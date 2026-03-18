@@ -1,0 +1,192 @@
+{
+  "^NSEI_252d": [
+    {
+      "made_on": "2026-03-16",
+      "due_on": "2026-11-23",
+      "horizon_days": 252,
+      "forecast_price": 20900.32,
+      "base_price": 23408.8,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "ACN_252d": [
+    {
+      "made_on": "2026-03-16",
+      "due_on": "2026-11-23",
+      "horizon_days": 252,
+      "forecast_price": 82.57,
+      "base_price": 199.74,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "TCS.NS_252d": [
+    {
+      "made_on": "2026-03-17",
+      "due_on": "2026-11-24",
+      "horizon_days": 252,
+      "forecast_price": 975.57,
+      "base_price": 2394.5,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "INFY.NS_63d": [
+    {
+      "made_on": "2026-03-17",
+      "due_on": "2026-05-19",
+      "horizon_days": 63,
+      "forecast_price": 1180.09,
+      "base_price": 1231.1,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "INFY.NS_126d": [
+    {
+      "made_on": "2026-03-17",
+      "due_on": "2026-07-21",
+      "horizon_days": 126,
+      "forecast_price": -145.84,
+      "base_price": 1231.1,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "ADANIGREEN.NS_63d": [
+    {
+      "made_on": "2026-03-17",
+      "due_on": "2026-05-19",
+      "horizon_days": 63,
+      "forecast_price": 751.84,
+      "base_price": 864.6,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    },
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 752.21,
+      "base_price": 868.65,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "RELIANCE.NS_65d": [
+    {
+      "made_on": "2026-03-17",
+      "due_on": "2026-05-21",
+      "horizon_days": 65,
+      "forecast_price": 1250.66,
+      "base_price": 1397.6,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "ACN_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 183.64,
+      "base_price": 199.61,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "GOOGL_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 332.52,
+      "base_price": 310.39,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "HG=F_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 6.81,
+      "base_price": 5.77,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "BZ=F_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 99.28,
+      "base_price": 103.5,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "SNOW_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 86.91,
+      "base_price": 174.6,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "IDFCFIRSTB.NS_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 66.93,
+      "base_price": 65.11,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "SUNPHARMA.NS_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 1708.76,
+      "base_price": 1785.9,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ],
+  "^BSESN_63d": [
+    {
+      "made_on": "2026-03-18",
+      "due_on": "2026-05-20",
+      "horizon_days": 63,
+      "forecast_price": 75120.68,
+      "base_price": 76945.45,
+      "actual_price": null,
+      "accuracy_pct": null,
+      "resolved": false
+    }
+  ]
+}
