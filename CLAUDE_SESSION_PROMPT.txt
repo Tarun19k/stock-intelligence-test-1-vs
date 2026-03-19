@@ -1,0 +1,30 @@
+════════════════════════════════════════════════════
+ GSI SESSION PROMPT — paste this at session START
+════════════════════════════════════════════════════
+
+I am working on the Global Stock Intelligence Dashboard.
+Here is the session manifest — GSI_session.json — which tracks
+every change, patch, and open item for this project.
+
+Read it fully, then confirm:
+  - Session number and last activity completed
+  - Regression status (should be 189/189)
+  - All open items with priority
+  - What files need to be uploaded based on today's work
+
+Then ask what I want to work on, or suggest the next open item.
+
+IMPORTANT REMINDER FOR CLAUDE:
+Updating GSI_session.json is the LAST required activity of this
+session — mandatory, no exceptions, no reminder needed from me.
+Before this session closes, you must deliver an updated manifest.
+
+════════════════════════════════════════════════════
+ ALSO PASTE THIS at session END if you want to be safe
+════════════════════════════════════════════════════
+
+We are wrapping up this session. Before we close:
+  1. Update GSI_session.json with all activities from today
+  2. Update file_state for every file touched
+  3. Update open_items
+  4. Deliver the updated GSI_session.json as a download

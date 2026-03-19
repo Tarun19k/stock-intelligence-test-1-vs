@@ -7,7 +7,7 @@ import re, ast, os, sys, zipfile
 from urllib.parse import urlparse
 
 PROJECT_FILES = [
-    "config.py","version.py","app.py","utils.py","forecast.py","market_data.py","styles.py",
+    "config.py","app.py","utils.py","forecast.py","market_data.py","styles.py",
     "pages/home.py","pages/dashboard.py","pages/global_intelligence.py","pages/week_summary.py",
 ]
 
@@ -113,21 +113,18 @@ def run(FM):
                 j = i + 1
                 while j < len(lines) and lines[j].strip().startswith("@"): j += 1
                 if j < len(lines) and lines[j].strip().startswith("def "):
-                    m = re.match(r"(\s*)def\s+(\w+)\s*\(", lines[j])
+                    m = re.match(r"\s*def\s+(\w+)\s*\(", lines[j])
                     if m:
-                        fn_indent = len(m.group(1))  # indentation of def line
-                        fname     = m.group(2)
+                        fname = m.group(1)
                         body_lines = []
                         k = j + 1
-                        while k < len(lines):
-                            stripped = lines[k].strip()
-                            if stripped == "":          # blank line — keep scanning
-                                body_lines.append(lines[k]); k += 1; continue
-                            line_indent = len(lines[k]) - len(lines[k].lstrip())
-                            if line_indent <= fn_indent: # back at/above def level
-                                break
-                            body_lines.append(lines[k]); k += 1
+                        while k < len(lines) and (lines[k].startswith(" ") or
+                                                    lines[k].startswith("\t") or
+                                                    lines[k].strip() == ""):
+                            body_lines.append(lines[k])
+                            k += 1
                         body = "\n".join(body_lines)
+                        body_no_rerun = re.sub(r"st\.rerun[^\n]*", "", body)
                         clean_body = re.sub(r"st\.rerun[^\n]*", "", body)
                         self_call  = bool(re.search(r"\b" + fname + r"\s*\(", clean_body))
                         chk("R8b.KI-015", f"no_self_recurse:{fname}@{fn}",
@@ -148,13 +145,6 @@ def run(FM):
             elif isinstance(node, ast.Assign):
                 for t in node.targets:
                     if isinstance(t, ast.Name): exports[mod].add(t.id)
-            elif isinstance(node, ast.AnnAssign):
-                # Handles type-annotated assignments: MARKET_SESSIONS: dict = {...}
-                if isinstance(node.target, ast.Name): exports[mod].add(node.target.id)
-            elif isinstance(node, ast.ImportFrom):
-                # Include re-exported names (e.g. config.py re-exports from version.py)
-                for alias in node.names:
-                    exports[mod].add(alias.asname or alias.name)
     for fn, src in FM.items():
         try: tree = ast.parse(src)
         except: continue
@@ -184,16 +174,10 @@ def run(FM):
     chk("R10.KI-009", "no_http_feeds", not http_bad, str(http_bad) if http_bad else "")
 
     # R11 · KI-006/KI-011 version log + delisted tickers ─────────────────────
-    # v5.16: VERSION_LOG moved to version.py; config.py re-exports it.
-    cfg     = FM.get("config.py", "")
-    ver_src = FM.get("version.py", cfg)  # fallback to config for pre-v5.16 repos
-    entries = re.findall(r'{"version":\s*"([^"]+)"[^}]+}', ver_src)
+    cfg = FM.get("config.py", "")
+    entries = re.findall(r'{"version":\s*"([^"]+)"[^}]+}', cfg)
     chk("R11", "version_log_min_20", len(entries) >= 20, str(len(entries)))
-    # v5.16+: version.py defines CURRENT_VERSION = VERSION_LOG[-1]["version"]
-    # pre-v5.16: config.py defined it inline
-    chk("R11", "current_ver_dynamic",
-        'VERSION_LOG[-1]["version"]' in ver_src or
-        "CURRENT_VERSION = VERSION_LOG[-1][" in cfg)
+    chk("R11", "current_ver_dynamic", "CURRENT_VERSION = VERSION_LOG[-1][" in cfg)
     chk("R11.KI-011", "no_TATAMOTORS_live",
         not any("TATAMOTORS" in l
                 for fn, src in FM.items() if fn.endswith(".py")
@@ -217,10 +201,7 @@ def run(FM):
     chk("R13.KI-003", "css_before_data_fetch",    "window.parent" in FM.get("pages/home.py",""))
     chk("R13.KI-008", "stSidebarNav_hidden",       "stSidebarNav" in FM.get("styles.py",""))
     chk("R13.KI-006", "no_double_v_prefix",        "f'v{CURRENT_VERSION}" not in FM.get("pages/home.py",""))
-    chk("R13.KI-012", "scoped_rerun",
-        # KI-020 (v5.17): scope="fragment" removed — plain st.rerun() is correct.
-        # Check: st.rerun() is present AND scope="fragment" is absent.
-        "st.rerun()" in app and 'scope="fragment"' not in app)
+    chk("R13.KI-012", "scoped_rerun",              ("st.rerun(scope=" in app))
     chk("R13",        "data_stale_guard",           "data_stale" in app)
     chk("R13",        "manual_refresh_btn",         ("Refresh data" in app or "🔄" in app))
 

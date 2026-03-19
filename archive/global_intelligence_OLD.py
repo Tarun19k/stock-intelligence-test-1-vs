@@ -7,8 +7,9 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as stc
 from config import GLOBAL_TOPICS, NEXT_STEPS_AI
-from utils import sanitise, safe_run, responsive_cols, log_error, safe_float
+from utils import sanitise,  safe_run, responsive_cols, log_error
 from market_data import get_news, get_price_data
+from utils import safe_float
 
 
 def _render_impact_chain(chain: list):
@@ -47,8 +48,7 @@ def _render_watchlist_badges(tickers: list, cur_sym: str, cb: int):
     cols = responsive_cols(min(len(tickers), 6))
     for col, sym in zip(cols, tickers):
         df = safe_run(
-            lambda s=sym: get_price_data(s, period="5d", interval="1d",
-                                         cache_buster=cb),
+            lambda s=sym: get_price_data(s, period="5d", interval="1d"),
             context=f"gi:watchlist:{sym}", default=None,
         )
         if df is not None and not df.empty and len(df) >= 2:
@@ -139,7 +139,7 @@ def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int):
         st.markdown('<p class="section-title">📰 Live Headlines</p>',
                     unsafe_allow_html=True)
         articles = safe_run(
-            lambda: get_news(topic.get("rss", []), max_n=5, cache_buster=cb),
+            lambda: get_news(topic.get("rss", []), max_n=5),
             context=f"gi:news:{topic_name[:20]}", default=[]
         )
         if articles:

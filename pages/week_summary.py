@@ -50,8 +50,9 @@ def _index_perf_row(cb: int):
     col_idx = 0
     for name, sym, csym in INDEX_WATCH:
         df = safe_run(
-            lambda s=sym: get_price_data(s, period="1mo", interval="1d"),
-            context=f"week:{sym}", default=None
+            lambda s=sym: get_price_data(s, period="1mo", interval="1d",
+                                         cache_buster=cb),
+            context=f"week:{sym}", default=None,
         )
         if df is None or df.empty or len(df) < 2:
             continue
@@ -102,7 +103,8 @@ def _nifty_heatmap(cb: int):
     names, returns = [], []
     for name, sym in NIFTY50_TICKERS:
         df = safe_run(
-            lambda s=sym: get_price_data(s, period="1mo", interval="1d"),
+            lambda s=sym: get_price_data(s, period="1mo", interval="1d",
+                                         cache_buster=cb),
             context=f"heatmap:{sym}", default=None,
         )
         if df is None or df.empty or len(df) < 2:
@@ -153,7 +155,8 @@ def _sector_cards(cb: int):
     cols = responsive_cols(len(SECTOR_PROXIES))
     for col, (name, sym) in zip(cols, SECTOR_PROXIES):
         df = safe_run(
-            lambda s=sym: get_price_data(s, period="1mo", interval="1d"),
+            lambda s=sym: get_price_data(s, period="1mo", interval="1d",
+                                         cache_buster=cb),
             context=f"sector:{sym}", default=None,
         )
         if df is None or df.empty or len(df) < 2:
@@ -184,11 +187,13 @@ def _nifty_weekly_chart(cb: int):
     st.markdown('<p class="section-title">📈 Nifty 50 — Week in Charts</p>',
                 unsafe_allow_html=True)
     df = safe_run(
-        lambda: get_price_data("^NSEI", period="1mo", interval="1d"),
+        lambda: get_price_data("^NSEI", period="1mo", interval="1d",
+                               cache_buster=cb),
         context="week_chart:nifty", default=None,
     )
     df_b = safe_run(
-        lambda: get_price_data("^NSEBANK", period="1mo", interval="1d"),
+        lambda: get_price_data("^NSEBANK", period="1mo", interval="1d",
+                               cache_buster=cb),
         context="week_chart:banknifty", default=None,
     )
     week_start, _, _, _ = _get_week_range()

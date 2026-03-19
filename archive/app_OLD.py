@@ -1,7 +1,8 @@
-# app.py — KI-012 through KI-016 applied + v5.16 cache_buster patch
+# app.py — KI-012 through KI-016 applied
 import streamlit as st
 import pytz
 from datetime import datetime
+
 from config import CURRENT_VERSION, MARKET_SESSIONS, CURRENCY, GROUPS
 from styles import inject_css
 from utils import init_session_state, render_error_log
@@ -21,27 +22,30 @@ st.set_page_config(
 inject_css()
 init_session_state()
 
-# ── Session defaults ─────────────────────────────────────────────────────────
-if "nav_page"    not in st.session_state: st.session_state.nav_page    = "🏠 Home"
-if "prev_ticker" not in st.session_state: st.session_state.prev_ticker = None
-if "cb"          not in st.session_state: st.session_state.cb          = 0
-if "data_stale"  not in st.session_state: st.session_state.data_stale  = False
-if "grp_sel"     not in st.session_state: st.session_state.grp_sel     = None
-if "stk_sel"     not in st.session_state: st.session_state.stk_sel     = None
-if "stock_search"not in st.session_state: st.session_state.stock_search = ""
+# ── Session defaults ────────────────────────────────────────────────────────
+if "nav_page"     not in st.session_state: st.session_state.nav_page     = "🏠 Home"
+if "prev_ticker"  not in st.session_state: st.session_state.prev_ticker  = None
+if "cb"           not in st.session_state: st.session_state.cb           = 0
+if "data_stale"   not in st.session_state: st.session_state.data_stale   = False
+if "grp_sel"      not in st.session_state: st.session_state.grp_sel      = None
+if "stk_sel"      not in st.session_state: st.session_state.stk_sel      = None
+if "stock_search" not in st.session_state: st.session_state.stock_search = ""
 
-# ── KI-014: market-open helper ───────────────────────────────────────────────
+
+# ── KI-014: market-open helper ──────────────────────────────────────────────
 def _is_market_open(country: str) -> bool:
     sess = MARKET_SESSIONS.get(country, {})
     tz   = pytz.timezone(sess.get("tz", "UTC"))
     now  = datetime.now(tz)
-    oh, om = sess.get("open",  (9, 0))
+    oh, om = sess.get("open",  (9,  0))
     ch, cm = sess.get("close", (17, 0))
     return (now.weekday() < 5
             and (oh, om) <= (now.hour, now.minute) < (ch, cm))
 
-# ── KI-016: market-change callback ──────────────────────────────────────────
+
+# ── KI-016: market-change callback — clears all stock state ─────────────────
 def _on_market_change():
+    # Clear scalar keys — pop grp_sel/stk_sel so selectbox defaults to index 0
     st.session_state["stock_search"] = ""
     st.session_state["prev_ticker"]  = None
     st.session_state["data_stale"]   = None
@@ -49,6 +53,7 @@ def _on_market_change():
         st.session_state.pop(key, None)   # pop → Streamlit resets widget to index 0
     st.session_state["nav_page"] = "🏠 Home"
     st.session_state.cb += 1
+
 
 # ── Global ticker bar ────────────────────────────────────────────────────────
 render_ticker_bar(cb=st.session_state.get("cb", 0))
@@ -58,7 +63,7 @@ with st.sidebar:
     st.markdown(f"### 📈 GSI Dashboard `{CURRENT_VERSION}`")
     st.divider()
 
-    country = st.selectbox(
+    country  = st.selectbox(
         "🌍 Market",
         list(MARKET_SESSIONS.keys()),
         index=0,
@@ -72,11 +77,11 @@ with st.sidebar:
     selected_name   = None
 
     if mkt_grps:
-        # Flat map of all stocks in the current market for search
-        all_stocks: dict = {}
+        all_stocks = {}
         for grp_name, stocks in mkt_grps.items():
             for sname, sticker in stocks.items():
-                all_stocks[f"{sname} [{sticker}]"] = (sname, sticker, grp_name)
+                label = f"{sname}  [{sticker}]"
+                all_stocks[label] = (sname, sticker, grp_name)
 
         search_query = st.text_input(
             "🔍 Search",
@@ -85,7 +90,7 @@ with st.sidebar:
         )
 
         if search_query.strip():
-            q        = search_query.strip().lower()
+            q = search_query.strip().lower()
             filtered = {
                 k: v for k, v in all_stocks.items()
                 if q in v[0].lower() or q in v[1].lower()
@@ -94,49 +99,43 @@ with st.sidebar:
                 st.caption("No results — try a different name or symbol.")
             else:
                 st.caption(f"{len(filtered)} result(s) found")
-                selected_label = st.selectbox(
+                selected_label  = st.selectbox(
                     "Select", list(filtered.keys()),
                     label_visibility="collapsed",
                 )
-                # KI-019: guard against None on first render after market switch
                 if selected_label and selected_label in filtered:
                     selected_name   = filtered[selected_label][0]
                     selected_ticker = filtered[selected_label][1]
         else:
             grp_names    = list(mkt_grps.keys())
             selected_grp = st.selectbox("📁 Group", grp_names, key="grp_sel")
-            # KI-018: guard against None returned by pop() on market switch
             if selected_grp not in mkt_grps:
                 selected_grp = grp_names[0]
-
-            stock_map = mkt_grps[selected_grp]
-            options   = ["— Select a stock —"] + list(stock_map.keys())
-            chosen    = st.selectbox("📊 Stock", options, key="stk_sel")
-            # KI-019: guard against None + missing key
+            stock_map    = mkt_grps[selected_grp]
+            options      = ["— Select a stock —"] + list(stock_map.keys())
+            chosen       = st.selectbox("📊 Stock", options, key="stk_sel")
             if chosen and chosen != "— Select a stock —" and chosen in stock_map:
                 selected_name   = chosen
                 selected_ticker = stock_map[chosen]
 
-    # Auto-navigate to dashboard when a new stock is picked
     if selected_ticker and selected_ticker != st.session_state.prev_ticker:
         st.session_state.nav_page    = "📊 Dashboard"
         st.session_state.prev_ticker = selected_ticker
         st.session_state.data_stale  = True
 
-    # Selected ticker badge
     if selected_ticker:
         st.markdown(
-            f'<div style="background:#1a2332;border:1px solid #2d3a5e;'
-            f'border-radius:8px;padding:6px 10px;margin:4px 0;'
-            f'font-size:0.78rem;color:#7eb3ff;font-weight:700;font-family:monospace">'
+            f'<div style="background:#1a2332;border:1px solid #2d3a5e;' +
+            f'border-radius:8px;padding:6px 10px;margin:4px 0;' +
+            f'font-size:0.78rem;color:#7eb3ff;font-weight:700;font-family:monospace">' +
             f'📌 {selected_ticker}</div>',
             unsafe_allow_html=True,
         )
     else:
         st.markdown(
-            '<div style="background:#1a2332;border:1px dashed #2d3a5e;'
-            'border-radius:8px;padding:6px 10px;margin:4px 0;'
-            'font-size:0.76rem;color:#4b6080">'
+            '<div style="background:#1a2332;border:1px dashed #2d3a5e;color:#6b7a9a;' +
+            'border-radius:8px;padding:6px 10px;margin:4px 0;' +
+            'font-size:0.76rem;color:#4b6080">' +
             'No stock selected — showing weekly summary</div>',
             unsafe_allow_html=True,
         )
@@ -151,38 +150,34 @@ with st.sidebar:
     )
 
     auto_refresh = st.toggle("⚡ Auto-refresh (60s)", value=False)
-
     if st.button("🔄 Refresh data", use_container_width=False):
         st.session_state.cb += 1
         st.rerun()
-
     st.divider()
     render_error_log()
 
-    # KI-012/013: non-blocking fragment-based auto-refresh inside sidebar
+    # ── KI-012/013: non-blocking fragment-based auto-refresh in sidebar ───────
     @st.fragment(run_every=60 if auto_refresh else None)
     def _refresh_fragment():
         if auto_refresh:
             st.session_state.cb += 1
-            st.rerun()   # KI-020: plain st.rerun() — no scope= arg
+            st.rerun()
 
     _refresh_fragment()
 
-cb          = st.session_state.cb
+cb = st.session_state.cb
 market_open = _is_market_open(country)
 
 # ── Routing ──────────────────────────────────────────────────────────────────
 if nav == "🏠 Home":
-    render_homepage(cb=cb, market_open=market_open)
+    render_homepage(cb=cb)
 
 elif nav == "📊 Dashboard":
     if not selected_ticker:
         render_week_summary(cur_sym=cur_sym, cb=cb)
     else:
-        # v5.16 FIX: pass cache_buster=cb so Refresh button actually busts cache
-        info = get_ticker_info(selected_ticker, cache_buster=cb)
-        df   = get_price_data(selected_ticker,  cache_buster=cb)
-
+        info = get_ticker_info(selected_ticker)
+        df   = get_price_data(selected_ticker)
         flat_stock_map = {
             sname: sticker
             for grp_stocks in mkt_grps.values()
@@ -202,4 +197,4 @@ elif nav == "📊 Dashboard":
         )
 
 elif nav == "🌍 Global Intelligence":
-    render_global_intelligence(cur_sym=cur_sym, cb=cb, market_open=market_open)
+    render_global_intelligence(cur_sym=cur_sym, cb=cb)

@@ -60,8 +60,7 @@ header[data-testid="stHeader"]{height:0!important;min-height:0!important;
     items = []
     for name, sym in TICKER_SYMBOLS:
         df = safe_run(
-            lambda s=sym: get_price_data(s, period="5d", interval="1d",
-                                          cache_buster=cb),
+            lambda s=sym: get_price_data(s, period="5d", interval="1d"),
             context=f"ticker_bar:{sym}", default=None,
         )
         if df is not None and not df.empty and len(df) >= 2 and "Close" in df.columns:
@@ -245,7 +244,7 @@ def _render_top_movers(cb: int):
     st.markdown('<p class="section-title">🚀 Top Movers Today</p>',
                 unsafe_allow_html=True)
     movers = safe_run(
-        lambda: get_top_movers(TOP_MOVER_WATCH, max_symbols=20, cache_buster=cb),
+        lambda: get_top_movers(TOP_MOVER_WATCH, max_symbols=20),
         context="home:top_movers", default=[]
     )
     if not movers:
@@ -283,7 +282,7 @@ def _render_news_feed(cb: int):
     st.markdown('<p class="section-title">📰 Latest Market News</p>',
                 unsafe_allow_html=True)
     articles = safe_run(
-        lambda: get_news(NEWS_FEEDS, max_n=6, cache_buster=cb),
+        lambda: get_news(NEWS_FEEDS, max_n=6),
         context="home:news", default=[]
     )
     if not articles:

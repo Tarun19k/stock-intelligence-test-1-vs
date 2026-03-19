@@ -465,7 +465,7 @@ def _tab_compare(ticker: str, name: str, df: pd.DataFrame,
 
     fig3 = go.Figure()
     for i, (nm, tk) in enumerate(zip(all_names, all_tickers)):
-        d = get_price_data(tk, period=yf_period, cache_buster=cb) if tk != ticker else df
+        d = get_price_data(tk, period=yf_period) if tk != ticker else df
         if d is None or d.empty:
             continue
         _cl  = _safe_close(d)
