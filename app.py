@@ -29,8 +29,22 @@ if "data_stale"  not in st.session_state: st.session_state.data_stale  = False
 if "grp_sel"     not in st.session_state: st.session_state.grp_sel     = None
 if "stk_sel"     not in st.session_state: st.session_state.stk_sel     = None
 if "stock_search"not in st.session_state: st.session_state.stock_search = ""
+if "market_open" not in st.session_state: st.session_state.market_open = False
 
-# ── KI-014: market-open helper ───────────────────────────────────────────────
+# ── Module-level refresh fragment ────────────────────────────────────────────
+# Defined here, outside any 'with' block, so Streamlit registers it once
+# per session and the 60s timer does NOT reset on user interactions.
+# Drives the global ticker bar only — dashboard page has its own fragments.
+@st.fragment(run_every=60)
+def _refresh_fragment():
+    """Silently increments cb every 60s when a live market is selected.
+    Only fires when st.session_state.market_open is True.
+    Does NOT call st.rerun() — full refresh is not needed for ticker bar.
+    The ticker bar re-fetches its own data via render_ticker_bar(cb=...)."""
+    if st.session_state.get("market_open", False):
+        st.session_state.cb += 1
+
+
 def _is_market_open(country: str) -> bool:
     sess = MARKET_SESSIONS.get(country, {})
     tz   = pytz.timezone(sess.get("tz", "UTC"))
@@ -65,8 +79,9 @@ with st.sidebar:
         key="market_sel",
         on_change=_on_market_change,
     )
-    cur_sym  = CURRENCY.get(country, "$")
-    mkt_grps = GROUPS.get(country, {})
+    cur_sym    = CURRENCY.get(country, "$")
+    mkt_grps   = GROUPS.get(country, {})
+    market_open = _is_market_open(country)  # computed here so badge can use it
 
     selected_ticker = None
     selected_name   = None
@@ -122,6 +137,7 @@ with st.sidebar:
         st.session_state.nav_page    = "📊 Dashboard"
         st.session_state.prev_ticker = selected_ticker
         st.session_state.data_stale  = True
+        st.session_state.cb         += 1   # bust cache on every new ticker selection
 
     # Selected ticker badge
     if selected_ticker:
@@ -150,7 +166,23 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    auto_refresh = st.toggle("⚡ Auto-refresh (60s)", value=False)
+    # ── Market status badge ──────────────────────────────────────
+    if market_open:
+        st.markdown(
+            '<div style="background:#00c85318;border:1px solid #00c853;'
+            'border-radius:8px;padding:6px 12px;margin:4px 0;'
+            'font-size:0.78rem;color:#00c853;font-weight:700;text-align:center">'
+            '🟢 Market LIVE — auto-refreshing</div>',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            '<div style="background:#ff174418;border:1px solid #ff1744;'
+            'border-radius:8px;padding:6px 12px;margin:4px 0;'
+            'font-size:0.78rem;color:#ff1744;font-weight:700;text-align:center">'
+            '🔴 Market CLOSED</div>',
+            unsafe_allow_html=True,
+        )
 
     if st.button("🔄 Refresh data", use_container_width=False):
         st.session_state.cb += 1
@@ -158,18 +190,10 @@ with st.sidebar:
 
     st.divider()
     render_error_log()
+    _refresh_fragment()  # module-level — timer stable across user interactions
 
-    # KI-012/013: non-blocking fragment-based auto-refresh inside sidebar
-    @st.fragment(run_every=60 if auto_refresh else None)
-    def _refresh_fragment():
-        if auto_refresh:
-            st.session_state.cb += 1
-            st.rerun()   # KI-020: plain st.rerun() — no scope= arg
-
-    _refresh_fragment()
-
-cb          = st.session_state.cb
-market_open = _is_market_open(country)
+cb = st.session_state.cb
+st.session_state.market_open = market_open  # fragment reads this
 
 # ── Routing ──────────────────────────────────────────────────────────────────
 if nav == "🏠 Home":

@@ -367,18 +367,19 @@ KI-020
 KI-021
   severity   : HIGH (crash on brand-new IPO listings)
   discovered : v5.17 (2026-03-18) — persona test P5 edge case simulation
-  fixed      : OPEN
+  fixed      : v5.17 (2026-03-20)
   file       : forecast.py
   symptom    : numpy.linalg.LinAlgError: SVD did not converge
                (when a stock has < 2 rows of price history)
   root_cause : np.polyfit() requires at minimum 2 data points. A same-day
                IPO listing returns a single-row DataFrame. No length guard
                exists before the polyfit call.
-  fix        : Add: if len(df) < lookback or len(df) < 2:
-                        st.info("Insufficient price history for forecast")
-                        return
-               before every polyfit / regression call in forecast.py
-  regression : Add R15 — verify polyfit calls are guarded by len(df) check
+  fix        : Added len(hist) < 2 guard in pages/dashboard.py _tab_forecast()
+               before np.polyfit call. Returns st.warning() instead of crashing.
+               Also added max(forecast_price, 0.01) clamp in forecast.py
+               store_forecast() — prevents negative prices being stored.
+  regression : R8.KI-002 entry point check covers _tab_forecast
+               Add R15 next session: verify polyfit guarded by len(df) >= 2
 # ──────────────────────────────────────────────────────────────────────────────
 # EXTERNAL / ENVIRONMENT ISSUES (not code bugs — documented for awareness)
 # ──────────────────────────────────────────────────────────────────────────────
@@ -406,3 +407,96 @@ EXT-003
   behaviour  : safe_run() catches it, returns empty DataFrame — no crash
   distinction: Transient → wait and retry. Permanent → update config.py.
                Check NSE/BSE announcements to distinguish.
+
+# ──────────────────────────────────────────────────────────────────────────────
+# OBSERVATION LOG (non-crash issues found during code audit)
+# ──────────────────────────────────────────────────────────────────────────────
+
+OBS-001
+  severity   : LOW (cosmetic / code quality)
+  discovered : v5.17 (2026-03-20) — session 003 direct file audit
+  fixed      : v5.17 (2026-03-20)
+  file       : utils.py → responsive_cols()
+  symptom    : tablet and mobile params in signature silently ignored
+  root_cause : Stub never implemented — returns st.columns(desktop) regardless
+  fix        : Added inline comment documenting params as reserved stubs
+  regression : None needed
+
+OBS-002
+  severity   : LOW (dead code)
+  discovered : v5.17 (2026-03-20) — session 003 direct file audit
+  fixed      : v5.17 (2026-03-20)
+  file       : pages/home.py → _render_live_section()
+  symptom    : @st.fragment function defined but never called anywhere
+  root_cause : Fragment was planned for dynamic home page sections but
+               render_homepage() calls individual helpers directly instead
+  fix        : Removed _render_live_section() entirely
+  regression : R8b — @st.fragment self-recursion check still passes (function gone)
+
+OBS-003
+  severity   : CRITICAL (CSS never injected — production layout broken)
+  discovered : v5.17 (2026-03-20) — session 003 direct file audit
+  fixed      : v5.17 (2026-03-20)
+  file       : styles.py → inject_css()
+  symptom    : stSidebarNav visible, ticker bar mispositioned, Streamlit header
+               showing, deploy button visible — any of these could be wrong in prod
+  root_cause : inject_css() body is a one-liner: st.markdown(CSS, ...).
+               A large CSS block (ticker-wrap, stHeader suppression, stSidebarNav
+               hide, stDeployButton hide, all padding-top rules) was placed inside
+               the function's docstring — not inside the CSS constant.
+               Python docstrings are documentation strings, not executed code.
+               The CSS constant never contained these rules, so they were never
+               sent to the browser.
+  fix        : Merged all CSS from docstring into CSS constant.
+               Replaced docstring with single-line description.
+  note       : R13.KI-008 was a false-green — checked for 'stSidebarNav' anywhere
+               in the file (including docstring). Tighten next session.
+  regression : R13.KI-008 currently passes (string present in CSS constant now).
+               TODO: tighten check to verify string is inside CSS constant only.
+
+OBS-004
+  severity   : LOW (code quality)
+  discovered : v5.17 (2026-03-20) — session 003 direct file audit
+  fixed      : v5.17 (2026-03-20)
+  file       : pages/dashboard.py → _tab_compare()
+  symptom    : from config import GROUPS, CURRENCY inside function body
+  root_cause : Added as precaution against circular import that does not exist.
+               Import chain is config → market_data → dashboard — clean one-way.
+  fix        : Moved to top-level imports alongside existing config import
+  regression : R9.KI-002 cross-file import check covers this
+
+OBS-005
+  severity   : LOW (maintainability)
+  discovered : v5.17 (2026-03-20) — session 003 direct file audit
+  fixed      : OPEN — see OPEN-004
+  file       : indicators.py → signal_score()
+  symptom    : Scoring weights (RSI=25pts, MACD=20pts, SMA=20pts etc.) are
+               inline magic numbers with no central definition
+  root_cause : Original implementation — weights were never extracted
+  fix        : Extract to SCORING_WEIGHTS dict at top of indicators.py
+  regression : None yet — add once fix is implemented
+
+OBS-006
+  severity   : MEDIUM (incorrect stored data)
+  discovered : v5.17 (2026-03-20) — found in forecast_history.json
+  fixed      : v5.17 (2026-03-20)
+  file       : forecast.py → store_forecast()
+  symptom    : INFY.NS_126d stored forecast_price: -145.84
+               Negative stock price — mathematically impossible
+  root_cause : np.polyfit on a downward-trending stock extrapolates linearly
+               past zero when the horizon is long (126 days). No sanity check
+               existed before storing the result.
+  fix        : Added forecast_price = max(forecast_price, 0.01) before append
+  note       : Existing negative entries in forecast_history.json should be
+               manually removed or they will show as resolved with 0% accuracy
+  regression : No automated check — value is runtime-computed
+
+OBS-007
+  severity   : MEDIUM (repo hygiene)
+  discovered : v5.17 (2026-03-20) — session 003 audit
+  fixed      : OPEN — see OPEN-005
+  file       : repo root
+  symptom    : config_OLD.py present — pre-refactor 962-line file
+  root_cause : Not removed after v5.16 config refactor
+  fix        : git rm config_OLD.py (or move to archive/)
+  regression : None needed once removed

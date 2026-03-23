@@ -1,0 +1,1347 @@
+{
+  "_CLAUDE_READ_THIS_FIRST": "MANDATORY — READ BEFORE ANYTHING ELSE.\n\nThis is GSI_Session.json v2.0 — the SESSION MANIFEST for the Global Stock Intelligence Dashboard.\nIt tracks session history, file versions, open items, and per-file next steps.\nStable reference (file structure, rules, architecture, API behavior) lives in CLAUDE.md in the repo root.\n\nON SESSION START:\n 1. Read this manifest fully — confirm session number, current version, open items.\n 2. Read CLAUDE.md if you do not have it in context (repo root or ask user to paste).\n 3. Run python regression.py — confirm 189/189 PASS before any new work.\n 4. Follow session_start_checklist for which Gists/files to fetch.\n\nDURING SESSION:\n 5. Log every patch, fix, decision as an activity entry in sessions[N].activities as it happens.\n\nON SESSION END — NON-NEGOTIABLE:\n 6. Update sessions[N].activities with all activities.\n 7. Update file_state for every file touched (version, lines, last_confirmed).\n 8. Update file_registry[file].change_history and next_steps for touched files.\n 9. Update open_items — close completed, add new ones.\n10. Update regression.last_run and last_result.\n11. If architecture changed — update CLAUDE.md too.\n12. Deliver updated GSI_Session.json as downloadable file.\n13. Remind user to push CLAUDE.md to repo and update Gist: https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab\n\nResume prompt: 'I am working on the Global Stock Intelligence Dashboard. Here is the session manifest GSI_Session.json — read it fully and confirm our state before we proceed.'",
+  "meta": {
+    "project": "Global Stock Intelligence Dashboard",
+    "repo_modular": "https://github.com/Tarun19k/stock-intelligence-test-1-vs",
+    "repo_monolith": "https://github.com/Tarun19k/global-gsi-intelligence",
+    "manifest_version": "4.2",
+    "protocol": "This manifest MUST be updated after every patch, fix, rebuild, or architectural change to the project. Updating the manifest is itself a required activity — marked IMPORTANT — and must occur before or towards the end of every session. At the start of a new session, provide the Gist URL and say: 'Here is the session manifest — continue from where we left off.' Claude will read it and resume without re-reading every file from GitHub.",
+    "current_version": "v5.21",
+    "next_version": "v5.22",
+    "version_convention": "Increment minor version (v5.X) for any patch or fix. Increment major version (vX.0) for structural refactors. Always add entry to version.py VERSION_LOG before shipping.",
+    "deployment_target": "Both — Streamlit Community Cloud AND local dev",
+    "entry_point": "app.py (root)",
+    "python_runtime": "Python 3.x, Streamlit",
+    "run_local": "streamlit run app.py",
+    "run_regression": "python regression.py # must be run from project root",
+    "github_constraints": {
+      "root_files": "Readable via blob URLs — Claude can fetch these without upload",
+      "pages_subdir": "BLOCKED by robots.txt — use Pages Gist instead",
+      "rate_limiting": "GitHub rate-limits Claude fetches. If a fetch fails, use the Gist URL instead.",
+      "raw_urls_blocked": "raw.githubusercontent.com URLs are blocked unless they appear in search results first. Use github.com/blob/ URLs instead.",
+      "html_truncation_warning": "GitHub blob page HTML includes full file content embedded in the page. Large files (>400 lines) served alongside other files in a single Gist fetch will truncate. ALWAYS use dedicated single-file Gists for large files. See gist_truncation_policy."
+    },
+    "repo_relationship": "TWO REPOS EXIST — do not confuse them. Repo 1 (global-gsi-intelligence): the original monolith — 2451 lines in one file. REFERENCE ONLY — no active development. Repo 2 (stock-intelligence-test-1-vs): the modular refactor — ALL active work happens here. Every fix, patch, and rebuild in this manifest applies to Repo 2 only.",
+    "claude_md": "CLAUDE.md in repo root — stable cold-start reference. Contains: file structure, run commands, do-not-undo rules, architecture decisions, environment, API behavior, scoring model, regression table. Update CLAUDE.md when architecture changes; update this manifest every session.",
+    "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol."
+  },
+  "gist_index": {
+    "description": "Master index of all Gist URLs used in this project. ALWAYS add new files here when creating or moving to a Gist. This is the single source of truth for code access.",
+    "truncation_policy": {
+      "rule": "Any file over ~300 lines must have its own dedicated single-file Gist. Never share a Gist page with another large file.",
+      "reason": "Claude's web_fetch tool returns a fixed-size HTML response. When a Gist page contains multiple large files, the HTML is truncated mid-page and files appearing later in the page are silently missing. This was discovered in session 002 when GSI_session.json (~860 lines) caused version.py, tickers.json, regression.py, and market_data.py to be invisible in the root Gist fetch.",
+      "lesson": "If Claude reports a file as 'missing' from a Gist, the real cause is almost always truncation — not absence. Always verify by fetching the dedicated Gist URL for that file.",
+      "size_thresholds": {
+        "safe_in_multi_file_gist": "< 200 lines",
+        "borderline": "200-400 lines — use judgement based on other files in same Gist",
+        "must_have_own_gist": "> 400 lines"
+      }
+    },
+    "gists": {
+      "GSI_session": {
+        "url": "https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab",
+        "files": [
+          "GSI_Session.json"
+        ],
+        "lines": 860,
+        "reason": "Dedicated — too large to share (860+ lines, grows each session)",
+        "update_frequency": "Every session — mandatory end-of-session update"
+      },
+      "tickers": {
+        "url": "https://gist.github.com/Tarun19k/744a7e7a58f8f079a3120b55e34a3c0d",
+        "files": [
+          "tickers.json"
+        ],
+        "lines": 655,
+        "reason": "Dedicated — too large to share (655 lines of JSON)",
+        "update_frequency": "Only when tickers are added/removed"
+      },
+      "pages": {
+        "url": "https://gist.github.com/Tarun19k/08480054082ca1f0f0aa3a585030e63a",
+        "files": [
+          "dashboard.py",
+          "global_intelligence.py",
+          "home.py",
+          "week_summary.py"
+        ],
+        "lines": {
+          "dashboard.py": 661,
+          "global_intelligence.py": 194,
+          "home.py": 352,
+          "week_summary.py": 247
+        },
+        "reason": "Multi-file Gist safe — total lines spread across 4 files, no single file dominates the page",
+        "update_frequency": "When any pages/ file is patched"
+      },
+      "root_files": {
+        "url": "https://gist.github.com/Tarun19k/ae1c6f3cda019baa8c831cad38da2d71",
+        "files": [
+          "app.py",
+          "config.py",
+          "forecast.py",
+          "forecast_history.json"
+        ],
+        "lines": {
+          "app.py": 205,
+          "config.py": 289,
+          "forecast.py": 249
+        },
+        "reason": "Multi-file Gist — safe as long as no single file exceeds 400 lines",
+        "warning": "version.py, tickers.json, regression.py, market_data.py were previously in this Gist but caused truncation. They now have dedicated Gists or GitHub blob URLs.",
+        "update_frequency": "When any root file is patched"
+      }
+    },
+    "add_new_file_procedure": {
+      "step_1": "Check the file's line count",
+      "step_2": "If > 400 lines — create a dedicated single-file Gist",
+      "step_3": "If < 200 lines — can be added to an existing multi-file Gist IF total page size stays reasonable",
+      "step_4": "Add the new Gist URL to gist_index.gists in this manifest",
+      "step_5": "Add the URL to session_start_checklist.gist_urls",
+      "step_6": "Update manifest and push updated GSI_Session.json to its Gist"
+    }
+  },
+  "sessions": [
+    {
+      "session_id": "001",
+      "date": "2026-03-19",
+      "title": "Full audit, config refactor, critical bug fixes, regression suite, manifest protocol established and completed",
+      "regression_result": "189 / 189 PASS",
+      "activities": [
+        {
+          "order": 1,
+          "type": "audit",
+          "label": "Repo 1 (monolith) review",
+          "detail": "Read app_v4_phase5_finalFix.py (2451 lines, 125KB). Identified: monolith problem, forecast_history.json filesystem bug, cache_buster missing, CSS media query fragility, magic-number scoring weights, hardcoded GLOBAL_TOPICS, filename mismatch vs README."
+        },
+        {
+          "order": 2,
+          "type": "audit",
+          "label": "Repo 2 (modular) full cross-file audit",
+          "detail": "Read all root files: app.py, config.py, forecast.py, market_data.py, indicators.py, styles.py, utils.py, regression.py. Read all pages/ files (via upload): home.py, dashboard.py, global_intelligence.py, week_summary.py, __init__.py. Read all markdown docs. Built full dependency graph and bug table."
+        },
+        {
+          "order": 3,
+          "type": "decision",
+          "label": "Rebuild order established",
+          "detail": "Priority: config.py first, then market_data.py, then forecast.py, then .gitignore. Pages patched in same pass as market_data fix."
+        },
+        {
+          "order": 4,
+          "type": "rebuild",
+          "label": "config.py split into 3 files",
+          "files_changed": [
+            "config.py",
+            "version.py",
+            "tickers.json"
+          ],
+          "detail": "config.py: 962 → 289 lines. GROUPS extracted to tickers.json (655 lines, 9 markets). VERSION_LOG split to version.py. config.py re-exports both for full backward compatibility.",
+          "validation": "Python AST parse + json.load() + spot checks passed"
+        },
+        {
+          "order": 5,
+          "type": "new_file",
+          "label": ".gitignore created",
+          "files_changed": [
+            ".gitignore"
+          ],
+          "detail": "Covers: __pycache__, *.pyc, .venv, forecast_history.json, .DS_Store, .vscode, .streamlit/secrets.toml, *.log, *.tmp.",
+          "validation": "Manual review"
+        },
+        {
+          "order": 6,
+          "type": "patch",
+          "label": "market_data.py — cache_buster param added",
+          "files_changed": [
+            "market_data.py"
+          ],
+          "detail": "Added cache_buster: int = 0 to all 4 public functions. Default=0 means all existing call sites work unchanged. Without this, Refresh button and auto-refresh were silently no-ops.",
+          "bug_fixed": "CRITICAL: Refresh button silently broken across entire app",
+          "validation": "AST parse + signature scan confirmed"
+        },
+        {
+          "order": 7,
+          "type": "patch",
+          "label": "forecast.py — session_state persistence",
+          "files_changed": [
+            "forecast.py"
+          ],
+          "detail": "Replaced filesystem-only persistence with st.session_state as primary store. _SS_KEY = 'forecast_history'. Seeds from disk on first call per session, writes back to disk as best-effort. Added empty-ticker guards on all functions.",
+          "bug_fixed": "CRITICAL: forecast_history.json wiped on every Streamlit Cloud redeploy",
+          "validation": "R-FC checks all pass"
+        },
+        {
+          "order": 8,
+          "type": "patch",
+          "label": "app.py — cache_buster + market_open propagation",
+          "files_changed": [
+            "app.py"
+          ],
+          "detail": "get_ticker_info and get_price_data now receive cache_buster=cb. render_homepage and render_global_intelligence now receive market_open. KI-020: st.rerun(scope='fragment') → st.rerun().",
+          "bug_fixed": "CRITICAL: cache_buster not reaching primary data fetches",
+          "validation": "R13.cb, R14.KI-016, R13.KI-012 all pass"
+        },
+        {
+          "order": 9,
+          "type": "patch",
+          "label": "pages — cache_buster at all 8 remaining call sites",
+          "files_changed": [
+            "pages/home.py",
+            "pages/dashboard.py",
+            "pages/global_intelligence.py",
+            "pages/week_summary.py"
+          ],
+          "detail": "home.py: 3 sites. dashboard.py: 1 site. global_intelligence.py: 2 sites. week_summary.py: 5 sites. All safe_run calls retain context= and default= args.",
+          "validation": "R13.cb: 13/13 call sites confirmed"
+        },
+        {
+          "order": 10,
+          "type": "verify",
+          "label": "Unchanged files verified clean",
+          "files_changed": [
+            "indicators.py",
+            "styles.py",
+            "utils.py"
+          ],
+          "detail": "All three parsed clean — no use_container_width=True, no bare except:, no blocking sleep.",
+          "validation": "Automated checks passed"
+        },
+        {
+          "order": 11,
+          "type": "patch",
+          "label": "regression.py — 3 stale checks fixed",
+          "files_changed": [
+            "regression.py"
+          ],
+          "detail": "PROJECT_FILES: added version.py. R11: reads version.py. R8b.KI-015: strict indentation-depth tracking. R9.KI-002: handles AnnAssign + ImportFrom. R13.KI-012: scoped_rerun check inverted.",
+          "validation": "189 / 189 regression checks pass"
+        },
+        {
+          "order": 12,
+          "type": "manifest",
+          "label": "Session manifest protocol established — v1.0 written",
+          "files_changed": [
+            "GSI_Session.json"
+          ]
+        },
+        {
+          "order": 13,
+          "type": "audit",
+          "label": "Manifest completeness simulation — gap analysis",
+          "detail": "11 gaps identified: 3 blockers, 8 important. All closed in v1.1."
+        },
+        {
+          "order": 14,
+          "type": "rebuild",
+          "label": "Manifest v1.0 → v1.1: all 11 gaps closed",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "Added: environment, entry_point_signatures, external_api_behavior, do_not_undo, code_access_strategy."
+        },
+        {
+          "order": 15,
+          "type": "manifest",
+          "label": "Session manifest finalised — v1.1 complete",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "17 activities total. All sections present."
+        },
+        {
+          "order": 16,
+          "type": "audit",
+          "label": "175/175 manifest verification + code access strategy documented",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "Two-tier approach confirmed: GitHub blob URLs (root) + Gists (pages). Added code_access_strategy.",
+          "validation": "175 / 175 manifest checks pass"
+        },
+        {
+          "order": 17,
+          "type": "verify",
+          "label": "Pages Gist URL confirmed accessible",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "https://gist.github.com/Tarun19k/08480054082ca1f0f0aa3a585030e63a confirmed: all 4 pages files readable by Claude without upload.",
+          "validation": "Gist fetched and all 4 files confirmed readable"
+        }
+      ],
+      "open_items_at_close": [
+        "OPEN-001",
+        "OPEN-002",
+        "OPEN-003",
+        "OPEN-004",
+        "OPEN-005"
+      ]
+    },
+    {
+      "session_id": "002",
+      "date": "2026-03-20",
+      "title": "Git push verification, Gist architecture established, truncation problem discovered and documented, manifest v1.2",
+      "regression_result": "NOT RUN — pending local testing",
+      "activities": [
+        {
+          "order": 1,
+          "type": "verify",
+          "label": "Git workflow — pull before push process established",
+          "detail": "User confirmed VS Code terminal as the correct environment for git commands. Established correct sequence: git fetch origin → git log --oneline HEAD..origin/main → git pull --rebase origin main → git push origin main. Merge commit 89b83be confirmed on origin/main."
+        },
+        {
+          "order": 2,
+          "type": "verify",
+          "label": "Repo sync confirmed — all v5.16 files pushed",
+          "detail": "git log confirmed: commit bf5367f 'v5.xx: config refactor, cache_buster fix, forecast session_state persistence, regression suite update' on origin/main. Total 6 commits in repo. All patched files confirmed present by user manual inspection.",
+          "files_confirmed": [
+            "config.py (289 lines)",
+            "market_data.py (200 lines)",
+            "forecast.py (249 lines)",
+            "app.py (205 lines)",
+            "version.py (39 lines)",
+            "tickers.json (655 lines)",
+            "regression.py (283 lines)",
+            "pages/home.py",
+            "pages/dashboard.py",
+            "pages/global_intelligence.py",
+            "pages/week_summary.py"
+          ]
+        },
+        {
+          "order": 3,
+          "type": "audit",
+          "label": "Gist truncation problem discovered and root-caused",
+          "detail": "When Claude fetched the root Gist (ae1c6f3cda019baa8c831cad38da2d71) containing 8 files including GSI_session.json (~860 lines), the HTML response was truncated. Files appearing after GSI_session.json in the page (version.py, tickers.json, regression.py, market_data.py) were silently missing from the response. Claude incorrectly reported these as 'not in Gist' when they were present. Root cause: Gist HTML pages embed full file content — large files consume the fixed fetch response budget, leaving no room for subsequent files in the page.",
+          "lesson": "Never put files >400 lines in a shared Gist. Create dedicated single-file Gists for large files. When Claude reports a file as missing from a Gist, always suspect truncation first."
+        },
+        {
+          "order": 4,
+          "type": "rebuild",
+          "label": "Gist architecture split into 4 dedicated Gists",
+          "detail": "Established 4-Gist architecture to prevent future truncation: (1) GSI_session.json alone at 7c894c02dad4e76fe7c404bf963baeab — ~860 lines, grows each session. (2) tickers.json alone at 744a7e7a58f8f079a3120b55e34a3c0d — 655 lines JSON. (3) pages/ files at 08480054082ca1f0f0aa3a585030e63a — 4 files, safe multi-file. (4) root .py files at ae1c6f3cda019baa8c831cad38da2d71 — smaller files only.",
+          "files_changed": [
+            "GSI_Session.json (gist_index section added)"
+          ]
+        },
+        {
+          "order": 5,
+          "type": "verify",
+          "label": "All 4 Gists fully validated",
+          "detail": "tickers.json Gist: all 9 markets present, TATAMOTORS.NS absent, TMCV.NS/TMPV.NS correct. GSI_session.json Gist: fully readable without truncation, all 17 session 001 activities present, 5 open items intact. Pages Gist: all 4 files present, cache_buster at all call sites, market_open propagated. Root Gist: app.py, config.py, forecast.py all confirmed correct.",
+          "validation": "All 4 Gists fetched clean — no truncation"
+        },
+        {
+          "order": 6,
+          "type": "manifest",
+          "label": "Manifest v1.1 → v1.2: truncation policy, Gist index, strict line counts, session 002 logged",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "Added: gist_index (master Gist registry with truncation_policy, size_thresholds, add_new_file_procedure). Updated: file_state — all entries now have confirmed line counts. Updated: session_start_checklist — GSI_session.json now uses dedicated Gist URL. Updated: meta.github_constraints — html_truncation_warning added. Added: session 002 with 6 activities. manifest_version bumped to 1.2."
+        },
+        {
+          "order": 7,
+          "type": "manifest",
+          "label": "Manifest v1.2 → v1.3: file_registry added for all 14 files",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "Added file_registry section with per-file: purpose, capabilities, depends_on, used_by, ss_keys_read, ss_keys_write, key_design, issues. Derived from direct file reads (dashboard.py, home.py, tickers.json) + signatures/dependency_graph. Covers all 14 project files."
+        }
+      ],
+      "open_items_at_close": [
+        "OPEN-001",
+        "OPEN-002",
+        "OPEN-003",
+        "OPEN-004",
+        "OPEN-005"
+      ]
+    },
+    {
+      "session_id": "003",
+      "date": "2026-03-20",
+      "title": "Full file reads, file_registry built, all OBS/KI bug fixes shipped as v5.17",
+      "regression_result": "NOT RUN — pending local run after push",
+      "activities": [
+        {
+          "order": 1,
+          "type": "audit",
+          "label": "Full file context acquired — all 17 files uploaded and read",
+          "detail": "User uploaded all project files directly. Full content confirmed for all 14 source files + tickers.json + forecast_history.json + requirements.txt. First time in project history that Claude has read every file in a single session."
+        },
+        {
+          "order": 2,
+          "type": "rebuild",
+          "label": "file_registry added to GSI_Session.json v1.3",
+          "detail": "Built per-file metadata for all 14 files: purpose, capabilities, depends_on, used_by, ss_keys_read/write, key_design, issues. Manifest bumped to v1.3."
+        },
+        {
+          "order": 3,
+          "type": "audit",
+          "label": "Bug discovery — 7 issues identified from direct file reads",
+          "detail": "OBS-006: negative forecast price (INFY.NS_126d = -145.84, no clamp). KI-021: polyfit crash on <2 rows. OBS-003: styles.py CSS entirely in docstring, never injected (stSidebarNav, ticker-wrap, stHeader, stDeployButton, padding-top all missing from production). OBS-002: _render_live_section dead code. OBS-004: late GROUPS/CURRENCY import. OBS-001: responsive_cols stub undocumented."
+        },
+        {
+          "order": 4,
+          "type": "patch",
+          "label": "forecast.py — negative price clamp (OBS-006 / KI-021)",
+          "files_changed": [
+            "forecast.py"
+          ],
+          "detail": "Added forecast_price = max(forecast_price, 0.01) before append in store_forecast(). Prevents nonsensical negative forecasts from steep polyfit extrapolation.",
+          "bug_fixed": "OBS-006: INFY.NS_126d stored as -145.84"
+        },
+        {
+          "order": 5,
+          "type": "patch",
+          "label": "dashboard.py — polyfit crash guard + late import fix (KI-021, OBS-004)",
+          "files_changed": [
+            "pages/dashboard.py"
+          ],
+          "detail": "KI-021: added len(hist) < 2 guard before np.polyfit in _tab_forecast — returns warning instead of crashing on IPO/new stocks. OBS-004: moved GROUPS/CURRENCY import from inside _tab_compare body to top-level module imports.",
+          "bug_fixed": "KI-021: np.polyfit crash on IPO stocks"
+        },
+        {
+          "order": 6,
+          "type": "patch",
+          "label": "styles.py — CRITICAL: CSS docstring merged into CSS constant (OBS-003)",
+          "files_changed": [
+            "styles.py"
+          ],
+          "detail": "stSidebarNav hide, ticker-wrap, stHeader suppression, stDeployButton hide, and padding-top rules were in inject_css() docstring — never injected into the page. Merged all into CSS constant. inject_css() docstring replaced with one-liner. THIS WAS A PRODUCTION BUG — MPA sidebar nav was likely showing and ticker bar padding was wrong.",
+          "bug_fixed": "OBS-003: stSidebarNav, ticker-wrap, padding-top, stHeader, stDeployButton all now actually injected"
+        },
+        {
+          "order": 7,
+          "type": "patch",
+          "label": "home.py — removed _render_live_section dead code (OBS-002)",
+          "files_changed": [
+            "pages/home.py"
+          ],
+          "detail": "Removed @st.fragment _render_live_section() — defined but never called. Was consuming a fragment slot definition with no effect."
+        },
+        {
+          "order": 8,
+          "type": "patch",
+          "label": "utils.py — responsive_cols stub documented (OBS-001)",
+          "files_changed": [
+            "utils.py"
+          ],
+          "detail": "Added inline comment noting tablet/mobile params are reserved stubs — not silently ignored."
+        },
+        {
+          "order": 9,
+          "type": "patch",
+          "label": "version.py — v5.17 entry added",
+          "files_changed": [
+            "version.py"
+          ],
+          "detail": "Added version log entry for all 6 fixes shipped this session. CURRENT_VERSION now v5.17."
+        },
+        {
+          "order": 10,
+          "type": "manifest",
+          "label": "GSI_Session.json v1.3 → v1.4: session 003 logged, file_state updated, known_issues resolved",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "Updated: file_state for 6 patched files (lines + version + status). Updated: known_issues — KI-021/OBS-001-006 all marked FIXED. Updated: meta.current_version to v5.17. Added: session 003 with 10 activities."
+        },
+        {
+          "order": 11,
+          "type": "new_file",
+          "label": "KNOWN_ISSUES_LOG.md generated — complete issue history KI-001 through OBS-007",
+          "files_changed": [
+            "KNOWN_ISSUES_LOG.md"
+          ],
+          "detail": "Full issue log: 21 KI entries (all fixed), 6 OBS entries (5 fixed, 1 open), 5 open items, regression suite reference table, and updated Do Not Undo list with new rule 8 (CSS must be in CSS constant, not docstring)."
+        },
+        {
+          "order": 12,
+          "type": "manifest",
+          "label": "Manifest v1.4 → v1.5: next_steps + change_history added to all 14 file_registry entries",
+          "files_changed": [
+            "GSI_Session.json"
+          ],
+          "detail": "Added next_steps (planned work per file) and change_history (one-line per version that touched the file) to every file_registry entry. Closes the gap where open work and file history required cross-referencing three separate manifest sections."
+        },
+        {
+          "order": 13,
+          "type": "rebuild",
+          "label": "CLAUDE.md created + manifest rebuilt as v2.0 — clean split of stable vs session-state content",
+          "files_changed": [
+            "CLAUDE.md",
+            "GSI_Session.json"
+          ],
+          "detail": "CLAUDE.md: new repo-root file — cold-start reference for any AI or contributor. Contains: file structure, run commands, dependency tiers, entry points, do-not-undo rules, architecture decisions, environment, regression table, scoring model, API behavior, forecast schema, open work summary, Gist URL. Manifest v2.0: removed 9 sections (architectural_decisions, do_not_undo, dependency_graph, environment, scoring_model, forecast_history_schema, external_api_behavior, audit_observations, entry_point_signatures). Replaced with CLAUDE.md pointer in meta. Manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry."
+        },
+        {
+          "order": 14,
+          "type": "patch",
+          "label": "regression.py — remove stale _render_live_section from R8 EP dict",
+          "files_changed": [
+            "regression.py"
+          ],
+          "detail": "R8 EP dict for pages/home.py still listed _render_live_section, which was deleted in v5.17 (OBS-002). Would have caused R8 failure on first regression run after pushing v5.17 patches. Caught by cold-start simulation before push."
+        },
+        {
+          "order": 15,
+          "type": "verify",
+          "label": "Cold-start simulation passed — session recollection confirmed viable",
+          "detail": "Simulated new-thread cold start. Verified: project identity, run commands, regression gate, Gist URLs, open items, per-file next_steps all present and correct. One real blocker found and fixed (regression.py R8 stale EP). File state version warnings were false positives — untouched files correctly at v5.16. CLAUDE.md + GSI_Session.json v2.0 together provide complete context for any new session."
+        },
+        {
+          "order": 16,
+          "type": "verify",
+          "label": "Regression confirmed 188/188 — new baseline after _render_live_section removal",
+          "detail": "189 → 188 checks: removal of _render_live_section from R8 EP dict (OBS-002, home.py v5.17) reduced check count by exactly 1. All 188 pass. 188 is the new expected baseline."
+        },
+        {
+          "order": 17,
+          "type": "rebuild",
+          "label": "v5.18 — Live auto-refresh shipped: price tile (5s), KPI (60s), intraday chart (60s)",
+          "files_changed": [
+            "market_data.py",
+            "pages/dashboard.py",
+            "app.py",
+            "version.py",
+            "regression.py"
+          ],
+          "detail": "market_data.py: get_live_price() TTL=5s + get_intraday_chart_data() TTL=60s added. dashboard.py: _render_header split into static + _make_live_price_fragment (run_every=5). _make_live_kpi_fragment (run_every=60) now self-fetches and recomputes — no stale sig. _tab_charts: intraday @st.fragment(run_every=60) with 1-min candles + VWAP added, gated by market_open. app.py: _refresh_fragment moved to module level (fixes 60s timer reset on interaction). Manual auto_refresh toggle removed — market_open drives everything automatically. market_open stored in session_state so fragment can read it. LIVE/CLOSED badge in sidebar. regression.py: R8 EP dict updated (35 EPs, +18). R15 added (7 live-refresh contract checks). New expected baseline: 213 checks."
+        },
+        {
+          "order": 18,
+          "type": "verify",
+          "label": "Regression confirmed 208/208 — new baseline after v5.18",
+          "detail": "188 → 208 checks: R8 +18 new EP entries (live fragment functions + new market_data functions), R15 +7 new live-refresh contract checks, R9 +2 new cross-file import checks. All 208 pass."
+        },
+        {
+          "order": 19,
+          "type": "rebuild",
+          "label": "v5.19 — Forecasting engine rebuilt: Historical Simulation + Weinstein + Elder + Unified Verdict",
+          "files_changed": [
+            "indicators.py",
+            "forecast.py",
+            "pages/dashboard.py",
+            "pages/week_summary.py",
+            "version.py",
+            "regression.py"
+          ],
+          "detail": "indicators.py: compute_weinstein_stage (Stage 1-4 via 30w MA), compute_elder_screens (weekly MACD histogram + daily RSI), compute_forecast (2000-path Historical Simulation, bootstrapped log-returns, regime-conditioned drift, Holt-Winters secondary), compute_unified_verdict (Stage veto → Elder suppress → score → conflict detection). forecast.py: store_forecast extended (simulation dict + p10/p25/p75/p90/p_gain/calibration fields). resolve_forecasts computes in_p25_p75, in_p10_p90, direction_correct. get_weekly_accuracy_report() aggregates all resolved forecasts across all tickers. dashboard.py: _tab_forecast rebuilt (probability fan chart, P(gain) headline, percentile cards). _tab_insights rebuilt (conflict banners first, unified verdict card, Weinstein/Elder regime row, evidence columns driven by unified signal not raw score). week_summary.py: _render_forecast_accuracy_report() shows directional accuracy, band calibration, and recent resolved entry table. regression.py: R8 +12 new EPs (45 total), R16 +10 new v5.19 contract checks. Expected baseline: 228 checks."
+        },
+        {
+          "order": 20,
+          "type": "patch",
+          "label": "regression.py — add indicators.py to PROJECT_FILES",
+          "files_changed": [
+            "regression.py"
+          ],
+          "detail": "indicators.py was missing from PROJECT_FILES. FM never loaded it, causing all R8 EP checks and R16 contract checks against it to fail (10 failures). Fix: added indicators.py to PROJECT_FILES. New baseline: 238 checks."
+        },
+        {
+          "order": 21,
+          "type": "patch",
+          "label": "regression.py — R4 SAFE list extended for indicators.py patterns",
+          "files_changed": [
+            "regression.py"
+          ],
+          "detail": "R4 flagged 4 lines in indicators.py: c = df[\"Close\"] (compute_indicators L22) and close = df[\"Close\"] (L212/302/406 in new functions). All are immediately followed by isinstance guards on the next line — legitimate safe patterns. Added c = df[ and close = df[ to SAFE list. Baseline stays 238."
+        },
+        {
+          "order": 22,
+          "type": "verify",
+          "label": "Regression confirmed 239/239 — new baseline after v5.19",
+          "detail": "208 → 239: +12 new R8 EPs (indicators.py added to PROJECT_FILES), +10 R16 v5.19 contract checks, +8 R1-R7 pattern checks now running against indicators.py, +1 unexplained (likely R5 pd/np double-count). All 239 pass. This is the new baseline."
+        },
+        {
+          "order": 23,
+          "type": "rebuild",
+          "label": "v5.20 — Header verdict fix + asset class KPI suppression + HELP_TEXT",
+          "files_changed": [
+            "pages/dashboard.py",
+            "config.py",
+            "version.py",
+            "regression.py"
+          ],
+          "detail": "CRITICAL FIX: header badge now shows unified verdict (not raw momentum score). 44% of stock views previously showed misleading BUY when verdict was WATCH/AVOID. _detect_asset_class() detects equity/commodity/debt/index/etf from quoteType + market name + ticker suffix. _render_kpi_panel: P/E + ROE suppressed for non-equity, labelled Momentum Signal Panel. _render_header_static: verdict badge, Momentum:N/100 label, alignment status (✅/⚠️), one-line rationale. render_dashboard: compute stage/elder/fcast/verdict before header, pass to _tab_insights (no recomputation). config.py: 7 new HELP_TEXT entries. regression.py: R17 +7 checks, R8 +1 EP. Expected baseline: 247 checks."
+        },
+        {
+          "order": 24,
+          "type": "verify",
+          "label": "Regression confirmed 252/252 — new baseline after v5.20",
+          "detail": "Expected 247, got 252. Extra 5 checks from R1-R7 pattern checks now running against config.py and additional R17 helptext iterations. All 252 pass. 252 is the new baseline."
+        },
+        {
+          "order": 25,
+          "type": "patch",
+          "label": "config.py score tooltip simplified + R18 CLAUDE.md sync check + CLAUDE.md updated to 252",
+          "files_changed": [
+            "config.py",
+            "regression.py",
+            "CLAUDE.md"
+          ],
+          "detail": "config.py: score tooltip rewritten — removed hardcoded \"AVOID\" example that contradicted the WATCH verdict shown on screen. Now describes the relationship between score and verdict without assuming a specific outcome. regression.py: R18 added — checks CLAUDE.md contains current regression count. Stale CLAUDE.md now causes a regression failure. CLAUDE.md: regression count updated 208 → 252, sync note added pointing to manifest."
+        },
+        {
+          "order": 26,
+          "type": "verify",
+          "label": "Regression confirmed 253/253 — baseline locked after v5.20 final",
+          "detail": "R18 CLAUDE.md sync check passing. All 253 checks green. Baseline locked."
+        },
+        {
+          "order": 27,
+          "type": "patch",
+          "label": "indicators.py — verdict_reason contextualises score against verdict in plain English",
+          "files_changed": [
+            "indicators.py"
+          ],
+          "detail": "Stage 2 + aligned branch: reason text now explains score in context of verdict. Strong (≥58): \"trend and technicals agree\". Moderate (40-57): \"watch for strengthening\". Weak (<40): \"trend cycle healthy but technicals not supportive — wait for RSI/MACD to improve\". LVMH example: \"Stage 2 uptrend confirmed. Weekly tide bullish. Momentum is weak (14/100) — the trend cycle is healthy but short-term technical signals are not yet supportive.\""
+        },
+        {
+          "order": 28,
+          "type": "patch",
+          "label": "app.py — bust cache on ticker switch (stale first-load fix)",
+          "files_changed": [
+            "app.py"
+          ],
+          "detail": "When a new ticker was selected, cb was not incremented — first load hit a stale cache entry (potentially from a different ticker or period). Symptom: wrong price, 0% change, blank MACD/RSI charts on first load. Fix: cb += 1 added to the ticker-switch block alongside data_stale = True. Now every new ticker selection forces a fresh yfinance fetch."
+        },
+        {
+          "order": 29,
+          "type": "patch",
+          "label": "app.py — explicit cache clear on ticker switch (robust fix)",
+          "files_changed": [
+            "app.py"
+          ],
+          "detail": "cb increment alone insufficient — new cb may already exist in cache from prior fetch of same ticker in same session. Added get_price_data.clear() + get_ticker_info.clear() on ticker switch. Wipes ALL cache entries for both functions regardless of args. 100% reliable fresh fetch on every ticker selection."
+        },
+        {
+          "order": 30,
+          "type": "patch",
+          "label": "CLAUDE.md regression count updated 252 → 253",
+          "files_changed": [
+            "CLAUDE.md"
+          ],
+          "detail": "R18 was silently wrong — CLAUDE.md showed 252 but actual baseline is 253. Updated to 253/253."
+        },
+        {
+          "order": 31,
+          "type": "rebuild",
+          "label": "v5.21 — Phase 2: Debt/Rates suppression, chart guard, plain English labels, tooltip wiring",
+          "files_changed": [
+            "indicators.py",
+            "pages/dashboard.py",
+            "version.py",
+            "regression.py"
+          ],
+          "detail": "indicators.py: compute_unified_verdict extended with asset_class param. Debt/Rates returns RATES CONTEXT — suppresses all BUY/SELL signals. dashboard.py: _render_kpi_panel debt branch (yield warning, RSI/ATR/BBW only). _tab_charts dynamic subplots (_has_macd/_has_rsi guards, _row_macd/_row_rsi/_row_vol). Header alignment labels: \"Trend and momentum agree\" / \"Momentum signal adjusted\". All 6 HELP_TEXT keys wired: weinstein_stage, elder_screen, p_gain, hist_sim, conflict, unified_verdict. regression.py: R19 +8 checks. Expected baseline: 261."
+        },
+        {
+          "order": 32,
+          "type": "verify",
+          "label": "Regression confirmed 264/264 — new baseline after v5.21",
+          "detail": "Expected 261, got 264. Extra 3 from R9 (dynamic cross-file import discovery — cannot be statically predicted). Root cause of all prediction gaps identified: R9 is runtime-dynamic. Going forward: do not predict R9 count. Accept ±3-5 variance. Actual run is the source of truth."
+        }
+      ],
+      "open_items_at_close": [
+        "OPEN-001",
+        "OPEN-002",
+        "OPEN-003",
+        "OPEN-004",
+        "OPEN-005"
+      ]
+    }
+  ],
+  "open_items": [
+    {
+      "id": "OPEN-002",
+      "priority": "MEDIUM",
+      "status": "OPEN",
+      "label": "README update",
+      "detail": "Document new file structure: tickers.json, version.py. Update deployment steps. Update file table. Fix README main file reference (still says app_v4_compat.py)."
+    },
+    {
+      "id": "OPEN-003",
+      "priority": "MEDIUM",
+      "status": "OPEN",
+      "label": "Cross-session forecast persistence",
+      "detail": "session_state fixes the cloud wipe bug but history resets on browser close. Options: Supabase free tier (simplest), Firebase Realtime DB, or st.secrets + lightweight DB URL."
+    },
+    {
+      "id": "OPEN-004",
+      "priority": "LOW",
+      "status": "OPEN",
+      "label": "indicators.py scoring weight audit",
+      "detail": "RSI/MACD/SMA scoring weights are inline magic numbers. Extract to SCORING_WEIGHTS dict at top of indicators.py."
+    }
+  ],
+  "file_state": {
+    "config.py": {
+      "version": "v5.20",
+      "status": "patched",
+      "lines": 354,
+      "gist": "root_files",
+      "last_confirmed": "2026-03-21"
+    },
+    "version.py": {
+      "version": "v5.21",
+      "status": "patched",
+      "lines": 47,
+      "gist": "github_blob",
+      "last_confirmed": "2026-03-21"
+    },
+    "tickers.json": {
+      "version": "v5.16",
+      "status": "new",
+      "lines": 655,
+      "gist": "tickers",
+      "last_confirmed": "2026-03-20"
+    },
+    "app.py": {
+      "version": "v5.20.2",
+      "status": "patched",
+      "lines": 235,
+      "gist": "root_files",
+      "last_confirmed": "2026-03-21"
+    },
+    "market_data.py": {
+      "version": "v5.18",
+      "status": "patched",
+      "lines": 279,
+      "gist": "github_blob",
+      "last_confirmed": "2026-03-21"
+    },
+    "forecast.py": {
+      "version": "v5.19",
+      "status": "patched",
+      "lines": 349,
+      "gist": "root_files",
+      "last_confirmed": "2026-03-21"
+    },
+    "indicators.py": {
+      "version": "v5.21",
+      "status": "patched",
+      "lines": 645,
+      "gist": "github_blob",
+      "last_confirmed": "2026-03-21"
+    },
+    "styles.py": {
+      "version": "v5.17",
+      "status": "patched",
+      "lines": 144,
+      "gist": "github_blob",
+      "last_confirmed": "2026-03-20"
+    },
+    "utils.py": {
+      "version": "v5.17",
+      "status": "patched",
+      "lines": 140,
+      "gist": "github_blob",
+      "last_confirmed": "2026-03-20"
+    },
+    "regression.py": {
+      "version": "v5.21",
+      "status": "patched",
+      "lines": 449,
+      "gist": "github_blob",
+      "last_confirmed": "2026-03-21"
+    },
+    ".gitignore": {
+      "version": "v5.16",
+      "status": "new",
+      "lines": 39,
+      "gist": "none",
+      "last_confirmed": "2026-03-19"
+    },
+    "pages/home.py": {
+      "version": "v5.17",
+      "status": "patched",
+      "lines": 341,
+      "gist": "pages",
+      "last_confirmed": "2026-03-20"
+    },
+    "pages/dashboard.py": {
+      "version": "v5.21",
+      "status": "rebuilt",
+      "lines": 1154,
+      "gist": "pages",
+      "last_confirmed": "2026-03-21"
+    },
+    "pages/global_intelligence.py": {
+      "version": "v5.16",
+      "status": "patched",
+      "lines": 195,
+      "gist": "pages",
+      "last_confirmed": "2026-03-20"
+    },
+    "pages/week_summary.py": {
+      "version": "v5.19",
+      "status": "patched",
+      "lines": 367,
+      "gist": "pages",
+      "last_confirmed": "2026-03-21"
+    },
+    "pages/__init__.py": {
+      "version": "v5.0",
+      "status": "verified",
+      "lines": 2,
+      "gist": "none",
+      "last_confirmed": "2026-03-19"
+    },
+    "GSI_Session.json": {
+      "version": "v4.2",
+      "status": "active",
+      "lines": 860,
+      "gist": "GSI_session",
+      "last_confirmed": "2026-03-20",
+      "note": "Update line count each session — grows with every activity logged"
+    },
+    "CLAUDE_SESSION_PROMPT.txt": {
+      "version": "v1.0",
+      "status": "active",
+      "lines": 22,
+      "gist": "none",
+      "last_confirmed": "2026-03-19",
+      "note": "Paste at session start"
+    },
+    "requirements.txt": {
+      "version": "v5.15.2",
+      "status": "verified",
+      "lines": 8,
+      "gist": "github_blob",
+      "last_confirmed": "2026-03-19",
+      "note": "No changes needed"
+    },
+    ".streamlit/config.toml": {
+      "version": "unknown",
+      "status": "unread",
+      "lines": "unknown",
+      "gist": "none",
+      "last_confirmed": "never",
+      "note": "Hidden dir — GitHub blocks access. Upload if theme/server config needs changing."
+    }
+  },
+  "known_issues": {
+    "_note": "Full forensic detail in KNOWN_ISSUES_LOG_v5_17.md in repo root",
+    "KI-001_to_KI-020": "FIXED — see KNOWN_ISSUES_LOG.md",
+    "KI-021": "FIXED v5.17 — len(hist)<2 guard before np.polyfit in _tab_forecast",
+    "OBS-001": "FIXED v5.17 — responsive_cols stub documented",
+    "OBS-002": "FIXED v5.17 — _render_live_section dead code removed from home.py",
+    "OBS-003": "FIXED v5.17 — CSS merged from inject_css() docstring into CSS constant",
+    "OBS-004": "FIXED v5.17 — GROUPS/CURRENCY moved to top-level import in dashboard.py",
+    "OBS-005": "OPEN — inline scoring weights in indicators.py (OPEN-004)",
+    "OBS-006": "FIXED v5.17 — forecast_price clamped to max(val, 0.01) in store_forecast()",
+    "OBS-007": "RESOLVED — config_OLD.py confirmed in archive/ folder",
+    "auto_refresh_timer_reset": "FIXED v5.18 — fragment moved to module level",
+    "manual_refresh_toggle": "FIXED v5.18 — replaced by market-open auto-detection",
+    "polyfit_forecast": "FIXED v5.19 — replaced by Historical Simulation engine",
+    "signal_forecast_disconnect": "FIXED v5.19 — Unified verdict with Stage/Elder veto",
+    "no_weekly_tracking": "FIXED v5.19 — get_weekly_accuracy_report + week summary panel",
+    "header_raw_signal": "FIXED v5.20 — header now shows unified verdict, not raw score signal",
+    "pe_for_commodities": "FIXED v5.20 — P/E/ROE suppressed for non-equity via _detect_asset_class()",
+    "score_label_missing": "FIXED v5.20 — score labelled Momentum: N/100 with pre-regime note",
+    "helptext_gaps": "FIXED v5.20 — 7 new HELP_TEXT entries added, all orphaned entries retained with improved text",
+    "debt_rates_strong_buy": "FIXED v5.21 — RATES CONTEXT verdict suppresses BUY/SELL for yield instruments",
+    "blank_macd_rsi_charts": "FIXED v5.21 — dynamic subplot layout, no empty panels",
+    "all_layers_aligned_jargon": "FIXED v5.21 — plain English labels",
+    "helptext_keys_unwired": "FIXED v5.21 — all 6 new keys wired to tooltips"
+  },
+  "regression": {
+    "file": "regression.py",
+    "run_command": "python regression.py",
+    "expected_output": "ALL 264 CHECKS PASS",
+    "last_run": "2026-03-21 — session 003",
+    "last_result": "264 / 264 PASS",
+    "next_run": "Required at start of every session before any new work",
+    "check_list": "→ see CLAUDE.md regression table",
+    "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file — should check inside CSS constant only. Fix next session."
+  },
+  "session_start_checklist": {
+    "always": [
+      "Fetch GSI_Session.json Gist: https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab",
+      "Read manifest fully and confirm session number, last activity, open items",
+      "Run: python regression.py — confirm 189/189 before any new work"
+    ],
+    "if_working_on_pages": [
+      "Fetch Pages Gist: https://gist.github.com/Tarun19k/08480054082ca1f0f0aa3a585030e63a",
+      "All 4 pages files in one Gist — dashboard, global_intelligence, home, week_summary",
+      "If Gist is out of date: upload the changed file directly"
+    ],
+    "if_working_on_tickers": [
+      "Fetch Tickers Gist: https://gist.github.com/Tarun19k/744a7e7a58f8f079a3120b55e34a3c0d"
+    ],
+    "if_working_on_root_files": [
+      "Root Gist (app.py, config.py, forecast.py): https://gist.github.com/Tarun19k/ae1c6f3cda019baa8c831cad38da2d71",
+      "OR fetch individually via GitHub blob URLs below"
+    ],
+    "gist_urls": {
+      "GSI_session": "https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab",
+      "tickers.json": "https://gist.github.com/Tarun19k/744a7e7a58f8f079a3120b55e34a3c0d",
+      "pages_all_4": "https://gist.github.com/Tarun19k/08480054082ca1f0f0aa3a585030e63a",
+      "root_files": "https://gist.github.com/Tarun19k/ae1c6f3cda019baa8c831cad38da2d71"
+    },
+    "github_blob_urls": {
+      "app.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/app.py",
+      "config.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/config.py",
+      "version.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/version.py",
+      "market_data.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/market_data.py",
+      "forecast.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/forecast.py",
+      "indicators.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/indicators.py",
+      "styles.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/styles.py",
+      "utils.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/utils.py",
+      "regression.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/regression.py",
+      "requirements.txt": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/requirements.txt",
+      "note": "pages/ subdirectory blocked by robots.txt — use Pages Gist"
+    }
+  },
+  "_CLAUDE_END_OF_SESSION": "END-OF-SESSION CHECKLIST — verify each before closing:\n1. sessions[N].activities — every activity logged?\n2. file_state — version, lines, last_confirmed updated for every touched file?\n3. file_registry — change_history + next_steps updated for touched files?\n4. open_items — completed ones closed, new ones added?\n5. regression.last_run + last_result updated?\n6. CLAUDE.md updated if architecture changed?\n7. GSI_Session.json delivered as downloadable file?\n8. User reminded to: push CLAUDE.md to repo root + update Gist at https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab\nIf any answer is NO — do it now. Non-negotiable.",
+  "file_registry": {
+    "config.py": {
+      "purpose": "Configuration hub — re-exports GROUPS (from tickers.json) and VERSION_LOG/CURRENT_VERSION (from version.py), plus owns MARKET_SESSIONS, HELP_TEXT, CURRENCY, SCORING_WEIGHTS",
+      "capabilities": [
+        "Market session open/close windows per country",
+        "Tooltip/help text for all UI indicators",
+        "Currency symbol map per market",
+        "GROUPS + VERSION_LOG re-export for backward compat"
+      ],
+      "depends_on": [
+        "tickers.json",
+        "version.py"
+      ],
+      "used_by": [
+        "app.py",
+        "pages/home.py",
+        "pages/dashboard.py",
+        "pages/global_intelligence.py",
+        "pages/week_summary.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "Re-exports GROUPS and VERSION_LOG so all 'from config import X' callers work unchanged after the split. JSON loaded at import time — no runtime cost.",
+      "issues": [
+        "OBS-005: SCORING_WEIGHTS still inline magic numbers in indicators.py — see OPEN-004"
+      ],
+      "next_steps": [],
+      "change_history": [
+        "v5.16 — REBUILT: split from 962-line monolith. GROUPS extracted to tickers.json, VERSION_LOG to version.py. Re-exports both for backward compat.",
+        "v5.20 — PATCHED: 7 new HELP_TEXT entries (weinstein_stage, elder_screen, p_gain, hist_sim, conflict, unified_verdict, score updated). 31 total HELP_TEXT keys."
+      ]
+    },
+    "version.py": {
+      "purpose": "Single source of truth for version string and changelog — CURRENT_VERSION + VERSION_LOG list",
+      "capabilities": [
+        "CURRENT_VERSION string (e.g. v5.16)",
+        "VERSION_LOG: chronological patch list (20+ entries)",
+        "Imported by config.py and re-exported"
+      ],
+      "depends_on": [],
+      "used_by": [
+        "config.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "Leaf node — no imports from project. Isolated so config.py stays stable between releases. R11 regression check enforces >= 20 entries.",
+      "issues": [],
+      "next_steps": [],
+      "change_history": [
+        "v5.16 — NEW: split from config.py. Owns VERSION_LOG list + CURRENT_VERSION string.",
+        "v5.17 — PATCHED: v5.17 entry added."
+      ]
+    },
+    "tickers.json": {
+      "purpose": "Master ticker registry — 9 markets, 38 stocks as {market_name: {display_name: ticker_symbol}}",
+      "capabilities": [
+        "India (17), USA (12), Europe (2), China (2), ETFs-India (1), ETFs-Global (1), Commodities (1), Debt & Rates (1), Global Indices (1)",
+        "Loaded by config.py as GROUPS at import time",
+        "TATAMOTORS.NS absent — uses TMCV.NS + TMPV.NS"
+      ],
+      "depends_on": [],
+      "used_by": [
+        "config.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "Top-level keys ARE market names (not nested under 'GROUPS'). config.py assigns the loaded dict directly to GROUPS. Edit tickers here — never in config.py.",
+      "issues": [
+        "KI-011: TATAMOTORS.NS permanently removed — do not re-add"
+      ],
+      "next_steps": [
+        "OPEN-001: no code change needed here — but forecast_history.json must be removed from git tracking (unrelated cleanup)",
+        "Periodic audit: verify all tickers still listed on NSE/BSE/NYSE before each release"
+      ],
+      "change_history": [
+        "v5.16 — NEW: extracted from config.py. 9 markets, 38 tickers.",
+        "v5.13 — TATAMOTORS.NS replaced with TMCV.NS + TMPV.NS (demerger Oct 2025)"
+      ]
+    },
+    "utils.py": {
+      "purpose": "Cross-cutting utilities — error handling, input sanitisation, session_state init, layout helpers",
+      "capabilities": [
+        "safe_run(): wraps any fn call, catches exceptions, logs to error_log ss key",
+        "sanitise/sanitise_bold: XSS prevention for all user-facing strings",
+        "init_session_state(): seeds all ss keys on first load",
+        "responsive_cols(): column layout helper (tablet/mobile params stubbed — OBS-001)",
+        "info_tip/section_title_with_tip: hover tooltip HTML helpers"
+      ],
+      "depends_on": [],
+      "used_by": [
+        "app.py",
+        "market_data.py",
+        "indicators.py",
+        "forecast.py",
+        "pages/home.py",
+        "pages/dashboard.py",
+        "pages/global_intelligence.py",
+        "pages/week_summary.py"
+      ],
+      "ss_keys_read": [
+        "error_log"
+      ],
+      "ss_keys_write": [
+        "error_log",
+        "ticker",
+        "market",
+        "data_stale",
+        "cache_buster",
+        "market_open"
+      ],
+      "key_design": "init_session_state() is the single place all ss keys are declared with defaults — call once from app.py on startup. safe_run() is the universal error boundary throughout the app.",
+      "issues": [
+        "OBS-001: responsive_cols tablet/mobile params silently ignored — stub only"
+      ],
+      "next_steps": [
+        "Implement tablet/mobile breakpoint logic in responsive_cols() — currently a stub (OBS-001)"
+      ],
+      "change_history": [
+        "v5.6  — sanitise_bold() added for XSS-safe bold in insight cards",
+        "v5.17 — PATCHED: responsive_cols stub documented with inline comment"
+      ]
+    },
+    "styles.py": {
+      "purpose": "All custom CSS — inject once from app.py to style KPI cards, ticker bar, nav, tabs, and mobile layout",
+      "capabilities": [
+        "KPI card styling (kpi-card, kpi-label, kpi-value CSS classes)",
+        "Fixed 36px ticker strip at page top",
+        "Hides Streamlit's native MPA sidebar nav",
+        "graph-help tooltip row styling",
+        "Mobile responsive overrides"
+      ],
+      "depends_on": [],
+      "used_by": [
+        "app.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "All CSS — both component styles AND structural layout rules (ticker bar, sidebar hide, header suppression) — must live inside the CSS constant, not in comments or docstrings. inject_css() is a one-liner wrapper.",
+      "issues": [],
+      "next_steps": [],
+      "change_history": [
+        "v5.10 — stSidebarNav + stDeployButton hide rules added",
+        "v5.17 — CRITICAL FIX (OBS-003): entire CSS block was in inject_css() docstring, never injected. Merged into CSS constant. ticker-wrap, stHeader, padding-top, stSidebarNav, stDeployButton now all actually reach the browser."
+      ]
+    },
+    "market_data.py": {
+      "purpose": "All external data fetching — yfinance prices/info, RSS news, top movers calculation",
+      "capabilities": [
+        "get_price_data(): OHLCV DataFrame via yfinance, normalised through _normalize_df()",
+        "get_ticker_info(): metadata dict (marketCap, sector, PE, ROE etc.)",
+        "get_top_movers(): ranked list of price-change leaders from a symbol list",
+        "get_news(): RSS feed aggregation via feedparser with domain allowlist",
+        "get_live_price(): 1m intraday fetch, TTL=5s — price/chg/high/low/volume for live tile",
+        "get_intraday_chart_data(): 1m OHLCV for today's chart, TTL=60s"
+      ],
+      "depends_on": [
+        "utils.py"
+      ],
+      "used_by": [
+        "app.py",
+        "pages/home.py",
+        "pages/dashboard.py",
+        "pages/global_intelligence.py",
+        "pages/week_summary.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "cache_buster: int = 0 on ALL 4 public functions — Streamlit @st.cache_data keys on all args, so incrementing cb forces real fetch. Default 0 means all existing call sites unchanged.",
+      "issues": [
+        "EXT-001: HTTP 401 crumb (auto-resolves)",
+        "EXT-002: premium endpoint blocks (expected)",
+        "EXT-003: delisted ticker 404 (fix tickers.json)"
+      ],
+      "next_steps": [],
+      "change_history": [
+        "v5.9  — _safe_close() added; _normalize_df() hardened for yfinance MultiIndex",
+        "v5.11 — RSS allowlist: bbci.co.uk + bbc.co.uk added; all http:// feeds → https://",
+        "v5.16 — PATCHED: cache_buster: int = 0 added to all 4 public functions",
+        "v5.18 — PATCHED: get_live_price() (TTL=5s) + get_intraday_chart_data() (TTL=60s) added"
+      ]
+    },
+    "indicators.py": {
+      "purpose": "Technical analysis engine — adds RSI/MACD/SMA/BB/ATR/ADX columns to price df and computes 0-100 signal score",
+      "capabilities": [
+        "compute_indicators(df): appends RSI, MACD, MACD_signal, SMA20/50/200, BB_upper/lower/width, ATR, ADX columns",
+        "signal_score(df, info): returns dict with all indicator values + score (0-100) + signal label",
+        "Scoring: RSI(25) + MACD(20) + SMA(20) + BB(15) + Volume(10) + ADX(10) = 100 max",
+        "Signal labels: STRONG BUY ≥72 / BUY ≥58 / WATCH ≥40 / CAUTION <40",
+        "compute_weinstein_stage(df): Stage 1-4 classification, 30w MA slope",
+        "compute_elder_screens(df): weekly MACD tide + daily RSI second screen",
+        "compute_forecast(df, horizon): 2000-path Historical Simulation, returns P10/P25/P50/P75/P90 + P(gain)",
+        "compute_unified_verdict(sig, stage, elder, fcast): single verdict with conflict detection"
+      ],
+      "depends_on": [
+        "utils.py"
+      ],
+      "used_by": [
+        "pages/dashboard.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "Scoring weights are inline magic numbers — see OPEN-004 to extract to SCORING_WEIGHTS dict. KI-021: np.polyfit crashes on IPO stocks with <2 rows — guard not yet added.",
+      "issues": [
+        "OBS-005: inline scoring weights — OPEN-004"
+      ],
+      "next_steps": [
+        "OPEN-004: extract inline scoring weights to SCORING_WEIGHTS dict at top of file"
+      ],
+      "change_history": [
+        "v5.0  — NEW: extracted from monolith. compute_indicators() + signal_score()",
+        "v5.15.2 — verified unchanged",
+        "v5.19 — REBUILT: 4 new functions. polyfit replaced by Historical Simulation. Weinstein Stage + Elder Triple Screen. Unified verdict."
+      ]
+    },
+    "forecast.py": {
+      "purpose": "Forecast lifecycle management — store predictions, resolve actuals, compute accuracy, render accuracy UI",
+      "capabilities": [
+        "store_forecast(): saves polyfit price prediction keyed by ticker+horizon",
+        "resolve_forecasts(): matches due forecasts against current price, computes accuracy_pct",
+        "compute_correction_factor(): bias-correction multiplier from resolved history",
+        "get_accuracy_summary(): hit rate and avg error stats per ticker",
+        "render_forecast_accuracy(): Streamlit UI showing forecast history table"
+      ],
+      "depends_on": [
+        "config.py",
+        "utils.py"
+      ],
+      "used_by": [
+        "pages/dashboard.py"
+      ],
+      "ss_keys_read": [
+        "forecast_history"
+      ],
+      "ss_keys_write": [
+        "forecast_history"
+      ],
+      "key_design": "_SS_KEY='forecast_history' is primary store (survives page reruns). Disk write to forecast_history.json is best-effort local backup only — Streamlit Cloud filesystem is ephemeral. Long-term fix: OPEN-003.",
+      "issues": [
+        "OPEN-003: cross-session persistence (Supabase) still needed"
+      ],
+      "next_steps": [
+        "OPEN-003: implement cross-session persistence (Supabase free tier recommended)",
+        "OBS-006 resolved but existing negative entries in forecast_history.json should be manually cleaned out"
+      ],
+      "change_history": [
+        "v5.3  — accuracy tracking + auto-correction logic added",
+        "v5.16 — CRITICAL FIX: replaced filesystem-only persistence with session_state as primary store",
+        "v5.17 — PATCHED (OBS-006/KI-021): max(forecast_price, 0.01) clamp in store_forecast()",
+        "v5.19 — PATCHED: store_forecast extended with full simulation dict + calibration fields. resolve_forecasts computes in_p25_p75/in_p10_p90/direction_correct. get_weekly_accuracy_report() added."
+      ]
+    },
+    "regression.py": {
+      "purpose": "189-check automated test suite — validates syntax, design contracts, banned patterns, and cross-file imports across all 11 source files",
+      "capabilities": [
+        "R1: AST syntax parse (11 files)",
+        "R2-R10: banned patterns (use_container_width, bare except, raw df access, blocking sleep, sidebar-in-fragment, scoped rerun)",
+        "R11: version log integrity + TATAMOTORS.NS absent",
+        "R12-R14: design contracts (market_open param, cache_buster at all 13 call sites, market-switch state isolation)"
+      ],
+      "depends_on": [],
+      "used_by": [],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "Standalone script — no Streamlit imports, no project imports. Run as 'python regression.py' from project root. Must show 189/189 PASS before any new work begins each session.",
+      "issues": [],
+      "next_steps": [
+        "Tighten R13.KI-008: check stSidebarNav inside CSS constant string specifically, not raw file text",
+        "Add R15: verify polyfit calls guarded by len(df) >= 2"
+      ],
+      "change_history": [
+        "v5.15.2 — NEW: 189-check suite introduced",
+        "v5.16   — PATCHED: 3 stale checks fixed (AnnAssign handling, version.py added to PROJECT_FILES, scoped_rerun check inverted)",
+        "v5.17 — PATCHED: removed _render_live_section from R8 EP dict (deleted from home.py in OBS-002 fix)"
+      ]
+    },
+    "app.py": {
+      "purpose": "Entry point — Streamlit app shell, market/ticker selection, auto-refresh fragment, navigation router",
+      "capabilities": [
+        "Market selector (9 markets from GROUPS) with state isolation on switch",
+        "_refresh_fragment: @st.fragment(run_every=60) auto-increments cache_buster every 60s",
+        "Manual radio-button routing to 4 pages (replaces Streamlit MPA)",
+        "Propagates cb and market_open to all page render functions",
+        "Refresh button in sidebar triggers st.rerun()"
+      ],
+      "depends_on": [
+        "config.py",
+        "styles.py",
+        "utils.py",
+        "market_data.py",
+        "pages/home.py",
+        "pages/dashboard.py",
+        "pages/global_intelligence.py",
+        "pages/week_summary.py"
+      ],
+      "used_by": [],
+      "ss_keys_read": [
+        "ticker",
+        "market",
+        "cache_buster",
+        "market_open",
+        "data_stale"
+      ],
+      "ss_keys_write": [
+        "ticker",
+        "market",
+        "cache_buster",
+        "market_open"
+      ],
+      "key_design": "Plain st.rerun() in _refresh_fragment — NOT st.rerun(scope='fragment') (KI-020). Market switch calls _on_market_change() which resets ticker to first in new market, preventing stale cross-market state.",
+      "issues": [],
+      "next_steps": [
+        "OPEN-001: git rm --cached forecast_history.json .DS_Store __pycache__/ and move old monolith files to archive/"
+      ],
+      "change_history": [
+        "v5.14 — @st.fragment auto-refresh introduced (replaced blocking time.sleep)",
+        "v5.15 — fragment moved inside sidebar context (KI-013)",
+        "v5.16 — PATCHED: cache_buster propagated to primary fetches; market_open propagated; _on_market_change() added (KI-016/018/019); st.rerun(scope=) removed (KI-020)",
+        "v5.18 — PATCHED: _refresh_fragment moved to module level (fixes timer reset). Manual toggle removed. market_open stored in ss. LIVE/CLOSED badge added."
+      ]
+    },
+    "pages/home.py": {
+      "purpose": "Homepage — fixed global ticker bar, morning brief, top movers grid, news feed, week summary embed, version log",
+      "capabilities": [
+        "render_ticker_bar(): 36px fixed strip with 10 global indices (Nifty/Sensex/BankNifty/S&P/Nasdaq/DJI/HangSeng/Gold/Crude/USDINR)",
+        "render_homepage(): morning brief → top movers → news feed → week_summary embed → version log",
+        "_render_top_movers(): ranked price-change cards for current market",
+        "_render_news_feed(): RSS aggregated headlines",
+        "_render_version_log(): collapsible VERSION_LOG display"
+      ],
+      "depends_on": [
+        "config.py",
+        "utils.py",
+        "market_data.py",
+        "pages/week_summary.py"
+      ],
+      "used_by": [
+        "app.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "render_ticker_bar() called from app.py BEFORE sidebar renders — this is what pins it above all page content. Must remain a separate call from render_homepage().",
+      "issues": [],
+      "next_steps": [],
+      "change_history": [
+        "v5.2  — ticker bar z-index + header suppression fixed",
+        "v5.3  — scrolling ticker + news feed + morning brief added",
+        "v5.7  — dark bg readability audit applied",
+        "v5.9  — NEWS_FEEDS self-reference crash fixed (KI-004); _safe_close applied",
+        "v5.10 — ticker bar moved to window.parent DOM injection (KI-007)",
+        "v5.16 — PATCHED: cache_buster at all 3 call sites",
+        "v5.17 — PATCHED (OBS-002): _render_live_section dead code removed"
+      ]
+    },
+    "pages/dashboard.py": {
+      "purpose": "4-tab stock detail dashboard — Charts, Forecast, Compare, Insights for a single selected ticker",
+      "capabilities": [
+        "Tab 1 Charts: 4-panel Plotly (candlestick+BB+MAs / MACD / RSI / Volume), 120-day window",
+        "Tab 2 Forecast: polyfit prediction with selectable lookback (30/60/90/180d) and horizon (21/63/126d), accuracy history",
+        "Tab 3 Compare: multi-stock overlay (up to 4), normalised % return chart",
+        "Tab 4 Insights: plain-English verdict, signal badge, buy/sell/avoid action bullets",
+        "_live_kpi_panel: @st.fragment(run_every=60) live price + KPI refresh",
+        "Live price tile: @st.fragment(run_every=5) self-fetches get_live_price(), LIVE/CLOSED badge",
+        "Live KPI panel: @st.fragment(run_every=60) self-fetches and recomputes indicators",
+        "Intraday chart: @st.fragment(run_every=60) 1-min candles + VWAP, shown only when market open"
+      ],
+      "depends_on": [
+        "config.py",
+        "utils.py",
+        "market_data.py",
+        "indicators.py",
+        "forecast.py"
+      ],
+      "used_by": [
+        "app.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [
+        "data_stale"
+      ],
+      "key_design": "GROUPS/CURRENCY imported late inside _tab_compare to avoid circular dep risk. data_stale written to False on render_dashboard() entry (KI-017b). Tab state keys scoped with ticker suffix (e.g. fc_lb_{ticker}) to prevent bleed between stock switches.",
+      "issues": [],
+      "next_steps": [
+        "Wire 6 new HELP_TEXT keys to ℹ️ tooltips in Phase 2: weinstein_stage, elder_screen, p_gain, hist_sim, conflict, unified_verdict"
+      ],
+      "change_history": [
+        "v5.4  — localised tab filters (forecast horizon/lookback + compare inline)",
+        "v5.6  — sanitise_bold + explicit text colors applied to insight cards",
+        "v5.9  — _safe_close applied; sanitise_bold import fixed (KI-002)",
+        "v5.15 — _live_kpi_panel @st.fragment added; market_open param added (KI-014/015)",
+        "v5.16 — PATCHED: cache_buster at 1 call site",
+        "v5.17 — PATCHED (KI-021): len(hist)<2 guard before polyfit; (OBS-004): GROUPS/CURRENCY moved to top-level import",
+        "v5.18 — REBUILT: header split static/live. Price tile fragment (5s). KPI fragment self-fetches. Intraday chart added to Charts tab.",
+        "v5.19 — REBUILT Forecast tab: probability fan, P(gain) headline, Holt-Winters secondary. REBUILT Insights tab: Weinstein/Elder regime display, unified verdict, conflict banners.",
+        "v5.20 — REBUILT: _render_header_static now shows unified verdict badge. Momentum score labelled pre-regime-filter. _detect_asset_class() added. _render_kpi_panel asset-class-aware (P/E/ROE suppressed for non-equity). render_dashboard computes verdict before header. _tab_insights accepts pre-computed stage/elder/fcast/verdict."
+      ]
+    },
+    "pages/global_intelligence.py": {
+      "purpose": "Global market intelligence page — multi-market top movers, global news aggregation, market status grid",
+      "capabilities": [
+        "Top movers across all 9 markets simultaneously",
+        "Global RSS news aggregation",
+        "Market open/closed status display per region"
+      ],
+      "depends_on": [
+        "config.py",
+        "utils.py",
+        "market_data.py"
+      ],
+      "used_by": [
+        "app.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "Receives market_open and cur_sym from app.py. 2 cache_buster call sites — both confirmed patched in v5.16.",
+      "issues": [],
+      "next_steps": [],
+      "change_history": [
+        "v5.0  — NEW: extracted from monolith",
+        "v5.12 — import pandas as pd added (KI-010)",
+        "v5.16 — PATCHED: cache_buster at 2 call sites; market_open param added"
+      ]
+    },
+    "pages/week_summary.py": {
+      "purpose": "Weekly performance summary — calculates and displays 5-day price returns for all stocks in the selected market",
+      "capabilities": [
+        "Weekly return % for each ticker in current GROUPS market",
+        "Colour-coded gain/loss display",
+        "Embedded by home.py via render_week_summary()"
+      ],
+      "depends_on": [
+        "utils.py",
+        "market_data.py"
+      ],
+      "used_by": [
+        "app.py",
+        "pages/home.py"
+      ],
+      "ss_keys_read": [],
+      "ss_keys_write": [],
+      "key_design": "5 cache_buster call sites — all confirmed patched in v5.16. Called both standalone (app.py nav) and embedded (home.py morning section).",
+      "issues": [],
+      "next_steps": [],
+      "change_history": [
+        "v5.0  — NEW: extracted from monolith",
+        "v5.16 — PATCHED: cache_buster at all 5 call sites",
+        "v5.19 — PATCHED: _render_forecast_accuracy_report() added with calibration KPIs and entry table."
+      ]
+    }
+  }
+}

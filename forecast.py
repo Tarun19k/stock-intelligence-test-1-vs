@@ -68,8 +68,13 @@ def save_forecast_history(data: dict) -> None:
 # ── Forecast CRUD ─────────────────────────────────────────────────────────────
 
 def store_forecast(ticker: str, horizon_days: int,
-                   forecast_price: float, current_price: float) -> dict:
-    """Record a new forecast entry (one per ticker per day)."""
+                   forecast_price: float, current_price: float,
+                   simulation: dict = None) -> dict:
+    """
+    Record a new forecast entry (one per ticker per day).
+    simulation: optional dict from compute_forecast() — stores full
+    percentile distribution for weekly accuracy tracking.
+    """
     if not ticker:
         return {}
     history = load_forecast_history()
@@ -82,16 +87,31 @@ def store_forecast(ticker: str, horizon_days: int,
     if any(e["made_on"] == today for e in history[key]):
         return history
 
-    history[key].append({
-        "made_on":       today,
-        "due_on":        (datetime.now() + timedelta(days=horizon_days)).strftime("%Y-%m-%d"),
-        "horizon_days":  horizon_days,
+    # OBS-006 / KI-021: clamp to 0.01
+    forecast_price = max(forecast_price, 0.01)
+
+    entry = {
+        "made_on":        today,
+        "due_on":         (datetime.now() + timedelta(days=horizon_days)).strftime("%Y-%m-%d"),
+        "horizon_days":   horizon_days,
         "forecast_price": round(forecast_price, 2),
-        "base_price":    round(current_price, 2),
-        "actual_price":  None,
-        "accuracy_pct":  None,
-        "resolved":      False,
-    })
+        "base_price":     round(current_price, 2),
+        "actual_price":   None,
+        "accuracy_pct":   None,
+        "resolved":       False,
+        "method":         "historical_simulation_v1",
+        # Full distribution — enables proper accuracy tracking
+        "p10":     simulation.get("p10")    if simulation else None,
+        "p25":     simulation.get("p25")    if simulation else None,
+        "p75":     simulation.get("p75")    if simulation else None,
+        "p90":     simulation.get("p90")    if simulation else None,
+        "p_gain":  simulation.get("p_gain") if simulation else None,
+        # Resolution tracking fields (set on resolve)
+        "in_p25_p75": None,  # was actual in the central band?
+        "in_p10_p90": None,  # was actual in the wide band?
+        "direction_correct": None,  # did we get the direction right?
+    }
+    history[key].append(entry)
     save_forecast_history(history)
     return history
 
@@ -99,7 +119,7 @@ def store_forecast(ticker: str, horizon_days: int,
 def resolve_forecasts(ticker: str, current_price: float) -> dict:
     """
     Check all pending forecasts whose due date has passed and mark them
-    resolved with accuracy. Idempotent — already-resolved entries are skipped.
+    resolved with accuracy. Computes calibration fields for weekly report.
     """
     if not ticker:
         return {}
@@ -118,9 +138,23 @@ def resolve_forecasts(ticker: str, current_price: float) -> dict:
             if not fp:
                 continue
             pct_err = abs(current_price - fp) / fp * 100
-            e["actual_price"] = round(current_price, 2)
-            e["accuracy_pct"] = round(max(0.0, 100.0 - pct_err), 2)
-            e["resolved"]     = True
+            e["actual_price"]      = round(current_price, 2)
+            e["accuracy_pct"]      = round(max(0.0, 100.0 - pct_err), 2)
+            e["resolved"]          = True
+            # Calibration: was actual within confidence bands?
+            p25 = e.get("p25"); p75 = e.get("p75")
+            p10 = e.get("p10"); p90 = e.get("p90")
+            if p25 is not None and p75 is not None:
+                e["in_p25_p75"] = bool(p25 <= current_price <= p75)
+            if p10 is not None and p90 is not None:
+                e["in_p10_p90"] = bool(p10 <= current_price <= p90)
+            # Direction: did P(gain) predict correctly?
+            p_gain = e.get("p_gain")
+            base   = e.get("base_price", fp)
+            if p_gain is not None and base:
+                predicted_up = p_gain >= 50
+                actually_up  = current_price >= base
+                e["direction_correct"] = bool(predicted_up == actually_up)
             changed = True
 
     if changed:
@@ -247,3 +281,68 @@ def render_forecast_accuracy(ticker: str, cur_sym: str) -> None:
     ]
     if rows:
         st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+
+
+# ── Weekly accuracy report ─────────────────────────────────────────────────
+
+def get_weekly_accuracy_report() -> dict:
+    """
+    Aggregate all resolved forecasts across all tickers.
+    Returns calibration stats for the weekly summary page.
+
+    Tracks:
+      - Directional accuracy: did P(gain)>=50% predict direction correctly?
+      - Band calibration: what % of actuals landed in P25-P75 and P10-P90?
+      - Mean accuracy: how close was P50 to actual price?
+    """
+    history = load_forecast_history()
+    resolved = []
+
+    for key, entries in history.items():
+        for e in entries:
+            if e.get("resolved") and e.get("actual_price") is not None:
+                resolved.append({**e, "_key": key})
+
+    if not resolved:
+        return {"count": 0, "entries": []}
+
+    # Compute aggregate stats
+    direction_results = [e for e in resolved if e.get("direction_correct") is not None]
+    band_25_75        = [e for e in resolved if e.get("in_p25_p75") is not None]
+    band_10_90        = [e for e in resolved if e.get("in_p10_p90") is not None]
+    accuracy_vals     = [e["accuracy_pct"] for e in resolved
+                         if e.get("accuracy_pct") is not None]
+
+    dir_accuracy = (
+        round(sum(e["direction_correct"] for e in direction_results)
+              / len(direction_results) * 100, 1)
+        if direction_results else None
+    )
+    band_25_75_hit = (
+        round(sum(e["in_p25_p75"] for e in band_25_75)
+              / len(band_25_75) * 100, 1)
+        if band_25_75 else None
+    )
+    band_10_90_hit = (
+        round(sum(e["in_p10_p90"] for e in band_10_90)
+              / len(band_10_90) * 100, 1)
+        if band_10_90 else None
+    )
+    mean_accuracy = round(sum(accuracy_vals) / len(accuracy_vals), 1) if accuracy_vals else None
+
+    # Expected calibration targets:
+    #   P25-P75 band should capture ~50% of outcomes
+    #   P10-P90 band should capture ~80% of outcomes
+    #   Direction accuracy: random = 50%, good model > 55%
+
+    return {
+        "count":            len(resolved),
+        "dir_accuracy":     dir_accuracy,
+        "band_25_75_hit":   band_25_75_hit,
+        "band_10_90_hit":   band_10_90_hit,
+        "mean_accuracy":    mean_accuracy,
+        "expected_25_75":   50.0,   # theoretical target
+        "expected_10_90":   80.0,   # theoretical target
+        "expected_dir":     55.0,   # target: beat random by 5%
+        "entries":          sorted(resolved, key=lambda x: x["made_on"], reverse=True)[:20],
+    }

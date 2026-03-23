@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 PROJECT_FILES = [
     "config.py","version.py","app.py","utils.py","forecast.py","market_data.py","styles.py",
+    "indicators.py",
     "pages/home.py","pages/dashboard.py","pages/global_intelligence.py","pages/week_summary.py",
 ]
 
@@ -47,7 +48,8 @@ def run(FM):
         chk("R3", "bare_except:"+fn, not bare, str(bare) if bare else "")
 
     # R4 · KI-005 unsafe raw df["Close"] ──────────────────────────────────────
-    SAFE = ["_safe_close","isinstance","#","_cl = df[","cl = df[","val = df["]
+    SAFE = ["_safe_close","isinstance","#","_cl = df[","cl = df[","val = df[",
+            "c = df[","close = df["]
     for fn, src in FM.items():
         bad = [i+1 for i,l in enumerate(src.splitlines())
                if re.search(r'\b(df|d)\["Close"\]', l) and not any(g in l for g in SAFE)]
@@ -86,17 +88,23 @@ def run(FM):
 
     # R8 · KI-002 entry points defined ────────────────────────────────────────
     EP = {
-        "app.py": ["_is_market_open","_refresh_fragment"],
-        "pages/home.py": ["render_homepage","render_ticker_bar","_render_live_section"],
-        "pages/dashboard.py": ["render_dashboard","_live_kpi_panel","_render_kpi_panel"],
+        "app.py": ["_is_market_open","_refresh_fragment","_on_market_change"],
+        "pages/home.py": ["render_homepage","render_ticker_bar"],
+        "pages/dashboard.py": ["render_dashboard","_live_price_tile","_render_kpi_panel",
+                               "_render_header_static","_make_live_price_fragment",
+                               "_make_live_kpi_fragment","_render_price_tile",
+                               "_tab_forecast","_tab_insights","_detect_asset_class"],
         "pages/global_intelligence.py": ["render_global_intelligence"],
-        "pages/week_summary.py": ["render_week_summary"],
+        "pages/week_summary.py": ["render_week_summary","_render_forecast_accuracy_report"],
         "styles.py": ["inject_css"],
         "utils.py": ["init_session_state","render_error_log","safe_run","log_error",
                      "safe_float","sanitise","sanitise_bold","responsive_cols","info_tip","section_title_with_tip"],
         "market_data.py": ["get_price_data","get_ticker_info","get_top_movers",
-                           "get_news","_safe_close"],
-        "forecast.py": ["store_forecast","resolve_forecasts","render_forecast_accuracy"],
+                           "get_news","_safe_close","get_live_price","get_intraday_chart_data"],
+        "forecast.py": ["store_forecast","resolve_forecasts","render_forecast_accuracy",
+                        "get_weekly_accuracy_report"],
+        "indicators.py": ["compute_indicators","signal_score","compute_weinstein_stage",
+                          "compute_elder_screens","compute_forecast","compute_unified_verdict"],
     }
     for fn, fns in EP.items():
         src = FM.get(fn, "")
@@ -236,6 +244,163 @@ def run(FM):
             f"'{k}' not cleared in _on_market_change" if k not in handler_body else "")
     chk("R14.KI-016", "resets_nav_to_home", "nav_page" in handler_body and "Home" in handler_body)
     chk("R14.KI-016", "busts_cache_on_change", "cb" in handler_body and ("+ 1" in handler_body or "+= 1" in handler_body))
+
+    # R15 · v5.18 live auto-refresh contracts ────────────────────────────────
+    app = FM.get("app.py", "")
+    db  = FM.get("pages/dashboard.py", "")
+    md  = FM.get("market_data.py", "")
+    # Fragment must be at module level — defined before 'with st.sidebar:'
+    frag_idx    = app.find("@st.fragment")
+    sidebar_idx = app.find("with st.sidebar:")
+    chk("R15.v518", "fragment_before_sidebar",
+        0 <= frag_idx < sidebar_idx,
+        "fragment defined inside sidebar — timer will reset on every interaction")
+    # market_open must be stored in session_state for fragment to read
+    chk("R15.v518", "market_open_in_ss",
+        "st.session_state.market_open = market_open" in app,
+        "market_open not stored in session_state")
+    # Manual auto_refresh toggle must be gone
+    chk("R15.v518", "no_manual_toggle",
+        "auto_refresh" not in app,
+        "manual auto_refresh toggle still present — remove it")
+    # Live price tile must NOT call st.rerun()
+    tile_start = db.find("def _live_price_tile")
+    tile_end   = db.find("return _live_price_tile", tile_start) if tile_start >= 0 else -1
+    tile_body  = db[tile_start:tile_end] if tile_start >= 0 and tile_end >= 0 else ""
+    chk("R15.v518", "no_rerun_in_price_tile",
+        "st.rerun()" not in tile_body,
+        "st.rerun() inside _live_price_tile — defeats fragment isolation")
+    # get_live_price must have TTL=5
+    chk("R15.v518", "live_price_ttl_5",
+        "ttl=5" in md and "get_live_price" in md,
+        "get_live_price TTL must be 5s")
+    # get_intraday_chart_data must have TTL=60
+    chk("R15.v518", "intraday_ttl_60",
+        "ttl=60" in md and "get_intraday_chart_data" in md,
+        "get_intraday_chart_data TTL must be 60s")
+    # Intraday chart only renders when market open
+    chk("R15.v518", "intraday_gated_by_market_open",
+        "if market_open and ticker" in db,
+        "intraday chart not gated by market_open")
+
+
+
+    # R16 · v5.19 forecast engine + unified verdict contracts ─────────────────
+    db  = FM.get("pages/dashboard.py", "")
+    ind = FM.get("indicators.py", "")
+    fc  = FM.get("forecast.py", "")
+    ws  = FM.get("pages/week_summary.py", "")
+    # polyfit must be gone from _tab_forecast
+    chk("R16.v519", "no_polyfit_in_forecast",
+        "np.polyfit" not in db[db.find("def _tab_forecast"):db.find("def _tab_compare")]
+        if "def _tab_forecast" in db and "def _tab_compare" in db else True,
+        "polyfit still in _tab_forecast — must be replaced by Historical Simulation")
+    # new engine functions present
+    chk("R16.v519", "compute_forecast_defined",        "def compute_forecast" in ind)
+    chk("R16.v519", "compute_weinstein_defined",       "def compute_weinstein_stage" in ind)
+    chk("R16.v519", "compute_elder_defined",           "def compute_elder_screens" in ind)
+    chk("R16.v519", "compute_unified_verdict_defined", "def compute_unified_verdict" in ind)
+    chk("R16.v519", "get_weekly_accuracy_report",      "def get_weekly_accuracy_report" in fc)
+    chk("R16.v519", "weekly_report_in_week_summary",   "_render_forecast_accuracy_report" in ws)
+    chk("R16.v519", "store_forecast_takes_simulation", "simulation: dict" in fc or "simulation=None" in fc)
+    chk("R16.v519", "resolve_calibration_fields",      "in_p25_p75" in fc and "direction_correct" in fc)
+    chk("R16.v519", "no_6m_12m_horizon",
+        '"6M"' not in db[db.find("def _tab_forecast"):db.find("def _tab_compare")]
+        if "def _tab_forecast" in db and "def _tab_compare" in db else True,
+        "6M/12M horizon options still present — removed as statistically unreliable")
+
+    # R17 · v5.20 header verdict + asset class contracts ─────────────────────
+    db  = FM.get("pages/dashboard.py", "")
+    cfg = FM.get("config.py", "")
+    # Header must show verdict, not raw signal
+    chk("R17.v520", "header_takes_verdict_param",
+        "verdict=None" in db,
+        "header still uses raw sig — verdict param missing")
+    # Momentum score labelled pre-regime
+    chk("R17.v520", "score_labelled_momentum",
+        "Momentum: {score}/100" in db or "Momentum:" in db,
+        "score not labelled as Momentum only")
+    # Asset class detection defined
+    chk("R17.v520", "detect_asset_class_defined",
+        "def _detect_asset_class" in db)
+    # P/E suppressed for non-equity
+    chk("R17.v520", "pe_suppressed_non_equity",
+        "show_fundamentals" in db and "P/E, P/B, ROE" in db,
+        "P/E not suppressed for non-equity asset classes")
+    # Verdict computed before header in render_dashboard
+    rd_body = db[db.find("def render_dashboard"):]
+    verdict_idx = rd_body.find("compute_unified_verdict")
+    header_idx  = rd_body.find("_render_header_static(")
+    chk("R17.v520", "verdict_before_header",
+        0 < verdict_idx < header_idx,
+        "verdict not computed before header renders")
+    # _tab_insights receives pre-computed objects
+    chk("R17.v520", "insights_accepts_precomputed",
+        "stage: dict = None" in db and "verdict: dict = None" in db,
+        "_tab_insights does not accept pre-computed stage/verdict")
+    # New HELP_TEXT keys present
+    for key in ["weinstein_stage", "elder_screen", "p_gain",
+                "hist_sim", "conflict", "unified_verdict"]:
+        chk("R17.v520", f"helptext_{key}", f'"{key}"' in cfg,
+            f"HELP_TEXT missing key: {key}")
+
+    # R18 · CLAUDE.md baseline sync ──────────────────────────────────────────
+    # Ensures CLAUDE.md regression count stays in sync with actual baseline.
+    # A stale CLAUDE.md becomes a regression failure — cannot be missed.
+    import re as _re
+    claude_md_path = "CLAUDE.md"
+    if os.path.exists(claude_md_path):
+        claude_md_src = open(claude_md_path).read()
+        total_so_far  = len(_results)
+        pattern       = _re.compile(r"(\d+)/(\d+)\s+PASS")
+        matches       = pattern.findall(claude_md_src)
+        if matches:
+            claude_n = int(matches[0][0])
+            chk("R18", "claude_md_baseline_current",
+                str(total_so_far) in claude_md_src,
+                f"CLAUDE.md shows {claude_n} but run has {total_so_far} checks so far — update CLAUDE.md")
+        else:
+            chk("R18", "claude_md_baseline_current", False,
+                "CLAUDE.md has no 'NNN/NNN PASS' line — add regression count")
+    else:
+        chk("R18", "claude_md_baseline_current", False,
+            "CLAUDE.md not found in repo root")
+
+    # R19 · v5.21 Phase 2 contracts ──────────────────────────────────────────
+    db  = FM.get("pages/dashboard.py", "")
+    ind = FM.get("indicators.py", "")
+    # Debt suppression in unified_verdict
+    chk("R19.v521", "debt_suppression_in_verdict",
+        'asset_class == "debt"' in ind or "asset_class==" in ind,
+        "compute_unified_verdict has no debt asset_class branch")
+    chk("R19.v521", "rates_context_signal",
+        "RATES CONTEXT" in ind,
+        "RATES CONTEXT signal not defined for debt instruments")
+    # Plain English header labels
+    chk("R19.v521", "plain_english_aligned",
+        "Trend and momentum agree" in db,
+        "Header still shows 'All layers aligned' jargon")
+    chk("R19.v521", "plain_english_conflict",
+        "Momentum signal adjusted" in db,
+        "Header still shows 'Score overridden by regime' jargon")
+    # Debt KPI panel
+    chk("R19.v521", "debt_kpi_branch_in_panel",
+        'asset_class == "debt"' in db[db.find("def _render_kpi_panel"):
+                                       db.find("def _make_live_kpi_fragment")],
+        "_render_kpi_panel has no debt branch")
+    # Dynamic chart subplots
+    chk("R19.v521", "dynamic_chart_subplots",
+        "_has_macd" in db and "_row_macd" in db,
+        "_tab_charts still uses hardcoded 4-row subplot layout")
+    # All 6 HELP_TEXT keys wired
+    for key in ["weinstein_stage", "elder_screen", "hist_sim", "conflict"]:
+        chk("R19.v521", f"helptext_{key}_wired",
+            f"HELP_TEXT['{key}']" in db or f'HELP_TEXT["{key}"]' in db,
+            f"HELP_TEXT['{key}'] not wired in dashboard.py")
+    # asset_class passed to compute_unified_verdict
+    chk("R19.v521", "asset_class_to_verdict",
+        "asset_class=asset_class" in db,
+        "asset_class not passed to compute_unified_verdict in render_dashboard")
 
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.

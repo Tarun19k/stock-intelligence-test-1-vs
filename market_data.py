@@ -106,6 +106,84 @@ def _safe_close(df: pd.DataFrame) -> pd.Series:
 
 # ── Public API ─────────────────────────────────────────────────────────────────
 
+@st.cache_data(ttl=5, show_spinner=False)
+def get_live_price(ticker: str, cache_buster: int = 0) -> dict:
+    """
+    Fetch the latest intraday price for a live market session.
+    Returns dict with: price, prev_close, change_pct, volume, high, low, timestamp.
+    Uses period='2d' interval='1m' — gives enough data for today's OHLC + prev close.
+    TTL=5s — self-expires every 5 seconds. cache_buster allows forced refresh.
+    Returns empty dict on any failure — callers must handle gracefully.
+    """
+    _throttle(ticker)
+    try:
+        df = yf.download(ticker, period="2d", interval="1m",
+                         auto_adjust=True, progress=False)
+        if df is None or df.empty:
+            return {}
+        df = _normalize_df(df)
+        if df.empty:
+            return {}
+        df.index = pd.to_datetime(df.index)
+        df.sort_index(inplace=True)
+
+        cl    = _safe_close(df)
+        if cl.empty:
+            return {}
+
+        # Split today vs yesterday by date
+        import pytz
+        last_ts   = df.index[-1]
+        today_str = last_ts.date()
+        today_df  = df[df.index.date == today_str]
+        prev_df   = df[df.index.date < today_str]
+
+        price     = float(cl.iloc[-1])
+        prev_close = float(_safe_close(prev_df).iloc[-1]) if not prev_df.empty else price
+        chg_pct   = (price - prev_close) / prev_close * 100 if prev_close else 0.0
+
+        day_high  = float(today_df["High"].max())  if not today_df.empty and "High"   in today_df.columns else price
+        day_low   = float(today_df["Low"].min())   if not today_df.empty and "Low"    in today_df.columns else price
+        volume    = float(today_df["Volume"].sum()) if not today_df.empty and "Volume" in today_df.columns else 0.0
+
+        return {
+            "price":      round(price, 2),
+            "prev_close": round(prev_close, 2),
+            "change_pct": round(chg_pct, 2),
+            "day_high":   round(day_high, 2),
+            "day_low":    round(day_low, 2),
+            "volume":     volume,
+            "timestamp":  str(last_ts),
+        }
+    except Exception as e:
+        log_error(f"get_live_price:{ticker}", e)
+        return {}
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def get_intraday_chart_data(ticker: str, cache_buster: int = 0) -> pd.DataFrame:
+    """
+    Fetch today's 1-minute OHLCV bars for the intraday chart.
+    TTL=60s — refreshes once per minute inside the chart fragment.
+    Returns empty DataFrame on failure.
+    """
+    _throttle(ticker)
+    try:
+        df = yf.download(ticker, period="1d", interval="1m",
+                         auto_adjust=True, progress=False)
+        if df is None or df.empty:
+            return pd.DataFrame()
+        df = _normalize_df(df)
+        if df.empty:
+            return pd.DataFrame()
+        df.index = pd.to_datetime(df.index)
+        df.sort_index(inplace=True)
+        return df
+    except Exception as e:
+        log_error(f"get_intraday_chart_data:{ticker}", e)
+        return pd.DataFrame()
+
+
 @st.cache_data(ttl=300, show_spinner=False)
 def get_price_data(ticker: str, period: str = "1y", interval: str = "1d",
                    cache_buster: int = 0) -> pd.DataFrame:
