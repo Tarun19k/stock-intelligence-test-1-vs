@@ -470,7 +470,7 @@ def _tab_charts(df: pd.DataFrame, cur_sym: str,
             )
             fig_intra.update_xaxes(gridcolor="#1f2540")
             fig_intra.update_yaxes(gridcolor="#1f2540")
-            st.plotly_chart(fig_intra, width='stretch', config={"responsive": True})
+            st.plotly_chart(fig_intra, config={"responsive": True})
 
         _intraday_chart()
         st.divider()
@@ -584,7 +584,7 @@ def _tab_charts(df: pd.DataFrame, cur_sym: str,
     if _row_macd: fig.update_yaxes(title_text="MACD",   row=_row_macd, col=1)
     if _row_rsi:  fig.update_yaxes(title_text="RSI",    row=_row_rsi,  col=1)
     fig.update_yaxes(title_text="Volume", row=_row_vol, col=1)
-    st.plotly_chart(fig, width='stretch', config={"responsive": True})
+    st.plotly_chart(fig, config={"responsive": True})
 
 
 # ─────────────────────────────────────────────────────────────────
@@ -737,7 +737,7 @@ def _tab_forecast(ticker: str, df: pd.DataFrame, sig: dict,
     )
     fig2.update_xaxes(title_text="Date", gridcolor="#1f2540")
     fig2.update_yaxes(title_text="Price", gridcolor="#1f2540")
-    st.plotly_chart(fig2, width='stretch', config={"responsive": True})
+    st.plotly_chart(fig2, config={"responsive": True})
 
     # ── Percentile cards ──────────────────────────────────────────
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -856,7 +856,7 @@ def _tab_compare(ticker: str, name: str, df: pd.DataFrame,
     )
     fig3.update_xaxes(title_text="Date")
     fig3.update_yaxes(title_text="Normalised (100=start)")
-    st.plotly_chart(fig3, width='stretch', config={"responsive": True})
+    st.plotly_chart(fig3, config={"responsive": True})
 
 
 # ─────────────────────────────────────────────────────────────────

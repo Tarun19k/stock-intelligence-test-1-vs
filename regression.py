@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 """
 regression.py — GSI Regression & Validation Suite
-Run from project root: python regression.py
+Run from project root: python3 regression.py
 Each check references its KI-code from KNOWN_ISSUES_LOG.md.
 """
 import re, ast, os, sys, zipfile
@@ -8,7 +9,7 @@ from urllib.parse import urlparse
 
 PROJECT_FILES = [
     "config.py","version.py","app.py","utils.py","forecast.py","market_data.py","styles.py",
-    "indicators.py",
+    "indicators.py","portfolio.py",
     "pages/home.py","pages/dashboard.py","pages/global_intelligence.py","pages/week_summary.py",
 ]
 
@@ -31,15 +32,27 @@ def run(FM):
         try: ast.parse(src); chk("R1", "syntax:"+fn, True)
         except SyntaxError as e: chk("R1", "syntax:"+fn, False, f"L{e.lineno}: {e.msg}")
 
-    # R2 · KI-001 use_container_width deprecated ───────────────────────────────
+    # R2 · KI-001 deprecated Streamlit width/container args ────────────────────
+    # Streamlit 1.43 deprecation rules:
+    #   use_container_width=True  → width='stretch'   (for dataframe, table etc)
+    #   use_container_width=False → width='content'   (for dataframe, table etc)
+    #   width='stretch' on st.plotly_chart → REMOVE   (use config={'responsive':True})
     for fn, src in FM.items():
-        hits = [i+1 for i,l in enumerate(src.splitlines())
-                if "use_container_width" in l
-                and "=False" not in l          # =False is valid, only True deprecated
-                and not l.strip().startswith("#")
-                and not l.strip().startswith('"')
-                and not l.strip().startswith("{")
-                and not l.strip().startswith("'")]
+        lines = src.splitlines()
+        hits = []
+        for i, l in enumerate(lines):
+            s = l.strip()
+            if s.startswith('#') or s.startswith('"') or s.startswith("'"):
+                continue
+            # Skip version log entries which document historical fixes
+            if 'notes' in l.lower() or 'version' in l.lower() and '{' in l:
+                continue
+            # Flag use_container_width anywhere (deprecated — use width= instead)
+            if 'use_container_width' in l and ('True' in l or 'False' in l):
+                hits.append(i+1)
+            # Flag width='stretch' on plotly_chart (remove it — config handles responsiveness)
+            if 'plotly_chart' in l and "width=" in l and 'stretch' in l:
+                hits.append(i+1)
         chk("R2.KI-001", "ucw:"+fn, not hits, str(hits) if hits else "")
 
     # R3 · Bare except ─────────────────────────────────────────────────────────
@@ -95,14 +108,17 @@ def run(FM):
                                "_make_live_kpi_fragment","_render_price_tile",
                                "_tab_forecast","_tab_insights","_detect_asset_class"],
         "pages/global_intelligence.py": ["render_global_intelligence"],
-        "pages/week_summary.py": ["render_week_summary","_render_forecast_accuracy_report"],
+        "pages/week_summary.py": ["render_week_summary","_render_forecast_accuracy_report","render_market_overview","render_group_overview","_multi_asset_weekly_chart"],
         "styles.py": ["inject_css"],
         "utils.py": ["init_session_state","render_error_log","safe_run","log_error",
                      "safe_float","sanitise","sanitise_bold","responsive_cols","info_tip","section_title_with_tip"],
         "market_data.py": ["get_price_data","get_ticker_info","get_top_movers",
                            "get_news","_safe_close","get_live_price","get_intraday_chart_data"],
         "forecast.py": ["store_forecast","resolve_forecasts","render_forecast_accuracy",
-                        "get_weekly_accuracy_report"],
+                        "get_weekly_accuracy_report","get_pending_forecast_summary"],
+            "portfolio.py": ["check_data_quality","compute_log_returns","winsorize_returns",
+                        "bootstrap_scenarios","optimise_mean_cvar","compute_efficient_frontier",
+                        "detect_stress_regime","check_regime_conflicts"],
         "indicators.py": ["compute_indicators","signal_score","compute_weinstein_stage",
                           "compute_elder_screens","compute_forecast","compute_unified_verdict"],
     }
@@ -345,20 +361,33 @@ def run(FM):
             f"HELP_TEXT missing key: {key}")
 
     # R18 · CLAUDE.md baseline sync ──────────────────────────────────────────
-    # Ensures CLAUDE.md regression count stays in sync with actual baseline.
-    # A stale CLAUDE.md becomes a regression failure — cannot be missed.
-    import re as _re
+    # Compares CLAUDE.md count against GSI_Session.json manifest — NOT the
+    # mid-run check count (which is incomplete when R18 executes).
+    import re as _re, json as _json
     claude_md_path = "CLAUDE.md"
+    session_path   = "GSI_Session.json"
     if os.path.exists(claude_md_path):
         claude_md_src = open(claude_md_path).read()
-        total_so_far  = len(_results)
-        pattern       = _re.compile(r"(\d+)/(\d+)\s+PASS")
-        matches       = pattern.findall(claude_md_src)
-        if matches:
-            claude_n = int(matches[0][0])
+        # Get expected count from manifest
+        expected_n = None
+        if os.path.exists(session_path):
+            try:
+                _m   = _json.load(open(session_path))
+                _exp = _m.get("regression", {}).get("expected_output", "")
+                _hit = _re.findall(r"(\d+)", _exp)
+                if _hit: expected_n = _hit[0]
+            except Exception:
+                pass
+        matches = _re.findall(r"(\d+)/(\d+)\s+PASS", claude_md_src)
+        if matches and expected_n:
+            claude_n = matches[0][0]
             chk("R18", "claude_md_baseline_current",
-                str(total_so_far) in claude_md_src,
-                f"CLAUDE.md shows {claude_n} but run has {total_so_far} checks so far — update CLAUDE.md")
+                claude_n == expected_n,
+                f"CLAUDE.md shows {claude_n} but manifest expects {expected_n} — update CLAUDE.md")
+        elif matches:
+            chk("R18", "claude_md_baseline_current",
+                int(matches[0][0]) > 0,
+                "CLAUDE.md regression count is zero or missing")
         else:
             chk("R18", "claude_md_baseline_current", False,
                 "CLAUDE.md has no 'NNN/NNN PASS' line — add regression count")
@@ -401,6 +430,69 @@ def run(FM):
     chk("R19.v521", "asset_class_to_verdict",
         "asset_class=asset_class" in db,
         "asset_class not passed to compute_unified_verdict in render_dashboard")
+
+    # R20 · v5.22 routing + new page functions ───────────────────────────────
+    ap  = FM.get("app.py", "")
+    ws  = FM.get("pages/week_summary.py", "")
+    # 4-state routing in app.py
+    chk("R20.v522", "view_mode_logic",
+        "_view_mode" in ap,
+        "app.py missing _view_mode routing logic")
+    chk("R20.v522", "group_routing",
+        "render_group_overview" in ap,
+        "app.py not routing to render_group_overview")
+    chk("R20.v522", "market_routing",
+        "render_market_overview" in ap,
+        "app.py not routing to render_market_overview")
+    chk("R20.v522", "week_routing",
+        "render_week_summary" in ap,
+        "app.py not routing to render_week_summary")
+    # New page functions in week_summary.py
+    chk("R20.v522", "render_market_overview_defined",
+        "def render_market_overview" in ws,
+        "render_market_overview not defined in week_summary.py")
+    chk("R20.v522", "render_group_overview_defined",
+        "def render_group_overview" in ws,
+        "render_group_overview not defined in week_summary.py")
+    chk("R20.v522", "multi_asset_chart_defined",
+        "def _multi_asset_weekly_chart" in ws,
+        "_multi_asset_weekly_chart not defined in week_summary.py")
+    chk("R20.v522", "imports_in_app",
+        "render_market_overview" in ap and "render_group_overview" in ap,
+        "new page functions not imported in app.py")
+
+    # R21 · v5.23 portfolio allocator contracts ───────────────────────────────
+    ws  = FM.get("pages/week_summary.py", "")
+    pf  = FM.get("portfolio.py", "")
+    chk("R21.v523", "portfolio_module_exists",
+        bool(pf), "portfolio.py not in loaded files — add to PROJECT_FILES")
+    chk("R21.v523", "cvxpy_guard",
+        "CVXPY_AVAILABLE" in pf,
+        "portfolio.py missing CVXPY_AVAILABLE guard — cvxpy may not be installed")
+    chk("R21.v523", "winsorize_defined",
+        "def winsorize_returns" in pf,
+        "winsorize_returns not defined — HIGH/D3 fix missing")
+    chk("R21.v523", "stress_regime_defined",
+        "def detect_stress_regime" in pf,
+        "detect_stress_regime not defined — CRITICAL/P1+M1 fix missing")
+    chk("R21.v523", "conflict_check_defined",
+        "def check_regime_conflicts" in pf,
+        "check_regime_conflicts not defined — Layer 4 missing")
+    chk("R21.v523", "data_quality_defined",
+        "def check_data_quality" in pf,
+        "check_data_quality not defined — HIGH/D1 fix missing")
+    chk("R21.v523", "allocator_tab_in_week_summary",
+        "_render_portfolio_allocator" in ws and "tab_alloc" in ws,
+        "Portfolio Allocator tab not wired in render_group_overview")
+    chk("R21.v523", "stress_check_before_allocation",
+        "detect_stress_regime" in ws,
+        "Stress regime check not called in week_summary — CRITICAL fix missing")
+    chk("R21.v523", "conflict_check_in_week_summary",
+        "check_regime_conflicts" in ws,
+        "Layer 4 conflict check not called in week_summary")
+    chk("R21.v523", "leverage_disclaimer",
+        "leverage" in ws.lower() or "borrowed" in ws.lower(),
+        "Leverage disclaimer missing from allocator UI — HIGH/P4 fix missing")
 
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.

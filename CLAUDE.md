@@ -20,7 +20,7 @@ Two repos exist — ALL active work is in the modular repo only:
 
 ```bash
 streamlit run app.py        # run the app locally
-python regression.py        # MUST pass 189/189 before any new work
+python3 regression.py       # MUST pass before any new work
 ```
 
 Deploy target: Streamlit Community Cloud + local dev.
@@ -37,7 +37,9 @@ pytz==2024.2        requests==2.32.3
 
 Streamlit notes:
 - `@st.fragment` available from 1.37+
-- `width='stretch'` replaces `use_container_width=True` from 1.40+
+- `width='stretch'` is correct for `st.dataframe` in 1.43+
+- `use_container_width` deprecated for all st.* calls — do not use
+- `width='stretch'` must NOT be passed to `st.plotly_chart` — use `config={'responsive':True}` only
 - `st.rerun(scope='fragment')` raises StreamlitAPIException in 1.43 — use plain `st.rerun()`
 
 ---
@@ -59,6 +61,7 @@ pages/week_summary.py   Weekly performance summary. Embedded by home.py + routed
 pages/global_intelligence.py  Geopolitical topics, watchlists, live news, WorldMonitor map.
 pages/home.py           Homepage. Ticker bar (window.parent injection) + morning brief + movers.
 pages/dashboard.py      4-tab stock detail: Charts | Forecast | Compare | Insights.
+portfolio.py            Mean-CVaR portfolio optimisation engine. No Streamlit calls.
 app.py                  Entry point. Market selector, routing, auto-refresh fragment.
 ```
 
@@ -116,6 +119,16 @@ utils.py            safe_run(fn, context='', default=None) → Any
                     responsive_cols(desktop, tablet=None, mobile=1) → list
 
 styles.py           inject_css() → None
+
+portfolio.py        check_data_quality(ticker, df) → dict
+                    compute_log_returns(df_dict) → (np.ndarray, names, excluded)
+                    winsorize_returns(returns) → np.ndarray
+                    bootstrap_scenarios(returns, n=2000) → np.ndarray
+                    optimise_mean_cvar(scenarios, names, risk_aversion, ...) → dict
+                    compute_efficient_frontier(scenarios, names, n_points=12) → list
+                    compute_stability_score(scenarios, names, ...) → dict
+                    detect_stress_regime(returns, vix_df) → dict
+                    check_regime_conflicts(allocation, stock_signals) → list
 ```
 
 ---
@@ -167,7 +180,7 @@ Violating any of these has caused a production crash or data loss before.
 
 ## Regression Suite — `regression.py`
 
-Run `python regression.py` from project root. Must show **252/252 PASS** before starting any new work.
+Run `python3 regression.py` from project root. Must show **307/307 PASS** before starting any new work.
 
 > **Keep this number in sync with `GSI_Session.json → regression.expected_output`.**
 > R18 check in regression.py will fail if CLAUDE.md is stale — update both together.
@@ -249,6 +262,7 @@ See `open_items` in GSI_Session.json for full detail. Summary:
 | OPEN-003 | MED | Cross-session forecast persistence (Supabase free tier recommended) |
 | OPEN-004 | LOW | Extract scoring weights to `SCORING_WEIGHTS` dict in `indicators.py` |
 | OPEN-005 | HIGH | `git rm config_OLD.py` from repo root |
+| OPEN-006 | MED | Portfolio Allocator v5.24: wire stability score UI badge + backtest engine + CVaR calibration tracker |
 
 ---
 

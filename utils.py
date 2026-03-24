@@ -105,6 +105,7 @@ def render_error_log():
 
 
 def responsive_cols(desktop: int, tablet: int = None, mobile: int = 1):
+    # tablet/mobile params reserved for future responsive breakpoint logic — currently unused.
     return st.columns(desktop)
 
 

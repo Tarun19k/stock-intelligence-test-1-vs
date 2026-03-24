@@ -214,10 +214,18 @@ def get_ticker_info(ticker: str, cache_buster: int = 0) -> dict:
     """
     Fetch metadata/fundamentals for a ticker.
     cache_buster: same semantics as get_price_data.
+    Returns {} on any failure — callers must handle missing keys gracefully.
+    Note: yfinance raises TypeError internally for some futures tickers (CL=F,
+    GC=F etc.) — this is a known upstream issue, handled silently here.
     """
     _throttle(ticker)
     try:
-        return yf.Ticker(ticker).info or {}
+        result = yf.Ticker(ticker).info
+        return result if isinstance(result, dict) else {}
+    except TypeError:
+        # Known yfinance issue with futures/commodity tickers — not our bug.
+        # Return empty dict; _detect_asset_class will fall back to ticker suffix.
+        return {}
     except Exception as e:
         log_error(f"get_ticker_info:{ticker}", e)
         return {}

@@ -309,7 +309,7 @@ def _render_version_log():
     with st.expander("📋 Version History", expanded=False):
         rows = [{"Version": v["version"], "Date": v["date"], "Notes": v["notes"]}
                 for v in reversed(VERSION_LOG)]
-        st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
+        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -317,18 +317,6 @@ def _render_version_log():
 # ══════════════════════════════════════════════════════════════════
 
 def _s(t, n=200): return sanitise(t, max_len=n)
-
-@st.fragment(run_every=60)
-def _render_live_section(market_open: bool = False, cb: int = 0):
-    """
-    Fragment wrapping all DYNAMIC home-page sections:
-    morning brief status, market session open/closed badges, top movers.
-    Runs every 60 s when called (Streamlit ignores run_every if market is
-    closed — we control that by only calling with run_every when open).
-    Static sections (news feed, version log) live outside this fragment.
-    """
-    safe_run(_render_morning_brief,   context="morning_brief")
-
 
 def render_homepage(cb: int = 0, market_open: bool = False):
     """Called from app.py routing — renders the Home page body."""

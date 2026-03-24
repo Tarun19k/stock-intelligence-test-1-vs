@@ -9,6 +9,121 @@ CSS = """
 <style>
 body, .main { background: #0e1117; color: #c8d6f0; }
 
+/* ── Ticker bar: suppress Streamlit header so fixed strip sits flush ── */
+header[data-testid="stHeader"] {
+    height: 0 !important; min-height: 0 !important;
+    padding: 0 !important; overflow: hidden !important;
+    visibility: hidden !important;
+}
+/* ── Toolbar: hide chrome, preserve the sidebar collapse button ─ */
+/* DO NOT hide stAppToolbar — collapse button lives inside it.     */
+/* Hide only specific unwanted children.                           */
+[data-testid="stDecoration"]  { display: none !important; }
+[data-testid="stToolbar"] > *:not([data-testid="collapsedControl"]) {
+    visibility: hidden !important;
+}
+
+/* Make the toolbar bar itself invisible but keep it in flow      */
+/* so the collapse button remains accessible.                     */
+[data-testid="stAppToolbar"] {
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+/* ── Sidebar OPEN: style collapse button as right-edge pill ───── */
+[data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] {
+    background: #1a2540 !important;
+    border: 1px solid #2d3a5e !important;
+    border-radius: 0 8px 8px 0 !important;
+    opacity: 1 !important;
+}
+
+/* ── Sidebar CLOSED: collapsedControl as left-edge pill ────────── */
+[data-testid="collapsedControl"] {
+    position: fixed !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9999999 !important;
+    background: #1a2540 !important;
+    border: 1px solid #2d3a5e !important;
+    border-left: none !important;
+    border-radius: 0 8px 8px 0 !important;
+    width: 20px !important;
+    height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.5) !important;
+    cursor: pointer !important;
+    visibility: visible !important;
+}
+[data-testid="collapsedControl"]:hover {
+    background: #253356 !important;
+    width: 26px !important;
+}
+[data-testid="collapsedControl"] button {
+    background: transparent !important;
+    border: none !important;
+    width: 100% !important; height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    visibility: visible !important;
+}
+[data-testid="collapsedControl"] svg {
+    stroke: #4f8ef7 !important;
+    fill: none !important;
+    width: 12px !important; height: 12px !important;
+    visibility: visible !important;
+}
+
+/* ── Fixed 36px ticker strip ── */
+.ticker-wrap {
+    position: fixed; top: 0; left: 0; width: 100vw; z-index: 1000000;
+    background: linear-gradient(90deg, #070c1a 0%, #0a1020 100%);
+    border-bottom: 1px solid #1a2540; height: 32px;
+    overflow: hidden; display: flex; align-items: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.ticker-track {
+    display: flex; align-items: center; white-space: nowrap;
+    animation: tickerScroll 60s linear infinite; will-change: transform;
+}
+.ticker-wrap:hover .ticker-track { animation-play-state: paused; }
+@keyframes tickerScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-33.33%); }
+}
+.tick-item  { display:inline-flex;align-items:center;gap:5px;padding:0 12px;
+              font-size:0.71rem;font-family:'JetBrains Mono','Fira Code',ui-monospace,monospace; }
+.tick-name  { color:#4b6080;font-weight:600; }
+.tick-price { color:#c8d6f0;font-weight:700; }
+.tick-chg   { font-weight:700; }
+.tick-sep   { color:#1f2d40;padding:0 3px;font-size:0.8rem; }
+
+/* ── Padding so content clears the fixed ticker bar ── */
+[data-testid="stAppViewContainer"] > section[data-testid="stMain"]
+    { padding-top: 32px !important; }
+.main .block-container     { padding-top: 46px !important; }
+section.main > div:first-child { padding-top: 32px !important; }
+[data-testid="stSidebar"] > div:first-child
+    { padding-top: 36px !important; margin-top: 0 !important; }
+
+/* ── Hide Streamlit's auto-generated MPA sidebar nav ── */
+[data-testid="stSidebarNav"]          { display: none !important; }
+[data-testid="stSidebarNavItems"]     { display: none !important; }
+[data-testid="stSidebarNavSeparator"] { display: none !important; }
+section[data-testid="stSidebar"] > div:first-child > div:first-child
+    { padding-top: 0 !important; }
+
+/* ── Hide deploy / share button ── */
+[data-testid="stDeployButton"] { display: none !important; }
+
+
+
 .kpi-card {
     background: linear-gradient(135deg, #1e2130, #252840); color: #c8d6f0;
     border-radius: 12px; padding: 14px 18px; margin: 5px 0;
@@ -88,52 +203,22 @@ body, .main { background: #0e1117; color: #c8d6f0; }
 
 
 def inject_css():
-    """Call once at the top of app.py to inject global styles.
-    /* ── Ticker bar: always suppress Streamlit header ─────────────── */
-    header[data-testid="stHeader"] {
-        height: 0 !important; min-height: 0 !important;
-        padding: 0 !important; overflow: hidden !important;
-        visibility: hidden !important;
-    }
-    .stAppToolbar, [data-testid="stToolbar"],
-    [data-testid="stDecoration"] { display: none !important; }
-    .ticker-wrap {
-        position: fixed; top: 0; left: 0; width: 100vw; z-index: 1000000;
-        background: linear-gradient(90deg, #070c1a 0%, #0a1020 100%);
-        border-bottom: 1px solid #1a2540; height: 32px;
-        overflow: hidden; display: flex; align-items: center;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.5);
-    }
-    .ticker-track {
-        display: flex; align-items: center; white-space: nowrap;
-        animation: tickerScroll 60s linear infinite; will-change: transform;
-    }
-    .ticker-wrap:hover .ticker-track { animation-play-state: paused; }
-    @keyframes tickerScroll {
-        0%   { transform: translateX(0); }
-        100% { transform: translateX(-33.33%); }
-    }
-    .tick-item  { display:inline-flex;align-items:center;gap:5px;padding:0 12px;
-                  font-size:0.71rem;font-family:'JetBrains Mono','Fira Code',ui-monospace,monospace; }
-    .tick-name  { color:#4b6080;font-weight:600; }
-    .tick-price { color:#c8d6f0;font-weight:700; }
-    .tick-chg   { font-weight:700; }
-    .tick-sep   { color:#1f2d40;padding:0 3px;font-size:0.8rem; }
-    [data-testid="stAppViewContainer"] > section[data-testid="stMain"]
-        { padding-top: 32px !important; }
-    .main .block-container     { padding-top: 46px !important; }
-    section.main > div:first-child { padding-top: 32px !important; }
-    [data-testid="stSidebar"] > div:first-child
-        { padding-top: 36px !important; margin-top: 0 !important; }
-
-    /* ── Hide Streamlit's auto-generated MPA sidebar nav ──────────── */
-    [data-testid="stSidebarNav"]       { display: none !important; }
-    [data-testid="stSidebarNavItems"]  { display: none !important; }
-    [data-testid="stSidebarNavSeparator"] { display: none !important; }
-    section[data-testid="stSidebar"] > div:first-child > div:first-child
-        { padding-top: 0 !important; }
-
-    /* ── Hide deploy / share button in top-right ───────────────────── */
-    [data-testid="stDeployButton"]     { display: none !important; }
-"""
+    """Inject global CSS once at app startup. Call from app.py before any other render."""
     st.markdown(CSS, unsafe_allow_html=True)
+    # Clear any stale sidebar-collapsed state from browser localStorage.
+    # Streamlit stores sidebar state under keys like 'stSidebar' or similar —
+    # clearing them ensures the sidebar opens on first load after a CSS change.
+    import streamlit.components.v1 as _stc
+    _stc.html(
+        "<script>"
+        "try{"
+        "var keys=Object.keys(window.parent.localStorage);"
+        "keys.forEach(function(k){"
+        "if(k.indexOf('sidebar')>-1||k.indexOf('Sidebar')>-1||k.indexOf('collapsed')>-1){"
+        "window.parent.localStorage.removeItem(k);"
+        "}"
+        "});"
+        "}catch(e){}"
+        "</script>",
+        height=0, scrolling=False
+    )

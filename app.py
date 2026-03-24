@@ -9,7 +9,8 @@ from market_data import get_price_data, get_ticker_info
 from pages.home import render_homepage, render_ticker_bar
 from pages.dashboard import render_dashboard
 from pages.global_intelligence import render_global_intelligence
-from pages.week_summary import render_week_summary
+from pages.week_summary import (render_week_summary, render_market_overview,
+                                  render_group_overview)
 
 st.set_page_config(
     page_title=f"Global Stock Intelligence {CURRENT_VERSION}",
@@ -137,7 +138,12 @@ with st.sidebar:
         st.session_state.nav_page    = "📊 Dashboard"
         st.session_state.prev_ticker = selected_ticker
         st.session_state.data_stale  = True
-        st.session_state.cb         += 1   # bust cache on every new ticker selection
+        st.session_state.cb         += 1
+        # Explicitly clear price + info caches so first load is always fresh.
+        # cb increment alone is not sufficient — the new cb value may already
+        # exist in cache from a prior fetch of the same ticker in this session.
+        get_price_data.clear()
+        get_ticker_info.clear()
 
     # Selected ticker badge
     if selected_ticker:
@@ -184,7 +190,7 @@ with st.sidebar:
             unsafe_allow_html=True,
         )
 
-    if st.button("🔄 Refresh data", use_container_width=False):
+    if st.button("🔄 Refresh data", width='content'):
         st.session_state.cb += 1
         st.rerun()
 
@@ -196,13 +202,27 @@ cb = st.session_state.cb
 st.session_state.market_open = market_open  # fragment reads this
 
 # ── Routing ──────────────────────────────────────────────────────────────────
+# Determine view mode for Dashboard routing:
+#   "stock"   — stock explicitly selected
+#   "group"   — group selected, stock dropdown at placeholder
+#   "market"  — market selected, no group/stock interaction
+#   "week"    — default (no meaningful selection or no market groups)
+_default_country = list(MARKET_SESSIONS.keys())[0]
+if selected_ticker:
+    _view_mode = "stock"
+elif mkt_grps and st.session_state.get("stk_sel") in (None, "— Select a stock —", ""):
+    # Group is selected but no stock chosen
+    _view_mode = "group"
+elif mkt_grps:
+    _view_mode = "market"
+else:
+    _view_mode = "week"
+
 if nav == "🏠 Home":
     render_homepage(cb=cb, market_open=market_open)
 
 elif nav == "📊 Dashboard":
-    if not selected_ticker:
-        render_week_summary(cur_sym=cur_sym, cb=cb)
-    else:
+    if _view_mode == "stock":
         # v5.16 FIX: pass cache_buster=cb so Refresh button actually busts cache
         info = get_ticker_info(selected_ticker, cache_buster=cb)
         df   = get_price_data(selected_ticker,  cache_buster=cb)
@@ -224,6 +244,27 @@ elif nav == "📊 Dashboard":
             stock_map=flat_stock_map,
             market_open=market_open,
         )
+
+    elif _view_mode == "group":
+        # Group selected, no stock — show group overview
+        _grp = st.session_state.get("grp_sel") or (list(mkt_grps.keys())[0] if mkt_grps else None)
+        if _grp and _grp in mkt_grps:
+            render_group_overview(
+                country=country, group_name=_grp,
+                stocks=mkt_grps[_grp], cur_sym=cur_sym, cb=cb,
+            )
+        else:
+            render_week_summary(cur_sym=cur_sym, cb=cb)
+
+    elif _view_mode == "market":
+        # Market selected, no group/stock — show market overview
+        render_market_overview(
+            country=country, groups=mkt_grps, cur_sym=cur_sym, cb=cb,
+        )
+
+    else:
+        # Default — week summary
+        render_week_summary(cur_sym=cur_sym, cb=cb)
 
 elif nav == "🌍 Global Intelligence":
     render_global_intelligence(cur_sym=cur_sym, cb=cb, market_open=market_open)

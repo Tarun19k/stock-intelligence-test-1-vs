@@ -226,7 +226,7 @@ def get_accuracy_summary(ticker: str) -> dict:
 def render_forecast_accuracy(ticker: str, cur_sym: str) -> None:
     """
     Render the Forecast Accuracy Tracker panel.
-    Only function in this module that calls st.*.
+    Shows pending forecasts with due dates when no resolved entries exist yet.
     """
     st.markdown("### 📏 Forecast Accuracy Tracker")
 
@@ -237,10 +237,57 @@ def render_forecast_accuracy(ticker: str, cur_sym: str) -> None:
     acc = get_accuracy_summary(ticker)
 
     if acc["count"] == 0:
-        st.info(
-            "No resolved forecasts yet for this stock. "
-            "Accuracy data builds up over time as forecast due-dates pass."
-        )
+        # No resolved forecasts yet — show pending status instead of blank
+        pending = get_pending_forecast_summary()
+        ticker_key = safe_ticker_key(ticker)
+        ticker_pending = [e for e in pending.get("pending", [])
+                          if e["_key"].startswith(ticker_key + "_")]
+
+        if ticker_pending:
+            earliest = min(e["due_on"] for e in ticker_pending)
+            from datetime import datetime as _dt
+            try:
+                days_left = (_dt.strptime(earliest, "%Y-%m-%d") -
+                             _dt.now()).days
+            except Exception:
+                days_left = None
+
+            st.markdown(
+                f'<div style="background:#0d1f35;border:1px solid #1a3050;'
+                f'border-radius:10px;padding:14px 18px;margin-bottom:10px">'
+                f'<div style="font-size:0.80rem;font-weight:700;color:#4f8ef7;'
+                f'margin-bottom:8px">🕐 Forecasts are being tracked</div>'
+                f'<div style="font-size:0.82rem;color:#c8d6f0;line-height:1.7">'
+                f'{len(ticker_pending)} forecast(s) stored for this stock.<br>'
+                f'Earliest resolution date: <b>{earliest}</b>'
+                f'{f" — {days_left} days from now" if days_left is not None else ""}.<br>'
+                f'Accuracy data will appear automatically once due dates pass.'
+                f'</div></div>',
+                unsafe_allow_html=True,
+            )
+            # Show pending table
+            rows = []
+            for e in ticker_pending:
+                base  = e.get("base_price") or 0
+                fcast = e.get("forecast_price") or 0
+                pg    = e.get("p_gain")
+                rows.append({
+                    "Made On":        e["made_on"],
+                    "Due On":         e["due_on"],
+                    "Horizon":        f'{e["horizon_days"]}d',
+                    "Base Price":     f"{cur_sym}{base:,.2f}" if base else "—",
+                    "Forecast (P50)": f"{cur_sym}{fcast:,.2f}" if fcast else "—",
+                    "P(Gain)":        f"{pg:.0f}%" if pg is not None else "—",
+                    "Status":         "⏳ Pending",
+                })
+            if rows:
+                st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+        else:
+            st.info(
+                "No forecasts stored for this stock yet. "
+                "Open the Forecast tab to generate and store a forecast. "
+                "Accuracy tracking begins automatically."
+            )
         return
 
     mean_a = acc["mean_accuracy"] or 0
@@ -284,6 +331,59 @@ def render_forecast_accuracy(ticker: str, cur_sym: str) -> None:
 
 
 # ── Weekly accuracy report ─────────────────────────────────────────────────
+
+
+def get_pending_forecast_summary() -> dict:
+    """
+    Returns a summary of forecasts that have been stored but not yet resolved.
+    Used to show meaningful content in the accuracy tracker before due dates pass.
+    Returns: count, earliest_due, latest_due, tickers, days_until_first
+    """
+    from datetime import datetime as _dt
+    history = load_forecast_history()
+    pending = []
+
+    for key, entries in history.items():
+        for e in entries:
+            if not e.get("resolved") and e.get("due_on"):
+                pending.append({
+                    "_key":      key,
+                    "made_on":   e.get("made_on", ""),
+                    "due_on":    e.get("due_on", ""),
+                    "horizon_days": e.get("horizon_days", 0),
+                    "forecast_price": e.get("forecast_price"),
+                    "base_price":     e.get("base_price"),
+                    "p_gain":         e.get("p_gain"),
+                })
+
+    if not pending:
+        return {"count": 0, "pending": []}
+
+    today = _dt.now().strftime("%Y-%m-%d")
+    due_dates = sorted(e["due_on"] for e in pending)
+    earliest  = due_dates[0]
+    latest    = due_dates[-1]
+
+    try:
+        days_until = (_dt.strptime(earliest, "%Y-%m-%d") -
+                      _dt.strptime(today, "%Y-%m-%d")).days
+    except Exception:
+        days_until = None
+
+    # Unique tickers (strip _21d / _63d suffix)
+    import re as _re
+    tickers = sorted(set(
+        _re.sub(r'_\d+d$', '', e["_key"]) for e in pending
+    ))
+
+    return {
+        "count":         len(pending),
+        "earliest_due":  earliest,
+        "latest_due":    latest,
+        "days_until_first": max(0, days_until) if days_until is not None else None,
+        "tickers":       tickers,
+        "pending":       sorted(pending, key=lambda x: x["due_on"])[:20],
+    }
 
 def get_weekly_accuracy_report() -> dict:
     """
