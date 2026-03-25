@@ -85,9 +85,19 @@ header[data-testid="stHeader"]{height:0!important;min-height:0!important;
             )
 
     if not items:
-        return  # CSS already injected above — layout stays clean
+        # Rate-limited or no data yet — show placeholder dots so the bar
+        # always renders and never blocks layout on cold start.
+        placeholder = (
+            '<span class="tick-item">'
+            '<span class="tick-name">GSI</span> '
+            '<span class="tick-price">Loading…</span>'
+            '</span><span class="tick-sep">·</span>'
+        ) * 12
+        items_str = placeholder
+    else:
+        items_str = " ".join(items * 3)  # triple for seamless CSS loop
 
-    ticker_content = " ".join(items * 3)  # triple for seamless CSS loop
+    ticker_content = items_str
 
     # ③ Inject ticker HTML into window.parent (host page body) via iframe JS
     #    This fully escapes Streamlit's component tree and renders as a true
@@ -156,7 +166,7 @@ header[data-testid="stHeader"]{height:0!important;min-height:0!important;
     parent.document.body.prepend(div);
 }})();
 </script>
-""", height=0, scrolling=False)
+""", height=1, scrolling=False)
 # ══════════════════════════════════════════════════════════════════
 # MARKET STATUS
 # ══════════════════════════════════════════════════════════════════

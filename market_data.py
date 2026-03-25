@@ -13,6 +13,9 @@ import time
 import feedparser
 import pandas as pd
 import yfinance as yf
+import logging as _logging
+_logging.getLogger("yfinance").setLevel(_logging.ERROR)   # silence "Failed download" warnings
+_logging.getLogger("peewee").setLevel(_logging.ERROR)     # silence peewee ORM noise
 import streamlit as st
 from urllib.parse import urlparse
 from utils import safe_run, log_error, safe_url
@@ -47,6 +50,26 @@ def _throttle(sym: str):
     if wait > 0:
         time.sleep(wait)
     _last_call[sym] = time.monotonic()
+
+
+# ── yfinance download wrapper with rate-limit retry ──────────────────────────
+def _yf_download(ticker: str, **kwargs) -> "pd.DataFrame":
+    """
+    Wraps _yf_download() with exponential backoff on YFRateLimitError.
+    Max 3 attempts: waits 2s, 4s before giving up.
+    Returns empty DataFrame on failure — callers handle gracefully.
+    """
+    for attempt in range(3):
+        try:
+            return _yf_download(ticker, **kwargs)
+        except Exception as exc:
+            # YFRateLimitError may not be importable on all versions — check name
+            if type(exc).__name__ == "YFRateLimitError":
+                if attempt < 2:
+                    time.sleep(2 ** (attempt + 1))   # 2s, 4s
+                    continue
+            return pd.DataFrame()   # non-rate-limit error or exhausted retries
+    return pd.DataFrame()
 
 
 # ── DataFrame normaliser ───────────────────────────────────────────────────────
@@ -117,7 +140,7 @@ def get_live_price(ticker: str, cache_buster: int = 0) -> dict:
     """
     _throttle(ticker)
     try:
-        df = yf.download(ticker, period="2d", interval="1m",
+        df = _yf_download(ticker, period="2d", interval="1m",
                          auto_adjust=True, progress=False)
         if df is None or df.empty:
             return {}
@@ -169,7 +192,7 @@ def get_intraday_chart_data(ticker: str, cache_buster: int = 0) -> pd.DataFrame:
     """
     _throttle(ticker)
     try:
-        df = yf.download(ticker, period="1d", interval="1m",
+        df = _yf_download(ticker, period="1d", interval="1m",
                          auto_adjust=True, progress=False)
         if df is None or df.empty:
             return pd.DataFrame()
@@ -194,7 +217,7 @@ def get_price_data(ticker: str, period: str = "1y", interval: str = "1d",
     """
     _throttle(ticker)
     try:
-        df = yf.download(ticker, period=period, interval=interval,
+        df = _yf_download(ticker, period=period, interval=interval,
                          auto_adjust=True, progress=False)
         if df.empty:
             return pd.DataFrame()
