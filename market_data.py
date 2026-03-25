@@ -40,23 +40,34 @@ def _is_allowed_rss(url: str) -> bool:
     except Exception:
         return False
 
-# ── Global token-bucket rate limiter ────────────────────────────────────────
-# Yahoo Finance allows ~5 requests per 5 seconds before triggering limits.
-# This single global lock ensures all download calls across the app
-# (ticker bar, top movers, week summary) share one rate budget.
+# ── Token-bucket rate limiter ────────────────────────────────────────────────
+# Yahoo Finance from datacenter IPs: safe rate is ~5 req/s sustained.
+# Token bucket: holds up to 5 tokens, refills at 1 token per 0.4s.
+# This lets a burst of 5 fire immediately, then paces at ~2.5 req/s.
+# Result: 49-stock group loads in ~20s instead of 122s with a flat 2.5s delay.
 import threading as _threading
-_RATE_LOCK   = _threading.Lock()
-_MIN_INTERVAL = 2.5   # minimum seconds between any two yfinance calls globally
-_last_yf_call = [0.0]  # mutable list so inner functions can mutate it
+_RATE_LOCK    = _threading.Lock()
+_BUCKET_MAX   = 5      # max burst size
+_BUCKET_RATE  = 0.4    # seconds per token (2.5 tokens/second)
+_bucket_tokens = [float(_BUCKET_MAX)]
+_bucket_last   = [time.monotonic()]
 
 def _global_throttle():
-    """Block until at least _MIN_INTERVAL has elapsed since last yfinance call."""
+    """Token-bucket throttle. Fast for small bursts, paced for sustained use."""
     with _RATE_LOCK:
-        now  = time.monotonic()
-        wait = _MIN_INTERVAL - (now - _last_yf_call[0])
-        if wait > 0:
+        now = time.monotonic()
+        # Replenish tokens based on elapsed time
+        elapsed = now - _bucket_last[0]
+        _bucket_tokens[0] = min(_BUCKET_MAX, _bucket_tokens[0] + elapsed / _BUCKET_RATE)
+        _bucket_last[0] = now
+        if _bucket_tokens[0] >= 1.0:
+            _bucket_tokens[0] -= 1.0
+        else:
+            # Need to wait for next token
+            wait = _BUCKET_RATE * (1.0 - _bucket_tokens[0])
             time.sleep(wait)
-        _last_yf_call[0] = time.monotonic()
+            _bucket_tokens[0] = 0.0
+            _bucket_last[0] = time.monotonic()
 
 
 # ── Single-ticker download with retry ────────────────────────────────────────
@@ -399,10 +410,23 @@ def get_top_movers(symbols: list, max_symbols: int = 20,
 def get_ticker_bar_data(tickers: list, cache_buster: int = 0) -> dict:
     """
     Cached wrapper for the ticker bar batch fetch.
-    TTL=300s — data refreshes every 5 minutes without busting individual
-    stock caches. Returns {sym: DataFrame} mapping.
+    TTL=300s — data refreshes every 5 minutes.
+    cache_buster should always be 0 so ticker selection doesn't bust this cache.
+    Returns {sym: DataFrame} mapping.
     """
     return _yf_batch_download(list(tickers), period="5d", interval="1d")
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_group_data(tickers: list, period: str = "1mo",
+                   cache_buster: int = 0) -> dict:
+    """
+    Batch fetch for group overview (week_summary).
+    Uses chunked _yf_batch_download so 49 stocks → ~17 batched calls
+    instead of 49 sequential throttled calls.
+    Returns {sym: DataFrame} mapping. TTL=300s.
+    """
+    return _yf_batch_download(list(tickers), period=period, interval="1d")
 
 
 @st.cache_data(ttl=600, show_spinner=False)
