@@ -33,10 +33,11 @@ def run(FM):
         except SyntaxError as e: chk("R1", "syntax:"+fn, False, f"L{e.lineno}: {e.msg}")
 
     # R2 · KI-001 deprecated Streamlit width/container args ────────────────────
-    # Streamlit 1.43 deprecation rules:
-    #   use_container_width=True  → width='stretch'   (for dataframe, table etc)
-    #   use_container_width=False → width='content'   (for dataframe, table etc)
-    #   width='stretch' on st.plotly_chart → REMOVE   (use config={'responsive':True})
+    # Streamlit 1.43 rules (corrected):
+    #   st.dataframe: use_container_width=True  ✅ VALID in 1.43
+    #   st.dataframe: width='stretch'            ❌ INVALID in 1.43 (TypeError)
+    #   st.plotly_chart: width='stretch'         ❌ INVALID — use config={'responsive':True}
+    #   st.button(width=...)                     ❌ INVALID — no width param on button
     for fn, src in FM.items():
         lines = src.splitlines()
         hits = []
@@ -44,14 +45,16 @@ def run(FM):
             s = l.strip()
             if s.startswith('#') or s.startswith('"') or s.startswith("'"):
                 continue
-            # Skip version log entries which document historical fixes
-            if 'notes' in l.lower() or 'version' in l.lower() and '{' in l:
+            if 'notes' in l.lower() or ('version' in l.lower() and '{' in l):
                 continue
-            # Flag use_container_width anywhere (deprecated — use width= instead)
-            if 'use_container_width' in l and ('True' in l or 'False' in l):
+            # Flag width='stretch' on dataframe (invalid in 1.43 — use use_container_width=True)
+            if 'dataframe' in l and "width=" in l and ('stretch' in l or 'content' in l):
                 hits.append(i+1)
-            # Flag width='stretch' on plotly_chart (remove it — config handles responsiveness)
+            # Flag width='stretch' on plotly_chart
             if 'plotly_chart' in l and "width=" in l and 'stretch' in l:
+                hits.append(i+1)
+            # Flag width= on st.button (no width param in any version)
+            if re.search(r'st\.button\(.*width\s*=', l):
                 hits.append(i+1)
         chk("R2.KI-001", "ucw:"+fn, not hits, str(hits) if hits else "")
 

@@ -8,7 +8,7 @@ import streamlit as st
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from utils import safe_run, responsive_cols
-from market_data import get_price_data
+from market_data import get_price_data, get_group_data
 from forecast import get_weekly_accuracy_report, get_pending_forecast_summary
 from portfolio import (compute_log_returns, winsorize_returns,
                        bootstrap_scenarios, optimise_mean_cvar,
@@ -501,13 +501,16 @@ def render_group_overview(country: str, group_name: str,
     week_start, _, _, _ = _get_week_range()
     stock_rows = []
 
+    # Batch-fetch all group tickers at once — avoids 49 sequential throttled calls
+    _syms = tuple(stocks.values())
+    _batch = safe_run(
+        lambda: get_group_data(_syms, period="3mo", cache_buster=cb),
+        context="grp_overview:batch", default={},
+    ) or {}
+
     with st.spinner("Loading group data…"):
         for sname, sym in stocks.items():
-            df = safe_run(
-                lambda s=sym: get_price_data(s, period="3mo", interval="1d",
-                                             cache_buster=cb),
-                context=f"grp_overview:{sym}", default=None,
-            )
+            df = _batch.get(sym)
             if df is None or df.empty or len(df) < 5:
                 continue
             df_w = df[df.index.date >= week_start]
@@ -1015,7 +1018,7 @@ def _render_forecast_accuracy_report():
                     "Status":   "⏳ Pending",
                 })
             if rows:
-                st.dataframe(_pd.DataFrame(rows), width="stretch", hide_index=True)
+                st.dataframe(_pd.DataFrame(rows), use_container_width=True, hide_index=True)
         else:
             st.markdown(
                 '<div class="insight-box" style="font-size:0.84rem">'
@@ -1112,4 +1115,4 @@ def _render_forecast_accuracy_report():
                 "In Band":   "✅" if e.get("in_p25_p75") else "❌" if e.get("in_p25_p75") is False else "—",
                 "Accuracy":  f'{e.get("accuracy_pct",""):.1f}%' if e.get("accuracy_pct") is not None else "—",
             })
-        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)

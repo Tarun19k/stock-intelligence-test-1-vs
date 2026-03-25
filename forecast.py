@@ -281,7 +281,7 @@ def render_forecast_accuracy(ticker: str, cur_sym: str) -> None:
                     "Status":         "⏳ Pending",
                 })
             if rows:
-                st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+                st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
         else:
             st.info(
                 "No forecasts stored for this stock yet. "
@@ -327,7 +327,7 @@ def render_forecast_accuracy(ticker: str, cur_sym: str) -> None:
         for e in reversed(acc["entries"])
     ]
     if rows:
-        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
 
 # ── Weekly accuracy report ─────────────────────────────────────────────────

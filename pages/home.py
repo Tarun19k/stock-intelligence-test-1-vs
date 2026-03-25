@@ -59,7 +59,7 @@ header[data-testid="stHeader"]{height:0!important;min-height:0!important;
     # ② Build ticker data — cached batch (TTL=300s, chunks of 3 with delays)
     _syms  = tuple(sym for _, sym in TICKER_SYMBOLS)
     _batch = safe_run(
-        lambda: get_ticker_bar_data(_syms, cache_buster=cb),
+        lambda: get_ticker_bar_data(_syms, cache_buster=0),  # 0 = TTL-only, never busted by stock selection
         context="ticker_bar:batch", default={},
     ) or {}
     items = []
@@ -320,7 +320,7 @@ def _render_version_log():
     with st.expander("📋 Version History", expanded=False):
         rows = [{"Version": v["version"], "Date": v["date"], "Notes": v["notes"]}
                 for v in reversed(VERSION_LOG)]
-        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
 
 # ══════════════════════════════════════════════════════════════════
