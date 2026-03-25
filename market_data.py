@@ -46,7 +46,7 @@ def _is_allowed_rss(url: str) -> bool:
 # (ticker bar, top movers, week summary) share one rate budget.
 import threading as _threading
 _RATE_LOCK   = _threading.Lock()
-_MIN_INTERVAL = 1.5   # minimum seconds between any two yfinance calls globally
+_MIN_INTERVAL = 2.5   # minimum seconds between any two yfinance calls globally
 _last_yf_call = [0.0]  # mutable list so inner functions can mutate it
 
 def _global_throttle():
@@ -95,6 +95,14 @@ def _yf_batch_download(tickers: list, period: str = "5d",
             tickers, period=period, interval=interval,
             auto_adjust=True, progress=False, group_by="ticker",
         )
+        if raw is None or raw.empty:
+            # One retry after a short pause — batch calls can be slow to warm
+            time.sleep(3)
+            _global_throttle()
+            raw = yf.download(
+                tickers, period=period, interval=interval,
+                auto_adjust=True, progress=False, group_by="ticker",
+            )
         if raw is None or raw.empty:
             return {}
         result = {}
@@ -189,7 +197,7 @@ def get_live_price(ticker: str, cache_buster: int = 0) -> dict:
     TTL=5s — self-expires every 5 seconds. cache_buster allows forced refresh.
     Returns empty dict on any failure — callers must handle gracefully.
     """
-    _throttle(ticker)
+    _global_throttle()
     try:
         df = _yf_download(ticker, period="2d", interval="1m",
                          auto_adjust=True, progress=False)
@@ -241,7 +249,7 @@ def get_intraday_chart_data(ticker: str, cache_buster: int = 0) -> pd.DataFrame:
     TTL=60s — refreshes once per minute inside the chart fragment.
     Returns empty DataFrame on failure.
     """
-    _throttle(ticker)
+    _global_throttle()
     try:
         df = _yf_download(ticker, period="1d", interval="1m",
                          auto_adjust=True, progress=False)
@@ -266,7 +274,7 @@ def get_price_data(ticker: str, period: str = "1y", interval: str = "1d",
     cache_buster: pass st.session_state.cb to force cache invalidation on
     user-triggered refresh. Default 0 = rely on TTL (300 s).
     """
-    _throttle(ticker)
+    _global_throttle()
     try:
         df = _yf_download(ticker, period=period, interval=interval,
                          auto_adjust=True, progress=False)
@@ -292,7 +300,7 @@ def get_ticker_info(ticker: str, cache_buster: int = 0) -> dict:
     Note: yfinance raises TypeError internally for some futures tickers (CL=F,
     GC=F etc.) — this is a known upstream issue, handled silently here.
     """
-    _throttle(ticker)
+    _global_throttle()
     try:
         result = yf.Ticker(ticker).info
         return result if isinstance(result, dict) else {}
