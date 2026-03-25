@@ -4,7 +4,7 @@
     "project": "Global Stock Intelligence Dashboard",
     "repo_modular": "https://github.com/Tarun19k/stock-intelligence-test-1-vs",
     "repo_monolith": "https://github.com/Tarun19k/global-gsi-intelligence",
-    "manifest_version": "6.3",
+    "manifest_version": "6.6",
     "protocol": "This manifest MUST be updated after every patch, fix, rebuild, or architectural change to the project. Updating the manifest is itself a required activity — marked IMPORTANT — and must occur before or towards the end of every session. At the start of a new session, provide the Gist URL and say: 'Here is the session manifest — continue from where we left off.' Claude will read it and resume without re-reading every file from GitHub.",
     "current_version": "v5.23",
     "next_version": "v5.22",
@@ -837,6 +837,35 @@
             "pages/week_summary.py"
           ],
           "detail": "Plotly rejects 8-digit hex colors (#rrggbbaa). L931: line color #4f8ef755 → rgba(79,142,247,0.33). All other 8-digit hex in file are in HTML strings (unsafe_allow_html) — valid there."
+        },
+        {
+          "order": 54,
+          "type": "patch",
+          "label": "market_data.py — silence YFRateLimitError console noise completely",
+          "files_changed": [
+            "market_data.py"
+          ],
+          "detail": "Two-part fix for clean console: (1) logging.getLogger(\"yfinance\").setLevel(ERROR) — suppresses yfinance internal WARNING-level \"Failed download\" messages that bypass our exception handler. Also silences peewee ORM noise. (2) _yf_download() wrapper replaces all yf.download() calls — retries YFRateLimitError up to 3 times with 2s/4s backoff before returning empty DataFrame. progress=False was already set; this handles the logger and the retry correctly."
+        },
+        {
+          "order": 55,
+          "type": "patch",
+          "label": "home.py — fix ticker bar not rendering on Streamlit Cloud",
+          "files_changed": [
+            "home.py"
+          ],
+          "detail": "Two causes: (1) On cold start, all yfinance calls fail with YFRateLimitError, items=[] → early return → JS never fires → bar never appears. Fix: remove early return; show placeholder on empty items so JS always fires. (2) height=0 on _components.html() collapses iframe in some Streamlit versions. Fix: height=1."
+        },
+        {
+          "order": 56,
+          "type": "patch",
+          "label": "CRITICAL: Fix 4 rate-limit root causes in market_data.py, home.py, app.py",
+          "files_changed": [
+            "market_data.py",
+            "home.py",
+            "app.py"
+          ],
+          "detail": "P1 RECURSION: _yf_download() was calling itself, never yf.download(). Every fetch silently returned empty DataFrame. Fixed: calls yf.download(). P2 CACHE BUSTING: cb as universal cache key evicted ALL ticker data on every increment. 60s fragment was incrementing cb every minute. Market change was incrementing cb. Result: 30-50 simultaneous YF requests on every event. Fixed: fragment is now no-op; market change no longer increments cb; only explicit Refresh button increments cb. P3 BATCHING: ticker bar made 10 sequential get_price_data calls. get_top_movers made 20 sequential calls. Fixed: both now use _yf_batch_download() — 1 YF request for all tickers. P4 GLOBAL RATE LIMITER: per-symbol throttle allowed different tickers to fire simultaneously. Fixed: _global_throttle() uses threading.Lock and _last_yf_call shared state — enforces 1.5s between any two YF calls globally."
         }
       ],
       "open_items_at_close": [
@@ -1164,9 +1193,9 @@
     "market_data.py": {
       "version": "v5.21",
       "status": "patched",
-      "lines": 287,
+      "lines": 310,
       "gist": "github_blob",
-      "last_confirmed": "2026-03-21"
+      "last_confirmed": "2026-03-25"
     },
     "forecast.py": {
       "version": "v5.21",
@@ -1213,9 +1242,9 @@
     "pages/home.py": {
       "version": "v5.17",
       "status": "patched",
-      "lines": 341,
+      "lines": 351,
       "gist": "pages",
-      "last_confirmed": "2026-03-23"
+      "last_confirmed": "2026-03-25"
     },
     "pages/dashboard.py": {
       "version": "v5.21",
@@ -1246,7 +1275,7 @@
       "last_confirmed": "2026-03-19"
     },
     "GSI_Session.json": {
-      "version": "v6.3",
+      "version": "v6.6",
       "status": "active",
       "lines": 860,
       "gist": "GSI_session",

@@ -38,12 +38,10 @@ if "market_open" not in st.session_state: st.session_state.market_open = False
 # Drives the global ticker bar only — dashboard page has its own fragments.
 @st.fragment(run_every=60)
 def _refresh_fragment():
-    """Silently increments cb every 60s when a live market is selected.
-    Only fires when st.session_state.market_open is True.
-    Does NOT call st.rerun() — full refresh is not needed for ticker bar.
-    The ticker bar re-fetches its own data via render_ticker_bar(cb=...)."""
-    if st.session_state.get("market_open", False):
-        st.session_state.cb += 1
+    """Kept for compatibility — ticker bar now self-manages via TTL cache.
+    No longer increments cb (which was cache-busting ALL tickers every 60s).
+    The global rate limiter in market_data.py handles yfinance pacing."""
+    pass   # intentional no-op — do not re-add cb increment here
 
 
 def _is_market_open(country: str) -> bool:
@@ -61,9 +59,10 @@ def _on_market_change():
     st.session_state["prev_ticker"]  = None
     st.session_state["data_stale"]   = None
     for key in ("grp_sel", "stk_sel"):
-        st.session_state.pop(key, None)   # pop → Streamlit resets widget to index 0
+        st.session_state.pop(key, None)
     st.session_state["nav_page"] = "🏠 Home"
-    st.session_state.cb += 1
+    # NOTE: do NOT increment cb here — that would evict all ticker caches
+    # for the new market before any data has been fetched. TTL handles staleness.
 
 # ── Global ticker bar ────────────────────────────────────────────────────────
 render_ticker_bar(cb=st.session_state.get("cb", 0))

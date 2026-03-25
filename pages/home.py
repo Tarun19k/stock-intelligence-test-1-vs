@@ -56,14 +56,16 @@ header[data-testid="stHeader"]{height:0!important;min-height:0!important;
 [data-testid="stSidebar"]>div:first-child{padding-top:36px!important;margin-top:0!important;}
 </style>""", unsafe_allow_html=True)
 
-    # ② Build ticker data
+    # ② Build ticker data — ONE batch call instead of 10 individual calls
+    from market_data import _yf_batch_download
+    _syms  = [sym for _, sym in TICKER_SYMBOLS]
+    _batch = safe_run(
+        lambda: _yf_batch_download(_syms, period="5d", interval="1d"),
+        context="ticker_bar:batch", default={},
+    ) or {}
     items = []
     for name, sym in TICKER_SYMBOLS:
-        df = safe_run(
-            lambda s=sym: get_price_data(s, period="5d", interval="1d",
-                                          cache_buster=cb),
-            context=f"ticker_bar:{sym}", default=None,
-        )
+        df = _batch.get(sym)
         if df is not None and not df.empty and len(df) >= 2 and "Close" in df.columns:
             _cl = df["Close"]
             _cl = _cl.iloc[:, 0] if isinstance(_cl, pd.DataFrame) else _cl

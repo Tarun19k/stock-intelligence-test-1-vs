@@ -40,36 +40,87 @@ def _is_allowed_rss(url: str) -> bool:
     except Exception:
         return False
 
-# ── Rate throttle — prevents hammering yfinance ────────────────────────────────
-_last_call: dict = {}
-_MIN_INTERVAL = 1.2
+# ── Global token-bucket rate limiter ────────────────────────────────────────
+# Yahoo Finance allows ~5 requests per 5 seconds before triggering limits.
+# This single global lock ensures all download calls across the app
+# (ticker bar, top movers, week summary) share one rate budget.
+import threading as _threading
+_RATE_LOCK   = _threading.Lock()
+_MIN_INTERVAL = 1.5   # minimum seconds between any two yfinance calls globally
+_last_yf_call = [0.0]  # mutable list so inner functions can mutate it
 
-def _throttle(sym: str):
-    now  = time.monotonic()
-    wait = _MIN_INTERVAL - (now - _last_call.get(sym, 0))
-    if wait > 0:
-        time.sleep(wait)
-    _last_call[sym] = time.monotonic()
+def _global_throttle():
+    """Block until at least _MIN_INTERVAL has elapsed since last yfinance call."""
+    with _RATE_LOCK:
+        now  = time.monotonic()
+        wait = _MIN_INTERVAL - (now - _last_yf_call[0])
+        if wait > 0:
+            time.sleep(wait)
+        _last_yf_call[0] = time.monotonic()
 
 
-# ── yfinance download wrapper with rate-limit retry ──────────────────────────
-def _yf_download(ticker: str, **kwargs) -> "pd.DataFrame":
+# ── Single-ticker download with retry ────────────────────────────────────────
+def _yf_download(ticker: str, **kwargs) -> pd.DataFrame:
     """
-    Wraps _yf_download() with exponential backoff on YFRateLimitError.
-    Max 3 attempts: waits 2s, 4s before giving up.
-    Returns empty DataFrame on failure — callers handle gracefully.
+    Calls yf.download() (not itself) with exponential backoff on rate limits.
+    Max 3 attempts: waits 2s then 4s before returning empty DataFrame.
     """
     for attempt in range(3):
+        _global_throttle()
         try:
-            return _yf_download(ticker, **kwargs)
+            df = yf.download(ticker, **kwargs)   # NOTE: yf.download, not _yf_download
+            return df if df is not None else pd.DataFrame()
         except Exception as exc:
-            # YFRateLimitError may not be importable on all versions — check name
             if type(exc).__name__ == "YFRateLimitError":
                 if attempt < 2:
-                    time.sleep(2 ** (attempt + 1))   # 2s, 4s
+                    time.sleep(2 ** (attempt + 1))  # 2s, 4s
                     continue
-            return pd.DataFrame()   # non-rate-limit error or exhausted retries
+            return pd.DataFrame()
     return pd.DataFrame()
+
+
+# ── Multi-ticker batch download ───────────────────────────────────────────────
+def _yf_batch_download(tickers: list, period: str = "5d",
+                       interval: str = "1d") -> dict:
+    """
+    Fetch multiple tickers in ONE yf.download() call.
+    Returns {ticker: DataFrame} mapping. Empty dict on failure.
+    Yahoo Finance handles up to ~50 tickers per batch without rate issues.
+    """
+    if not tickers:
+        return {}
+    _global_throttle()
+    try:
+        raw = yf.download(
+            tickers, period=period, interval=interval,
+            auto_adjust=True, progress=False, group_by="ticker",
+        )
+        if raw is None or raw.empty:
+            return {}
+        result = {}
+        if len(tickers) == 1:
+            # Single ticker — yf returns flat DataFrame, not grouped
+            df = _normalize_df(raw.copy())
+            if not df.empty:
+                df.index = pd.to_datetime(df.index)
+                df.sort_index(inplace=True)
+                result[tickers[0]] = df
+        else:
+            for sym in tickers:
+                try:
+                    df = raw[sym].copy() if sym in raw.columns.get_level_values(1) else pd.DataFrame()
+                    if isinstance(df, pd.DataFrame) and not df.empty:
+                        df = _normalize_df(df)
+                        df.index = pd.to_datetime(df.index)
+                        df.sort_index(inplace=True)
+                        result[sym] = df
+                except Exception:
+                    pass
+        return result
+    except Exception as exc:
+        if type(exc).__name__ == "YFRateLimitError":
+            time.sleep(5)
+        return {}
 
 
 # ── DataFrame normaliser ───────────────────────────────────────────────────────
@@ -259,12 +310,17 @@ def get_top_movers(symbols: list, max_symbols: int = 20,
                    cache_buster: int = 0) -> list:
     """
     Return top movers sorted by absolute % change.
-    cache_buster: pass cb so the homepage refresh button busts this cache too.
+    Uses _yf_batch_download — ONE Yahoo Finance request for all tickers,
+    dramatically reducing rate limit exposure vs the old per-ticker loop.
     """
+    syms = list(symbols[:max_symbols])
+    if not syms:
+        return []
+    # One batch call instead of N sequential calls
+    batch = _yf_batch_download(syms, period="5d", interval="1d")
     results = []
-    for sym in symbols[:max_symbols]:
-        df = get_price_data(sym, period="5d", interval="1d",
-                            cache_buster=cache_buster)
+    for sym in syms:
+        df = batch.get(sym)
         if df is None or df.empty or len(df) < 2:
             continue
         try:
