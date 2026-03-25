@@ -190,7 +190,7 @@ with st.sidebar:
             unsafe_allow_html=True,
         )
 
-    if st.button("🔄 Refresh data", width='content'):
+    if st.button("🔄 Refresh data"):
         st.session_state.cb += 1
         st.rerun()
 
