@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from config import MARKET_SESSIONS, CURRENT_VERSION, VERSION_LOG
 from pages.week_summary import render_week_summary
 from utils import sanitise,  safe_run, responsive_cols, log_error
-from market_data import get_price_data, get_top_movers, get_news
+from market_data import get_price_data, get_top_movers, get_news, get_ticker_bar_data
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -56,11 +56,10 @@ header[data-testid="stHeader"]{height:0!important;min-height:0!important;
 [data-testid="stSidebar"]>div:first-child{padding-top:36px!important;margin-top:0!important;}
 </style>""", unsafe_allow_html=True)
 
-    # ② Build ticker data — ONE batch call instead of 10 individual calls
-    from market_data import _yf_batch_download
-    _syms  = [sym for _, sym in TICKER_SYMBOLS]
+    # ② Build ticker data — cached batch (TTL=300s, chunks of 3 with delays)
+    _syms  = tuple(sym for _, sym in TICKER_SYMBOLS)
     _batch = safe_run(
-        lambda: _yf_batch_download(_syms, period="5d", interval="1d"),
+        lambda: get_ticker_bar_data(_syms, cache_buster=cb),
         context="ticker_bar:batch", default={},
     ) or {}
     items = []

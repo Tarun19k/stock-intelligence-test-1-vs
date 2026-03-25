@@ -79,56 +79,108 @@ def _yf_download(ticker: str, **kwargs) -> pd.DataFrame:
     return pd.DataFrame()
 
 
-# ── Multi-ticker batch download ───────────────────────────────────────────────
+# ── Module-level ticker cache (survives across Streamlit rerenders) ────────────
+# Stores the last successfully fetched DataFrame per ticker.
+# Yahoo Finance rate-limits on cold start from datacenter IPs — this ensures
+# that once data is fetched it is never lost between rerenders, even if the
+# next fetch is blocked. TTL-controlled at call site via st.cache_data.
+_ticker_cache: dict = {}
+_ticker_cache_time: dict = {}
+_TICKER_CACHE_TTL = 300  # seconds — match get_price_data TTL
+
+
+def _parse_batch_raw(raw, tickers: list) -> dict:
+    """Extract per-ticker DataFrames from a yf.download() grouped result."""
+    result = {}
+    if raw is None or raw.empty:
+        return result
+    if len(tickers) == 1:
+        df = _normalize_df(raw.copy())
+        if not df.empty:
+            df.index = pd.to_datetime(df.index)
+            df.sort_index(inplace=True)
+            result[tickers[0]] = df
+    else:
+        levels = raw.columns.get_level_values(1) if isinstance(raw.columns, pd.MultiIndex) else []
+        for sym in tickers:
+            try:
+                if sym in levels:
+                    df = raw[sym].copy()
+                elif sym in raw.columns:
+                    df = raw[[sym]].copy()
+                else:
+                    continue
+                if isinstance(df, pd.DataFrame) and not df.empty:
+                    df = _normalize_df(df)
+                    df.index = pd.to_datetime(df.index)
+                    df.sort_index(inplace=True)
+                    result[sym] = df
+            except Exception:
+                pass
+    return result
+
+
+# ── Multi-ticker chunked batch download ───────────────────────────────────────
 def _yf_batch_download(tickers: list, period: str = "5d",
                        interval: str = "1d") -> dict:
     """
-    Fetch multiple tickers in ONE yf.download() call.
-    Returns {ticker: DataFrame} mapping. Empty dict on failure.
-    Yahoo Finance handles up to ~50 tickers per batch without rate issues.
+    Fetch multiple tickers in small chunks with delays between groups.
+    Splits into groups of 3 with 3s gaps — prevents Yahoo from seeing
+    a burst from a datacenter IP and rate-limiting mid-batch.
+    Falls back to module-level _ticker_cache for any ticker that fails,
+    so previously fetched data is never lost between rerenders.
     """
     if not tickers:
         return {}
-    _global_throttle()
-    try:
-        raw = yf.download(
-            tickers, period=period, interval=interval,
-            auto_adjust=True, progress=False, group_by="ticker",
-        )
-        if raw is None or raw.empty:
-            # One retry after a short pause — batch calls can be slow to warm
-            time.sleep(3)
-            _global_throttle()
+
+    result = {}
+    now = time.monotonic()
+
+    # Serve from module cache for tickers that are still fresh
+    fresh    = [s for s in tickers
+                if s in _ticker_cache
+                and (now - _ticker_cache_time.get(s, 0)) < _TICKER_CACHE_TTL]
+    to_fetch = [s for s in tickers if s not in fresh]
+
+    for s in fresh:
+        result[s] = _ticker_cache[s]
+
+    if not to_fetch:
+        return result
+
+    # Fetch in chunks of 3 — each chunk is one HTTP request
+    CHUNK = 3
+    chunks = [to_fetch[i:i+CHUNK] for i in range(0, len(to_fetch), CHUNK)]
+
+    for i, chunk in enumerate(chunks):
+        if i > 0:
+            time.sleep(3)          # 3s between chunks — let Yahoo's window reset
+        _global_throttle()
+        try:
             raw = yf.download(
-                tickers, period=period, interval=interval,
+                chunk, period=period, interval=interval,
                 auto_adjust=True, progress=False, group_by="ticker",
             )
-        if raw is None or raw.empty:
-            return {}
-        result = {}
-        if len(tickers) == 1:
-            # Single ticker — yf returns flat DataFrame, not grouped
-            df = _normalize_df(raw.copy())
-            if not df.empty:
-                df.index = pd.to_datetime(df.index)
-                df.sort_index(inplace=True)
-                result[tickers[0]] = df
-        else:
-            for sym in tickers:
-                try:
-                    df = raw[sym].copy() if sym in raw.columns.get_level_values(1) else pd.DataFrame()
-                    if isinstance(df, pd.DataFrame) and not df.empty:
-                        df = _normalize_df(df)
-                        df.index = pd.to_datetime(df.index)
-                        df.sort_index(inplace=True)
-                        result[sym] = df
-                except Exception:
-                    pass
-        return result
-    except Exception as exc:
-        if type(exc).__name__ == "YFRateLimitError":
-            time.sleep(5)
-        return {}
+            chunk_result = _parse_batch_raw(raw, chunk)
+            result.update(chunk_result)
+            # Update module-level cache for successful fetches
+            for sym, df in chunk_result.items():
+                _ticker_cache[sym]      = df
+                _ticker_cache_time[sym] = time.monotonic()
+        except Exception as exc:
+            if type(exc).__name__ == "YFRateLimitError":
+                time.sleep(5)          # back off before next chunk
+            # Fall back to stale cache for any failed tickers in this chunk
+            for sym in chunk:
+                if sym in _ticker_cache and sym not in result:
+                    result[sym] = _ticker_cache[sym]
+
+    # Final fallback: serve stale cache for anything still missing
+    for sym in tickers:
+        if sym not in result and sym in _ticker_cache:
+            result[sym] = _ticker_cache[sym]
+
+    return result
 
 
 # ── DataFrame normaliser ───────────────────────────────────────────────────────
@@ -341,6 +393,16 @@ def get_top_movers(symbols: list, max_symbols: int = 20,
             log_error(f"get_top_movers:{sym}", e)
     results.sort(key=lambda x: abs(x[1]), reverse=True)
     return results
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_ticker_bar_data(tickers: list, cache_buster: int = 0) -> dict:
+    """
+    Cached wrapper for the ticker bar batch fetch.
+    TTL=300s — data refreshes every 5 minutes without busting individual
+    stock caches. Returns {sym: DataFrame} mapping.
+    """
+    return _yf_batch_download(list(tickers), period="5d", interval="1d")
 
 
 @st.cache_data(ttl=600, show_spinner=False)
