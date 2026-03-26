@@ -104,18 +104,18 @@ _TICKER_CACHE_TTL = 300  # seconds — match get_price_data TTL
 
 def is_ticker_cache_warm(tickers: tuple) -> bool:
     """
-    Returns True if ALL tickers have a valid entry in the module-level
+    Returns True if MOST tickers have a valid entry in the module-level
     _ticker_cache (populated by _yf_batch_download on first successful fetch).
-    Used by home.py fragments to guard against cold-start concurrent fetches:
-    a fragment checks this before making its own fetch — if False, it renders
-    a placeholder and waits for the ticker bar batch to warm the cache first.
+    Uses a majority threshold (>=70%) rather than all() — a single failing
+    ticker (e.g. USDINR=X, GC=F under rate limits) should not block signals
+    and movers indefinitely when 9/10 price cards are already displaying.
+    Intentionally does NOT check _ticker_cache_time TTL — the module-level
+    dict is already managed by the 300s @st.cache_data TTL on get_batch_data.
     """
-    now = time.monotonic()
-    return all(
-        sym in _ticker_cache
-        and (now - _ticker_cache_time.get(sym, 0)) < _TICKER_CACHE_TTL
-        for sym in tickers
-    )
+    if not tickers:
+        return False
+    warm = sum(1 for sym in tickers if sym in _ticker_cache)
+    return warm >= max(1, int(len(tickers) * 0.7))
 
 
 def _parse_batch_raw(raw, tickers: list) -> dict:
@@ -181,14 +181,9 @@ def _yf_batch_download(tickers: list, period: str = "5d",
     CHUNK = 3
     chunks = [to_fetch[i:i+CHUNK] for i in range(0, len(to_fetch), CHUNK)]
 
-    # On cold cache (no prior data), add an initial delay so the app's first
-    # render doesn't hammer Yahoo before the connection is fully warmed.
-    if not _ticker_cache:
-        time.sleep(2)
-
     for i, chunk in enumerate(chunks):
         if i > 0:
-            time.sleep(5)          # 5s between chunks — AWS IP needs more recovery time
+            time.sleep(3)          # 3s between chunks — let Yahoo's window reset
         _global_throttle()
         try:
             raw = yf.download(
@@ -203,7 +198,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
                 _ticker_cache_time[sym] = time.monotonic()
         except Exception as exc:
             if type(exc).__name__ == "YFRateLimitError":
-                time.sleep(10)         # back off before next chunk — AWS IP needs longer
+                time.sleep(5)          # back off before next chunk
             # Fall back to stale cache for any failed tickers in this chunk
             for sym in chunk:
                 if sym in _ticker_cache and sym not in result:
