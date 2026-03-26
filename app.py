@@ -33,17 +33,6 @@ if "stock_search"not in st.session_state: st.session_state.stock_search = ""
 if "market_open"           not in st.session_state: st.session_state.market_open            = False
 if "grp_explicitly_selected" not in st.session_state: st.session_state.grp_explicitly_selected = False
 
-# ── Module-level refresh fragment ────────────────────────────────────────────
-# Defined here, outside any 'with' block, so Streamlit registers it once
-# per session and the 60s timer does NOT reset on user interactions.
-# Drives the global ticker bar only — dashboard page has its own fragments.
-@st.fragment(run_every=60)
-def _refresh_fragment():
-    """Kept for compatibility — ticker bar now self-manages via TTL cache.
-    No longer increments cb (which was cache-busting ALL tickers every 60s).
-    The global rate limiter in market_data.py handles yfinance pacing."""
-    pass   # intentional no-op — do not re-add cb increment here
-
 
 def _is_market_open(country: str) -> bool:
     sess = MARKET_SESSIONS.get(country, {})
@@ -200,7 +189,6 @@ with st.sidebar:
 
     st.divider()
     render_error_log()
-    _refresh_fragment()  # module-level — timer stable across user interactions
 
 cb = st.session_state.cb
 st.session_state.market_open = market_open  # fragment reads this

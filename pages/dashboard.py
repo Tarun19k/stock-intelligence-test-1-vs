@@ -834,7 +834,10 @@ def _tab_compare(ticker: str, name: str, df: pd.DataFrame,
 
     fig3 = go.Figure()
     for i, (nm, tk) in enumerate(zip(all_names, all_tickers)):
-        d = get_price_data(tk, period=yf_period, cache_buster=cb) if tk != ticker else df
+        d = safe_run(
+            lambda t=tk: get_price_data(t, period=yf_period, cache_buster=cb),
+            context=f"compare:{tk}", default=None,
+        ) if tk != ticker else df
         if d is None or d.empty:
             continue
         _cl  = _safe_close(d)
@@ -1069,9 +1072,11 @@ def render_dashboard(ticker: str, name: str, country: str, cur_sym: str,
         st.error(
             f"⚠️ Price data for **{sanitise(ticker, 20)}** could not be loaded correctly. "
             "Columns received: " + str(list(df.columns) if df is not None and not df.empty else "empty") +
-            "\n\nThis is usually a temporary yfinance issue. "
-            "**Try selecting the stock again** or wait 30 seconds and refresh."
+            "\n\nThis is a temporary yfinance issue — click Retry below."
         )
+        if st.button("🔄 Retry", key=f"retry_{ticker}", type="primary"):
+            get_price_data.clear()
+            st.rerun()
         return
 
     # Compute indicators

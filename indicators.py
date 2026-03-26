@@ -18,6 +18,8 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     if missing:
         return df   # caller's safe_run will surface this gracefully
 
+    if len(df) < 30:
+        return df   # insufficient rows for rolling indicators (need ≥30 for MACD)
     df = df.copy()
     c = df["Close"]
     h = df["High"]

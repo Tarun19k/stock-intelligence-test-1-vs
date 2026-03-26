@@ -117,10 +117,10 @@ def run(FM):
 
     # R8 · KI-002 entry points defined ────────────────────────────────────────
     EP = {
-        "app.py": ["_is_market_open","_refresh_fragment","_on_market_change"],
+        "app.py": ["_is_market_open","_on_market_change"],
         "pages/home.py": ["render_homepage","render_ticker_bar",
                               "_render_global_signals","_render_global_overview_prices"],
-        "pages/dashboard.py": ["render_dashboard","_live_price_tile","_render_kpi_panel",
+        "pages/dashboard.py": ["render_dashboard","_make_live_price_fragment","_render_kpi_panel",
                                "_render_header_static","_make_live_price_fragment",
                                "_make_live_kpi_fragment","_render_price_tile",
                                "_tab_forecast","_tab_insights","_detect_asset_class"],
