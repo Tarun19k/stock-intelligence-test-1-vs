@@ -165,6 +165,10 @@ def _yf_batch_download(tickers: list, period: str = "5d",
     result = {}
     now = time.monotonic()
 
+    # On cold cache: 2s startup delay prevents instant-fire on Cloud wake-up
+    if not _ticker_cache:
+        time.sleep(2)
+
     # Serve from module cache for tickers that are still fresh
     fresh    = [s for s in tickers
                 if s in _ticker_cache
@@ -183,7 +187,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
 
     for i, chunk in enumerate(chunks):
         if i > 0:
-            time.sleep(3)          # 3s between chunks — let Yahoo's window reset
+            time.sleep(5)          # 5s between chunks — AWS IP needs longer recovery window
         _global_throttle()
         try:
             raw = yf.download(
@@ -198,7 +202,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
                 _ticker_cache_time[sym] = time.monotonic()
         except Exception as exc:
             if type(exc).__name__ == "YFRateLimitError":
-                time.sleep(5)          # back off before next chunk
+                time.sleep(10)         # 10s backoff — AWS datacenter IP rate limit recovery
             # Fall back to stale cache for any failed tickers in this chunk
             for sym in chunk:
                 if sym in _ticker_cache and sym not in result:
@@ -314,6 +318,8 @@ def get_live_price(ticker: str, cache_buster: int = 0) -> dict:
         today_df  = df[df.index.date == today_str]
         prev_df   = df[df.index.date < today_str]
 
+        if len(cl) == 0:
+            return None
         price     = float(cl.iloc[-1])
         prev_close = float(_safe_close(prev_df).iloc[-1]) if not prev_df.empty else price
         chg_pct   = (price - prev_close) / prev_close * 100 if prev_close else 0.0

@@ -176,12 +176,19 @@ def render_global_intelligence(cur_sym: str = "$", cb: int = 0, market_open: boo
                      expanded=True):
         st.caption("Live global event data. Use controls to explore conflicts, "
                    "economic zones, and risk regions.")
-        stc.html(
-            '<div id="wm-wrap" style="width:100%;height:570px;position:relative">'
-            '<iframe id="wm-frame" src="https://worldmonitor.app" '
-            'style="width:100%;height:570px;border:none;border-radius:10px" '
-            'allowfullscreen referrerpolicy="no-referrer"></iframe></div>',
-            height=590,
+        # WorldMonitor blocks framing from *.streamlit.app (CSP frame-ancestors)
+        # Show an inline link so the map is still accessible
+        st.markdown(
+            '<a href="https://worldmonitor.app" target="_blank" '
+            'style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;'
+            'background:#0d1b2e;border:1px solid #2d4a6e;border-radius:8px;'
+            'color:#7eb3ff;text-decoration:none;font-size:0.9rem;font-weight:600">'
+            '🗺️ Open WorldMonitor Live Map</a>',
+            unsafe_allow_html=True,
+        )
+        st.caption(
+            "WorldMonitor cannot be embedded here due to their Content Security Policy. "
+            "Click above to open the live map in a new tab."
         )
 
     st.divider()

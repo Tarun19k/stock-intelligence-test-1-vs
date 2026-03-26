@@ -131,8 +131,10 @@ header[data-testid="stHeader"]{height:0!important;min-height:0!important;
     var TICKER_ID = 'gsi-ticker-bar';
     var parent = window.parent;
     if (!parent) return;
-    var old = parent.document.getElementById(TICKER_ID);
-    if (old) old.remove();
+    try {{
+        var old = parent.document.getElementById(TICKER_ID);
+        if (old && old.parentNode) old.parentNode.removeChild(old);
+    }} catch(e) {{}}
     if (!parent.document.getElementById('gsi-ticker-css')) {{
         var s = parent.document.createElement('style');
         s.id = 'gsi-ticker-css';
@@ -304,7 +306,7 @@ def _render_global_overview_prices(batch_5d: dict):
 # GLOBAL TREND SIGNALS — @st.fragment (Tier 2, deferred)
 # ══════════════════════════════════════════════════════════════════
 
-@st.fragment(run_every=15)
+@st.fragment(run_every=60)
 def _render_global_signals():
     """
     BUY/WATCH/AVOID + RSI for each global instrument.
@@ -394,7 +396,7 @@ TOP_MOVER_WATCH = [
 ]
 
 
-@st.fragment(run_every=30)
+@st.fragment(run_every=60)
 def _render_top_movers(cb: int):
     st.markdown('<p class="section-title">🚀 Top Movers Today</p>',
                 unsafe_allow_html=True)
@@ -438,12 +440,12 @@ NEWS_FEEDS = [
 ]
 
 
-@st.fragment
+@st.fragment(run_every=300)
 def _render_news_feed(cb: int):
     st.markdown('<p class="section-title">📰 Latest Market News</p>',
                 unsafe_allow_html=True)
     articles = safe_run(
-        lambda: get_news(NEWS_FEEDS, max_n=6, cache_buster=cb),
+        lambda: get_news(NEWS_FEEDS, max_n=6, cache_buster=0),  # news not stock-specific
         context="home:news", default=[]
     )
     if not articles:
