@@ -30,7 +30,8 @@ if "data_stale"  not in st.session_state: st.session_state.data_stale  = False
 if "grp_sel"     not in st.session_state: st.session_state.grp_sel     = None
 if "stk_sel"     not in st.session_state: st.session_state.stk_sel     = None
 if "stock_search"not in st.session_state: st.session_state.stock_search = ""
-if "market_open" not in st.session_state: st.session_state.market_open = False
+if "market_open"           not in st.session_state: st.session_state.market_open            = False
+if "grp_explicitly_selected" not in st.session_state: st.session_state.grp_explicitly_selected = False
 
 # ── Module-level refresh fragment ────────────────────────────────────────────
 # Defined here, outside any 'with' block, so Streamlit registers it once
@@ -61,6 +62,7 @@ def _on_market_change():
     for key in ("grp_sel", "stk_sel"):
         st.session_state.pop(key, None)
     st.session_state["nav_page"] = "🏠 Home"
+    st.session_state["grp_explicitly_selected"] = False  # M3: reset on market switch
     # NOTE: do NOT increment cb here — that would evict all ticker caches
     # for the new market before any data has been fetched. TTL handles staleness.
 
@@ -119,7 +121,10 @@ with st.sidebar:
                     selected_ticker = filtered[selected_label][1]
         else:
             grp_names    = list(mkt_grps.keys())
-            selected_grp = st.selectbox("📁 Group", grp_names, key="grp_sel")
+            selected_grp = st.selectbox(
+                "📁 Group", grp_names, key="grp_sel",
+                on_change=lambda: st.session_state.update({"grp_explicitly_selected": True}),
+            )
             # KI-018: guard against None returned by pop() on market switch
             if selected_grp not in mkt_grps:
                 selected_grp = grp_names[0]
@@ -245,14 +250,17 @@ elif nav == "📊 Dashboard":
         )
 
     elif _view_mode == "group":
-        # Group selected, no stock — show group overview
+        # M3: only render group heatmap (49 tickers) when user has explicitly
+        # selected a group — not on cold start where grp_sel auto-defaults to
+        # the first group and would fire 49 ticker fetches unconditionally.
         _grp = st.session_state.get("grp_sel") or (list(mkt_grps.keys())[0] if mkt_grps else None)
-        if _grp and _grp in mkt_grps:
+        if _grp and _grp in mkt_grps and st.session_state.get("grp_explicitly_selected", False):
             render_group_overview(
                 country=country, group_name=_grp,
                 stocks=mkt_grps[_grp], cur_sym=cur_sym, cb=cb,
             )
         else:
+            # Default: show week summary until user explicitly picks a group
             render_week_summary(cur_sym=cur_sym, cb=cb)
 
     elif _view_mode == "market":

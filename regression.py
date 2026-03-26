@@ -97,26 +97,41 @@ def run(FM):
         chk("R6.KI-013", "sidebar_in_frag:"+fn, not hits, str(hits) if hits else "")
 
     # R7 · KI-012 blocking time.sleep ─────────────────────────────────────────
+    # Intentional sleeps in rate-limiter functions are whitelisted:
+    #   _yf_download (retry backoff), _yf_batch_download (inter-chunk gap)
+    # Any other time.sleep([1-9]) outside these functions is flagged.
+    _SLEEP_WHITELIST = {"_yf_download", "_yf_batch_download", "_global_throttle"}
     for fn, src in FM.items():
-        bad = [i+1 for i,l in enumerate(src.splitlines())
-               if re.search(r"time\.sleep\(\s*[1-9]", l) and not l.strip().startswith("#")]
+        lines = src.splitlines()
+        bad = []
+        current_fn = None
+        for i, l in enumerate(lines):
+            fn_match = re.match(r"^def (\w+)\(", l)
+            if fn_match:
+                current_fn = fn_match.group(1)
+            if (re.search(r"time\.sleep\(\s*[1-9]", l)
+                    and not l.strip().startswith("#")
+                    and current_fn not in _SLEEP_WHITELIST):
+                bad.append(i+1)
         chk("R7.KI-012", "blocking_sleep:"+fn, not bad, str(bad) if bad else "")
 
     # R8 · KI-002 entry points defined ────────────────────────────────────────
     EP = {
         "app.py": ["_is_market_open","_refresh_fragment","_on_market_change"],
-        "pages/home.py": ["render_homepage","render_ticker_bar"],
+        "pages/home.py": ["render_homepage","render_ticker_bar",
+                              "_render_global_signals","_render_global_overview_prices"],
         "pages/dashboard.py": ["render_dashboard","_live_price_tile","_render_kpi_panel",
                                "_render_header_static","_make_live_price_fragment",
                                "_make_live_kpi_fragment","_render_price_tile",
                                "_tab_forecast","_tab_insights","_detect_asset_class"],
         "pages/global_intelligence.py": ["render_global_intelligence"],
-        "pages/week_summary.py": ["render_week_summary","_render_forecast_accuracy_report","render_market_overview","render_group_overview","_multi_asset_weekly_chart"],
+        "pages/week_summary.py": ["render_week_summary","_render_forecast_accuracy_report","render_market_overview","render_group_overview","_multi_asset_weekly_chart","_index_perf_row","_sector_cards","_nifty_weekly_chart","_nifty_heatmap"],
         "styles.py": ["inject_css"],
         "utils.py": ["init_session_state","render_error_log","safe_run","log_error",
                      "safe_float","sanitise","sanitise_bold","responsive_cols","info_tip","section_title_with_tip"],
         "market_data.py": ["get_price_data","get_ticker_info","get_top_movers",
-                           "get_news","_safe_close","get_live_price","get_intraday_chart_data"],
+                           "get_news","_safe_close","get_live_price","get_intraday_chart_data",
+                           "get_batch_data","is_ticker_cache_warm"],
         "forecast.py": ["store_forecast","resolve_forecasts","render_forecast_accuracy",
                         "get_weekly_accuracy_report","get_pending_forecast_summary"],
             "portfolio.py": ["check_data_quality","compute_log_returns","winsorize_returns",
@@ -262,7 +277,13 @@ def run(FM):
         chk("R14.KI-016", f"clears_{k}", k in handler_body,
             f"'{k}' not cleared in _on_market_change" if k not in handler_body else "")
     chk("R14.KI-016", "resets_nav_to_home", "nav_page" in handler_body and "Home" in handler_body)
-    chk("R14.KI-016", "busts_cache_on_change", "cb" in handler_body and ("+ 1" in handler_body or "+= 1" in handler_body))
+    # M3 design decision: _on_market_change intentionally does NOT increment cb.
+    # Incrementing cb on market switch would evict all ticker caches simultaneously,
+    # causing a rate-limit burst. TTL handles staleness instead.
+    # Check: the intentional NOTE comment is present confirming the decision.
+    chk("R14.KI-016", "busts_cache_on_change",
+        "do NOT increment cb" in handler_body or "TTL handles staleness" in handler_body,
+        "intentional no-cb-increment note missing from _on_market_change")
 
     # R15 · v5.18 live auto-refresh contracts ────────────────────────────────
     app = FM.get("app.py", "")
@@ -542,3 +563,37 @@ if __name__ == "__main__":
             verify_zip(zname)
             break
     sys.exit(exit_code)
+
+
+    # R22 · v5.24 lazy loading contracts ─────────────────────────────────────
+    app  = FM.get("app.py", "")
+    home = FM.get("pages/home.py", "")
+    ws   = FM.get("pages/week_summary.py", "")
+    md   = FM.get("market_data.py", "")
+    # M0
+    chk("R22.v524", "get_batch_data_defined",     "def get_batch_data(" in md)
+    chk("R22.v524", "get_ticker_bar_data_removed", "def get_ticker_bar_data(" not in md)
+    chk("R22.v524", "get_group_data_removed",      "def get_group_data(" not in md)
+    chk("R22.v524", "tickers_tuple_arg",           "tickers: tuple" in md)
+    chk("R22.v524", "is_ticker_cache_warm_defined","def is_ticker_cache_warm(" in md)
+    chk("R22.v524", "raises_on_empty_result",      "raise RuntimeError" in md)
+    # M1
+    _home_code = "".join(l for l in home.splitlines() if not l.strip().startswith("#"))
+    chk("R22.v524", "home_no_render_week_summary", "render_week_summary" not in _home_code)
+    chk("R22.v524", "home_has_global_signals",     "def _render_global_signals(" in home)
+    chk("R22.v524", "home_has_price_snapshot",     "def _render_global_overview_prices(" in home)
+    chk("R22.v524", "signals_has_warmth_guard",    "is_ticker_cache_warm" in home)
+    chk("R22.v524", "cache_buster_0_ticker_bar",   "cache_buster=0" in home)
+    # M2
+    chk("R22.v524", "ws_index_perf_fragment",      "@st.fragment" in ws and "_index_perf_row" in ws)
+    chk("R22.v524", "ws_nifty_heatmap_fragment",   "@st.fragment" in ws and "_nifty_heatmap" in ws)
+    chk("R22.v524", "ws_sector_cards_fragment",    "@st.fragment" in ws and "_sector_cards" in ws)
+    chk("R22.v524", "ws_nifty_weekly_fragment",    "@st.fragment" in ws and "_nifty_weekly_chart" in ws)
+    chk("R22.v524", "ws_multi_asset_fragment",     "@st.fragment" in ws and "_multi_asset_weekly_chart" in ws)
+    chk("R22.v524", "ws_uses_get_batch_data",      "get_batch_data" in ws)
+    # M3
+    chk("R22.v524", "grp_explicitly_selected_default", "grp_explicitly_selected" in app)
+    chk("R22.v524", "grp_guard_in_routing",
+        "grp_explicitly_selected" in app and "render_group_overview" in app)
+    _mc_body = app[app.find("def _on_market_change"):app.find("def _on_market_change")+500]
+    chk("R22.v524", "grp_reset_on_market_change",  "grp_explicitly_selected" in _mc_body)

@@ -25,30 +25,30 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     v = df["Volume"]
 
     # SMAs
-    df["SMA20"]  = c.rolling(20).mean()
-    df["SMA50"]  = c.rolling(50).mean()
-    df["SMA200"] = c.rolling(200).mean()
+    df.loc[:, "SMA20"] = c.rolling(20).mean()
+    df.loc[:, "SMA50"] = c.rolling(50).mean()
+    df.loc[:, "SMA200"] = c.rolling(200).mean()
 
     # RSI
     delta = c.diff()
     gain  = delta.clip(lower=0).rolling(14).mean()
     loss  = (-delta.clip(upper=0)).rolling(14).mean()
     rs    = gain / loss.replace(0, np.nan)
-    df["RSI"] = 100 - 100 / (1 + rs)
+    df.loc[:, "RSI"] = 100 - 100 / (1 + rs)
 
     # MACD
     ema12 = c.ewm(span=12, adjust=False).mean()
     ema26 = c.ewm(span=26, adjust=False).mean()
-    df["MACD"]  = ema12 - ema26
-    df["MACDS"] = df["MACD"].ewm(span=9, adjust=False).mean()
-    df["MACDH"] = df["MACD"] - df["MACDS"]
+    df.loc[:, "MACD"] = ema12 - ema26
+    df.loc[:, "MACDS"] = df["MACD"].ewm(span=9, adjust=False).mean()
+    df.loc[:, "MACDH"] = df["MACD"] - df["MACDS"]
 
     # Bollinger Bands
     bb_mid = c.rolling(20).mean()
     bb_std = c.rolling(20).std()
-    df["BBU"] = bb_mid + 2 * bb_std
-    df["BBL"] = bb_mid - 2 * bb_std
-    df["BBW"] = (df["BBU"] - df["BBL"]) / bb_mid * 100
+    df.loc[:, "BBU"] = bb_mid + 2 * bb_std
+    df.loc[:, "BBL"] = bb_mid - 2 * bb_std
+    df.loc[:, "BBW"] = (df["BBU"] - df["BBL"]) / bb_mid * 100
 
     # ATR
     tr = pd.concat([
@@ -56,7 +56,7 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
         (h - c.shift()).abs(),
         (lo - c.shift()).abs(),
     ], axis=1).max(axis=1)
-    df["ATR"] = tr.rolling(14).mean()
+    df.loc[:, "ATR"] = tr.rolling(14).mean()
 
     # ADX
     up   = h.diff()
@@ -67,19 +67,19 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     pdi  = 100 * pdm.rolling(14).mean() / atr14.replace(0, np.nan)
     ndi  = 100 * ndm.rolling(14).mean() / atr14.replace(0, np.nan)
     dx   = (100 * (pdi - ndi).abs() / (pdi + ndi).replace(0, np.nan))
-    df["ADX"] = dx.rolling(14).mean()
+    df.loc[:, "ADX"] = dx.rolling(14).mean()
 
     # Stochastic %K
     low14  = lo.rolling(14).min()
     high14 = h.rolling(14).max()
-    df["Stoch"] = 100 * (c - low14) / (high14 - low14).replace(0, np.nan)
+    df.loc[:, "Stoch"] = 100 * (c - low14) / (high14 - low14).replace(0, np.nan)
 
     # OBV
     direction = c.diff().apply(lambda x: 1 if x > 0 else (-1 if x < 0 else 0))
-    df["OBV"] = (v * direction).cumsum()
+    df.loc[:, "OBV"] = (v * direction).cumsum()
 
     # Volume MA
-    df["VolumeMA"] = v.rolling(20).mean()
+    df.loc[:, "VolumeMA"] = v.rolling(20).mean()
 
     return df.dropna(subset=["SMA20"])
 

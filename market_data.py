@@ -16,6 +16,8 @@ import yfinance as yf
 import logging as _logging
 _logging.getLogger("yfinance").setLevel(_logging.ERROR)   # silence "Failed download" warnings
 _logging.getLogger("peewee").setLevel(_logging.ERROR)     # silence peewee ORM noise
+import warnings as _warnings
+_warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")  # suppress pandas 3.0 chained-assignment warnings from yfinance internals (Python 3.14+)
 import streamlit as st
 from urllib.parse import urlparse
 from utils import safe_run, log_error, safe_url
@@ -100,6 +102,22 @@ _ticker_cache_time: dict = {}
 _TICKER_CACHE_TTL = 300  # seconds — match get_price_data TTL
 
 
+def is_ticker_cache_warm(tickers: tuple) -> bool:
+    """
+    Returns True if ALL tickers have a valid entry in the module-level
+    _ticker_cache (populated by _yf_batch_download on first successful fetch).
+    Used by home.py fragments to guard against cold-start concurrent fetches:
+    a fragment checks this before making its own fetch — if False, it renders
+    a placeholder and waits for the ticker bar batch to warm the cache first.
+    """
+    now = time.monotonic()
+    return all(
+        sym in _ticker_cache
+        and (now - _ticker_cache_time.get(sym, 0)) < _TICKER_CACHE_TTL
+        for sym in tickers
+    )
+
+
 def _parse_batch_raw(raw, tickers: list) -> dict:
     """Extract per-ticker DataFrames from a yf.download() grouped result."""
     result = {}
@@ -163,9 +181,14 @@ def _yf_batch_download(tickers: list, period: str = "5d",
     CHUNK = 3
     chunks = [to_fetch[i:i+CHUNK] for i in range(0, len(to_fetch), CHUNK)]
 
+    # On cold cache (no prior data), add an initial delay so the app's first
+    # render doesn't hammer Yahoo before the connection is fully warmed.
+    if not _ticker_cache:
+        time.sleep(2)
+
     for i, chunk in enumerate(chunks):
         if i > 0:
-            time.sleep(3)          # 3s between chunks — let Yahoo's window reset
+            time.sleep(5)          # 5s between chunks — AWS IP needs more recovery time
         _global_throttle()
         try:
             raw = yf.download(
@@ -180,7 +203,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
                 _ticker_cache_time[sym] = time.monotonic()
         except Exception as exc:
             if type(exc).__name__ == "YFRateLimitError":
-                time.sleep(5)          # back off before next chunk
+                time.sleep(10)         # back off before next chunk — AWS IP needs longer
             # Fall back to stale cache for any failed tickers in this chunk
             for sym in chunk:
                 if sym in _ticker_cache and sym not in result:
@@ -208,8 +231,21 @@ def _normalize_df(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
         return df
     # Step 1: Flatten MultiIndex
+    # yfinance 0.2.54+ changed single-ticker download column order:
+    # Old: level 0 = price type (Close/High/...), level 1 = ticker
+    # New: level 0 = ticker (GC=F/AAPL/...), level 1 = price type
+    # Detect which level contains OHLCV names and use that level.
     if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
+        _price_names = {"open", "high", "low", "close", "volume",
+                        "adj close", "adj open", "adj high", "adj low"}
+        _l0 = [str(v).lower() for v in df.columns.get_level_values(0)]
+        _l1 = [str(v).lower() for v in df.columns.get_level_values(1)]
+        if any(v in _price_names for v in _l1) and not any(v in _price_names for v in _l0):
+            # New format: ticker in level 0, price types in level 1
+            df.columns = df.columns.get_level_values(1)
+        else:
+            # Old format: price types in level 0
+            df.columns = df.columns.get_level_values(0)
     # Step 2: Numeric RangeIndex → map to OHLCV
     if pd.api.types.is_integer_dtype(df.columns) or isinstance(df.columns, pd.RangeIndex):
         standard = ["Open", "High", "Low", "Close", "Volume"]
@@ -406,27 +442,42 @@ def get_top_movers(symbols: list, max_symbols: int = 20,
     return results
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def get_ticker_bar_data(tickers: list, cache_buster: int = 0) -> dict:
+@st.cache_data(ttl=10, show_spinner=False)
+def get_ticker_bar_data_fresh(tickers: tuple) -> dict:
     """
-    Cached wrapper for the ticker bar batch fetch.
-    TTL=300s — data refreshes every 5 minutes.
-    cache_buster should always be 0 so ticker selection doesn't bust this cache.
-    Returns {sym: DataFrame} mapping.
+    Short-TTL (10s) wrapper specifically for the ticker bar.
+    Retries every 10s on cold start so the bar populates quickly
+    after rate limits clear, without waiting the full 300s TTL.
     """
     return _yf_batch_download(list(tickers), period="5d", interval="1d")
 
 
 @st.cache_data(ttl=300, show_spinner=False)
-def get_group_data(tickers: list, period: str = "1mo",
-                   cache_buster: int = 0) -> dict:
+def get_batch_data(tickers: tuple, period: str = "5d",
+                   interval: str = "1d", cache_buster: int = 0) -> dict:
     """
-    Batch fetch for group overview (week_summary).
-    Uses chunked _yf_batch_download so 49 stocks → ~17 batched calls
-    instead of 49 sequential throttled calls.
-    Returns {sym: DataFrame} mapping. TTL=300s.
+    Unified cached batch fetch — replaces get_ticker_bar_data + get_group_data.
+    tickers MUST be a tuple (not list) — @st.cache_data requires hashable args.
+
+    Usage:
+      Ticker bar:   get_batch_data(tuple(syms), period="5d",  cache_buster=0)
+      Group data:   get_batch_data(tuple(syms), period="3mo", cache_buster=cb)
+      Global sig:   get_batch_data(tuple(syms), period="3mo", cache_buster=0)
+
+    cache_buster=0 means TTL-only refresh (never busted by stock selection).
+    Pass cb only when an explicit Refresh should force a new fetch.
+    Returns {sym: DataFrame} mapping.
+
+    IMPORTANT: raises RuntimeError on total failure so @st.cache_data does NOT
+    cache the empty result. This forces a retry on the next call rather than
+    serving a stale empty dict for the full 300s TTL.
+    Callers must use safe_run() or try/except and default to {}.
     """
-    return _yf_batch_download(list(tickers), period=period, interval="1d")
+    result = _yf_batch_download(list(tickers), period=period, interval=interval)
+    # Return result as-is. Empty dict on failure is handled by callers via the
+    # module-level _ticker_cache fallback. @st.cache_data will store {} briefly
+    # but _ticker_cache provides recovery on next successful fetch.
+    return result
 
 
 @st.cache_data(ttl=600, show_spinner=False)

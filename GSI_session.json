@@ -4,7 +4,7 @@
     "project": "Global Stock Intelligence Dashboard",
     "repo_modular": "https://github.com/Tarun19k/stock-intelligence-test-1-vs",
     "repo_monolith": "https://github.com/Tarun19k/global-gsi-intelligence",
-    "manifest_version": "6.6",
+    "manifest_version": "6.9",
     "protocol": "This manifest MUST be updated after every patch, fix, rebuild, or architectural change to the project. Updating the manifest is itself a required activity — marked IMPORTANT — and must occur before or towards the end of every session. At the start of a new session, provide the Gist URL and say: 'Here is the session manifest — continue from where we left off.' Claude will read it and resume without re-reading every file from GitHub.",
     "current_version": "v5.23",
     "next_version": "v5.22",
@@ -866,6 +866,85 @@
             "app.py"
           ],
           "detail": "P1 RECURSION: _yf_download() was calling itself, never yf.download(). Every fetch silently returned empty DataFrame. Fixed: calls yf.download(). P2 CACHE BUSTING: cb as universal cache key evicted ALL ticker data on every increment. 60s fragment was incrementing cb every minute. Market change was incrementing cb. Result: 30-50 simultaneous YF requests on every event. Fixed: fragment is now no-op; market change no longer increments cb; only explicit Refresh button increments cb. P3 BATCHING: ticker bar made 10 sequential get_price_data calls. get_top_movers made 20 sequential calls. Fixed: both now use _yf_batch_download() — 1 YF request for all tickers. P4 GLOBAL RATE LIMITER: per-symbol throttle allowed different tickers to fire simultaneously. Fixed: _global_throttle() uses threading.Lock and _last_yf_call shared state — enforces 1.5s between any two YF calls globally."
+        },
+        {
+          "order": 57,
+          "type": "patch",
+          "label": "market_data.py + home.py — chunked batch, module cache, stale fallback",
+          "files_changed": [
+            "market_data.py",
+            "home.py"
+          ],
+          "detail": "Root cause: single 10-ticker batch still rate-limited by Yahoo from datacenter IP. Fix: chunk into groups of 3 with 3s gaps between chunks. Added module-level _ticker_cache dict — stale data served when fresh fetch fails. Added get_ticker_bar_data() cached wrapper (TTL=300s) so rerenders never re-trigger fetch. Added _parse_batch_raw() helper to cleanly extract per-ticker DFs from grouped result. home.py updated to use get_ticker_bar_data() instead of raw _yf_batch_download."
+        },
+        {
+          "order": 58,
+          "type": "redesign",
+          "label": "M0+M1+M2: Lazy loading redesign — cold start 100 tickers → 10",
+          "files_changed": [
+            "market_data.py",
+            "pages/home.py",
+            "pages/week_summary.py",
+            "regression.py",
+            "version.py"
+          ],
+          "detail": "M0: Consolidated get_ticker_bar_data + get_group_data into get_batch_data(tickers:tuple, period, interval, cache_buster). tickers is tuple for correct @st.cache_data hash key. M1: render_homepage() redesigned as Global Market Overview. Removed render_week_summary() call (was triggering 8 sections on Home load). Removed _render_version_log(). Added _render_price_cards() — immediate, 0 extra API calls (ticker bar cache hit). Added _render_global_signals() as @st.fragment — deferred 3mo fetch + compute_indicators. _render_top_movers() wrapped in @st.fragment — deferred 20-ticker batch. M2: @st.fragment on all 5 week_summary private sections: _index_perf_row, _nifty_heatmap, _sector_cards, _nifty_weekly_chart, _multi_asset_weekly_chart. render_group_overview replaced 49-sequential get_price_data loop with get_batch_data batch prefetch. Cold-start API calls: ~100 tickers/~35 requests → 10 tickers/1 batch call."
+        },
+        {
+          "order": 58,
+          "type": "milestone",
+          "label": "M0: market_data.py — get_batch_data consolidation",
+          "files_changed": [
+            "market_data.py"
+          ],
+          "detail": "Replaced get_ticker_bar_data() and get_group_data() with unified get_batch_data(tickers: tuple, period, interval, cache_buster). tickers must be tuple (hashable) so @st.cache_data uses content-based key. Single TTL=300s cached function covers all batch fetch use cases."
+        },
+        {
+          "order": 59,
+          "type": "milestone",
+          "label": "M1: home.py — Global Market Overview redesign",
+          "files_changed": [
+            "home.py"
+          ],
+          "detail": "Home page redesigned as Global Market Overview. REMOVED: render_week_summary() call (was firing 8 sections on Home load — biggest cold-start fetch in app). REMOVED: _render_version_log(). ADDED: _render_global_overview_prices() — price/change cards using ticker bar cache hit (0 extra API calls). ADDED: _render_global_signals() @st.fragment — fetches 1mo data for RSI+momentum signals per instrument, FX/commodity show directional label. WRAPPED: _render_top_movers, _render_news_feed as @st.fragment. IMPORT: get_ticker_bar_data → get_batch_data, indicators added. Tier 1 (cold start): 0 extra fetches. Tier 2 (fragments): deferred."
+        },
+        {
+          "order": 60,
+          "type": "milestone",
+          "label": "M2: week_summary.py — @st.fragment on all 5 sections",
+          "files_changed": [
+            "week_summary.py"
+          ],
+          "detail": "All 5 private section functions wrapped with @st.fragment: _index_perf_row, _nifty_heatmap, _sector_cards, _nifty_weekly_chart, _multi_asset_weekly_chart. Each renders and fetches independently. _render_forecast_accuracy_report left unwrapped (no fetches). render_group_overview updated: sequential 49-ticker get_price_data loop replaced with get_batch_data(_syms, period=3mo) batch call. Import: get_price_data, get_batch_data (get_group_data removed). "
+        },
+        {
+          "order": 61,
+          "type": "milestone",
+          "label": "M1b: home.py + market_data.py — cold-start warmth guards",
+          "files_changed": [
+            "home.py",
+            "market_data.py"
+          ],
+          "detail": "Root cause: @st.fragment launches concurrent threads. On cold start, _render_global_signals and _render_top_movers raced with ticker bar, firing 30 tickers concurrently and triggering YF rate limits. Fix 1: is_ticker_cache_warm(tickers) added to market_data.py — checks module-level _ticker_cache populated by _yf_batch_download. Fix 2: both fragments guard on is_ticker_cache_warm(_TICKER_SYMS) at top — show placeholder if cold, proceed only after ticker bar warms cache. Fix 3: get_batch_data raises RuntimeError on empty result so @st.cache_data does not cache failed fetches for 300s TTL."
+        },
+        {
+          "order": 62,
+          "type": "milestone",
+          "label": "M3: app.py — routing guard for group heatmap",
+          "files_changed": [
+            "app.py"
+          ],
+          "detail": "grp_explicitly_selected session state flag added. Group selectbox on_change sets flag=True. _on_market_change resets flag=False. Routing: render_group_overview only fires when grp_explicitly_selected=True. Cold start: grp_sel auto-defaults to first group but flag=False, so week_summary renders instead of 49-ticker group heatmap. User explicitly clicking a group sets flag=True and fires heatmap correctly."
+        },
+        {
+          "order": 63,
+          "type": "milestone",
+          "label": "M4: regression.py + version.py — R22 contracts, v5.25",
+          "files_changed": [
+            "regression.py",
+            "version.py"
+          ],
+          "detail": "R22 added: 20 checks covering M0 (get_batch_data, is_ticker_cache_warm, raises_on_empty), M1 (home no render_week_summary, global signals, warmth guard), M2 (5 fragment checks, get_batch_data in ws), M3 (grp_explicitly_selected, routing guard, reset on market change). R14 stale_keys updated: grp_explicitly_selected added. v5.25 logged."
         }
       ],
       "open_items_at_close": [
@@ -1170,11 +1249,9 @@
       "last_confirmed": "2026-03-21"
     },
     "version.py": {
-      "version": "v5.23",
-      "status": "patched",
-      "lines": 49,
-      "gist": "github_blob",
-      "last_confirmed": "2026-03-24"
+      "version": "v5.24",
+      "lines": 53,
+      "last_confirmed": "2026-03-26"
     },
     "tickers.json": {
       "version": "v5.16",
@@ -1186,16 +1263,16 @@
     "app.py": {
       "version": "v5.22",
       "status": "patched",
-      "lines": 271,
+      "lines": 278,
       "gist": "root_files",
-      "last_confirmed": "2026-03-23"
+      "last_confirmed": "2026-03-26"
     },
     "market_data.py": {
       "version": "v5.21",
       "status": "patched",
-      "lines": 310,
+      "lines": 480,
       "gist": "github_blob",
-      "last_confirmed": "2026-03-25"
+      "last_confirmed": "2026-03-26"
     },
     "forecast.py": {
       "version": "v5.21",
@@ -1226,11 +1303,8 @@
       "last_confirmed": "2026-03-20"
     },
     "regression.py": {
-      "version": "v5.23",
-      "status": "patched",
-      "lines": 541,
-      "gist": "github_blob",
-      "last_confirmed": "2026-03-24"
+      "lines": 600,
+      "last_confirmed": "2026-03-26"
     },
     ".gitignore": {
       "version": "v5.16",
@@ -1242,9 +1316,9 @@
     "pages/home.py": {
       "version": "v5.17",
       "status": "patched",
-      "lines": 351,
+      "lines": 498,
       "gist": "pages",
-      "last_confirmed": "2026-03-25"
+      "last_confirmed": "2026-03-26"
     },
     "pages/dashboard.py": {
       "version": "v5.21",
@@ -1263,9 +1337,9 @@
     "pages/week_summary.py": {
       "version": "v5.23",
       "status": "patched",
-      "lines": 1116,
+      "lines": 1124,
       "gist": "pages",
-      "last_confirmed": "2026-03-24"
+      "last_confirmed": "2026-03-26"
     },
     "pages/__init__.py": {
       "version": "v5.0",
@@ -1275,7 +1349,7 @@
       "last_confirmed": "2026-03-19"
     },
     "GSI_Session.json": {
-      "version": "v6.6",
+      "version": "v6.9",
       "status": "active",
       "lines": 860,
       "gist": "GSI_session",

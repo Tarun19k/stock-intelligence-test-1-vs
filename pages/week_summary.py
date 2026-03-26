@@ -8,7 +8,7 @@ import streamlit as st
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from utils import safe_run, responsive_cols
-from market_data import get_price_data, get_group_data
+from market_data import get_price_data, get_batch_data
 from forecast import get_weekly_accuracy_report, get_pending_forecast_summary
 from portfolio import (compute_log_returns, winsorize_returns,
                        bootstrap_scenarios, optimise_mean_cvar,
@@ -49,6 +49,7 @@ INDEX_WATCH = [
     ("Crude Oil WTI",  "CL=F",     "$"),
 ]
 
+@st.fragment
 def _index_perf_row(cb: int):
     st.markdown('<p class="section-title">🌐 Index Performance — This Week</p>',
                 unsafe_allow_html=True)
@@ -102,6 +103,7 @@ NIFTY50_TICKERS = [
     ("Adani Ports", "ADANIPORTS.NS"),("Tata Motors","TMCV.NS"),
 ]
 
+@st.fragment
 def _nifty_heatmap(cb: int):
     st.markdown('<p class="section-title">🟩 Nifty 50 — Weekly Returns Heatmap</p>',
                 unsafe_allow_html=True)
@@ -154,6 +156,7 @@ SECTOR_PROXIES = [
     ("Realty",   "^CNXREALTY"),
 ]
 
+@st.fragment
 def _sector_cards(cb: int):
     st.markdown('<p class="section-title">📊 Sector Snapshot</p>',
                 unsafe_allow_html=True)
@@ -189,6 +192,7 @@ def _sector_cards(cb: int):
 
 
 # ── Weekly Nifty 50 line chart ────────────────────────────────────────────────
+@st.fragment
 def _nifty_weekly_chart(cb: int):
     st.markdown('<p class="section-title">📈 Nifty 50 — Week in Charts</p>',
                 unsafe_allow_html=True)
@@ -286,6 +290,7 @@ def render_week_summary(cur_sym: str = "₹", cb: int = 0):
 # ─────────────────────────────────────────────────────────────────
 # NEW: Multi-asset weekly performance chart (replaces Nifty-only)
 # ─────────────────────────────────────────────────────────────────
+@st.fragment
 def _multi_asset_weekly_chart(cb: int):
     """Stacked bar chart comparing weekly % returns across asset classes."""
     st.markdown('<p class="section-title">🌐 Multi-Asset Weekly Performance</p>',
@@ -501,10 +506,10 @@ def render_group_overview(country: str, group_name: str,
     week_start, _, _, _ = _get_week_range()
     stock_rows = []
 
-    # Batch-fetch all group tickers at once — avoids 49 sequential throttled calls
-    _syms = tuple(stocks.values())
+    # Batch-fetch all group tickers (chunked, not sequential per-ticker)
+    _syms  = tuple(stocks.values())
     _batch = safe_run(
-        lambda: get_group_data(_syms, period="3mo", cache_buster=cb),
+        lambda: get_batch_data(_syms, period="3mo", cache_buster=cb),
         context="grp_overview:batch", default={},
     ) or {}
 
@@ -677,7 +682,7 @@ def _render_portfolio_allocator(stocks: dict, stock_rows: list,
     Steps: data quality → stress check → winsorise → bootstrap → optimise → display.
     All critical stress test fixes (P1, M1, D1, D3, A1) applied inline.
     """
-    from market_data import get_price_data
+    from market_data import get_price_data, get_batch_data
 
     if not CVXPY_AVAILABLE:
         st.warning(
