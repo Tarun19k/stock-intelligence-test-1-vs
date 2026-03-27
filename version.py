@@ -46,6 +46,13 @@ VERSION_LOG = [
     {"version": "v5.24",    "date": "2026-03-26", "notes": "Lazy loading redesign (M0-M2): get_batch_data consolidates get_ticker_bar_data+get_group_data. Home page redesigned as Global Market Overview — removes render_week_summary call, adds _render_global_signals (@st.fragment), price snapshot (0-extra-fetch cache hit), _render_top_movers and _render_news_feed as @st.fragment. week_summary sections wrapped in @st.fragment: _index_perf_row, _nifty_heatmap, _sector_cards, _nifty_weekly_chart, _multi_asset_weekly_chart. render_group_overview uses get_batch_data. Cold-start API calls: ~100 tickers → 10 tickers."},
     {"version": "v5.25",    "date": "2026-03-26", "notes": "M3: routing guard — grp_explicitly_selected flag prevents 49-ticker group heatmap from auto-firing on cold start. render_group_overview only fires when user explicitly clicks a group. Reset on market switch. M1b: cold-start warmth guards on _render_global_signals and _render_top_movers — fragments defer fetches until ticker bar has populated _ticker_cache. get_batch_data raises RuntimeError on empty result so failed fetches are not cached for 300s TTL. is_ticker_cache_warm() added to market_data.py."},
     {"version": "v5.26", "date": "2026-03-26", "notes": "Hotfix batch: is_ticker_cache_warm majority threshold (70%); double _yf_batch_download cold start; _ticker_cache_time TTL bug; yfinance 0.2.54 MultiIndex; pandas 3.0 chained assignment; indicators len guard; live_price empty series guard; compare safe_run; chunk gap 3s to 5s; backoff 5s to 10s; 2s cold-start delay; OHLCV retry button; _refresh_fragment removed; R8 EP updated."},
+    {"version": "v5.27", "date": "2026-03-27",
+ "notes": "Emergency fix: global 429 cooldown gate (_is_rate_limited, _set_rate_limited, "
+          "_clear_rate_limit_state) added to market_data.py. _yf_batch_download + "
+          "_yf_download abort on cooldown instead of retrying. get_ticker_bar_data_fresh "
+          "TTL 10s → 60s (root cause of 8,345-event 429 death spiral on Cloud). "
+          "nav_page guards on _render_global_signals + _render_top_movers (fragment ghost fix). "
+          "BUG-007 closed. 11 new R23 regression checks added."},
 
 
 ]

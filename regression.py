@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 PROJECT_FILES = [
     "config.py","version.py","app.py","utils.py","forecast.py","market_data.py","styles.py",
-    "indicators.py","portfolio.py",
+    "indicators.py","portfolio.py","data_manager.py",
     "pages/home.py","pages/dashboard.py","pages/global_intelligence.py","pages/week_summary.py",
 ]
 
@@ -139,6 +139,7 @@ def run(FM):
                         "detect_stress_regime","check_regime_conflicts"],
         "indicators.py": ["compute_indicators","signal_score","compute_weinstein_stage",
                           "compute_elder_screens","compute_forecast","compute_unified_verdict"],
+        "data_manager.py": ["get_datamanager"],
     }
     for fn, fns in EP.items():
         src = FM.get(fn, "")
@@ -255,7 +256,9 @@ def run(FM):
 
     # R13 · Design contracts ───────────────────────────────────────────────────
     app = FM.get("app.py", "")
-    chk("R13.KI-013", "fragment_in_sidebar_ctx",  "_refresh_fragment()" in app)
+    chk("R13.KI-013", "refresh_fragment_removed",
+    "_refresh_fragment" not in app,
+    "_refresh_fragment still present in app.py — was removed in v5.26")
     chk("R13.KI-003", "css_before_data_fetch",    "window.parent" in FM.get("pages/home.py",""))
     chk("R13.KI-008", "stSidebarNav_hidden",       "stSidebarNav" in FM.get("styles.py",""))
     chk("R13.KI-006", "no_double_v_prefix",        "f'v{CURRENT_VERSION}" not in FM.get("pages/home.py",""))
@@ -289,12 +292,11 @@ def run(FM):
     app = FM.get("app.py", "")
     db  = FM.get("pages/dashboard.py", "")
     md  = FM.get("market_data.py", "")
-    # Fragment must be at module level — defined before 'with st.sidebar:'
-    frag_idx    = app.find("@st.fragment")
-    sidebar_idx = app.find("with st.sidebar:")
-    chk("R15.v518", "fragment_before_sidebar",
-        0 <= frag_idx < sidebar_idx,
-        "fragment defined inside sidebar — timer will reset on every interaction")
+    # v5.26: _refresh_fragment removed — app.py must have NO module-level @st.fragment
+    # (ticker bar self-manages via TTL cache; fragments live in page files only)
+    chk("R15.v518", "no_app_level_fragment",
+        "@st.fragment" not in app,
+        "app.py should have no @st.fragment — _refresh_fragment was removed in v5.26")
     # market_open must be stored in session_state for fragment to read
     chk("R15.v518", "market_open_in_ss",
         "st.session_state.market_open = market_open" in app,
@@ -518,6 +520,137 @@ def run(FM):
         "leverage" in ws.lower() or "borrowed" in ws.lower(),
         "Leverage disclaimer missing from allocator UI — HIGH/P4 fix missing")
 
+    # R22 · v5.24 lazy loading contracts ─────────────────────────────────────
+    app  = FM.get("app.py", "")
+    home = FM.get("pages/home.py", "")
+    ws   = FM.get("pages/week_summary.py", "")
+    md   = FM.get("market_data.py", "")
+    # M0
+    chk("R22.v524", "get_batch_data_defined",     "def get_batch_data(" in md)
+    chk("R22.v524", "get_ticker_bar_data_removed", "def get_ticker_bar_data(" not in md)
+    chk("R22.v524", "get_group_data_removed",      "def get_group_data(" not in md)
+    chk("R22.v524", "tickers_tuple_arg",           "tickers: tuple" in md)
+    chk("R22.v524", "is_ticker_cache_warm_defined","def is_ticker_cache_warm(" in md)
+    chk("R22.v524", "raises_on_empty_result",      "raise RuntimeError" in md)
+    # M1
+    _home_code = "".join(l for l in home.splitlines() if not l.strip().startswith("#"))
+    chk("R22.v524", "home_no_render_week_summary", "render_week_summary" not in _home_code)
+    chk("R22.v524", "home_has_global_signals",     "def _render_global_signals(" in home)
+    chk("R22.v524", "home_has_price_snapshot",     "def _render_global_overview_prices(" in home)
+    chk("R22.v524", "signals_has_warmth_guard",    "is_ticker_cache_warm" in home)
+    chk("R22.v524", "cache_buster_0_ticker_bar",   "cache_buster=0" in home)
+    # M2
+    chk("R22.v524", "ws_index_perf_fragment",      "@st.fragment" in ws and "_index_perf_row" in ws)
+    chk("R22.v524", "ws_nifty_heatmap_fragment",   "@st.fragment" in ws and "_nifty_heatmap" in ws)
+    chk("R22.v524", "ws_sector_cards_fragment",    "@st.fragment" in ws and "_sector_cards" in ws)
+    chk("R22.v524", "ws_nifty_weekly_fragment",    "@st.fragment" in ws and "_nifty_weekly_chart" in ws)
+    chk("R22.v524", "ws_multi_asset_fragment",     "@st.fragment" in ws and "_multi_asset_weekly_chart" in ws)
+    chk("R22.v524", "ws_uses_get_batch_data",      "get_batch_data" in ws)
+    # M3
+    chk("R22.v524", "grp_explicitly_selected_default", "grp_explicitly_selected" in app)
+    chk("R22.v524", "grp_guard_in_routing",
+        "grp_explicitly_selected" in app and "render_group_overview" in app)
+    _mc_body = app[app.find("def _on_market_change"):app.find("def _on_market_change")+500]
+    chk("R22.v524", "grp_reset_on_market_change",  "grp_explicitly_selected" in _mc_body)
+
+    # R23 · v5.27 rate-limit gate + TTL fix + fragment guards ─────────────────
+    md   = FM.get("market_data.py", "")
+    home = FM.get("pages/home.py", "")
+
+    chk("R23.v527", "rl_cooldown_state_exists",
+        "_rl_cooldown_until" in md and "_rl_hit_count" in md,
+        "_rl_cooldown_until/_rl_hit_count module-level vars missing from market_data.py")
+
+    chk("R23.v527", "is_rate_limited_defined",
+        "def _is_rate_limited" in md,
+        "_is_rate_limited() not defined in market_data.py")
+
+    chk("R23.v527", "set_rate_limited_defined",
+        "def _set_rate_limited" in md,
+        "_set_rate_limited() not defined in market_data.py")
+
+    chk("R23.v527", "clear_rate_limit_state_defined",
+        "def _clear_rate_limit_state" in md,
+        "_clear_rate_limit_state() not defined in market_data.py")
+
+    _batch_body = md[md.find("def _yf_batch_download"):md.find("def _normalize_df")]
+    chk("R23.v527", "batch_checks_cooldown_at_entry",
+        "_is_rate_limited()" in _batch_body,
+        "_yf_batch_download does not check _is_rate_limited() — cooldown gate missing")
+
+    chk("R23.v527", "batch_calls_set_rate_limited",
+        "_set_rate_limited()" in _batch_body,
+        "_yf_batch_download does not call _set_rate_limited() on 429")
+
+    chk("R23.v527", "batch_breaks_on_429",
+        "break" in _batch_body and "_any_429" in _batch_body,
+        "_yf_batch_download must break chunk loop on 429 (_any_429 flag missing)")
+
+    _dl_body = md[md.find("def _yf_download"):md.find("def _yf_batch_download")]
+    chk("R23.v527", "download_checks_cooldown",
+        "_is_rate_limited()" in _dl_body,
+        "_yf_download does not check _is_rate_limited()")
+
+    chk("R23.v527", "ticker_bar_ttl_60",
+        "ttl=60" in md[md.find("def get_ticker_bar_data_fresh") - 120:
+                       md.find("def get_ticker_bar_data_fresh")],
+        "get_ticker_bar_data_fresh TTL must be 60s (was 10s — caused 429 death spiral)")
+
+    _gs_start = home.find("def _render_global_signals")
+    chk("R23.v527", "global_signals_page_guard",
+        "nav_page" in home[_gs_start:_gs_start + 1000] if _gs_start >= 0 else False,
+        "_render_global_signals missing nav_page guard — will ghost after navigation")
+
+    _tm_start = home.find("def _render_top_movers")
+    chk("R23.v527", "top_movers_page_guard",
+        "nav_page" in home[_tm_start:_tm_start + 400] if _tm_start >= 0 else False,
+        "_render_top_movers missing nav_page guard — will ghost after navigation")
+
+    # R24 · v5.27 DataManager M1 contracts ───────────────────────────────────
+    # Verifies data_manager.py satisfies all M1 architecture contracts.
+    dm = FM.get("data_manager.py", "")
+
+    chk("R24.v527", "dm_file_exists",
+        bool(dm),
+        "data_manager.py missing — add to repo root and PROJECT_FILES")
+
+    chk("R24.v527", "dm_datamanager_class",
+        "class DataManager" in dm,
+        "class DataManager must be defined in data_manager.py")
+
+    chk("R24.v527", "dm_circuit_breaker_class",
+        "class CircuitBreaker" in dm,
+        "class CircuitBreaker must be defined in data_manager.py")
+
+    chk("R24.v527", "dm_bypass_mode_method",
+        "def bypass_mode" in dm,
+        "DataManager.bypass_mode() must be defined")
+
+    chk("R24.v527", "dm_get_health_method",
+        "def get_health" in dm,
+        "DataManager.get_health() must be defined")
+
+    chk("R24.v527", "dm_unavailable_status",
+        "UNAVAILABLE" in dm,
+        "ResultStatus.UNAVAILABLE must be defined in data_manager.py")
+
+    chk("R24.v527", "dm_source_tags_present",
+        all(tag in dm for tag in ["YAHOO", "NSEPYTHON", "FRED", "STALE_CACHE"]),
+        "SourceTag must define YAHOO, NSEPYTHON, FRED, STALE_CACHE")
+
+    chk("R24.v527", "dm_cache_resource_singleton",
+        "@st.cache_resource" in dm and "def get_datamanager" in dm,
+        "get_datamanager() must use @st.cache_resource — not a module-level variable")
+
+    _dm_code = "\n".join(l for l in dm.splitlines() if not l.strip().startswith("#"))
+    chk("R24.v527", "dm_no_get_news",
+        "get_news" not in _dm_code,
+        "get_news() must NOT appear in data_manager.py — RSS excluded from DataManager")
+
+    chk("R24.v527", "dm_unavailable_factory",
+        "def unavailable(" in dm,
+        "unavailable() factory function must be defined — never return None from DataManager")
+
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.
     Catches fixes applied to in-memory FM but not written to the zip."""
@@ -563,37 +696,3 @@ if __name__ == "__main__":
             verify_zip(zname)
             break
     sys.exit(exit_code)
-
-
-    # R22 · v5.24 lazy loading contracts ─────────────────────────────────────
-    app  = FM.get("app.py", "")
-    home = FM.get("pages/home.py", "")
-    ws   = FM.get("pages/week_summary.py", "")
-    md   = FM.get("market_data.py", "")
-    # M0
-    chk("R22.v524", "get_batch_data_defined",     "def get_batch_data(" in md)
-    chk("R22.v524", "get_ticker_bar_data_removed", "def get_ticker_bar_data(" not in md)
-    chk("R22.v524", "get_group_data_removed",      "def get_group_data(" not in md)
-    chk("R22.v524", "tickers_tuple_arg",           "tickers: tuple" in md)
-    chk("R22.v524", "is_ticker_cache_warm_defined","def is_ticker_cache_warm(" in md)
-    chk("R22.v524", "raises_on_empty_result",      "raise RuntimeError" in md)
-    # M1
-    _home_code = "".join(l for l in home.splitlines() if not l.strip().startswith("#"))
-    chk("R22.v524", "home_no_render_week_summary", "render_week_summary" not in _home_code)
-    chk("R22.v524", "home_has_global_signals",     "def _render_global_signals(" in home)
-    chk("R22.v524", "home_has_price_snapshot",     "def _render_global_overview_prices(" in home)
-    chk("R22.v524", "signals_has_warmth_guard",    "is_ticker_cache_warm" in home)
-    chk("R22.v524", "cache_buster_0_ticker_bar",   "cache_buster=0" in home)
-    # M2
-    chk("R22.v524", "ws_index_perf_fragment",      "@st.fragment" in ws and "_index_perf_row" in ws)
-    chk("R22.v524", "ws_nifty_heatmap_fragment",   "@st.fragment" in ws and "_nifty_heatmap" in ws)
-    chk("R22.v524", "ws_sector_cards_fragment",    "@st.fragment" in ws and "_sector_cards" in ws)
-    chk("R22.v524", "ws_nifty_weekly_fragment",    "@st.fragment" in ws and "_nifty_weekly_chart" in ws)
-    chk("R22.v524", "ws_multi_asset_fragment",     "@st.fragment" in ws and "_multi_asset_weekly_chart" in ws)
-    chk("R22.v524", "ws_uses_get_batch_data",      "get_batch_data" in ws)
-    # M3
-    chk("R22.v524", "grp_explicitly_selected_default", "grp_explicitly_selected" in app)
-    chk("R22.v524", "grp_guard_in_routing",
-        "grp_explicitly_selected" in app and "render_group_overview" in app)
-    _mc_body = app[app.find("def _on_market_change"):app.find("def _on_market_change")+500]
-    chk("R22.v524", "grp_reset_on_market_change",  "grp_explicitly_selected" in _mc_body)

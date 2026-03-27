@@ -316,6 +316,13 @@ def _render_global_signals():
     concurrent burst with ticker bar that triggers YF rate limits.
     Signals appear on the next Streamlit re-render once cache is warm.
     """
+    # v5.27 — page guard: if the user has navigated away from Home, this
+    # fragment is a ghost — Streamlit destroyed it on the full-app rerun but
+    # the run_every=60 timer keeps firing. Without this guard, each ghost
+    # trigger attempts a live yfinance batch fetch, compounding 429 storms.
+    if st.session_state.get("nav_page", "🏠 Home") != "🏠 Home":
+        return
+    
     # Guard: only fetch 1mo data after ticker bar has warmed the 5d cache
     if not is_ticker_cache_warm(_TICKER_SYMS):
         st.caption("⏳ Signals load after price data is ready…")
@@ -398,6 +405,9 @@ TOP_MOVER_WATCH = [
 
 @st.fragment(run_every=60)
 def _render_top_movers(cb: int):
+    # v5.27 — page guard (same reason as _render_global_signals above)
+    if st.session_state.get("nav_page", "🏠 Home") != "🏠 Home":
+        return
     st.markdown('<p class="section-title">🚀 Top Movers Today</p>',
                 unsafe_allow_html=True)
     # Guard: defer until ticker bar cache is warm to avoid cold-start burst

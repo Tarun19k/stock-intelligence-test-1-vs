@@ -54,6 +54,48 @@ _BUCKET_RATE  = 0.4    # seconds per token (2.5 tokens/second)
 _bucket_tokens = [float(_BUCKET_MAX)]
 _bucket_last   = [time.monotonic()]
 
+# ── Global rate-limit cooldown gate (v5.27) ──────────────────────────────────
+# When Yahoo Finance returns 429, ALL fetches across ALL fragments must pause.
+# _global_throttle() serialises concurrent calls but doesn't stop the VOLUME
+# of TTL-triggered retries. This gate adds a timed pause that every download
+# path checks BEFORE touching yfinance. Uses exponential backoff per hit.
+#
+# Design:
+#   _rl_cooldown_until  — monotonic timestamp after which fetches may resume
+#   _rl_hit_count       — consecutive 429 count → drives backoff multiplier
+#   _is_rate_limited()  — fast read, called before every download attempt
+#   _set_rate_limited() — called on any 429; sets cooldown + increments counter
+#   _clear_rate_limit_state() — called on clean batch success; resets counter
+#
+# Backoff schedule:  1st hit → 90s  |  2nd → 120s  |  3rd+ → 180s
+# Thread safety: _rl_cooldown_until needs `global` (float, immutable).
+#                _rl_hit_count is a list — mutated in-place, GIL-safe.
+_rl_cooldown_until: float = 0.0
+_rl_hit_count: list = [0]   # list so nested fns mutate without `global`
+
+def _is_rate_limited() -> bool:
+    """True if inside a 429 cooldown window. Fast path — no lock needed."""
+    return time.monotonic() < _rl_cooldown_until
+
+def _set_rate_limited(base_seconds: int = 90) -> None:
+    """
+    Engage global cooldown on 429. Exponential backoff capped at 180s.
+    ALL subsequent _yf_batch_download and _yf_download calls will short-circuit
+    until the cooldown expires, eliminating the retry storm.
+    """
+    global _rl_cooldown_until
+    _rl_hit_count[0] += 1
+    wait = min(base_seconds * (2 ** min(_rl_hit_count[0] - 1, 2)), 180)
+    _rl_cooldown_until = time.monotonic() + wait
+    log_error(
+        "rate_limiter:429",
+        Exception(f"Global cooldown: {wait}s (consecutive hit #{_rl_hit_count[0]})")
+    )
+
+def _clear_rate_limit_state() -> None:
+    """Reset consecutive hit counter after a fully clean batch. No global needed."""
+    _rl_hit_count[0] = 0
+
 def _global_throttle():
     """Token-bucket throttle. Fast for small bursts, paced for sustained use."""
     with _RATE_LOCK:
@@ -75,19 +117,22 @@ def _global_throttle():
 # ── Single-ticker download with retry ────────────────────────────────────────
 def _yf_download(ticker: str, **kwargs) -> pd.DataFrame:
     """
-    Calls yf.download() (not itself) with exponential backoff on rate limits.
-    Max 3 attempts: waits 2s then 4s before returning empty DataFrame.
+    Single-ticker download with global cooldown check (v5.27).
+    If _is_rate_limited(), returns immediately — don't wait for yfinance to 429.
+    On 429: calls _set_rate_limited() and returns empty — no per-attempt sleep.
+    The global cooldown handles recovery; re-trying in 2s just burns quota.
     """
     for attempt in range(3):
+        if _is_rate_limited():                         # v5.27 — abort during cooldown
+            return pd.DataFrame()
         _global_throttle()
         try:
-            df = yf.download(ticker, **kwargs)   # NOTE: yf.download, not _yf_download
+            df = yf.download(ticker, **kwargs)
             return df if df is not None else pd.DataFrame()
         except Exception as exc:
             if type(exc).__name__ == "YFRateLimitError":
-                if attempt < 2:
-                    time.sleep(2 ** (attempt + 1))  # 2s, 4s
-                    continue
+                _set_rate_limited()                    # v5.27 — engage global cooldown
+                return pd.DataFrame()                  # don't retry — cooldown handles it
             return pd.DataFrame()
     return pd.DataFrame()
 
@@ -153,41 +198,60 @@ def _parse_batch_raw(raw, tickers: list) -> dict:
 def _yf_batch_download(tickers: list, period: str = "5d",
                        interval: str = "1d") -> dict:
     """
-    Fetch multiple tickers in small chunks with delays between groups.
-    Splits into groups of 3 with 3s gaps — prevents Yahoo from seeing
-    a burst from a datacenter IP and rate-limiting mid-batch.
-    Falls back to module-level _ticker_cache for any ticker that fails,
-    so previously fetched data is never lost between rerenders.
+    Chunked batch downloader with global cooldown gate (v5.27).
+
+    v5.27 changes:
+    - Check _is_rate_limited() at entry: if in cooldown, serve _ticker_cache
+      immediately — zero yfinance calls, zero queue additions.
+    - Check _is_rate_limited() before EACH chunk: a 429 on chunk 1 sets
+      cooldown; chunk 2 will see it and skip rather than also firing.
+    - On 429: call _set_rate_limited(), serve stale cache for failed tickers,
+      break out of chunk loop. Don't sleep-then-continue.
+    - On clean success: call _clear_rate_limit_state() to reset backoff counter.
     """
     if not tickers:
         return {}
 
+    # v5.27 — Gate 1: global cooldown active → serve stale cache, no fetch
+    if _is_rate_limited():
+        cached = {sym: _ticker_cache[sym] for sym in tickers if sym in _ticker_cache}
+        if not cached:
+            raise RuntimeError("rate_limited_no_cache")   # don't cache empty result
+        return cached
+
     result = {}
     now = time.monotonic()
 
-    # On cold cache: 2s startup delay prevents instant-fire on Cloud wake-up
+    # Cold cache delay — prevents instant burst on Cloud wake-up
     if not _ticker_cache:
         time.sleep(2)
 
-    # Serve from module cache for tickers that are still fresh
-    fresh    = [s for s in tickers
-                if s in _ticker_cache
-                and (now - _ticker_cache_time.get(s, 0)) < _TICKER_CACHE_TTL]
+    # Serve cached tickers that are still fresh
+    fresh = [
+        s for s in tickers
+        if s in _ticker_cache
+        and (now - _ticker_cache_time.get(s, 0)) < _TICKER_CACHE_TTL
+    ]
     to_fetch = [s for s in tickers if s not in fresh]
-
     for s in fresh:
         result[s] = _ticker_cache[s]
 
     if not to_fetch:
         return result
 
-    # Fetch in chunks of 3 — each chunk is one HTTP request
     CHUNK = 3
-    chunks = [to_fetch[i:i+CHUNK] for i in range(0, len(to_fetch), CHUNK)]
+    chunks = [to_fetch[i:i + CHUNK] for i in range(0, len(to_fetch), CHUNK)]
+    _any_429 = False
 
     for i, chunk in enumerate(chunks):
+        # v5.27 — Gate 2: re-check cooldown before each chunk
+        # (may have been set by a parallel fragment thread between chunks)
+        if _is_rate_limited():
+            break
+
         if i > 0:
-            time.sleep(5)          # 5s between chunks — AWS IP needs longer recovery window
+            time.sleep(5)   # 5s inter-chunk gap — AWS IP recovery window
+
         _global_throttle()
         try:
             raw = yf.download(
@@ -196,23 +260,30 @@ def _yf_batch_download(tickers: list, period: str = "5d",
             )
             chunk_result = _parse_batch_raw(raw, chunk)
             result.update(chunk_result)
-            # Update module-level cache for successful fetches
             for sym, df in chunk_result.items():
-                _ticker_cache[sym]      = df
+                _ticker_cache[sym] = df
                 _ticker_cache_time[sym] = time.monotonic()
+
         except Exception as exc:
             if type(exc).__name__ == "YFRateLimitError":
-                time.sleep(10)         # 10s backoff — AWS datacenter IP rate limit recovery
-            # Fall back to stale cache for any failed tickers in this chunk
-            for sym in chunk:
-                if sym in _ticker_cache and sym not in result:
-                    result[sym] = _ticker_cache[sym]
+                _any_429 = True
+                _set_rate_limited()                   # v5.27 — engage global cooldown
+                for sym in chunk:                     # serve stale cache for this chunk
+                    if sym in _ticker_cache and sym not in result:
+                        result[sym] = _ticker_cache[sym]
+                break                                 # abort remaining chunks
 
-    # Final fallback: serve stale cache for anything still missing
+    # v5.27 — Reset backoff counter only on fully clean batch
+    if not _any_429 and to_fetch:
+        _clear_rate_limit_state()
+
+    # Final fallback: stale cache for anything still missing
     for sym in tickers:
         if sym not in result and sym in _ticker_cache:
             result[sym] = _ticker_cache[sym]
 
+    if not result and _is_rate_limited():
+        raise RuntimeError("rate_limited_no_cache")
     return result
 
 
@@ -443,12 +514,14 @@ def get_top_movers(symbols: list, max_symbols: int = 20,
     return results
 
 
-@st.cache_data(ttl=10, show_spinner=False)
+@st.cache_data(ttl=60, show_spinner=False)   # v5.27: was ttl=10 — 10s caused 429 death spiral on AWS IPs
 def get_ticker_bar_data_fresh(tickers: tuple) -> dict:
     """
-    Short-TTL (10s) wrapper specifically for the ticker bar.
-    Retries every 10s on cold start so the bar populates quickly
-    after rate limits clear, without waiting the full 300s TTL.
+    Ticker bar batch fetch. TTL=60s (v5.27: raised from 10s).
+    The original 10s TTL was designed for rapid retry after a transient 429,
+    but on Streamlit Cloud's AWS IPs, 429s are sustained — every 10s re-fire
+    re-triggered the rate limiter rather than recovering from it.
+    The global _is_rate_limited() gate now handles rapid-retry logic instead.
     """
     return _yf_batch_download(list(tickers), period="5d", interval="1d")
 
