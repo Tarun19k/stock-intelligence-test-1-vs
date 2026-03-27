@@ -16,12 +16,9 @@ header[data-testid="stHeader"] {
     visibility: hidden !important;
 }
 /* ── Toolbar: hide chrome, preserve the sidebar collapse button ─ */
-/* DO NOT hide stAppToolbar — collapse button lives inside it.     */
-/* Hide only specific unwanted children.                           */
+/* Streamlit 1.55: stAppToolbar redesigned — hide decoration only */
 [data-testid="stDecoration"]  { display: none !important; }
-[data-testid="stToolbar"] > *:not([data-testid="collapsedControl"]) {
-    visibility: hidden !important;
-}
+[data-testid="stDeployButton"] { display: none !important; }
 
 /* Make the toolbar bar itself invisible but keep it in flow      */
 /* so the collapse button remains accessible.                     */
@@ -31,7 +28,7 @@ header[data-testid="stHeader"] {
     box-shadow: none !important;
 }
 
-/* ── Sidebar OPEN: style collapse button as right-edge pill ───── */
+/* ── Sidebar OPEN: collapse button (right edge of sidebar) ────── */
 [data-testid="stSidebar"] button[data-testid="baseButton-headerNoPadding"] {
     background: #1a2540 !important;
     border: 1px solid #2d3a5e !important;
@@ -39,8 +36,11 @@ header[data-testid="stHeader"] {
     opacity: 1 !important;
 }
 
-/* ── Sidebar CLOSED: collapsedControl as left-edge pill ────────── */
-[data-testid="collapsedControl"] {
+/* ── Sidebar CLOSED: re-open pill (Streamlit 1.55 + fallback) ─── */
+/* Streamlit 1.55 moved the collapsed control — target both        */
+/* the legacy data-testid and the new button placement.            */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
     position: fixed !important;
     left: 0 !important;
     top: 50% !important;
@@ -58,12 +58,15 @@ header[data-testid="stHeader"] {
     box-shadow: 2px 0 8px rgba(0,0,0,0.5) !important;
     cursor: pointer !important;
     visibility: visible !important;
+    opacity: 1 !important;
 }
-[data-testid="collapsedControl"]:hover {
+[data-testid="collapsedControl"]:hover,
+[data-testid="stSidebarCollapsedControl"]:hover {
     background: #253356 !important;
     width: 26px !important;
 }
-[data-testid="collapsedControl"] button {
+[data-testid="collapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] button {
     background: transparent !important;
     border: none !important;
     width: 100% !important; height: 100% !important;
@@ -73,11 +76,32 @@ header[data-testid="stHeader"] {
     cursor: pointer !important;
     visibility: visible !important;
 }
-[data-testid="collapsedControl"] svg {
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg {
     stroke: #4f8ef7 !important;
     fill: none !important;
     width: 12px !important; height: 12px !important;
     visibility: visible !important;
+}
+
+/* Streamlit 1.55: sidebar toggle button when sidebar is collapsed */
+/* targets the floating button Streamlit renders in the main area  */
+section[data-testid="stMain"] > div > button[kind="header"],
+section[data-testid="stMain"] button[data-testid="baseButton-headerNoPadding"] {
+    position: fixed !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9999999 !important;
+    background: #1a2540 !important;
+    border: 1px solid #2d3a5e !important;
+    border-left: none !important;
+    border-radius: 0 8px 8px 0 !important;
+    width: 20px !important;
+    height: 56px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
 }
 
 /* ── Fixed 36px ticker strip ── */

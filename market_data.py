@@ -474,6 +474,8 @@ def get_ticker_info(ticker: str, cache_buster: int = 0) -> dict:
     Note: yfinance raises TypeError internally for some futures tickers (CL=F,
     GC=F etc.) — this is a known upstream issue, handled silently here.
     """
+    if _is_rate_limited():                         # v5.29 — abort during cooldown
+        return {}
     _global_throttle()
     try:
         result = yf.Ticker(ticker).info

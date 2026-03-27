@@ -62,6 +62,10 @@ VERSION_LOG = [
               "DataManager M1 skeleton also included in this deploy."},
 
 
+    {"version": "v5.29", "date": "2026-03-27",
+     "notes": "get_ticker_info: add _is_rate_limited() gate (was missing from v5.27 — "              "only _yf_download/_yf_batch_download had the gate). Stops ticker info calls "              "firing during 429 cooldown window and polluting the error log."},
+    {"version": "v5.30", "date": "2026-03-27",
+     "notes": "styles.py: sidebar collapse button CSS updated for Streamlit 1.55 "              "compatibility. Added stSidebarCollapsedControl selector + main-area "              "button fallback. Removed stToolbar child visibility rule that was "              "interfering with 1.55 toolbar redesign."},
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
