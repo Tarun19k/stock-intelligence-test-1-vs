@@ -76,8 +76,9 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     high14 = h.rolling(14).max()
     df.loc[:, "Stoch"] = 100 * (c - low14) / (high14 - low14).replace(0, np.nan)
 
-    # OBV
-    direction = c.diff().apply(lambda x: 1 if x > 0 else (-1 if x < 0 else 0))
+    # OBV — np.sign() is vectorised and pandas 3.0 compatible
+    # np.sign returns +1/0/-1 matching the old lambda, including 0 for unchanged prices
+    direction = np.sign(c.diff())
     df.loc[:, "OBV"] = (v * direction).cumsum()
 
     # Volume MA

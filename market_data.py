@@ -17,7 +17,10 @@ import logging as _logging
 _logging.getLogger("yfinance").setLevel(_logging.ERROR)   # silence "Failed download" warnings
 _logging.getLogger("peewee").setLevel(_logging.ERROR)     # silence peewee ORM noise
 import warnings as _warnings
-_warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")  # suppress pandas 3.0 chained-assignment warnings from yfinance internals (Python 3.14+)
+# yfinance 1.2.0 was updated for pandas 3.0 compatibility (PR #2683).
+# This filter suppresses any residual FutureWarning / Pandas4Warning from
+# yfinance internals during the transition window.
+_warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 import streamlit as st
 from urllib.parse import urlparse
 from utils import safe_run, log_error, safe_url

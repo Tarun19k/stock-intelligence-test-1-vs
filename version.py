@@ -53,6 +53,13 @@ VERSION_LOG = [
           "TTL 10s → 60s (root cause of 8,345-event 429 death spiral on Cloud). "
           "nav_page guards on _render_global_signals + _render_top_movers (fragment ghost fix). "
           "BUG-007 closed. 11 new R23 regression checks added."},
+    {"version": "v5.28", "date": "2026-03-27",
+     "notes": "Python 3.14 + dependency upgrade: streamlit 1.43.2->1.55.0, "
+              "yfinance 0.2.54->1.2.0 (pandas 3.0 compatible, no breaking changes from 0.2.x), "
+              "pandas 2.2.3->>=3.0.0. indicators.py: OBV direction .apply(lambda) replaced with "
+              "numpy.sign() vectorised form (pandas 3.0 compatible). regression.py R2: "
+              "width=content no longer flagged (valid in Streamlit 1.52+). "
+              "DataManager M1 skeleton also included in this deploy."},
 
 
 ]

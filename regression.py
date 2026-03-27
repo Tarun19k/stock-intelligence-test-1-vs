@@ -33,9 +33,10 @@ def run(FM):
         except SyntaxError as e: chk("R1", "syntax:"+fn, False, f"L{e.lineno}: {e.msg}")
 
     # R2 · KI-001 deprecated Streamlit width/container args ────────────────────
-    # Streamlit 1.43 rules (corrected):
-    #   st.dataframe: use_container_width=True  ✅ VALID in 1.43
-    #   st.dataframe: width='stretch'            ❌ INVALID in 1.43 (TypeError)
+    # Streamlit 1.55 rules:
+    #   st.dataframe: use_container_width=True  ✅ VALID
+    #   st.dataframe: width='stretch'            ❌ INVALID (TypeError)
+    #   st.dataframe: width='content'            ✅ VALID in 1.52+ (content-width mode)
     #   st.plotly_chart: width='stretch'         ❌ INVALID — use config={'responsive':True}
     #   st.button(width=...)                     ❌ INVALID — no width param on button
     for fn, src in FM.items():
@@ -47,8 +48,8 @@ def run(FM):
                 continue
             if 'notes' in l.lower() or ('version' in l.lower() and '{' in l):
                 continue
-            # Flag width='stretch' on dataframe (invalid in 1.43 — use use_container_width=True)
-            if 'dataframe' in l and "width=" in l and ('stretch' in l or 'content' in l):
+            # Flag width='stretch' on dataframe (invalid — use use_container_width=True)
+            if 'dataframe' in l and "width=" in l and 'stretch' in l:
                 hits.append(i+1)
             # Flag width='stretch' on plotly_chart
             if 'plotly_chart' in l and "width=" in l and 'stretch' in l:
