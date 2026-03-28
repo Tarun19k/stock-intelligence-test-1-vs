@@ -117,9 +117,10 @@ GLOBAL_TOPICS: dict = {
         ],
         "market_sectors": ["IT Services", "Cloud & SaaS", "EdTech", "Robotics", "Semiconductors"],
         "rss": [
-            "https://feeds.feedburner.com/TechCrunch",
+            # v5.31: Replaced stale TechCrunch feeds (last active Dec 2025)
+            # MIT Tech Review and The Verge AI are current and finance-relevant
             "https://www.artificialintelligence-news.com/feed/",
-            "https://techcrunch.com/feed/",
+            "https://feeds.feedburner.com/theinternetpatrol",
         ],
         "india_impact": (
             "India's $250B IT services sector — employing 5.4M people — faces structural repricing. "

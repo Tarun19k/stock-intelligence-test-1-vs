@@ -158,10 +158,6 @@ def _render_header_static(ticker, name, country, cur_sym, info,
         f'font-size:0.92rem;display:inline-block;margin-bottom:6px">'
         f'🎯 {sanitise(fsig)}</span>'
         f'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px">'
-        f'<span title="{tip_score}" style="background:#1a2332;'
-        f'border:1px solid #2d3a5e;border-radius:6px;'
-        f'padding:3px 10px;font-size:0.72rem;color:#9aa0b4;cursor:help">'
-        f'Momentum: {score}/100</span>'
         f'<span style="font-size:0.72rem;color:{align_color};font-weight:600">'
         f'{align_icon} {align_text}</span>'
         f'<span title="{tip_ticker}" style="background:#1a2332;'
@@ -334,8 +330,10 @@ def _render_kpi_panel(sig: dict, cur_sym: str, asset_class: str = "equity"):
              f'{pe_str} · {sig["pb"]:.2f}x',
              _color(sig["pe"], lambda v: 0 < v < 22, lambda v: v > 40),
              tip=HELP_TEXT["pe_pb"])
+        roe_str  = f'{sig["roe"]:.1f}%' if sig["roe"] != 0 else "N/A"
+        revg_str = f'{sig["revg"]:.1f}%' if sig["revg"] != 0 else "N/A"
         _kpi(row2[3], "ROE · Rev Growth",
-             f'{sig["roe"]:.1f}% · {sig["revg"]:.1f}%',
+             f'{roe_str} · {revg_str}',
              _color(sig["roe"], lambda v: v > 15, lambda v: v < 5),
              tip=HELP_TEXT["roe_revg"])
         _kpi(row2[4], "OBV · Volume",
@@ -1036,6 +1034,21 @@ def _tab_insights(sig: dict, cur_sym: str, ticker: str, df: pd.DataFrame,
     elif 0 < roe < 8:
         insights.append(f"<b>ROE {roe:.1f}%</b> — low return on equity. Watch margins.")
 
+    # v5.31: Algorithmic disclosure + SEBI disclaimer (P0 regulatory fix)
+    st.markdown(
+        '<div style="font-size:0.72rem;color:#4b6080;background:#0d1117;'
+        'border-radius:6px;padding:8px 12px;margin:8px 0 12px;'
+        'border-left:3px solid #2d3a5e">'
+        '⚙️ <strong style="color:#6b7280">Algorithmic analysis</strong> — '
+        'These insights are generated from quantitative technical indicators. '
+        'Not human analyst opinion. '
+        '<strong style="color:#ff9800">Not financial advice.</strong> '
+        'For informational purposes only. Consult a SEBI-registered investment advisor '
+        'before making investment decisions. Past performance is not indicative of future results.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
     ci, ca, cc = responsive_cols(3)
     with ci:
         st.markdown('<p class="section-title">🔍 What the data says</p>',
@@ -1052,7 +1065,18 @@ def _tab_insights(sig: dict, cur_sym: str, ticker: str, df: pd.DataFrame,
     with cc:
         st.markdown('<p class="section-title">⚠️ Watch out for</p>',
                     unsafe_allow_html=True)
-        for c in (cautions or ["No major red flags at this time."]):
+        # v5.31: Don't claim "no red flags" if technical indicators show weakness
+        # Only use the reassuring fallback when momentum is genuinely neutral/positive
+        _rsi   = sig.get("rsi", 50) if isinstance(sig, dict) else 50
+        _macdh = sig.get("macdh", 0) if isinstance(sig, dict) else 0
+        if not cautions:
+            if _rsi < 45 or _macdh < 0:
+                _default_caution = ["Momentum indicators are mixed — review RSI and MACD before acting."]
+            else:
+                _default_caution = ["No significant red flags in the current technical data."]
+        else:
+            _default_caution = []
+        for c in (cautions or _default_caution):
             st.markdown(f'<div class="warn-box">{sanitise_bold(c, 400)}</div>',
                         unsafe_allow_html=True)
 

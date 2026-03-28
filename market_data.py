@@ -34,6 +34,7 @@ _ALLOWED_RSS_DOMAINS = {
     "artificialintelligence-news.com", "ndtvprofit.com",
     "moneycontrol.com", "livemint.com", "businessstandard.com",
     "thehindubusinessline.com", "financialexpress.com",
+    "theinternetpatrol.com",
 }
 
 def _is_allowed_rss(url: str) -> bool:

@@ -20,7 +20,7 @@ Two repos — ALL active work is in the modular repo:
 
 ```bash
 streamlit run app.py        # run the app locally
-python3 regression.py       # MUST pass (323/323) before any new work
+python3 regression.py       # MUST pass (374/374) before any new work
 ```
 
 Deploy: Streamlit Community Cloud (1GB RAM) + local dev.
@@ -47,16 +47,24 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.28 — 2026-03-27)
+## Current State (v5.31 — 2026-03-28)
 
 **Regression baseline: 374/374 PASS**
 
-Key changes since v5.27:
-- `requirements.txt`: streamlit 1.43.2→1.55.0, yfinance 0.2.54→1.2.0, pandas 2.2.3→>=3.0.0
-- Python 3.14.x — runtime.txt removed, Streamlit Cloud uses latest (3.14)
-- `indicators.py`: OBV direction — `.apply(lambda)` replaced with `np.sign()` (pandas 3.0 vectorised)
-- `regression.py` R2: removed `'content'` from invalid width patterns (`width="content"` valid in 1.52+)
-- No code changes to any pages — all Streamlit API calls already compatible with 1.55
+Versions since last CLAUDE.md update:
+- **v5.29** — `get_ticker_info` missing `_is_rate_limited()` gate added
+- **v5.30** — `styles.py` sidebar collapse CSS for Streamlit 1.55 (stSidebarCollapsedControl)
+- **v5.31** — QA audit P0 fixes (see Open Items for full audit backlog):
+  - Option B: raw Momentum score removed from header; verdict + plain-English reason only
+  - ROE 0.0% null guard → N/A (yfinance returns null for Indian tickers via safe_float→0)
+  - Watch Out For false positive fixed: RSI/MACD-aware default, never blanket "no red flags"
+  - SEBI disclaimer + algorithmic disclosure added to Insights tab (P0 regulatory fix)
+  - Market status card labels: IND/USA/EUR/CHN/COMM/ETF (prevents mid-word wrapping)
+  - TechCrunch stale RSS feeds removed from AI & Jobs config
+  - GI topic cards: expanded=True by default
+  - Live Headlines label: date-gated, only "Live" when article <48h old
+  - "What You Should Do Next" removed from GI page (liability, no market relevance)
+  - R17 regression updated: "Momentum Signal Panel" accepted as valid score label
 ---
 
 ## File Structure
@@ -146,6 +154,10 @@ utils.py            safe_run(fn, context, default), sanitise(text, max_len)
 8. **Do NOT put CSS in `inject_css()` docstring.** All CSS inside `CSS` constant.
 9. **Do NOT re-add `_refresh_fragment` to app.py.** Removed v5.26. Was a no-op.
 10. **Do NOT pass `cache_buster=cb` to `get_news()`.** News is not stock-specific. Use 0.
+11. **Do NOT restore "No major red flags at this time."** as the Watch Out For fallback. It is a false safety statement. The RSI/MACD-aware default is the correct replacement.
+12. **Do NOT display raw Momentum score (X/100) in the dashboard header.** Option B is final — verdict badge + plain-English reason only. Score is in KPI panel.
+13. **Do NOT remove the SEBI disclaimer from `_tab_insights()`.** It is a P0 regulatory requirement. It must appear before the three insight columns.
+14. **Do NOT call `_render_next_steps_ai()` from `render_global_intelligence()`.** Removed v5.31 — liability risk. Function definition kept for future redesign.
 
 ---
 
@@ -160,6 +172,7 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 
 ## Open Items
 
+### Infrastructure
 | ID | Priority | Task |
 |---|---|---|
 | OPEN-001 | HIGH | git rm config_OLD.py + git rm --cached forecast_history.json |
@@ -168,9 +181,46 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 | OPEN-004 | LOW | Extract SCORING_WEIGHTS to config |
 | OPEN-005 | HIGH | git rm config_OLD.py from repo root |
 | OPEN-006 | MED | Portfolio Allocator stability score UI + backtest |
-| **OPEN-007** | **HIGH** | **DataManager: SQLite + priority queue + market-aware TTLs** |
+| **OPEN-007** | **HIGH** | **DataManager M2: CacheManager + DataContract validator (M1 complete)** |
 | RISK-001 | MED | XSS: sanitise() all {ticker}/{name} in unsafe_allow_html f-strings |
 | RISK-003 | LOW | safe_ticker_key() in _yf_download() before yf.download() |
+
+### QA Audit Backlog — v5.32 Sprint (P1 High)
+| ID | Audit Ref | Task |
+|---|---|---|
+| OPEN-008 | H-01 | 5-day calculation unification — shared `_calc_5d_change(df)` across Home/Dashboard/GI |
+| OPEN-009 | D-03 | Forecast neutral threshold — P(gain) 45–55% shows "Insufficient directional signal" |
+| OPEN-010 | D-04 | Forecast deduplication — update existing entry when forecast unchanged same day |
+| OPEN-011 | D-06/D-08 | Temporal labels — explicit "This week" / "Today" on all time-relative figures |
+| OPEN-012 | C-04 | Weinstein override disclosure — label when Stage vetoes Elder signal |
+| OPEN-013 | C-06 | MACD timeframe label — "Daily" on chart, "Intraday (live)" on KPI panel |
+| OPEN-014 | F-05 | GI watchlist responds to market selector — pass `country` param |
+| OPEN-015 | C-09 | Market LIVE badge gated on `market_open` bool, not Streamlit runtime |
+| OPEN-016 | G-04 | GI ticker data coherence — use ticker_cache when warm |
+
+### QA Audit Backlog — v5.33+ (P2 / Roadmap)
+| ID | Audit Ref | Task |
+|---|---|---|
+| OPEN-017 | Governance | 7-policy governance framework + R25 regression checks |
+| OPEN-018 | C-01 | Feed sector breadth into AI narrative engine (full C-01 fix) |
+| OPEN-019 | C-05 | Momentum Score decomposition bar chart |
+| OPEN-020 | G-01 | WorldMonitor self-hosted (Leaflet.js + ACLED/GDELT API) |
+
+## Governance Policy Framework (v5.31)
+
+Seven policies agreed during QA audit session. All future features must comply.
+
+| # | Policy | Core Rule |
+|---|---|---|
+| 1 | Data & Logic Integrity | No hard-coded dynamic values; refresh invalidates all cache layers |
+| 2 | Architectural Policies | Strict module separation; CSP compliance on all embeds; scalable impact chains |
+| 3 | UX & Performance Standards | Persona-ready density; 2MB bundle cap; 4:5 + 16:9 responsive |
+| **4** | **Regulatory & Compliance** | **SEBI disclaimer on every signal section; algorithmic outputs labeled; no unnamed investment recommendations** |
+| **5** | **Data Coherence** | **Same metric = same calculation function across all pages; AI narrative must consume same data as indicator panel** |
+| **6** | **Signal Arbitration** | **Documented hierarchy: Weinstein > Elder in conflict; veto must be visibly disclosed in UI** |
+| **7** | **Data Freshness Labeling** | **Recency claims ("Live", "Real-Time") gated on timestamp verification; stale data shows source date** |
+
+Policies 4–7 are new additions from audit session 009. Policies 1–3 were pre-existing.
 
 ---
 

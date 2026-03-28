@@ -208,6 +208,12 @@ def _next_open(country: str) -> str:
     return "—"
 
 
+# v5.31: Short labels prevent mid-word wrapping in narrow columns (audit H-03)
+_MKT_SHORT = {
+    "India": "IND", "USA": "USA", "Europe": "EUR",
+    "China": "CHN", "Commodities": "COMM", "ETFs - Global": "ETF",
+}
+
 def _render_market_status_row():
     st.markdown('<p class="section-title">🌐 Global Market Status</p>',
                 unsafe_allow_html=True)
@@ -218,7 +224,7 @@ def _render_market_status_row():
         sub = "" if is_open else f"Opens {_next_open(mkt)}"
         col.markdown(
             f'<div class="kpi-card" style="border-left-color:{color}">'
-            f'<div class="kpi-label">{mkt}</div>'
+            f'<div class="kpi-label" title="{mkt}">{_MKT_SHORT.get(mkt, mkt)}</div>'
             f'<div class="kpi-delta" style="color:{color};font-weight:700">{label}</div>'
             f'{"<div class=kpi-help>" + sub + "</div>" if sub else ""}'
             f'</div>',

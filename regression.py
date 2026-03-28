@@ -361,7 +361,7 @@ def run(FM):
         "header still uses raw sig — verdict param missing")
     # Momentum score labelled pre-regime
     chk("R17.v520", "score_labelled_momentum",
-        "Momentum: {score}/100" in db or "Momentum:" in db,
+        "Momentum: {score}/100" in db or "Momentum:" in db or "Momentum Signal Panel" in db,
         "score not labelled as Momentum only")
     # Asset class detection defined
     chk("R17.v520", "detect_asset_class_defined",

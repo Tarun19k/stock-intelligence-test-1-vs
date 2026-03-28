@@ -101,7 +101,7 @@ def _render_next_steps_ai():
 
 def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int):
     """Render one expandable topic card with chain + news + watchlist."""
-    with st.expander(topic_name, expanded=False):
+    with st.expander(topic_name, expanded=True):
         color = topic["color"]
         st.markdown(
             f'<div style="font-size:0.82rem;color:{color};'
@@ -135,13 +135,26 @@ def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int):
         if topic.get("watchlist"):
             _render_watchlist_badges(topic["watchlist"], cur_sym, cb)
 
-        # Live news
-        st.markdown('<p class="section-title">📰 Live Headlines</p>',
-                    unsafe_allow_html=True)
+        # Live news — only label "Live" when articles are recent (< 48 hours)
+        from datetime import datetime, timezone
+        import email.utils as _eut
         articles = safe_run(
             lambda: get_news(topic.get("rss", []), max_n=5, cache_buster=cb),
             context=f"gi:news:{topic_name[:20]}", default=[]
         )
+        # Check if newest article is < 48h old
+        _news_label = "📰 Recent Coverage"
+        if articles:
+            try:
+                _newest = articles[0].get("date", "")
+                _dt = _eut.parsedate_to_datetime(_newest) if _newest else None
+                if _dt:
+                    _age_h = (datetime.now(timezone.utc) - _dt).total_seconds() / 3600
+                    _news_label = "📰 Live Headlines" if _age_h < 48 else f"📰 Recent Coverage ({_dt.strftime('%d %b %Y')})"
+            except Exception:
+                pass
+        st.markdown(f'<p class="section-title">{_news_label}</p>',
+                    unsafe_allow_html=True)
         if articles:
             for a in articles:
                 st.markdown(
@@ -198,4 +211,12 @@ def render_global_intelligence(cur_sym: str = "$", cb: int = 0, market_open: boo
         _render_topic_card(topic_name, topic, cur_sym, cb)
 
     st.divider()
-    _render_next_steps_ai()
+    st.markdown(
+        '<div style="font-size:0.72rem;color:#4b6080;text-align:center;padding:8px">'
+        '⚙️ Analysis is algorithmically generated from market data. '
+        '<strong style="color:#ff9800">Not financial advice.</strong> '
+        'For informational purposes only. Consult a SEBI-registered investment advisor '
+        'before acting on any information shown here.'
+        '</div>',
+        unsafe_allow_html=True,
+    )

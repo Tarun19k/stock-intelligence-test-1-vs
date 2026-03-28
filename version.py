@@ -66,6 +66,17 @@ VERSION_LOG = [
      "notes": "get_ticker_info: add _is_rate_limited() gate (was missing from v5.27 — "              "only _yf_download/_yf_batch_download had the gate). Stops ticker info calls "              "firing during 429 cooldown window and polluting the error log."},
     {"version": "v5.30", "date": "2026-03-27",
      "notes": "styles.py: sidebar collapse button CSS updated for Streamlit 1.55 "              "compatibility. Added stSidebarCollapsedControl selector + main-area "              "button fallback. Removed stToolbar child visibility rule that was "              "interfering with 1.55 toolbar redesign."},
+    {"version": "v5.31", "date": "2026-03-28",
+     "notes": "QA audit fixes batch 1 (P0): (1) Option B — raw Momentum score removed from "
+              "header, verdict + plain-English reason only. (2) ROE null guard: 0.0 from "
+              "yfinance displays as N/A. (3) Watch-Out-For false-positive fixed — RSI/MACD "
+              "aware default caution replaces blanket no-red-flags claim. "
+              "(4) Algorithmic disclosure + SEBI disclaimer added to Insights tab. "
+              "(5) Market status cards: short labels (IND/USA/EUR/CHN/COMM/ETF) prevent "
+              "mid-word wrapping. (6) Stale TechCrunch RSS replaced with active feeds. "
+              "(7) GI topic cards expand by default. (8) Live Headlines label date-gated — "
+              "only shows Live when newest article is <48h old. "
+              "(9) What You Should Do Next section removed (liability risk, zero market relevance)."},
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
