@@ -37,3 +37,30 @@ forecast_history.json
 # Local logs / temp
 *.log
 *.tmp
+
+# GSI-specific — stale files (see OPEN-001/005)
+config_OLD.py
+
+# Additional credential patterns
+secrets.toml
+*.key
+*.pem
+.env.local
+.env.*.local
+
+# IDE (JetBrains)
+.idea/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Windows
+Thumbs.db
+desktop.ini

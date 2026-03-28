@@ -20,7 +20,20 @@ Two repos — ALL active work is in the modular repo:
 
 ```bash
 streamlit run app.py        # run the app locally
-python3 regression.py       # MUST pass (374/374) before any new work
+python3 regression.py       # MUST pass (378/378) before any new work
+```
+
+Before every `git push`, also run the compliance script in `GSI_COMPLIANCE_CHECKLIST.md`:
+```bash
+# Quick inline version (copy from GSI_COMPLIANCE_CHECKLIST.md §Quick compliance script)
+python3 -c "
+import re
+files = {'db':open('dashboard.py').read(),'gi':open('pages/global_intelligence.py').read(),'md':open('market_data.py').read(),'ind':open('indicators.py').read()}
+checks=[('SEBI disclaimer','SEBI-registered investment advisor' in files['db']),('Algo disclosure','algorithmically generated' in files['db'].lower()),('No raw score','Momentum: {score}/100' not in files['db']),('No red flags fallback','"No major red flags at this time."' not in files['db']),('ROE guard','roe_str' in files['db']),('Next steps removed',len(re.findall(r'(?<!def )_render_next_steps_ai\(\)',files['gi']))==0),('RATES CONTEXT','RATES CONTEXT' in files['ind']),('Rate limit gate','_is_rate_limited()' in files['md'])]
+fails=[n for n,ok in checks if not ok]
+print(f'{len(checks)-len(fails)}/{len(checks)} compliance checks passed')
+[print(f'  FAIL: {n}') for n in fails] if fails else print('Safe to push')
+"
 ```
 
 Deploy: Streamlit Community Cloud (1GB RAM) + local dev.
@@ -49,7 +62,9 @@ Streamlit 1.55 notes:
 
 ## Current State (v5.31 — 2026-03-28)
 
-**Regression baseline: 374/374 PASS**
+**Regression baseline: 378/378 PASS**
+
+**v5.31 QA status: ALL 8 FIXES VERIFIED (2026-03-28)**
 
 Versions since last CLAUDE.md update:
 - **v5.29** — `get_ticker_info` missing `_is_rate_limited()` gate added
@@ -69,8 +84,7 @@ Versions since last CLAUDE.md update:
 
 ## File Structure
 
-Safe rebuild order:
-
+### Code files — safe rebuild order
 ```
 version.py              Changelog + CURRENT_VERSION. No logic.
 tickers.json            Master ticker registry. Edit here, NEVER in config.py.
@@ -79,6 +93,7 @@ utils.py                safe_run(), sanitise(), init_session_state().
 styles.py               All CSS in CSS constant. inject_css() called once from app.py.
 indicators.py           compute_indicators(df), signal_score(df, info), unified verdict.
 market_data.py          All yfinance + RSS. Token bucket + _ticker_cache + warmth guard.
+data_manager.py         DataManager M1 skeleton + CircuitBreaker. Bypass mode until M4.
 forecast.py             Forecast lifecycle. session_state as primary store.
 portfolio.py            Mean-CVaR engine. No Streamlit calls.
 pages/week_summary.py   Weekly summary + group/market overview.
@@ -86,6 +101,18 @@ pages/global_intelligence.py  Geopolitical topics + WorldMonitor link + watchlis
 pages/home.py           Ticker bar + homepage. 3 deferred @st.fragment sections.
 pages/dashboard.py      4-tab stock dashboard: Charts | Forecast | Compare | Insights.
 app.py                  Entry point. Routing. No _refresh_fragment.
+regression.py           374-check regression suite. Must pass before every commit.
+requirements.txt        Python dependencies. See Environment section for constraints.
+```
+
+### Governance & documentation files (repo root)
+```
+CLAUDE.md                    Architecture reference. Read before every session.
+GSI_GOVERNANCE.md            7 policies — mandatory rules for all development.
+GSI_QA_STANDARDS.md          Test brief template, issue classification, data reliability.
+GSI_SKILLS.md                Development patterns, anti-patterns, lessons learned.
+GSI_COMPLIANCE_CHECKLIST.md  Pre-deploy gate. Run alongside regression.py.
+GSI_session.json             Session manifest. Dynamic state. Push to Gist after sessions.
 ```
 
 ---
@@ -158,6 +185,7 @@ utils.py            safe_run(fn, context, default), sanitise(text, max_len)
 12. **Do NOT display raw Momentum score (X/100) in the dashboard header.** Option B is final — verdict badge + plain-English reason only. Score is in KPI panel.
 13. **Do NOT remove the SEBI disclaimer from `_tab_insights()`.** It is a P0 regulatory requirement. It must appear before the three insight columns.
 14. **Do NOT call `_render_next_steps_ai()` from `render_global_intelligence()`.** Removed v5.31 — liability risk. Function definition kept for future redesign.
+15. **QA brief protocol:** Always include before/after screenshots and explicit expected text. Never rely on numbered fix lists alone — tester must know exactly what they are looking at on screen. Learned from v5.31 Fix1/Fix2 numbering confusion.
 
 ---
 
@@ -224,6 +252,43 @@ Policies 4–7 are new additions from audit session 009. Policies 1–3 were pre
 
 ---
 
+## Living Documentation
+
+Four governance documents produced from audit sessions 001–009.
+Read before implementing any new feature. Update after every sprint.
+
+| Document | Purpose |
+|---|---|
+| `GSI_GOVERNANCE.md` | 7 policies — mandatory rules for all future development |
+| `GSI_QA_STANDARDS.md` | Test brief template, issue classification, data reliability matrix |
+| `GSI_SKILLS.md` | Development patterns, anti-patterns, and lessons learned |
+| `GSI_COMPLIANCE_CHECKLIST.md` | Pre-deploy gate — all items must pass before git push |
+
+Store all four in repo root alongside CLAUDE.md.
+
+---
+
+## Scoped Rules (always active — path-specific behaviour)
+
+These rules are enforced regardless of interface. In Claude Code they also
+load automatically via `.claude/rules/` when the matching file is edited.
+
+### When editing any page file (pages/*.py, dashboard.py)
+- Every signal section showing BUY/WATCH/AVOID **must** include the SEBI disclaimer
+- Algorithmic narrative sections **must** be labeled as algorithmically generated
+- The Watch Out For fallback **must** check RSI and MACD — never use the blanket "no red flags" text
+- Raw Momentum score (X/100) **must not** appear in `_render_header_static()`
+- ROE display: `roe_str = f'{val:.1f}%' if val != 0 else "N/A"` — 0.0 is a data gap, not a value
+- Any named stock must show its current BUY/WATCH/AVOID verdict alongside the name
+
+### When editing market_data.py
+- Every new public function calling yfinance **must** call `_is_rate_limited()` first
+- Every new RSS feed domain **must** be added to `_ALLOWED_RSS_DOMAINS`
+- `get_news()` always uses `cache_buster=0` — never pass `cb`
+- Pages must NOT call `DataManager.fetch()` until M4 — bypass mode active
+- TTLs: live price=5s, OHLCV=300s, ticker info=600s, financials=86400s, news=600s
+---
+
 ## Session Manifest (Dynamic State)
 
 **GSI_Session.json Gist:** https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
@@ -231,3 +296,21 @@ Policies 4–7 are new additions from audit session 009. Policies 1–3 were pre
 To resume with Claude:
 > "I am working on the Global Stock Intelligence Dashboard.
 >  Here is CLAUDE.md and GSI_Session.json — read both fully before we proceed."
+
+**Also upload alongside CLAUDE.md when starting a new session:**
+- `GSI_GOVERNANCE.md` — Claude reads the 7 policies before writing any code
+- `GSI_SKILLS.md` — Claude consults the relevant skill before implementing a pattern
+
+Note: `.claude/settings.json` (permission rules) and `.claude/rules/` (path-scoped rules)
+only activate automatically in **Claude Code**. In Claude.ai, the Scoped Rules section
+above covers the same content, and command files are used as reference documents.
+
+**Using Claude Code?** Run `/new-session` to auto-load all context.
+Run `/compliance-check` before pushing. Run `/qa-brief` to generate QA briefs.
+
+**Using Claude.ai?** The `.claude/commands/` files work as reference documents:
+- Ask Claude to "follow the new-session command" → reads `.claude/commands/new-session.md`
+- Ask Claude to "generate a qa-brief" → reads `.claude/commands/qa-brief.md`
+- Ask Claude to "run compliance-check" → reads `.claude/commands/compliance-check.md`
+- Ask Claude to "run sprint-review" → reads `.claude/commands/sprint-review.md`
+Upload the relevant command file alongside CLAUDE.md when you need it.

@@ -77,6 +77,13 @@ VERSION_LOG = [
               "(7) GI topic cards expand by default. (8) Live Headlines label date-gated — "
               "only shows Live when newest article is <48h old. "
               "(9) What You Should Do Next section removed (liability risk, zero market relevance)."},
+    {"version": "v5.31.1", "date": "2026-03-28",
+     "notes": "Governance documentation suite added: GSI_GOVERNANCE.md (7 policies), "
+              "GSI_QA_STANDARDS.md (QA protocols), GSI_SKILLS.md (10 development skills), "
+              "GSI_COMPLIANCE_CHECKLIST.md (pre-deploy gate). "
+              "regression.py R10b: 4 governance doc existence checks added. "
+              "Baseline raised 374 -> 378. CLAUDE.md File Structure updated. "
+              "GSI_session.json file_registry and session_start_checklist updated."}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

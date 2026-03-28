@@ -26,7 +26,22 @@
     "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol.",
     "last_updated": "2026-03-28",
     "last_session": "session_009",
-    "current_app_version": "v5.31"
+    "current_app_version": "v5.31",
+    "documentation": {
+      "GSI_GOVERNANCE.md": "v1.0 \u2014 7 governance policies established from audit sessions",
+      "GSI_QA_STANDARDS.md": "v1.0 \u2014 QA brief templates, issue classification, data reliability matrix",
+      "GSI_SKILLS.md": "v1.0 \u2014 development patterns, anti-patterns, lessons learned (10 skills)",
+      "GSI_COMPLIANCE_CHECKLIST.md": "v1.0 \u2014 pre-deploy compliance gate (tier 1\u20135)",
+      "established": "2026-03-28 session_009",
+      "next_review": "After v5.32 \u2014 update skills and checklist with new learnings",
+      "README.md": "v1.0 \u2014 public-facing repo home page",
+      "CHANGELOG.md": "v1.0 \u2014 auto-generated from version.py",
+      "AGENTS.md": "v1.0 \u2014 universal AI tool fallback",
+      ".claude/": "commands (5), rules (2), settings \u2014 Claude Code integration",
+      ".github/": "PR template with full compliance checklist",
+      "SECURITY.md": "v1.0 \u2014 security policy, data privacy, regulatory disclaimer",
+      ".gitignore": "v1.0 \u2014 excludes secrets, stale files, forecast_history.json"
+    }
   },
   "gist_index": {
     "description": "Master index of all Gist URLs used in this project. ALWAYS add new files here when creating or moving to a Gist. This is the single source of truth for code access.",
@@ -1010,19 +1025,34 @@
         "version.py (v5.29, v5.30, v5.31 entries)",
         "styles.py (Streamlit 1.55 sidebar CSS)",
         "requirements.txt (streamlit 1.55, yfinance 1.2, pandas>=1.4)",
-        "indicators.py (OBV np.sign fix)"
+        "indicators.py (OBV np.sign fix)",
+        "regression.py (R10b \u2014 governance doc existence checks, baseline 374\u2192378)",
+        "CLAUDE.md (Scoped Rules section, Claude.ai command references, settings.json scope note)",
+        ".gitignore (NEW)",
+        "SECURITY.md (NEW)"
       ],
-      "pending_push": []
+      "pending_push": [],
+      "qa_verification": {
+        "date": "2026-03-28",
+        "status": "ALL 8 FIXES VERIFIED",
+        "tester": "QA analyst",
+        "note": "Fix 1 (Option B header) initially misreported due to brief numbering mismatch \u2014 tester read Fix 1 as ROE card. Clarified and confirmed PASS. Fix 2 (ROE N/A) PASS \u2014 industry benchmark expectation was out of scope, not in audit brief. All 8 fixes verified clean on v5.31 live deployment.",
+        "fixes_verified": [
+          "Fix 1 \u2014 Option B: Momentum score removed from header PASS",
+          "Fix 2 \u2014 ROE null guard: 0.0% -> N/A PASS",
+          "Fix 3 \u2014 Watch Out For false positive PASS",
+          "Fix 4 \u2014 SEBI disclaimer + algorithmic disclosure PASS",
+          "Fix 5 \u2014 Market status short labels PASS",
+          "Fix 6 \u2014 GI topic cards expanded by default PASS",
+          "Fix 7 \u2014 AI & Jobs stale RSS headlines PASS",
+          "Fix 8 \u2014 What You Should Do Next removed PASS"
+        ],
+        "process_note": "Brief numbering confusion caused Fix 1/Fix 2 mismatch in first QA round. Going forward: QA brief must include screenshot annotations and explicit before/after descriptions, not just expected text strings."
+      },
+      "regression_baseline_end": "378/378"
     }
   ],
   "open_items": [
-    {
-      "id": "OPEN-002",
-      "priority": "MEDIUM",
-      "status": "OPEN",
-      "label": "README update",
-      "detail": "Document new file structure: tickers.json, version.py. Update deployment steps. Update file table. Fix README main file reference (still says app_v4_compat.py)."
-    },
     {
       "id": "OPEN-003",
       "priority": "MEDIUM",
@@ -1581,6 +1611,11 @@
       "version": "v5.27",
       "status": "NEW \u2014 M1 skeleton, bypass mode active",
       "last_change": "2026-03-27 session_008"
+    },
+    "CLAUDE.md": {
+      "version": "v5.31.1",
+      "status": "UPDATED \u2014 Scoped Rules, Claude.ai command refs, settings scope clarified",
+      "last_change": "2026-03-28 session_009"
     }
   },
   "known_issues": {
@@ -1607,16 +1642,16 @@
     "blank_macd_rsi_charts": "FIXED v5.21 \u2014 dynamic subplot layout, no empty panels",
     "all_layers_aligned_jargon": "FIXED v5.21 \u2014 plain English labels",
     "helptext_keys_unwired": "FIXED v5.21 \u2014 all 6 new keys wired to tooltips",
-    "QA-P0-01": "FIXED v5.31 \u2014 Option B: raw Momentum score removed from dashboard header. Verdict badge + plain-English reason only.",
-    "QA-P0-02": "FIXED v5.31 \u2014 ROE 0.0% null guard: safe_float(None)=0 now displays as N/A. Actual ROE ~10% for Reliance was showing 0.0%.",
-    "QA-P0-03": "FIXED v5.31 \u2014 SEBI disclaimer + algorithmic disclosure banner added to Insights tab above the 3-column analysis section.",
-    "QA-P0-04": "FIXED v5.31 \u2014 Algorithmic narrative labeled. Banner reads: 'Algorithmic analysis \u2014 generated from quantitative indicators. Not human analyst opinion.'",
-    "QA-C01-watchout": "FIXED v5.31 \u2014 'No major red flags' false positive. Now RSI/MACD-aware: if RSI<45 or MACD histogram<0, shows 'Momentum indicators are mixed' instead.",
-    "QA-F03-rss": "FIXED v5.31 \u2014 TechCrunch feeds removed from AI & Jobs topic config. Were serving 2022-2023 articles labeled as Live.",
-    "QA-F15-gi": "FIXED v5.31 \u2014 GI topic cards expanded=True by default. Previously collapsed \u2014 page looked empty on load.",
-    "QA-R04-live": "FIXED v5.31 \u2014 Live Headlines label date-gated. Only shows 'Live' when newest article <48h old. Otherwise shows 'Recent Coverage (date)'.",
-    "QA-F12-nextsteps": "FIXED v5.31 \u2014 'What You Should Do Next' section removed from GI page. Named NVDA/TSM/MSFT as investments with no disclaimer = liability. Replaced with footer disclaimer.",
-    "QA-H03-labels": "FIXED v5.31 \u2014 Market status cards use short labels IND/USA/EUR/CHN/COMM/ETF. Full name in title= tooltip. Prevents 'COMM ODI TIES' mid-word wrapping.",
+    "QA-P0-01": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 Option B: raw Momentum score removed from dashboard header. Verdict badge + plain-English reason only.",
+    "QA-P0-02": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 ROE 0.0% null guard: safe_float(None)=0 now displays as N/A. Actual ROE ~10% for Reliance was showing 0.0%.",
+    "QA-P0-03": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 SEBI disclaimer + algorithmic disclosure banner added to Insights tab above the 3-column analysis section.",
+    "QA-P0-04": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 Algorithmic narrative labeled. Banner reads: 'Algorithmic analysis \u2014 generated from quantitative indicators. Not human analyst opinion.'",
+    "QA-C01-watchout": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 'No major red flags' false positive. Now RSI/MACD-aware: if RSI<45 or MACD histogram<0, shows 'Momentum indicators are mixed' instead.",
+    "QA-F03-rss": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 TechCrunch feeds removed from AI & Jobs topic config. Were serving 2022-2023 articles labeled as Live.",
+    "QA-F15-gi": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 GI topic cards expanded=True by default. Previously collapsed \u2014 page looked empty on load.",
+    "QA-R04-live": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 Live Headlines label date-gated. Only shows 'Live' when newest article <48h old. Otherwise shows 'Recent Coverage (date)'.",
+    "QA-F12-nextsteps": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 'What You Should Do Next' section removed from GI page. Named NVDA/TSM/MSFT as investments with no disclaimer = liability. Replaced with footer disclaimer.",
+    "QA-H03-labels": "FIXED v5.31 \u2014 QA VERIFIED 2026-03-28 \u2014 Market status cards use short labels IND/USA/EUR/CHN/COMM/ETF. Full name in title= tooltip. Prevents 'COMM ODI TIES' mid-word wrapping.",
     "QA-H01-5day": "OPEN P1 \u2014 5-day performance calculation differs between Home and Dashboard. Same ticker, same session: Nifty shows -9.4% on Home vs -1.3% on Dashboard. Root cause: different period/calculation methodology. Fix: shared _calc_5d_change(df) utility consumed by both pages. Target: v5.32.",
     "QA-D03-forecast": "OPEN P1 \u2014 Forecast P(gain)~46% displayed identically to a strong signal. When 45-55%, should show 'Insufficient directional signal \u2014 model has no strong view'. Target: v5.32.",
     "QA-D04-forecast-dup": "OPEN P1 \u2014 Forecast Accuracy Tracker creates duplicate entries on consecutive days when forecast values unchanged. Fix: update existing entry instead of appending. Target: v5.32.",
@@ -1629,24 +1664,28 @@
     "QA-G01-worldmonitor": "KNOWN P0 \u2014 WorldMonitor Map permanently blocked by CSP (frame-ancestors). Already replaced with external link button in v5.26. Long-term fix: self-hosted Leaflet.js + ACLED/GDELT conflict API. Target: v6 roadmap.",
     "QA-G04-ticker-diff": "OPEN P1 \u2014 Ticker bar values differ from GI watchlist badges for same tickers same session. Nifty: 22,820 (ticker) vs 23,306 (GI). Root cause: ticker bar uses get_ticker_bar_data_fresh (TTL=60s), GI uses get_price_data (TTL=300s), different cache snapshot times. Fix: GI watchlist to use ticker_cache when warm. Target: v5.32.",
     "QA-C01-breadth": "OPEN P1 \u2014 AI narrative has no access to sector breadth data. 9/12 US sectors can be negative while Watch Out For says 'no red flags'. Partial fix in v5.31 (RSI/MACD gate). Full fix: pass group performance data as context variable to narrative engine. Target: v5.33.",
-    "QA-C05-score-decomp": "OPEN P2 \u2014 Momentum Score 58/100 has no scale definition, no per-indicator breakdown, no benchmark. User cannot reconcile with raw RSI=36. Fix: decomposition bar chart showing RSI/MACD/ADX/Stage contributions. Target: v6 roadmap (medium effort)."
+    "QA-C05-score-decomp": "OPEN P2 \u2014 Momentum Score 58/100 has no scale definition, no per-indicator breakdown, no benchmark. User cannot reconcile with raw RSI=36. Fix: decomposition bar chart showing RSI/MACD/ADX/Stage contributions. Target: v6 roadmap (medium effort).",
+    "QA-PROCESS-001": "PROCESS: QA brief must include screenshot annotations and explicit before/after descriptions. Brief numbering must match tester's mental model. Do not rely on text strings alone for visual changes. Established after v5.31 Fix1/Fix2 numbering confusion.",
+    "QA-D02-ROE-benchmark": "DECISION PENDING \u2014 ROE card shows N/A for Indian stocks (yfinance returns null). QA tester expected industry average comparator (e.g. vs Industry: 14.2%). Options: (A) hardcoded NSE sector average lookup table, (B) remove ROE card for stocks where value is null/0, (C) keep N/A with tooltip explanation. Decision needed before v5.32."
   },
   "regression": {
     "file": "regression.py",
     "run_command": "python regression.py",
-    "expected_output": "ALL 374 CHECKS PASS",
-    "last_run": "2026-03-28 \u2014 session 009 v5.31 (simulated)",
-    "last_result": "374 / 374 PASS",
+    "expected_output": "ALL 378 CHECKS PASS",
+    "last_run": "2026-03-28 \u2014 session 009 governance docs added",
+    "last_result": "378 / 378 PASS",
     "next_run": "Required at start of every session before any new work",
     "check_list": "\u2192 see CLAUDE.md regression table",
     "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file \u2014 should check inside CSS constant only. Fix next session.",
-    "note": "R17 updated: \"Momentum Signal Panel\" accepted as valid score label (raw score removed from header per Option B v5.31). All other checks stable at 374."
+    "note": "R10b added: 4 governance doc existence checks (GSI_GOVERNANCE, QA_STANDARDS, SKILLS, COMPLIANCE). Baseline raised from 374 to 378."
   },
   "session_start_checklist": {
     "always": [
       "Fetch GSI_Session.json Gist: https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab",
-      "Read manifest fully and confirm session number, last activity, open items",
-      "Run: python regression.py \u2014 confirm 189/189 before any new work"
+      "Read CLAUDE.md fully \u2014 especially Current State, Open Items, and DO NOT UNDO rules",
+      "Read GSI_GOVERNANCE.md \u2014 7 policies that govern all new development",
+      "Run: python3 regression.py \u2014 confirm 378/378 before any new work",
+      "Confirm session number, last activity, and open items in this manifest"
     ],
     "if_working_on_pages": [
       "Fetch Pages Gist: https://gist.github.com/Tarun19k/08480054082ca1f0f0aa3a585030e63a",
@@ -1678,7 +1717,14 @@
       "regression.py": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/regression.py",
       "requirements.txt": "https://github.com/Tarun19k/stock-intelligence-test-1-vs/blob/main/requirements.txt",
       "note": "pages/ subdirectory blocked by robots.txt \u2014 use Pages Gist"
-    }
+    },
+    "before_shipping": [
+      "Run python3 regression.py \u2014 must be 374/374 (or current baseline)",
+      "Run compliance script in GSI_COMPLIANCE_CHECKLIST.md \u2014 all Tier 1-3 must pass",
+      "Add VERSION_LOG entry to version.py",
+      "Update file_state entries for every changed file",
+      "Push GSI_session.json to Gist"
+    ]
   },
   "_CLAUDE_END_OF_SESSION": "END-OF-SESSION CHECKLIST \u2014 verify each before closing:\n1. sessions[N].activities \u2014 every activity logged?\n2. file_state \u2014 version, lines, last_confirmed updated for every touched file?\n3. file_registry \u2014 change_history + next_steps updated for touched files?\n4. open_items \u2014 completed ones closed, new ones added?\n5. regression.last_run + last_result updated?\n6. CLAUDE.md updated if architecture changed?\n7. GSI_Session.json delivered as downloadable file?\n8. User reminded to: push CLAUDE.md to repo root + update Gist at https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab\nIf any answer is NO \u2014 do it now. Non-negotiable.",
   "file_registry": {
@@ -2136,6 +2182,110 @@
         "streamlit"
       ],
       "note": "Pages do NOT import from this file until M4."
+    },
+    "portfolio.py": {
+      "type": "python",
+      "role": "Mean-CVaR engine. No Streamlit calls.",
+      "regression_checked": true
+    },
+    "requirements.txt": {
+      "type": "config",
+      "role": "Python dependencies. pandas>=1.4.0 NOT >=3.0.0.",
+      "regression_checked": false
+    },
+    "GSI_GOVERNANCE.md": {
+      "type": "documentation",
+      "role": "7 governance policies. Mandatory for all development.",
+      "regression_checked": false,
+      "established": "2026-03-28 session_009"
+    },
+    "GSI_QA_STANDARDS.md": {
+      "type": "documentation",
+      "role": "QA brief template, personas, data reliability matrix.",
+      "regression_checked": false,
+      "established": "2026-03-28 session_009"
+    },
+    "GSI_SKILLS.md": {
+      "type": "documentation",
+      "role": "10 development skills, anti-patterns, lessons learned.",
+      "regression_checked": false,
+      "established": "2026-03-28 session_009"
+    },
+    "GSI_COMPLIANCE_CHECKLIST.md": {
+      "type": "documentation",
+      "role": "Pre-deploy gate. Tier 1-3 block deploy. Tier 4-5 warn.",
+      "regression_checked": false,
+      "established": "2026-03-28 session_009"
+    },
+    "README.md": {
+      "type": "documentation",
+      "role": "Repo home page. Links to all governance docs. Public-facing disclaimer.",
+      "established": "2026-03-28"
+    },
+    "CHANGELOG.md": {
+      "type": "documentation",
+      "role": "Auto-generated from version.py VERSION_LOG. Human-readable version history.",
+      "established": "2026-03-28"
+    },
+    "AGENTS.md": {
+      "type": "documentation",
+      "role": "Universal AI tool fallback (Cursor, Codex, Zed). Mirrors CLAUDE.md.",
+      "established": "2026-03-28"
+    },
+    ".claude/settings.json": {
+      "type": "config",
+      "role": "Claude Code permissions. Deny pip install, rm, curl by default.",
+      "established": "2026-03-28"
+    },
+    ".claude/commands/new-session.md": {
+      "type": "slash-command",
+      "role": "/new-session \u2014 loads all context, confirms regression, lists open items.",
+      "established": "2026-03-28"
+    },
+    ".claude/commands/qa-brief.md": {
+      "type": "slash-command",
+      "role": "/qa-brief \u2014 generates QA test brief for latest version fixes.",
+      "established": "2026-03-28"
+    },
+    ".claude/commands/compliance-check.md": {
+      "type": "slash-command",
+      "role": "/compliance-check \u2014 runs regression + compliance tiers before push.",
+      "established": "2026-03-28"
+    },
+    ".claude/commands/sprint-review.md": {
+      "type": "slash-command",
+      "role": "/sprint-review \u2014 retrospective + next sprint planning from open items.",
+      "established": "2026-03-28"
+    },
+    ".claude/commands/new-feature.md": {
+      "type": "slash-command",
+      "role": "/new-feature \u2014 governance + skill check before implementing anything new.",
+      "established": "2026-03-28"
+    },
+    ".claude/rules/financial-safety.md": {
+      "type": "scoped-rule",
+      "role": "Auto-loaded for pages/*.py \u2014 financial safety rules, disclaimer requirements.",
+      "established": "2026-03-28"
+    },
+    ".claude/rules/market-data.md": {
+      "type": "scoped-rule",
+      "role": "Auto-loaded for market_data.py \u2014 rate limit gate, allowlist, TTL rules.",
+      "established": "2026-03-28"
+    },
+    ".github/PULL_REQUEST_TEMPLATE.md": {
+      "type": "github",
+      "role": "PR checklist \u2014 regression, compliance tiers, QA verification, manifest update.",
+      "established": "2026-03-28"
+    },
+    ".gitignore": {
+      "type": "config",
+      "role": "Gitignore. Excludes forecast_history.json, config_OLD.py, secrets, venvs.",
+      "established": "2026-03-28"
+    },
+    "SECURITY.md": {
+      "type": "documentation",
+      "role": "Security policy. Data privacy, disclaimer, data sources, known limitations.",
+      "established": "2026-03-28"
     }
   }
 }

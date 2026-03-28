@@ -247,6 +247,18 @@ def run(FM):
                 and not l.strip().startswith("'")),
         "TATAMOTORS.NS found — delisted Oct 2025, use TMCV.NS/TMPV.NS")
 
+    # R10b · Governance documentation files exist ────────────────────────────
+    import os as _os
+    gov_docs = [
+        "GSI_GOVERNANCE.md",
+        "GSI_QA_STANDARDS.md",
+        "GSI_SKILLS.md",
+        "GSI_COMPLIANCE_CHECKLIST.md",
+    ]
+    for doc in gov_docs:
+        chk("R10b.gov_docs", f"exists:{doc}", _os.path.exists(doc),
+            f"{doc} missing from repo root — governance documentation required")
+
     # R12 · KI-014 market_open param propagated ───────────────────────────────
     for fn, param in [("app.py","_is_market_open"),
                       ("pages/home.py","market_open"),
