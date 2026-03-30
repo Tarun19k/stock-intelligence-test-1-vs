@@ -83,9 +83,9 @@ def store_forecast(ticker: str, horizon_days: int,
         history[key] = []
 
     today = datetime.now().strftime("%Y-%m-%d")
-    # One entry per day — no duplicates
-    if any(e["made_on"] == today for e in history[key]):
-        return history
+    # OPEN-010 / D-04: replace any existing same-day entry so user
+    # always sees the latest forecast when they re-run within a session.
+    history[key] = [e for e in history[key] if e["made_on"] != today]
 
     # OBS-006 / KI-021: clamp to 0.01
     forecast_price = max(forecast_price, 0.01)
@@ -152,7 +152,10 @@ def resolve_forecasts(ticker: str, current_price: float) -> dict:
             p_gain = e.get("p_gain")
             base   = e.get("base_price", fp)
             if p_gain is not None and base:
-                predicted_up = p_gain >= 50
+                if 45 <= p_gain <= 55:
+                    pass           # neutral zone — don't score direction
+                else:
+                    predicted_up = p_gain >= 50
                 actually_up  = current_price >= base
                 e["direction_correct"] = bool(predicted_up == actually_up)
             changed = True
@@ -277,7 +280,12 @@ def render_forecast_accuracy(ticker: str, cur_sym: str) -> None:
                     "Horizon":        f'{e["horizon_days"]}d',
                     "Base Price":     f"{cur_sym}{base:,.2f}" if base else "—",
                     "Forecast (P50)": f"{cur_sym}{fcast:,.2f}" if fcast else "—",
-                    "P(Gain)":        f"{pg:.0f}%" if pg is not None else "—",
+                    "P(Gain)":        (
+                        "Neutral (45–55%)"
+                        if pg is not None and 45 <= pg <= 55
+                        else f"{pg:.0f}%"
+                        if pg is not None else "—"
+                    ),
                     "Status":         "⏳ Pending",
                 })
             if rows:

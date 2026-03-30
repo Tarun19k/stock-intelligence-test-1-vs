@@ -66,24 +66,17 @@ VERSION_LOG = [
      "notes": "get_ticker_info: add _is_rate_limited() gate (was missing from v5.27 — "              "only _yf_download/_yf_batch_download had the gate). Stops ticker info calls "              "firing during 429 cooldown window and polluting the error log."},
     {"version": "v5.30", "date": "2026-03-27",
      "notes": "styles.py: sidebar collapse button CSS updated for Streamlit 1.55 "              "compatibility. Added stSidebarCollapsedControl selector + main-area "              "button fallback. Removed stToolbar child visibility rule that was "              "interfering with 1.55 toolbar redesign."},
-    {"version": "v5.31", "date": "2026-03-28",
-     "notes": "QA audit fixes batch 1 (P0): (1) Option B — raw Momentum score removed from "
-              "header, verdict + plain-English reason only. (2) ROE null guard: 0.0 from "
-              "yfinance displays as N/A. (3) Watch-Out-For false-positive fixed — RSI/MACD "
-              "aware default caution replaces blanket no-red-flags claim. "
-              "(4) Algorithmic disclosure + SEBI disclaimer added to Insights tab. "
-              "(5) Market status cards: short labels (IND/USA/EUR/CHN/COMM/ETF) prevent "
-              "mid-word wrapping. (6) Stale TechCrunch RSS replaced with active feeds. "
-              "(7) GI topic cards expand by default. (8) Live Headlines label date-gated — "
-              "only shows Live when newest article is <48h old. "
-              "(9) What You Should Do Next section removed (liability risk, zero market relevance)."},
-    {"version": "v5.31.1", "date": "2026-03-28",
-     "notes": "Governance documentation suite added: GSI_GOVERNANCE.md (7 policies), "
-              "GSI_QA_STANDARDS.md (QA protocols), GSI_SKILLS.md (10 development skills), "
-              "GSI_COMPLIANCE_CHECKLIST.md (pre-deploy gate). "
-              "regression.py R10b: 4 governance doc existence checks added. "
-              "Baseline raised 374 -> 378. CLAUDE.md File Structure updated. "
-              "GSI_session.json file_registry and session_start_checklist updated."}
+    {"version": "v5.32", "date": "2026-03-29",
+     "notes": "Data coherence + temporal labeling sprint (9 fixes, 11 new R23b checks). "
+              "OPEN-008: calc_5d_change() in utils.py — cross-page 5-day consistency. "
+              "OPEN-009: P(gain) 45-55% neutral zone — excluded from accuracy scoring. "
+              "OPEN-010: Forecast dedup — same-day entry replaced not silently skipped. "
+              "OPEN-011: week_summary section titles dynamic: This Week vs Last Week. "
+              "OPEN-012: Weinstein override label names the stage explicitly. "
+              "OPEN-013: MACD chart subplots and KPI panel show (Daily) timeframe. "
+              "OPEN-014: GI watchlist filters to selected market via _market_of(). "
+              "OPEN-015: Market LIVE badge names specific market country. "
+              "OPEN-016: GI watchlist cache_buster=0 — price coherence with ticker bar. "}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

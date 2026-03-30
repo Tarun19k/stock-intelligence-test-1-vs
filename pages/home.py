@@ -24,7 +24,7 @@ import streamlit as st
 import streamlit.components.v1 as _st_components
 from datetime import datetime, timedelta
 from config import MARKET_SESSIONS, CURRENT_VERSION
-from utils import sanitise, safe_run, responsive_cols, log_error
+from utils import sanitise, safe_run, responsive_cols, log_error, calc_5d_change
 from market_data import (get_price_data, get_top_movers, get_news,
                          get_batch_data, get_ticker_bar_data_fresh,
                          is_ticker_cache_warm, _ticker_cache)
@@ -208,12 +208,6 @@ def _next_open(country: str) -> str:
     return "—"
 
 
-# v5.31: Short labels prevent mid-word wrapping in narrow columns (audit H-03)
-_MKT_SHORT = {
-    "India": "IND", "USA": "USA", "Europe": "EUR",
-    "China": "CHN", "Commodities": "COMM", "ETFs - Global": "ETF",
-}
-
 def _render_market_status_row():
     st.markdown('<p class="section-title">🌐 Global Market Status</p>',
                 unsafe_allow_html=True)
@@ -224,7 +218,7 @@ def _render_market_status_row():
         sub = "" if is_open else f"Opens {_next_open(mkt)}"
         col.markdown(
             f'<div class="kpi-card" style="border-left-color:{color}">'
-            f'<div class="kpi-label" title="{mkt}">{_MKT_SHORT.get(mkt, mkt)}</div>'
+            f'<div class="kpi-label">{mkt}</div>'
             f'<div class="kpi-delta" style="color:{color};font-weight:700">{label}</div>'
             f'{"<div class=kpi-help>" + sub + "</div>" if sub else ""}'
             f'</div>',
@@ -292,7 +286,7 @@ def _render_global_overview_prices(batch_5d: dict):
         lp        = float(_cl.iloc[-1])
         pp        = float(_cl.iloc[-2])
         chg       = (lp - pp) / pp * 100 if pp else 0
-        week_chg  = (lp - float(_cl.iloc[0])) / float(_cl.iloc[0]) * 100 if float(_cl.iloc[0]) else 0
+        week_chg  = calc_5d_change(df)          # OPEN-008: shared utility
         color     = "#00c853" if chg >= 0 else "#ff1744"
         arrow     = "▲" if chg >= 0 else "▼"
         price_str = f"{lp:,.0f}" if lp >= 1000 else f"{lp:,.2f}" if lp >= 1 else f"{lp:.4f}"

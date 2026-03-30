@@ -20,7 +20,7 @@ Two repos — ALL active work is in the modular repo:
 
 ```bash
 streamlit run app.py        # run the app locally
-python3 regression.py       # MUST pass (378/378) before any new work
+python3 regression.py       # MUST pass (396/396) before any new work
 ```
 
 Before every `git push`, also run the compliance script in `GSI_COMPLIANCE_CHECKLIST.md`:
@@ -62,7 +62,7 @@ Streamlit 1.55 notes:
 
 ## Current State (v5.31 — 2026-03-28)
 
-**Regression baseline: 378/378 PASS**
+**Regression baseline: 396/396 PASS**
 
 **v5.31 QA status: ALL 8 FIXES VERIFIED (2026-03-28)**
 
@@ -254,7 +254,7 @@ Policies 4–7 are new additions from audit session 009. Policies 1–3 were pre
 
 ## Living Documentation
 
-Four governance documents produced from audit sessions 001–009.
+Five governance documents produced from audit sessions 001–010.
 Read before implementing any new feature. Update after every sprint.
 
 | Document | Purpose |
@@ -263,8 +263,13 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_QA_STANDARDS.md` | Test brief template, issue classification, data reliability matrix |
 | `GSI_SKILLS.md` | Development patterns, anti-patterns, and lessons learned |
 | `GSI_COMPLIANCE_CHECKLIST.md` | Pre-deploy gate — all items must pass before git push |
+| `GSI_AUDIT_TRAIL.md` | Immutable audit trail — 48 findings, all resolutions. **Append only. Never edit existing records.** |
+| `GSI_DECISIONS.md` | Architecture Decision Record log. 15 ADRs. Append only. Read before re-litigating any design choice. |
+| `GSI_SPRINT.md` | Sprint board — backlog, in-progress, done. Updated every session. |
+| `GSI_WIP.md` | Session continuity mutex. Read FIRST in every session. Write checkpoint when limit approaches. |
+| `GSI_DEPENDENCIES.md` | Compatibility constraints. 9 active constraints. Check before upgrading any package. |
 
-Store all four in repo root alongside CLAUDE.md.
+Store all ten in repo root alongside CLAUDE.md.
 
 ---
 
@@ -289,6 +294,63 @@ load automatically via `.claude/rules/` when the matching file is edited.
 - TTLs: live price=5s, OHLCV=300s, ticker info=600s, financials=86400s, news=600s
 ---
 
+## Usage Limit & Session Continuity Protocol
+
+Claude.ai has usage limits. Any session can be interrupted mid-implementation.
+These rules ensure zero work is lost and no conflict occurs between sessions.
+
+### Rule 1 — Read GSI_WIP.md first, always
+Before reading CLAUDE.md or session.json, read `GSI_WIP.md`.
+- If `Status: IDLE` — proceed normally.
+- If `Status: ACTIVE` — read the CHECKPOINT block and resume from it exactly.
+  Do NOT start fresh. Do NOT regenerate files already marked complete.
+
+### Rule 2 — Write to GSI_WIP.md before starting any implementation
+When starting a new sprint or implementation task:
+1. Set `Status: ACTIVE` in GSI_WIP.md
+2. List all planned tasks as unchecked boxes
+3. Begin implementation
+
+### Rule 3 — Commit after every file (git-first discipline)
+Never batch multiple files into a single commit during active development.
+Commit sequence: implement file → run regression → commit → then next file.
+If Claude hits a limit, only the current uncommitted file is at risk.
+
+### Rule 4 — Write a CHECKPOINT when context is running low
+If Claude suspects it is approaching a context or usage limit:
+1. Stop mid-task if necessary — a clean break is better than a half-done file
+2. Write a CHECKPOINT block to GSI_WIP.md immediately:
+
+```
+## CHECKPOINT — [YYYY-MM-DD] [session-id]
+Status: ACTIVE (interrupted)
+Currently working on: [file + function + what change]
+Completed (safe from outputs/):
+  - [filename] ✓ committed / not committed
+Not yet started:
+  - [task]
+Decisions made (add to GSI_DECISIONS.md):
+  - [decision + reason]
+Regression baseline at checkpoint: [N]/[N]
+Resume instruction: [one precise sentence]
+```
+
+3. Push GSI_WIP.md to GitHub immediately after writing the checkpoint
+4. Push any committed files
+
+### Rule 5 — Max 9 items per sprint
+Larger sprints increase the probability of hitting a limit mid-sprint.
+9 items is the verified maximum for a clean single-session completion.
+See GSI_SPRINT.md for sprint planning rules.
+
+### Rule 6 — Decisions go to GSI_DECISIONS.md before session ends
+Any decision that took more than 30 seconds to make gets an ADR record.
+If the session ends before this is done, note the pending decisions in
+the CHECKPOINT block of GSI_WIP.md.
+
+
+---
+
 ## Session Manifest (Dynamic State)
 
 **GSI_Session.json Gist:** https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
@@ -297,9 +359,16 @@ To resume with Claude:
 > "I am working on the Global Stock Intelligence Dashboard.
 >  Here is CLAUDE.md and GSI_Session.json — read both fully before we proceed."
 
-**Also upload alongside CLAUDE.md when starting a new session:**
-- `GSI_GOVERNANCE.md` — Claude reads the 7 policies before writing any code
-- `GSI_SKILLS.md` — Claude consults the relevant skill before implementing a pattern
+**Minimum upload bundle for every session:**
+- `GSI_WIP.md` — READ THIS FIRST. Contains session status and checkpoint if interrupted.
+- `CLAUDE.md` — architecture reference and DO NOT UNDO rules
+- `GSI_session.json` — session manifest with open items and baseline
+
+**Also upload when starting a sprint or new feature:**
+- `GSI_GOVERNANCE.md` — 7 policies Claude reads before writing any code
+- `GSI_SKILLS.md` — development patterns and anti-patterns
+- `GSI_SPRINT.md` — current sprint board and backlog
+- `GSI_DECISIONS.md` — ADR log to prevent re-litigating resolved decisions
 
 Note: `.claude/settings.json` (permission rules) and `.claude/rules/` (path-scoped rules)
 only activate automatically in **Claude Code**. In Claude.ai, the Scoped Rules section

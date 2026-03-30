@@ -27,6 +27,30 @@ def safe_run(fn, context: str = "", default=None):
         return default
 
 
+def calc_5d_change(df, col: str = "Close") -> float:
+    """
+    Shared 5-day percentage change utility — call this EVERYWHERE a 5-day
+    or weekly return is displayed to guarantee cross-page consistency.
+    (OPEN-008 / H-01 fix: eliminates per-page inline recalculations.)
+
+    Works for both 5d-period downloads and longer windows (3mo, 1y):
+      - ≤6 rows  → uses first vs last (full window is ≤5 trading days)
+      - >6 rows  → uses iloc[-6] vs iloc[-1] (last 5 trading days)
+    """
+    import pandas as pd
+    if df is None or df.empty or col not in df.columns:
+        return 0.0
+    cl = df[col]
+    cl = cl.iloc[:, 0] if isinstance(cl, pd.DataFrame) else cl
+    cl = cl.dropna().astype(float)
+    if len(cl) < 2:
+        return 0.0
+    latest   = float(cl.iloc[-1])
+    lookback = min(5, len(cl) - 1)
+    base     = float(cl.iloc[-1 - lookback])
+    return (latest - base) / base * 100 if base else 0.0
+
+
 def safe_float(val, default: float = 0.0) -> float:
     try:
         return float(val)

@@ -40,15 +40,32 @@ def _render_impact_chain(chain: list):
     )
 
 
-def _render_watchlist_badges(tickers: list, cur_sym: str, cb: int):
+def _market_of(sym: str) -> str:
+    """Infer market from ticker suffix for watchlist filtering (OPEN-014)."""
+    if sym.endswith((".NS", ".BO")):  return "India"
+    if sym.endswith((".L", ".DE", ".PA", ".AS", ".MI")): return "Europe"
+    if sym.endswith((".HK", ".SS", ".SZ")):              return "China"
+    return "USA"   # default: US stocks have no suffix
+
+
+def _render_watchlist_badges(tickers: list, cur_sym: str, cb: int,
+                              selected_market: str = "All"):
     """Live mini price badges for a topic watchlist."""
+    # OPEN-014: filter to selected market when user has narrowed scope
+    visible = [s for s in tickers
+               if selected_market == "All" or _market_of(s) == selected_market]
+    if not visible:
+        st.caption(f"No watchlist stocks for {selected_market} market in this topic.")
+        return
     st.markdown('<p class="section-title">📌 Related Stocks to Watch</p>',
                 unsafe_allow_html=True)
-    cols = responsive_cols(min(len(tickers), 6))
-    for col, sym in zip(cols, tickers):
+    cols = responsive_cols(min(len(visible), 6))
+    for col, sym in zip(cols, visible):
         df = safe_run(
+            # OPEN-016 / G-04: cache_buster=0 so GI uses same cached data
+            # as ticker bar — prevents same-session price divergence.
             lambda s=sym: get_price_data(s, period="5d", interval="1d",
-                                         cache_buster=cb),
+                                         cache_buster=0),
             context=f"gi:watchlist:{sym}", default=None,
         )
         if df is not None and not df.empty and len(df) >= 2:
@@ -99,9 +116,10 @@ def _render_next_steps_ai():
         )
 
 
-def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int):
+def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int,
+                       selected_market: str = "All"):
     """Render one expandable topic card with chain + news + watchlist."""
-    with st.expander(topic_name, expanded=True):
+    with st.expander(topic_name, expanded=False):
         color = topic["color"]
         st.markdown(
             f'<div style="font-size:0.82rem;color:{color};'
@@ -133,28 +151,16 @@ def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int):
             )
 
         if topic.get("watchlist"):
-            _render_watchlist_badges(topic["watchlist"], cur_sym, cb)
+            _render_watchlist_badges(topic["watchlist"], cur_sym, cb,
+                                     selected_market=selected_market)
 
-        # Live news — only label "Live" when articles are recent (< 48 hours)
-        from datetime import datetime, timezone
-        import email.utils as _eut
+        # Live news
+        st.markdown('<p class="section-title">📰 Live Headlines</p>',
+                    unsafe_allow_html=True)
         articles = safe_run(
             lambda: get_news(topic.get("rss", []), max_n=5, cache_buster=cb),
             context=f"gi:news:{topic_name[:20]}", default=[]
         )
-        # Check if newest article is < 48h old
-        _news_label = "📰 Recent Coverage"
-        if articles:
-            try:
-                _newest = articles[0].get("date", "")
-                _dt = _eut.parsedate_to_datetime(_newest) if _newest else None
-                if _dt:
-                    _age_h = (datetime.now(timezone.utc) - _dt).total_seconds() / 3600
-                    _news_label = "📰 Live Headlines" if _age_h < 48 else f"📰 Recent Coverage ({_dt.strftime('%d %b %Y')})"
-            except Exception:
-                pass
-        st.markdown(f'<p class="section-title">{_news_label}</p>',
-                    unsafe_allow_html=True)
         if articles:
             for a in articles:
                 st.markdown(
@@ -173,7 +179,9 @@ def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int):
 
 def _s(t, n=200): return sanitise(t, max_len=n)
 
-def render_global_intelligence(cur_sym: str = "$", cb: int = 0, market_open: bool = False):
+def render_global_intelligence(cur_sym: str = "$", cb: int = 0,
+                               market_open: bool = False,
+                               selected_market: str = "All"):
     """Main entry point — called from app.py routing."""
     st.markdown(
         '<div style="font-size:1.6rem;font-weight:900;color:#c8d6f0;'
@@ -208,15 +216,8 @@ def render_global_intelligence(cur_sym: str = "$", cb: int = 0, market_open: boo
 
     # Topic cards
     for topic_name, topic in GLOBAL_TOPICS.items():
-        _render_topic_card(topic_name, topic, cur_sym, cb)
+        _render_topic_card(topic_name, topic, cur_sym, cb,
+                           selected_market=selected_market)
 
     st.divider()
-    st.markdown(
-        '<div style="font-size:0.72rem;color:#4b6080;text-align:center;padding:8px">'
-        '⚙️ Analysis is algorithmically generated from market data. '
-        '<strong style="color:#ff9800">Not financial advice.</strong> '
-        'For informational purposes only. Consult a SEBI-registered investment advisor '
-        'before acting on any information shown here.'
-        '</div>',
-        unsafe_allow_html=True,
-    )
+    _render_next_steps_ai()

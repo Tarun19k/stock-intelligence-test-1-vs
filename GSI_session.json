@@ -7,7 +7,7 @@
     "manifest_version": "7.0",
     "protocol": "This manifest MUST be updated after every patch, fix, rebuild, or architectural change to the project. Updating the manifest is itself a required activity \u2014 marked IMPORTANT \u2014 and must occur before or towards the end of every session. At the start of a new session, provide the Gist URL and say: 'Here is the session manifest \u2014 continue from where we left off.' Claude will read it and resume without re-reading every file from GitHub.",
     "current_version": "v5.27",
-    "next_version": "v5.32",
+    "next_version": "v5.33",
     "version_convention": "Increment minor version (v5.X) for any patch or fix. Increment major version (vX.0) for structural refactors. Always add entry to version.py VERSION_LOG before shipping.",
     "deployment_target": "Both \u2014 Streamlit Community Cloud AND local dev",
     "entry_point": "app.py (root)",
@@ -24,9 +24,9 @@
     "repo_relationship": "TWO REPOS EXIST \u2014 do not confuse them. Repo 1 (global-gsi-intelligence): the original monolith \u2014 2451 lines in one file. REFERENCE ONLY \u2014 no active development. Repo 2 (stock-intelligence-test-1-vs): the modular refactor \u2014 ALL active work happens here. Every fix, patch, and rebuild in this manifest applies to Repo 2 only.",
     "claude_md": "CLAUDE.md in repo root \u2014 stable cold-start reference. Contains: file structure, run commands, do-not-undo rules, architecture decisions, environment, API behavior, scoring model, regression table. Update CLAUDE.md when architecture changes; update this manifest every session.",
     "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol.",
-    "last_updated": "2026-03-28",
+    "last_updated": "2026-03-29",
     "last_session": "session_009",
-    "current_app_version": "v5.31",
+    "current_app_version": "v5.32",
     "documentation": {
       "GSI_GOVERNANCE.md": "v1.0 \u2014 7 governance policies established from audit sessions",
       "GSI_QA_STANDARDS.md": "v1.0 \u2014 QA brief templates, issue classification, data reliability matrix",
@@ -40,7 +40,12 @@
       ".claude/": "commands (5), rules (2), settings \u2014 Claude Code integration",
       ".github/": "PR template with full compliance checklist",
       "SECURITY.md": "v1.0 \u2014 security policy, data privacy, regulatory disclaimer",
-      ".gitignore": "v1.0 \u2014 excludes secrets, stale files, forecast_history.json"
+      ".gitignore": "v1.0 \u2014 excludes secrets, stale files, forecast_history.json",
+      "GSI_AUDIT_TRAIL.md": "v1.0 \u2014 48 finding records, resolution/disregard records, current state view. Append-only. 4 record types: FINDING, RESOLUTION, REOPEN, GOVERNANCE.",
+      "GSI_WIP.md": "Session continuity mutex. READ FIRST every session. CHECKPOINT protocol.",
+      "GSI_SPRINT.md": "Sprint board \u2014 backlog, in-progress, done. Updated every session.",
+      "GSI_DECISIONS.md": "ADR log \u2014 15 decisions. Append only. Read before re-litigating design.",
+      "GSI_DEPENDENCIES.md": "Compatibility constraints. 9 active constraints. Check before upgrading."
     }
   },
   "gist_index": {
@@ -1050,6 +1055,26 @@
         "process_note": "Brief numbering confusion caused Fix 1/Fix 2 mismatch in first QA round. Going forward: QA brief must include screenshot annotations and explicit before/after descriptions, not just expected text strings."
       },
       "regression_baseline_end": "378/378"
+    },
+    {
+      "id": "session_010",
+      "date": "2026-03-29",
+      "version_start": "v5.31.1",
+      "version_end": "v5.32",
+      "regression_baseline_start": "378/378",
+      "regression_baseline_end": "391/391",
+      "summary": "v5.32 data coherence + temporal labeling sprint. 9 fixes: OPEN-008 through OPEN-016. calc_5d_change() shared utility, P(gain) neutral zone, forecast dedup, dynamic week titles, Weinstein override label, MACD (Daily), GI market filter, specific LIVE badge, GI cache coherence. R23b: 11 new regression checks. R19 updated for improved override label. Baseline 378 \u2192 391. Claude Mythos tabled as OPEN-018 (future phase).",
+      "files_changed": [
+        "utils.py (calc_5d_change utility added)",
+        "pages/home.py (uses calc_5d_change, OPEN-008)",
+        "pages/dashboard.py (override label OPEN-012, MACD Daily OPEN-013)",
+        "forecast.py (neutral zone OPEN-009, dedup OPEN-010)",
+        "pages/week_summary.py (dynamic section titles OPEN-011)",
+        "pages/global_intelligence.py (market filter OPEN-014, cache_buster=0 OPEN-016)",
+        "app.py (specific LIVE badge OPEN-015, selected_market pass-through OPEN-014)",
+        "version.py (v5.32 entry)",
+        "regression.py (R23b 11 checks, R19 updated, baseline 378\u2192391)"
+      ]
     }
   ],
   "open_items": [
@@ -1367,74 +1392,18 @@
       "created": "2026-03-27"
     },
     {
-      "id": "OPEN-008",
-      "priority": "HIGH",
-      "title": "5-day calculation unification across Home/Dashboard/GI",
-      "detail": "Shared _calc_5d_change(df) utility. Root cause of H-01 data inconsistency.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-009",
-      "priority": "HIGH",
-      "title": "Forecast neutral threshold \u2014 P(gain) 45-55% = Insufficient signal",
-      "detail": "QA-D03. Prevents false precision display.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-010",
-      "priority": "HIGH",
-      "title": "Forecast deduplication fix",
-      "detail": "QA-D04. Update existing entry when forecast unchanged same day.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-011",
-      "priority": "HIGH",
-      "title": "Temporal labeling \u2014 weekly vs daily figures",
-      "detail": "QA-D06. Explicit This Week / Today labels on all time-relative figures.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-012",
-      "priority": "HIGH",
-      "title": "Weinstein override disclosure label on dashboard",
-      "detail": "QA-C04. Elder BUY+Weinstein WAIT shown with equal weight. Add override label.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-013",
-      "priority": "HIGH",
-      "title": "MACD timeframe label on chart and KPI panel",
-      "detail": "QA-C06. Chart MACD=Daily, Panel MACD=Intraday(live). Currently unlabeled.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-014",
-      "priority": "HIGH",
-      "title": "GI watchlist responds to market selector",
-      "detail": "QA-F05. Pass country param to _render_watchlist_badges. USA market -> US stocks.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-015",
-      "priority": "MEDIUM",
-      "title": "Market LIVE badge gated on actual market open",
-      "detail": "QA-C09. Badge fires on Streamlit runtime not market hours. Use market_open bool.",
-      "target": "v5.32"
-    },
-    {
-      "id": "OPEN-016",
-      "priority": "MEDIUM",
-      "title": "GI ticker data coherence \u2014 same source as ticker bar",
-      "detail": "QA-G04. Ticker values differ between ticker bar and GI watchlist badges.",
-      "target": "v5.32"
-    },
-    {
       "id": "OPEN-017",
       "priority": "LOW",
       "title": "Governance policy framework \u2014 7 policies to enforce in regression",
       "detail": "Policies: Data & Logic Integrity, Architectural, UX & Performance, Regulatory & Compliance (new), Data Coherence (new), Signal Arbitration (new), Data Freshness Labeling (new). Add R25 regression checks for compliance.",
       "target": "v5.33"
+    },
+    {
+      "id": "OPEN-018",
+      "priority": "MEDIUM",
+      "title": "Claude API integration \u2014 live AI narrative with Opus 4.6 / Mythos-ready",
+      "detail": "Replace template-driven Watch Out For / What to Consider / Insights narrative with live Claude API calls (claude-opus-4-6). Pass sig dict + sector breadth + macro context. config.py AI_MODEL constant for easy Mythos swap. New ai_narrative.py module, no Streamlit calls. Governs Policy 4 (disclaimer must carry into generated text) and Policy 5 (narrative must consume same data as indicator panel). Separate sprint \u2014 do not block v5.32.",
+      "target": "v6 / future phase"
     }
   ],
   "file_state": {
@@ -1445,13 +1414,7 @@
       "last_confirmed": "2026-03-28",
       "changes": "Stale TechCrunch RSS replaced with active feeds"
     },
-    "version.py": {
-      "version": "v5.26",
-      "lines": 53,
-      "status": "deployed",
-      "last_confirmed": "2026-03-27",
-      "changes": "v5.26 entry added with full hotfix notes"
-    },
+    "version.py": "v5.32 entry added",
     "tickers.json": {
       "version": "v5.16",
       "status": "new",
@@ -1459,13 +1422,7 @@
       "gist": "tickers",
       "last_confirmed": "2026-03-20"
     },
-    "app.py": {
-      "version": "v5.26",
-      "lines": 266,
-      "status": "deployed",
-      "last_confirmed": "2026-03-27",
-      "changes": "_refresh_fragment removed entirely"
-    },
+    "app.py": "v5.32 \u2014 specific LIVE badge, selected_market",
     "market_data.py": {
       "version": "v5.31",
       "lines": null,
@@ -1473,13 +1430,7 @@
       "last_confirmed": "2026-03-28",
       "changes": "RSS allowlist updated, _is_rate_limited gate on get_ticker_info"
     },
-    "forecast.py": {
-      "version": "v5.21",
-      "status": "patched",
-      "lines": 449,
-      "gist": "root_files",
-      "last_confirmed": "2026-03-23"
-    },
+    "forecast.py": "v5.32 \u2014 neutral zone, dedup fix",
     "indicators.py": {
       "version": "v5.28",
       "lines": null,
@@ -1494,20 +1445,8 @@
       "last_confirmed": "2026-03-28",
       "changes": "Streamlit 1.55 sidebar CSS \u2014 stSidebarCollapsedControl + main-area fallback"
     },
-    "utils.py": {
-      "version": "v5.17",
-      "status": "patched",
-      "lines": 140,
-      "gist": "github_blob",
-      "last_confirmed": "2026-03-20"
-    },
-    "regression.py": {
-      "version": "v5.31",
-      "lines": null,
-      "status": "deployed",
-      "last_confirmed": "2026-03-28",
-      "changes": "R17 updated for Option B, R23 v527, R24 v527"
-    },
+    "utils.py": "v5.32 \u2014 calc_5d_change() added",
+    "regression.py": "v5.32 R23b (11 checks), R19 updated. Baseline 391",
     ".gitignore": {
       "version": "v5.16",
       "status": "new",
@@ -1515,34 +1454,10 @@
       "gist": "none",
       "last_confirmed": "2026-03-19"
     },
-    "pages/home.py": {
-      "version": "v5.31",
-      "lines": null,
-      "status": "deployed",
-      "last_confirmed": "2026-03-28",
-      "changes": "Market status short labels IND/USA/EUR/CHN/COMM/ETF"
-    },
-    "pages/dashboard.py": {
-      "version": "v5.21",
-      "status": "rebuilt",
-      "lines": 1154,
-      "gist": "pages",
-      "last_confirmed": "2026-03-23"
-    },
-    "pages/global_intelligence.py": {
-      "version": "v5.31",
-      "lines": null,
-      "status": "deployed",
-      "last_confirmed": "2026-03-28",
-      "changes": "expanded=True, Live Headlines date gate, next-steps removed, footer disclaimer"
-    },
-    "pages/week_summary.py": {
-      "version": "v5.23",
-      "status": "patched",
-      "lines": 1124,
-      "gist": "pages",
-      "last_confirmed": "2026-03-26"
-    },
+    "pages/home.py": "v5.32 \u2014 uses calc_5d_change()",
+    "pages/dashboard.py": "v5.32 \u2014 override label, MACD (Daily)",
+    "pages/global_intelligence.py": "v5.32 \u2014 market filter, cache_buster=0",
+    "pages/week_summary.py": "v5.32 \u2014 dynamic section titles",
     "pages/__init__.py": {
       "version": "v5.0",
       "status": "verified",
@@ -1671,20 +1586,21 @@
   "regression": {
     "file": "regression.py",
     "run_command": "python regression.py",
-    "expected_output": "ALL 378 CHECKS PASS",
-    "last_run": "2026-03-28 \u2014 session 009 governance docs added",
-    "last_result": "378 / 378 PASS",
+    "expected_output": "ALL 396 CHECKS PASS",
+    "last_run": "2026-03-29 \u2014 new governance docs (4 new R10b checks)",
+    "last_result": "396 / 396 PASS",
     "next_run": "Required at start of every session before any new work",
     "check_list": "\u2192 see CLAUDE.md regression table",
     "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file \u2014 should check inside CSS constant only. Fix next session.",
-    "note": "R10b added: 4 governance doc existence checks (GSI_GOVERNANCE, QA_STANDARDS, SKILLS, COMPLIANCE). Baseline raised from 374 to 378."
+    "note": "R10b now checks 9 governance docs. Baseline 392 \u2192 396."
   },
   "session_start_checklist": {
     "always": [
+      "Read GSI_WIP.md FIRST \u2014 check Status field. If ACTIVE: resume from CHECKPOINT. If IDLE: continue.",
       "Fetch GSI_Session.json Gist: https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab",
-      "Read CLAUDE.md fully \u2014 especially Current State, Open Items, and DO NOT UNDO rules",
-      "Read GSI_GOVERNANCE.md \u2014 7 policies that govern all new development",
-      "Run: python3 regression.py \u2014 confirm 378/378 before any new work",
+      "Read CLAUDE.md fully \u2014 especially Current State, Open Items, Usage Limit Protocol, and DO NOT UNDO rules",
+      "Read GSI_GOVERNANCE.md \u2014 7 policies that govern all development",
+      "Run: python3 regression.py \u2014 confirm 396/396 before any new work",
       "Confirm session number, last activity, and open items in this manifest"
     ],
     "if_working_on_pages": [
@@ -1719,11 +1635,14 @@
       "note": "pages/ subdirectory blocked by robots.txt \u2014 use Pages Gist"
     },
     "before_shipping": [
-      "Run python3 regression.py \u2014 must be 374/374 (or current baseline)",
+      "Update GSI_WIP.md \u2014 mark all tasks complete, set Status: IDLE",
+      "Run python3 regression.py \u2014 must be 392/392 (or current baseline)",
       "Run compliance script in GSI_COMPLIANCE_CHECKLIST.md \u2014 all Tier 1-3 must pass",
       "Add VERSION_LOG entry to version.py",
-      "Update file_state entries for every changed file",
-      "Push GSI_session.json to Gist"
+      "Update GSI_SPRINT.md \u2014 move completed items to Done",
+      "Update GSI_DECISIONS.md \u2014 add any ADRs from this session",
+      "Push GSI_session.json to Gist",
+      "Commit after every file \u2014 never batch"
     ]
   },
   "_CLAUDE_END_OF_SESSION": "END-OF-SESSION CHECKLIST \u2014 verify each before closing:\n1. sessions[N].activities \u2014 every activity logged?\n2. file_state \u2014 version, lines, last_confirmed updated for every touched file?\n3. file_registry \u2014 change_history + next_steps updated for touched files?\n4. open_items \u2014 completed ones closed, new ones added?\n5. regression.last_run + last_result updated?\n6. CLAUDE.md updated if architecture changed?\n7. GSI_Session.json delivered as downloadable file?\n8. User reminded to: push CLAUDE.md to repo root + update Gist at https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab\nIf any answer is NO \u2014 do it now. Non-negotiable.",
@@ -2286,6 +2205,32 @@
       "type": "documentation",
       "role": "Security policy. Data privacy, disclaimer, data sources, known limitations.",
       "established": "2026-03-28"
+    },
+    "GSI_AUDIT_TRAIL.md": {
+      "type": "documentation",
+      "role": "Immutable append-only audit trail. 48 findings from 6 reports. Never edit existing records.",
+      "established": "2026-03-29",
+      "governance": "APPEND ONLY \u2014 add FINDING, RESOLUTION, REOPEN, or GOVERNANCE records. Never edit."
+    },
+    "GSI_WIP.md": {
+      "type": "documentation",
+      "role": "Session continuity mutex. READ FIRST every session. CHECKPOINT protocol.",
+      "established": "2026-03-29"
+    },
+    "GSI_SPRINT.md": {
+      "type": "documentation",
+      "role": "Sprint board \u2014 backlog, in-progress, done. Updated every session.",
+      "established": "2026-03-29"
+    },
+    "GSI_DECISIONS.md": {
+      "type": "documentation",
+      "role": "ADR log \u2014 15 decisions. Append only. Read before re-litigating design.",
+      "established": "2026-03-29"
+    },
+    "GSI_DEPENDENCIES.md": {
+      "type": "documentation",
+      "role": "Compatibility constraints. 9 active constraints. Check before upgrading.",
+      "established": "2026-03-29"
     }
   }
 }

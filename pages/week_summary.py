@@ -51,7 +51,9 @@ INDEX_WATCH = [
 
 @st.fragment
 def _index_perf_row(cb: int):
-    st.markdown('<p class="section-title">🌐 Index Performance — This Week</p>',
+    week_start, week_end, week_label, is_current = _get_week_range()
+    _title = "This Week" if is_current else "Last Week"
+    st.markdown(f'<p class="section-title">🌐 Index Performance — {_title} <span style="font-size:0.72rem;color:#4b6080;font-weight:400">({week_label})</span></p>',
                 unsafe_allow_html=True)
     cols = responsive_cols(4)
     col_idx = 0
@@ -105,9 +107,10 @@ NIFTY50_TICKERS = [
 
 @st.fragment
 def _nifty_heatmap(cb: int):
-    st.markdown('<p class="section-title">🟩 Nifty 50 — Weekly Returns Heatmap</p>',
+    week_start, _, week_label, is_current = _get_week_range()
+    _title = "This Week" if is_current else "Last Week"
+    st.markdown(f'<p class="section-title">🟩 Nifty 50 — {_title} Returns Heatmap <span style="font-size:0.72rem;color:#4b6080;font-weight:400">({week_label})</span></p>',
                 unsafe_allow_html=True)
-    week_start, _, _, _ = _get_week_range()
     names, returns = [], []
     for name, sym in NIFTY50_TICKERS:
         df = safe_run(
@@ -194,7 +197,9 @@ def _sector_cards(cb: int):
 # ── Weekly Nifty 50 line chart ────────────────────────────────────────────────
 @st.fragment
 def _nifty_weekly_chart(cb: int):
-    st.markdown('<p class="section-title">📈 Nifty 50 — Week in Charts</p>',
+    _, _, week_label, is_current = _get_week_range()
+    _title = "This Week" if is_current else "Last Week"
+    st.markdown(f'<p class="section-title">📈 Nifty 50 — {_title} in Charts <span style="font-size:0.72rem;color:#4b6080;font-weight:400">({week_label})</span></p>',
                 unsafe_allow_html=True)
     df = safe_run(
         lambda: get_price_data("^NSEI", period="1mo", interval="1d",
@@ -293,10 +298,11 @@ def render_week_summary(cur_sym: str = "₹", cb: int = 0):
 @st.fragment
 def _multi_asset_weekly_chart(cb: int):
     """Stacked bar chart comparing weekly % returns across asset classes."""
-    st.markdown('<p class="section-title">🌐 Multi-Asset Weekly Performance</p>',
+    week_start, _, week_label, is_current = _get_week_range()
+    _title = "This Week" if is_current else "Last Week"
+    st.markdown(f'<p class="section-title">🌐 Multi-Asset {_title} Performance <span style="font-size:0.72rem;color:#4b6080;font-weight:400">({week_label})</span></p>',
                 unsafe_allow_html=True)
 
-    week_start, _, _, _ = _get_week_range()
     assets = [
         ("Nifty 50",       "^NSEI",   "Indian Equities"),
         ("S&P 500",        "^GSPC",   "US Equities"),
@@ -394,10 +400,11 @@ def render_market_overview(country: str, groups: dict,
         unsafe_allow_html=True,
     )
 
-    week_start, _, _, _ = _get_week_range()
+    week_start, _, week_label, is_current = _get_week_range()
+    _wk = "This Week" if is_current else "Last Week"
 
     # ── Group performance cards ───────────────────────────────────
-    st.markdown('<p class="section-title">📊 Group Performance This Week</p>',
+    st.markdown(f'<p class="section-title">📊 Group Performance — {_wk} <span style="font-size:0.72rem;color:#4b6080;font-weight:400">({week_label})</span></p>',
                 unsafe_allow_html=True)
 
     grp_data = []

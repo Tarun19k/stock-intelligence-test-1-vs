@@ -189,6 +189,7 @@ All audit reports received, version tested, and key findings:
 | Expert QA Report | v5.28 | 2026-03-28 | 5.5/10 | #29: Zero disclaimers; #32: Algo output unlabeled |
 | Data Dependency Report | v5.28 | 2026-03-28 | 2/10 | C-01: No red flags while 9/12 sectors negative |
 | 360° Bird's Eye View | v5.31 | 2026-03-28 | 5.5/10 | Meta-synthesis + v5.31 live verification |
+| v5.32 QA Brief | v5.32 | 2026-03-29 | TBD | 9 fixes: data coherence + temporal labeling |
 
 ---
 
@@ -217,4 +218,486 @@ Record these values every test run in the QA log:
 - Verdict for RELIANCE.NS: ___
 - ROE shown for RELIANCE.NS: ___
 
-Discrepancies in this table are P1 data coherence bugs (OPEN-008, OPEN-016).
+Discrepancies in this table are P1 data coherence bugs. OPEN-008 and OPEN-016 fixed in v5.32 — if values still diverge, regression has occurred.
+
+---
+
+## 10. v5.32 QA Brief — Data Coherence & Temporal Labeling Sprint
+
+**Version:** v5.32 | **Date:** 2026-03-29 | **Fixes:** 9 | **Regression baseline:** 391/391
+
+---
+
+### Fix 1 — 5-day % consistency across pages (OPEN-008 / H-01)
+**Audit ref:** H-01 | **Files changed:** `utils.py`, `pages/home.py`
+
+**What changed:** Home page and Dashboard now use the same `calc_5d_change()` function
+from `utils.py` to calculate 5-day returns. Previously each page had its own inline calc,
+which caused different values in the same session.
+
+**Where to look:**
+- Page: Home page → Global Snapshot section (the price cards row)
+- Navigate to: Open app → Home tab → scroll to "📊 Global Snapshot"
+- Also check: Select any stock → Dashboard → Charts tab → Live KPI panel
+
+**Before (v5.31):**
+Nifty 50 card on Home page could show e.g. `-9.4%` (5d) while the same
+stock's Dashboard KPI panel showed `-1.3%` in the same session.
+
+**After (v5.32):**
+Both pages show the same 5-day figure for the same instrument.
+
+**Pass criteria:** Record Nifty 50 5-day % from Home snapshot card, then select
+`^NSEI` on the Dashboard. Both figures must match within ±0.1%.
+
+**Fail criteria:** Any difference greater than 0.1% between the two pages in
+the same session is a failure.
+
+**Note:** Small differences (<0.1%) are acceptable due to cache timing.
+Differences >1% indicate the fix is not active.
+
+---
+
+### Fix 2 — Forecast P(gain) neutral zone (OPEN-009 / D-03)
+**Audit ref:** D-03 | **Files changed:** `forecast.py`
+
+**What changed:** P(gain) values between 45% and 55% now display as
+"Neutral (45–55%)" instead of a specific percentage like "49%", which
+implied false directional precision.
+
+**Where to look:**
+- Page: Dashboard → Forecast tab
+- Navigate to: Select any stock (RELIANCE.NS works well) → Forecast tab →
+  look at the forecast history table column "P(Gain)"
+
+**Before (v5.31):**
+P(Gain) column showed values like "49%" or "52%" even when the model
+had no real directional conviction.
+
+**After (v5.32):**
+Any value in the 45–55% band shows "Neutral (45–55%)" instead.
+Values outside this band (e.g. 38%, 67%) still show the exact figure.
+
+**Pass criteria:** Change the forecast horizon using the slider until
+P(gain) falls near 50%. The table must show "Neutral (45–55%)", not "50%".
+
+**Fail criteria:** Any value between 45 and 55 shown as a bare percentage (e.g. "49%").
+
+**Note:** You may need to try a few stocks or horizons to find a case in the
+neutral band. NSEI or broad ETFs tend to cluster near 50%.
+
+---
+
+### Fix 3 — Forecast deduplication (OPEN-010 / D-04)
+**Audit ref:** D-04 | **Files changed:** `forecast.py`
+
+**What changed:** If you view a stock's forecast, navigate away, then return
+to the same stock's Forecast tab in the same session, the forecast now
+updates rather than silently keeping the earlier entry.
+
+**Where to look:**
+- Page: Dashboard → Forecast tab
+- Navigate to: Select RELIANCE.NS → Forecast tab → note the "Made On" date
+  and forecast price → select a different stock → return to RELIANCE.NS →
+  Forecast tab
+
+**Before (v5.31):**
+Revisiting the same stock on the same day silently discarded the new
+forecast and kept the original, even if you changed the horizon.
+
+**After (v5.32):**
+The latest forecast for today replaces the earlier one. The table shows
+the most recent entry for each ticker/horizon combination.
+
+**Pass criteria:** Revisit the same stock's Forecast tab twice in one session.
+Both visits should show a consistent forecast that reflects the current run.
+
+**Fail criteria:** Forecast history shows two entries for the same ticker and
+horizon with the same "Made On" date.
+
+**Note:** This is most visible in extended sessions where a stock is revisited.
+
+---
+
+### Fix 4 — Dynamic section titles in Week Summary (OPEN-011 / D-06 / D-08)
+**Audit ref:** D-06, D-08 | **Files changed:** `pages/week_summary.py`
+
+**What changed:** All section headers in the Week Summary now show the actual
+date range and whether data is for the current week or last week. Previously
+all headers said "This Week" even on weekends when the data was from the
+prior week.
+
+**Where to look:**
+- Page: Week Summary (default home view, or no stock selected)
+- Navigate to: Open app without selecting any stock → observe section headings
+
+**Before (v5.31):**
+All sections showed "This Week" regardless of the actual date.
+On a Saturday, the heading still read "📊 Group Performance This Week"
+with no date reference.
+
+**After (v5.32):**
+- On a weekday: "🌐 Index Performance — This Week (Week of 24 Mar–28 Mar 2026)"
+- On a weekend: "🌐 Index Performance — Last Week (Week of 24 Mar–28 Mar 2026)"
+All five section headings now include this dynamic label.
+
+**Pass criteria:** At least 3 section headings on the Week Summary page must
+show the date range in grey text alongside the main title.
+
+**Fail criteria:** Any section heading that says only "This Week" with no date
+range, or a section that says "This Week" when tested on a Saturday or Sunday.
+
+**Note:** Test is most revealing on weekends. On weekdays, "This Week" is
+correct — confirm the date range still appears in the subtitle.
+
+---
+
+### Fix 5 — Weinstein override label (OPEN-012 / C-04)
+**Audit ref:** C-04, Expert QA #14 | **Files changed:** `pages/dashboard.py`
+
+**What changed:** When the Weinstein Stage analysis overrides the momentum
+signal, the dashboard header now shows the specific stage and a clear
+explanation instead of the generic "Momentum signal adjusted".
+
+**Where to look:**
+- Page: Dashboard → Charts tab header (verdict badge row)
+- Navigate to: Select a stock in a Stage 3 or Stage 4 (declining/downtrend)
+  with a positive short-term momentum. Stocks in correction often show this.
+
+**Before (v5.31):**
+Header showed: `⚠️ Momentum signal adjusted`
+No indication of which framework overrode which.
+
+**After (v5.32):**
+Header shows: `⚠️ Stage 4 overrides momentum — see Insights`
+(or Stage 3, Stage 2 depending on the detected stage)
+
+**Pass criteria:** Find any stock where the verdict is WATCH despite positive
+RSI/MACD signals. The header alignment label must name the Weinstein Stage
+that caused the override.
+
+**Fail criteria:** Header shows "Momentum signal adjusted" (old generic label)
+or shows no conflict label when a conflict exists.
+
+**Note:** Not all stocks will show this — it only fires when Weinstein Stage
+conflicts with the momentum score. Large-cap indices in downtrend (e.g.
+Hang Seng, or any stock near 52-week lows) are good candidates.
+
+---
+
+### Fix 6 — MACD timeframe labeling (OPEN-013 / C-06)
+**Audit ref:** C-06 | **Files changed:** `pages/dashboard.py`
+
+**What changed:** The MACD chart subplot and KPI panel card now explicitly
+say "(Daily)" so users know they are reading daily MACD, not intraday.
+
+**Where to look:**
+- Page: Dashboard → Charts tab
+- Navigate to: Select any stock (INFY.NS or AAPL) → Charts tab → scroll
+  to the indicator subplots below the main candlestick chart
+
+**Before (v5.31):**
+Chart subplot header: "MACD"
+KPI panel card label: "MACD Histogram"
+
+**After (v5.32):**
+Chart subplot header: "MACD (Daily)"
+KPI panel card label: "MACD Histogram (Daily)"
+
+**Pass criteria:** Both the chart subplot title and the KPI panel card label
+must include "(Daily)".
+
+**Fail criteria:** Either label shows plain "MACD" without the timeframe qualifier.
+
+**Note:** The intraday MACD (if shown in live price fragment during market hours)
+is a separate display — this fix applies to the main chart and KPI panel only.
+
+---
+
+### Fix 7 — GI watchlist filters to selected market (OPEN-014 / F-05)
+**Audit ref:** F-05 | **Files changed:** `pages/global_intelligence.py`, `app.py`
+
+**What changed:** The watchlist badges on Global Intelligence topic cards now
+filter to the market selected in the sidebar. If you select "India" in the
+market dropdown, the watchlist shows only Indian stocks. Previously it showed
+all stocks regardless of market selection.
+
+**Where to look:**
+- Page: Global Intelligence
+- Navigate to: Set sidebar market to "India" → Global Intelligence page →
+  open any topic card → scroll to "📌 Related Stocks to Watch"
+- Then: Change sidebar to "USA" → observe same section
+
+**Before (v5.31):**
+"Related Stocks to Watch" showed all watchlist stocks (Indian + US + others)
+regardless of which market was selected in the sidebar.
+
+**After (v5.32):**
+With "India" selected: only `.NS`/`.BO` suffix stocks appear.
+With "USA" selected: only US tickers (no suffix) appear.
+If no stocks match the selected market: shows a note "No watchlist stocks for
+[Market] market in this topic."
+
+**Pass criteria:**
+- With India selected: zero US tickers (NVDA, MSFT etc.) in any watchlist
+- With USA selected: zero Indian tickers (RELIANCE.NS etc.) in any watchlist
+
+**Fail criteria:** Any watchlist showing stocks from a different market than
+the one currently selected in the sidebar.
+
+**Note:** "All" market selection shows all watchlist stocks (baseline behaviour).
+
+---
+
+### Fix 8 — Market LIVE badge specificity (OPEN-015 / C-09)
+**Audit ref:** C-09 | **Files changed:** `app.py`
+
+**What changed:** The green LIVE badge in the sidebar now names the specific
+market that is open, instead of the generic "Market LIVE".
+
+**Where to look:**
+- Page: Any page with the sidebar visible
+- Navigate to: Use the app during market hours for any exchange → observe
+  the green badge in the sidebar below the market dropdown
+
+**Before (v5.31):**
+Badge text: `🟢 Market LIVE — auto-refreshing`
+No indication of which market is open.
+
+**After (v5.32):**
+Badge text: `🟢 India Market LIVE — auto-refreshing` (when India is selected
+and NSE is open), or `🟢 USA Market LIVE — auto-refreshing` etc.
+
+**Pass criteria:** The badge must include the country name from the sidebar
+market selector.
+
+**Fail criteria:** Badge shows "Market LIVE" without the market name.
+
+**Note:** This can only be fully tested during actual market hours (NSE:
+Mon–Fri 9:15–15:30 IST; NYSE: Mon–Fri 9:30–16:00 EST). Outside market hours
+the red "CLOSED" badge shows — confirm it still appears correctly.
+
+---
+
+### Fix 9 — GI price coherence with ticker bar (OPEN-016 / G-04)
+**Audit ref:** G-04 | **Files changed:** `pages/global_intelligence.py`
+
+**What changed:** GI watchlist badges now use `cache_buster=0`, the same
+cache key as the ticker bar. This guarantees both show the same price in the
+same session — eliminating the "Nifty 22,820 in ticker bar vs 23,306 in GI"
+class of divergence.
+
+**Where to look:**
+- Page: Global Intelligence
+- Navigate to: Note the Nifty 50 price in the ticker bar at the top →
+  open Global Intelligence → find a topic with `^NSEI` in its watchlist
+
+**Before (v5.31):**
+GI watchlist used `cache_buster=cb` (session-scoped), which could diverge
+from the ticker bar's `cache_buster=0` if a Refresh had been triggered.
+
+**After (v5.32):**
+GI watchlist always uses `cache_buster=0`, matching the ticker bar's cache key.
+
+**Pass criteria:** Record the Nifty price from the ticker bar. The same ticker
+in the GI watchlist must show the same price (±0).
+
+**Fail criteria:** Any price difference between the ticker bar and GI watchlist
+for the same instrument in the same session.
+
+**Note:** A fresh load (no Refresh pressed) may show both as "—" if the cache
+is still warming. Press Refresh once and then compare — both should update to
+the same value.
+
+---
+
+## 11. v5.32 Persona Test Matrix
+
+Each fix mapped to which persona is most likely to catch a failure and
+which is most harmed if the bug persists.
+
+| Fix | Primary tester persona | Failure impact if missed |
+|---|---|---|
+| Fix 1 — 5-day consistency | Fundamental Analyst | Trust-breaking: two numbers for the same fact |
+| Fix 2 — P(gain) neutral | Active Trader | False precision — 49% implies directional conviction |
+| Fix 3 — Forecast dedup | Active Trader | Stale forecast silently persists in same session |
+| Fix 4 — Dynamic week titles | Complete Beginner | Weekend user sees "This Week" — data is last week's |
+| Fix 5 — Weinstein override | Quant / Systematic | Conflict disclosed but arbitration hidden |
+| Fix 6 — MACD timeframe | Active Trader | User assumes intraday MACD when it's daily |
+| Fix 7 — GI market filter | NRI / Global Investor | Indian-focused user sees US stocks they don't follow |
+| Fix 8 — Specific LIVE badge | Casual Retail Investor | "Market LIVE" with no context — which market? |
+| Fix 9 — GI price coherence | Fundamental Analyst | Two different prices for same stock on same screen |
+
+**Recommended test order for a time-constrained QA session (30 min):**
+Fix 1 → Fix 9 → Fix 5 → Fix 8 → Fix 4 (highest impact / easiest to verify)
+
+---
+
+## 12. v5.32 Cross-Page Data Consistency Baseline
+
+Fill in during QA and keep for regression comparison in v5.33:
+
+| Metric | v5.32 baseline value | Notes |
+|---|---|---|
+| Nifty 50 5-day % — Home | ___ | Record from Global Snapshot card |
+| Nifty 50 5-day % — Dashboard | ___ | Must match Home within ±0.1% |
+| Nifty 50 price — ticker bar | ___ | Record from scrolling ticker |
+| Nifty 50 price — GI watchlist | ___ | Must match ticker bar exactly |
+| Crude WTI price — ticker bar | ___ | |
+| Crude WTI price — GI West Asia watchlist | ___ | Must match ticker bar |
+| RELIANCE.NS verdict | ___ | BUY / WATCH / AVOID |
+| RELIANCE.NS Weinstein Stage | ___ | 1–4 |
+| RELIANCE.NS override label (if conflict) | ___ | Should name the stage |
+| ROE shown for RELIANCE.NS | ___ | Should be N/A or actual % — not 0.0% |
+| Week Summary "This Week" or "Last Week"? | ___ | Depends on day tested |
+| Date range shown in section title | ___ | e.g. "24 Mar–28 Mar 2026" |
+
+
+---
+
+## 13. Complete Audit Finding Registry
+
+> **⚠️ SUPERSEDED — 2026-03-29**
+> This section has been superseded by `GSI_AUDIT_TRAIL.md`, which is the
+> authoritative, append-only audit record. This section is preserved as a
+> historical record of the pre-audit-trail format and will not be edited.
+> For current finding status, reading order, and resolution records,
+> refer to `GSI_AUDIT_TRAIL.md`.
+
+
+**All findings from all 6 audit reports conducted on v5.28 (2026-03-28).**
+Status legend: ✅ Fixed (version) | 🔶 Open (priority) | ⚠️ Known/Won't fix | 🔵 Decision pending
+
+---
+
+### Homepage Audit (v5.28 · Score: 6/10)
+
+| ID | Finding | Priority | Status |
+|---|---|---|---|
+| H-01 | Nifty 50 5-day shows -9.4% on Home vs -1.3% on Dashboard — same session, same ticker | P1 | ✅ Fixed v5.32 (calc_5d_change utility) |
+| H-02 | Global Trend Signals show "—" on first load with no loading state explanation | P2 | 🔶 Open (warmth guard shows placeholder, no user message) |
+| H-03 | Market status cards wrap mid-word: "COMM ODI TIES" at standard viewport | P1 | ✅ Fixed v5.31 (short labels IND/USA/EUR/CHN/COMM/ETF) |
+
+---
+
+### Dashboard Audit (v5.28 · Score: 7/10)
+
+| ID | Finding | Priority | Status |
+|---|---|---|---|
+| D-01 | Score 59/100 shown alongside WATCH verdict — confusing without explanation of why BUY was vetoed | P1 | ✅ Fixed v5.31 (Option B: raw score removed from header) |
+| D-02 | ROE shows 0.0% for RELIANCE.NS — yfinance returns null, safe_float(None)=0.0 displayed as data | P0 | ✅ Fixed v5.31 (N/A guard: val != 0 else "N/A") |
+| D-03 | Forecast P(gain) 46% displayed identically to 79% — no neutral zone for low-conviction signals | P1 | ✅ Fixed v5.32 (45–55% shows "Neutral") |
+| D-04 | Forecast tracker creates duplicate same-day entries when stock revisited in same session | P1 | ✅ Fixed v5.32 (replace not skip on same-day) |
+| D-05 | Week Summary state persists when navigating to Dashboard — no loading indicator shown | P2 | 🔶 Open |
+| D-06 | Section headers say "Weekly +1.36%" and "Daily -2.09%" with no date range — contradictory without context | P1 | ✅ Fixed v5.32 (dynamic titles with date range) |
+| D-07 | Elder Triple Screen verdict labels (BUY SETUP / WAIT) use jargon not plain English | P2 | 🔶 Open |
+| D-08 | "This Week" on all week_summary headers even on weekends when data is from prior week | P1 | ✅ Fixed v5.32 (dynamic "Last Week" on weekends) |
+| D-09 | Forecast correction factor applied silently — user shown adjusted forecast with no disclosure | P2 | 🔶 Open |
+
+---
+
+### Global Intelligence Audit (v5.28 · Score: 3/10)
+
+| ID | Finding | Priority | Status |
+|---|---|---|---|
+| G-01 | WorldMonitor embedded map blocked by CSP (frame-ancestors). Appeared as blank white space | P0 | ⚠️ Won't fix — replaced with external link button |
+| G-02 | Only 4 topic cards — insufficient for a page claiming "Global Intelligence Centre" | P2 | 🔶 Open — new topics require India impact formula |
+| G-03 | Impact chain nodes overflow at 1280px standard viewport | P2 | 🔶 Open |
+| G-04 | Ticker bar shows Nifty 22,820 while GI watchlist shows 23,306 — same session | P1 | ✅ Fixed v5.32 (cache_buster=0 in GI watchlist) |
+| G-05 | GI subtitle claims "Real-time geopolitical & technology trends" while serving stale content | P1 | ✅ Partially fixed v5.31 (Live Headlines date-gated) |
+
+---
+
+### Expert QA Report (v5.28 · Score: 5.5/10 · 43 findings total)
+
+High and critical findings listed. Full 43-finding report available from QA analyst.
+
+| ID | Finding | Priority | Status |
+|---|---|---|---|
+| #14 | Elder Triple Screen and Weinstein Stage shown at equal visual weight with no arbitration disclosed | P1 | ✅ Fixed v5.32 (override label names the stage) |
+| #29 | Zero investment disclaimers anywhere on the platform — full liability exposure | P0 | ✅ Fixed v5.31 (SEBI disclaimer + algorithmic disclosure) |
+| #32 | AI-generated narrative not labeled as algorithmic output — appears as human analysis | P0 | ✅ Fixed v5.31 (algorithmic disclosure banner) |
+| #33 | "Invest in NVDA, TSM, MSFT Azure" in GI with no disclaimer or signal context | P0 | ✅ Fixed v5.31 (What You Should Do Next removed) |
+| #38 | GI page subtitle "Real-Time" claim while map is broken and content is 3 years old | P1 | ✅ Partially fixed v5.31 (date gate on Live Headlines) |
+| #41 | Forecast accuracy tracker has no visual baseline — user cannot tell if 65% accuracy is good or bad | P2 | 🔶 Open |
+| #43 | No data export anywhere — quants and advisors cannot extract signals for external use | P3 | 🔶 Open (v6 roadmap) |
+
+---
+
+### Data Dependency Report (v5.28 · Score: 2/10 · 9 cross-page conflicts)
+
+| ID | Finding | Priority | Status |
+|---|---|---|---|
+| C-01 | AI narrative says "no major red flags" while 9/12 US sectors are negative — Watch Out For uses no sector data | P0 | ✅ Fixed v5.31 (RSI/MACD-aware fallback) + 🔶 Open (sector breadth still not wired to narrative) |
+| C-02 | Gold +3.92% visible in ticker bar while stock-level AI narrative says "no macro risk" | P1 | 🔶 Open — requires OPEN-018 (Claude API integration) |
+| C-03 | RSI 36 (bearish, approaching oversold) described as "neutral momentum zone" in AI text | P1 | 🔶 Open — requires OPEN-018 (Claude API integration) |
+| C-04 | Elder Triple Screen BUY SETUP + Weinstein WAIT shown simultaneously with no resolution | P1 | ✅ Fixed v5.32 (override label names the stage) |
+| C-05 | Momentum Score 58/100 shown with no scale definition, no per-indicator breakdown | P2 | 🔶 Open (OPEN-RISK-003 / C-05) |
+| C-06 | MACD on chart is daily; MACD in KPI panel refreshes every 60s (intraday) — unlabeled | P1 | ✅ Fixed v5.32 (MACD (Daily) label on chart and panel) |
+| C-07 | Price shown in multiple currencies with no conversion — EUR-listed stocks vs USD context | P3 | 🔶 Open |
+| C-08 | Sector breadth (9/12 US sectors negative) computed correctly but never passed to AI narrative | P1 | 🔶 Open — requires OPEN-018 (Claude API integration) |
+| C-09 | "Market LIVE" badge active at 2AM Saturday — all markets closed | P1 | ✅ Fixed v5.32 (badge names specific market + gated on market_open bool) |
+
+---
+
+### 360° Bird's Eye View (v5.31 · Score: 5.5/10)
+
+| ID | Finding | Priority | Status |
+|---|---|---|---|
+| F-01 | Only 2 topic cards visible on GI page (others collapsed) — page looks empty on first load | P1 | ✅ Fixed v5.31 (expanded=True by default) |
+| F-02 | India Impact text is a static formula — not computed from live Crude WTI price | P1 | 🔶 Open (OPEN-014 improved market filter; India formula still static) |
+| F-03 | TechCrunch RSS serving 2022–2023 articles labeled "Live" | P0 | ✅ Fixed v5.31 (stale feeds replaced + 48h date gate) |
+| F-04 | GI watchlist stocks hardcoded — ignores market selector | P1 | ✅ Fixed v5.32 (_market_of() filter + selected_market param) |
+| F-05 | GI watchlist always shows India stocks regardless of market selector | P1 | ✅ Fixed v5.32 (same as F-04) |
+| F-06 | "What You Should Do Next" — career advice disconnected from live market data | P0 | ✅ Fixed v5.31 (section removed) |
+| F-07 | Forecast accuracy report visible in Week Summary but Forecast tab has no link to it | P3 | 🔶 Open |
+| F-08 | Portfolio Allocator has no export — cannot download recommended weights | P3 | 🔶 Open (v6 roadmap) |
+| F-09 | Compare tab normalises to 100 at period start but no disclosure of normalisation method | P2 | 🔶 Open |
+| F-10 | Impact chain overflows at 1280px standard viewport (same as G-03) | P2 | 🔶 Open |
+| F-11 | Momentum score shown in header before verdict badge — misleads P1 Glancer persona | P0 | ✅ Fixed v5.31 (Option B: score removed from header) |
+| F-12 | Named stock investment recommendations (NVDA, TSM, MSFT) without disclaimer | P0 | ✅ Fixed v5.31 (section removed) |
+| F-13 | India Impact formula is static string — "every $10/bbl rise adds ₹1.2L cr to import bill" | P1 | 🔶 Open |
+| F-14 | West Asia section makes quantitative claims with no source attribution or date | P1 | 🔶 Open |
+| F-15 | All GI topic cards collapsed on first load — page appears empty to Complete Beginner | P1 | ✅ Fixed v5.31 (expanded=True by default) |
+
+---
+
+### Summary Table — All Findings by Status
+
+| Status | Count | Notes |
+|---|---|---|
+| ✅ Fixed v5.31 | 11 | All 8 QA-verified fixes + 3 additional |
+| ✅ Fixed v5.32 | 9 | All 9 OPEN items from v5.32 sprint |
+| 🔶 Open | 17 | Tracked in GSI_session.json open_items |
+| ⚠️ Known / Won't fix | 1 | G-01 WorldMonitor CSP — replaced with link |
+| 🔵 Decision pending | 1 | D-02 ROE benchmark (industry avg comparator) |
+| **Total** | **39** | Across 6 reports, v5.28 baseline |
+
+---
+
+### Open Findings Tracker (as of v5.32)
+
+Findings still open, mapped to their OPEN-XXX tracking ID:
+
+| Finding ID | Description (short) | Mapped to | Target |
+|---|---|---|---|
+| H-02 | No loading state explanation on first load | — | v5.33 consideration |
+| D-05 | Week Summary state persists on Dashboard load | — | v5.33 consideration |
+| D-07 | Elder labels use jargon (BUY SETUP / WAIT) | — | v5.33 consideration |
+| D-09 | Correction factor applied silently | — | v5.33 consideration |
+| G-02 | Only 4 GI topic cards | — | v6 roadmap |
+| G-03 / F-10 | Impact chain overflows at 1280px | — | v5.33 consideration |
+| #41 | Forecast accuracy has no visual baseline | — | v5.33 consideration |
+| #43 | No data export anywhere | — | v6 roadmap |
+| C-01 (partial) | Sector breadth not wired to AI narrative | OPEN-018 | Future phase |
+| C-02 | Macro data not wired to stock-level narrative | OPEN-018 | Future phase |
+| C-03 | RSI 36 described as neutral in AI text | OPEN-018 | Future phase |
+| C-05 | Score 58/100 has no scale or breakdown | RISK-003 | v5.33 |
+| C-07 | Multi-currency without conversion disclosure | — | v6 roadmap |
+| C-08 | Sector breadth computed but not passed to AI | OPEN-018 | Future phase |
+| F-02 / F-13 | India Impact static formula | OPEN-018 | Future phase |
+| F-07 | No link from Forecast tab to Accuracy Report | — | v5.33 consideration |
+| F-08 / F-09 | No Portfolio export, no normalisation disclosure | — | v6 roadmap |
+| F-14 | West Asia content unsourced | — | v5.33 consideration |
+| D-02 benchmark | ROE card with no industry comparator | OPEN-ROE | v5.33 |
+

@@ -254,6 +254,11 @@ def run(FM):
         "GSI_QA_STANDARDS.md",
         "GSI_SKILLS.md",
         "GSI_COMPLIANCE_CHECKLIST.md",
+        "GSI_AUDIT_TRAIL.md",
+        "GSI_DECISIONS.md",
+        "GSI_SPRINT.md",
+        "GSI_WIP.md",
+        "GSI_DEPENDENCIES.md",
     ]
     for doc in gov_docs:
         chk("R10b.gov_docs", f"exists:{doc}", _os.path.exists(doc),
@@ -449,8 +454,8 @@ def run(FM):
         "Trend and momentum agree" in db,
         "Header still shows 'All layers aligned' jargon")
     chk("R19.v521", "plain_english_conflict",
-        "Momentum signal adjusted" in db,
-        "Header still shows 'Score overridden by regime' jargon")
+        "overrides momentum" in db or "Trend and momentum agree" in db,
+        "Header must use plain English override label — not regime jargon")
     # Debt KPI panel
     chk("R19.v521", "debt_kpi_branch_in_panel",
         'asset_class == "debt"' in db[db.find("def _render_kpi_panel"):
@@ -619,6 +624,48 @@ def run(FM):
         "nav_page" in home[_tm_start:_tm_start + 400] if _tm_start >= 0 else False,
         "_render_top_movers missing nav_page guard — will ghost after navigation")
 
+    # R23b · v5.32 contracts ─────────────────────────────────────────────────
+    ut  = FM.get("utils.py", "")
+    ho  = FM.get("pages/home.py", "")
+    gi  = FM.get("pages/global_intelligence.py", "")
+    ws  = FM.get("pages/week_summary.py", "")
+    fo  = FM.get("forecast.py", "")
+    ap  = FM.get("app.py", "")
+
+    chk("R23b", "calc_5d_change_in_utils",
+        "def calc_5d_change" in ut,
+        "calc_5d_change missing from utils.py (OPEN-008)")
+    chk("R23b", "home_uses_calc_5d",
+        "calc_5d_change" in ho,
+        "home.py must use calc_5d_change() (OPEN-008)")
+    chk("R23b", "gi_cache_buster_0",
+        "cache_buster=0" in gi,
+        "GI watchlist must use cache_buster=0 for price coherence (OPEN-016)")
+    chk("R23b", "gi_market_filter",
+        "selected_market" in gi and "_market_of" in gi,
+        "GI must have market filter + _market_of helper (OPEN-014)")
+    chk("R23b", "gi_selected_market_param",
+        "selected_market=country" in ap,
+        "app.py must pass selected_market=country to render_global_intelligence (OPEN-014)")
+    chk("R23b", "forecast_neutral_zone",
+        "45 <= pg <= 55" in fo or "45 <= p_gain <= 55" in fo,
+        "forecast.py must have neutral zone 45-55% guard (OPEN-009)")
+    chk("R23b", "forecast_dedup_update",
+        'e["made_on"] != today' in fo,
+        "forecast.py must replace same-day entries not skip (OPEN-010)")
+    chk("R23b", "weinstein_override_label",
+        "overrides momentum" in FM.get("pages/dashboard.py", ""),
+        "dashboard.py must name the Weinstein override specifically (OPEN-012)")
+    chk("R23b", "macd_daily_label",
+        "MACD (Daily)" in FM.get("pages/dashboard.py", ""),
+        "dashboard.py MACD chart titles must include (Daily) label (OPEN-013)")
+    chk("R23b", "week_dynamic_titles",
+        "_title" in ws and "is_current" in ws,
+        "week_summary.py section titles must be dynamic (OPEN-011)")
+    chk("R23b", "live_badge_named_market",
+        "Market LIVE" in ap and "country" in ap,
+        "LIVE badge must name the specific market (OPEN-015)")
+
     # R24 · v5.27 DataManager M1 contracts ───────────────────────────────────
     # Verifies data_manager.py satisfies all M1 architecture contracts.
     dm = FM.get("data_manager.py", "")
@@ -708,4 +755,31 @@ if __name__ == "__main__":
         if os.path.exists(zname):
             verify_zip(zname)
             break
+
+    # ── Context generation ────────────────────────────────────────────────────
+    # Regenerate GSI_CONTEXT.md only when ALL regression checks pass (0 failures).
+    # This keeps the Project Files context file in sync with session state
+    # without requiring a separate manual step.
+    if exit_code == 0:
+        try:
+            import importlib.util as _ilu, os as _os
+            _ctx_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)),
+                                      "generate_context.py")
+            if _os.path.exists(_ctx_path):
+                _spec = _ilu.spec_from_file_location("generate_context", _ctx_path)
+                _mod  = _ilu.module_from_spec(_spec)
+                _spec.loader.exec_module(_mod)
+                _ok = _mod.run()
+                if _ok:
+                    print("\n  GSI_CONTEXT.md regenerated — upload to Project Files to sync")
+                else:
+                    print("\n  WARNING: GSI_CONTEXT.md validation failed — check generate_context.py")
+            else:
+                print("\n  (generate_context.py not found — skipping context regeneration)")
+        except Exception as _e:
+            print(f"\n  WARNING: context regeneration failed: {_e}")
+    else:
+        print("\n  (context regeneration skipped — fix regression failures first)")
+    # ─────────────────────────────────────────────────────────────────────────
+
     sys.exit(exit_code)

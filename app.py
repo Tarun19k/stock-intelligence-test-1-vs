@@ -168,10 +168,10 @@ with st.sidebar:
     # ── Market status badge ──────────────────────────────────────
     if market_open:
         st.markdown(
-            '<div style="background:#00c85318;border:1px solid #00c853;'
-            'border-radius:8px;padding:6px 12px;margin:4px 0;'
-            'font-size:0.78rem;color:#00c853;font-weight:700;text-align:center">'
-            '🟢 Market LIVE — auto-refreshing</div>',
+            f'<div style="background:#00c85318;border:1px solid #00c853;'
+            f'border-radius:8px;padding:6px 12px;margin:4px 0;'
+            f'font-size:0.78rem;color:#00c853;font-weight:700;text-align:center">'
+            f'🟢 {country} Market LIVE — auto-refreshing</div>',
             unsafe_allow_html=True,
         )
     else:
@@ -262,4 +262,5 @@ elif nav == "📊 Dashboard":
         render_week_summary(cur_sym=cur_sym, cb=cb)
 
 elif nav == "🌍 Global Intelligence":
-    render_global_intelligence(cur_sym=cur_sym, cb=cb, market_open=market_open)
+    render_global_intelligence(cur_sym=cur_sym, cb=cb, market_open=market_open,
+                               selected_market=country)
