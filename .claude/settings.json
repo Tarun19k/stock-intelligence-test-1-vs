@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 regression.py)",
+      "Bash(python3 -c *)",
+      "Bash(python3 *.py)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(wc *)",
+      "Read(*)",
+      "Write(*.py)",
+      "Write(*.md)",
+      "Write(*.json)",
+      "Write(*.txt)"
+    ],
+    "deny": [
+      "Bash(pip install *)",
+      "Bash(uv pip install *)",
+      "Bash(rm *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(streamlit run *)"
+    ]
+  },
+  "model": "claude-sonnet-4-6",
+  "notes": [
+    "deny pip/uv installs — dependency changes must be deliberate and reviewed",
+    "deny rm — file deletion must be intentional, not accidental",
+    "deny curl/wget — no unreviewed external fetches",
+    "deny streamlit run — app should be run manually by developer, not by Claude"
+  ]
+}
