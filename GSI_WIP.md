@@ -19,23 +19,47 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_012
-Version:       v5.33
+Status:        ACTIVE
+Session ID:    session_013
+Version:       v5.34
 Last updated:  2026-03-31
-Sprint:        v5.33 COMPLETE
+Sprint:        v5.34 IN PROGRESS
+Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS, 16 R27 checks)
 ```
 
-## Active Tasks (update as each completes)
+## Active Tasks — v5.34 (update as each completes)
 
-- [x] RISK-001: XSS sanitise() in unsafe_allow_html f-strings (dashboard.py, home.py, global_intelligence.py)
-- [x] RISK-003: safe_ticker_key() before yf.download() (market_data.py)
-- [x] G-05: Remove "Real-Time" false claim from GI subtitle (global_intelligence.py)
-- [x] H-02: First-load warmth guard state explanation (home.py)
-- [x] D-07: Elder labels → plain English (indicators.py)
-- [x] D-09: Forecast correction factor disclosed (dashboard.py)
-- [x] G-02: Expand GI topic cards (config.py — 2→5 topics)
-- [x] OPEN-017: R25 governance regression checks (regression.py)
+### Phase 0 — Infrastructure (session_013)
+- [x] regression.py: R27 sprint manifest sync checks added
+- [x] GSI_SPRINT_MANIFEST.json: manifest created (16 checks: 4 Tier A + 10 Tier B v5.33 + 2 Tier B infra)
+- [x] CLAUDE.md: Rule 2 updated (manifest step), Rule 7 added (amendment workflow)
+- [ ] GSI_WIP.md: Status ACTIVE (this file — in progress)
+
+### Phase 0 — Doc debt backfill (v5.33 misses)
+- [ ] GSI_AUDIT_TRAIL.md: 6 resolution records (H-02, D-07, D-09, G-02, G-05, EQA-38) + Section 4 regen
+- [ ] GSI_GOVERNANCE.md: Enforcement section Planned → Implemented (v5.33)
+- [ ] GSI_RISK_REGISTER.md: RISK-T09 Open → Mitigated
+- [ ] GSI_LOOPHOLE_LOG.md: Class 4 RISK-001 → Fixed (v5.33); 399 → 410
+- [ ] version.py: Add missing v5.31 entry
+- [ ] GSI_CONTEXT.md: Remove incorrectly added OPEN-001; close OPEN-001/OPEN-005
+
+### Phase 1 — Observability dashboard (prerequisites for UX items)
+- [ ] market_data.py: instrumentation (rate-limit getter, hit/miss counters, error counter, fetch latency)
+- [ ] pages/observability.py: new founder-only page (App Health + Program tabs)
+- [ ] regression.py: R26 observability checks (syntax + instrumentation contracts)
+
+### Phase 2 — UX items (after Phase 1 complete + passing)
+- [ ] D-05: Week Summary loading indicator on Dashboard navigation
+- [ ] G-03/F-10: Impact chain overflow fix at 1280px
+- [ ] F-14: West Asia content attribution
+
+### Phase 3 — Sprint close
+- [ ] version.py: v5.34 VERSION_LOG entry
+- [ ] CLAUDE.md: Current State updated to v5.34
+- [ ] GSI_CONTEXT.md: header updated to v5.34
+- [ ] GSI_SPRINT.md: v5.34 moved to Done
+- [ ] GSI_SPRINT_MANIFEST.json: status → COMPLETE, archive to docs/sprint_archive/
+- [ ] GSI_WIP.md: Status → IDLE
 
 ## Completed This Session (session_012 — v5.33)
 

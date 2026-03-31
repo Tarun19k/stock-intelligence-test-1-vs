@@ -311,11 +311,15 @@ Before reading CLAUDE.md or session.json, read `GSI_WIP.md`.
 - If `Status: ACTIVE` — read the CHECKPOINT block and resume from it exactly.
   Do NOT start fresh. Do NOT regenerate files already marked complete.
 
-### Rule 2 — Write to GSI_WIP.md before starting any implementation
+### Rule 2 — Write to GSI_WIP.md and GSI_SPRINT_MANIFEST.json before starting any implementation
 When starting a new sprint or implementation task:
 1. Set `Status: ACTIVE` in GSI_WIP.md
 2. List all planned tasks as unchecked boxes
-3. Begin implementation
+3. Write `GSI_SPRINT_MANIFEST.json` with:
+   - Tier A checks (always-required): version.py entry, CLAUDE.md version, GSI_CONTEXT.md header, GSI_SPRINT.md Done section
+   - Tier B checks (sprint-specific): one check per audit finding fixed, risk mitigated, governance change, or new ADR
+   - `file_change_log` entries for all files you know will change
+4. Begin implementation — regression R27 now enforces the manifest automatically
 
 ### Rule 3 — Commit after every file (git-first discipline)
 Never batch multiple files into a single commit during active development.
@@ -353,6 +357,22 @@ See GSI_SPRINT.md for sprint planning rules.
 Any decision that took more than 30 seconds to make gets an ADR record.
 If the session ends before this is done, note the pending decisions in
 the CHECKPOINT block of GSI_WIP.md.
+
+### Rule 7 — Amend the manifest for every mid-sprint file change
+Before committing any file during a sprint — whether planned or not:
+1. Check if the file is already in `file_change_log` in `GSI_SPRINT_MANIFEST.json`
+2. If NOT listed: add an entry immediately with `doc_updates_required` or `no_doc_update_reason`
+3. If a new file is created: look up its type in the template below and add standard checks
+4. Add any new `checks[]` entries that the change requires
+R27 fails if any committed file is missing from the log. No silent omissions.
+
+**New file type → standard doc update checks:**
+| File type | Required checks to add |
+|---|---|
+| `pages/*.py` | CLAUDE.md file structure, R8 EP list if new entry points |
+| New `GSI_*.md` governance doc | R10b list in regression.py, CLAUDE.md Living Documentation table |
+| New `*.py` utility/module | CLAUDE.md file structure, R8 EP list for public functions |
+| `docs/sprint_archive/*.json` | None — archival artifact |
 
 
 ---

@@ -2,7 +2,7 @@
 # Upload ONLY this file to Claude Project Files
 # Do NOT upload CLAUDE.md (5k tokens) or GSI_session.json (35k tokens) to Project Files
 # Regenerate: python3 generate_context.py  (auto-runs after regression.py passes)
-# Generated: 2026-03-31 | v5.32 | ALL 400 CHECKS PASS
+# Generated: 2026-03-31 | v5.33 | ALL 410 CHECKS PASS
 # Target: <1,600 tokens. Do not add verbose content here.
 
 ## Identity
@@ -11,7 +11,7 @@ Repo: https://github.com/Tarun19k/stock-intelligence-test-1-vs
 Session manifest (Gist): https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
 Stack: Python 3.14 · Streamlit 1.55 · yfinance 1.2 · pandas>=1.4.0
 Deploy: Streamlit Cloud (community) · no API keys · no database
-Current version: v5.32 | Regression: ALL 400 CHECKS PASS
+Current version: v5.33 | Regression: ALL 410 CHECKS PASS
 
 ## Architecture — one paragraph
 14-file modular app. market_data.py is the ONLY yfinance importer.
@@ -39,7 +39,7 @@ tickers.json is the single source of truth for all 559 tickers and 38 groups.
 12. Do NOT display raw Momentum score (X/100) in the dashboard header. — Option B is final — verdict badge + plain-English reason only. Score is in KPI panel.
 13. Do NOT remove the SEBI disclaimer from `_tab_insights()`. — It is a P0 regulatory requirement. It must appear before the three insight columns.
 14. Do NOT call `_render_next_steps_ai()` from `render_global_intelligence()`. — Removed v5.31 — liability risk. Function definition kept for future redesign.
-15. QA brief protocol:
+15. QA brief protocol: Always include before/after screenshots and explicit expected text. Never rely on numbered fix lists alone — tester must know exactly what they are looking at. Learned from v5.31 Fix1/Fix2 numbering confusion.
 
 ## Critical patterns (from GSI_SKILLS.md anti-patterns)
 safe_float(None)=0.0 — for ROE/fundamentals: show N/A not 0.0% if val==0
@@ -80,14 +80,17 @@ GSI_LOOPHOLE_LOG.md      6 classes of automation-caught loopholes. Append as dis
 .claude/rules/           Path-scoped rules — auto-load in Claude Code only (not claude.ai)
 
 ## Open items
-  OPEN-003 [MEDIUM]: Cross-session forecast persistence
-  OPEN-004 [LOW]: indicators.py scoring weight audit
-  OPEN-006 [MEDIUM]: Portfolio Allocator — Mean-CVaR optimisation tab in group overview
-  OPEN-007 [HIGH]: DataManager: SQLite + priority queue + circuit breaker + market-aware TTLs
-  RISK-001 [MEDIUM]: XSS via unsafe_allow_html with unescaped ticker vars
-  RISK-003 [LOW]: No safe_ticker_key() before yf.download()
-  OPEN-017 [LOW]: Governance policy framework — 7 policies to enforce in regression
-  OPEN-018 [MEDIUM]: Claude API integration — live AI narrative with Opus 4.6 / Mythos-ready
+  OPEN-001 [HIGH]: git rm config_OLD.py + forecast_history.json from repo
+  OPEN-003 [MEDIUM]: Cross-session forecast persistence (Supabase)
+  OPEN-004 [LOW]: Extract SCORING_WEIGHTS to config.py
+  OPEN-006 [MEDIUM]: Portfolio Allocator stability score UI + backtest
+  OPEN-007 [HIGH]: DataManager M2: CacheManager + DataContract validator
+  OPEN-018 [MEDIUM]: Claude API integration — live AI narrative with Opus 4.6
+  OPEN-019 [LOW]: Momentum Score decomposition bar chart (C-05)
+  OPEN-020 [LOW]: WorldMonitor self-hosted (Leaflet.js + ACLED/GDELT API)
+  D-05 [LOW]: Week Summary state persists on Dashboard nav — no loading indicator
+  G-03 [LOW]: Impact chain overflow fix at 1280px
+  F-14 [LOW]: West Asia content attribution
 
 ## Sprint discipline
 Max 9 items per sprint — verified ceiling for single-session completion

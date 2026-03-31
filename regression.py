@@ -753,6 +753,52 @@ def run(FM):
         "market_data.py must call safe_ticker_key() before yf.download() — RISK-003 / Policy 2")
 
 
+    # R27 · Sprint Manifest sync checks ──────────────────────────────────────
+    # Reads GSI_SPRINT_MANIFEST.json from repo root.
+    # Only active when manifest status == "IN_PROGRESS".
+    #
+    # Pass 1 — file_change_log completeness:
+    #   Every entry must have doc_updates_required (list) OR no_doc_update_reason (str).
+    #   Silence is not allowed — every file change must have a conscious doc decision.
+    #
+    # Pass 2 — must_contain checks:
+    #   Every check in checks[] must find its must_contain string in the target file.
+    #
+    # When status == "COMPLETE" or manifest absent: R27 = 0 checks, baseline unchanged.
+    import json as _j27
+    _manifest_path = "GSI_SPRINT_MANIFEST.json"
+    if os.path.exists(_manifest_path):
+        try:
+            _manifest = _j27.load(open(_manifest_path))
+        except Exception as _me:
+            chk("R27", "manifest_valid_json", False,
+                f"GSI_SPRINT_MANIFEST.json is not valid JSON: {_me}")
+            _manifest = {}
+        if _manifest.get("status") == "IN_PROGRESS":
+            # Pass 1 — every log entry is explicitly resolved
+            for _entry in _manifest.get("file_change_log", []):
+                _f = _entry.get("file", "?")
+                _has_upd    = "doc_updates_required" in _entry
+                _has_reason = bool(str(_entry.get("no_doc_update_reason", "")).strip())
+                chk("R27.log", f"change_log_complete:{_f}",
+                    _has_upd or _has_reason,
+                    f"{_f}: must declare doc_updates_required or no_doc_update_reason")
+            # Pass 2 — all declared must_contain checks
+            for _c in _manifest.get("checks", []):
+                _cid   = _c.get("id", "?")
+                _cfile = _c.get("file", "?")
+                _must  = _c.get("must_contain", "")
+                _label = _c.get("label", _cid)
+                _tier  = _c.get("tier", "?")
+                if not os.path.exists(_cfile):
+                    chk(f"R27.{_tier}", f"{_cid}:{_label}", False,
+                        f"{_cfile} not found on disk")
+                    continue
+                _ok = _must in open(_cfile).read()
+                chk(f"R27.{_tier}", f"{_cid}:{_label}", _ok,
+                    f"not found in {_cfile}: '{_must[:80]}'" if not _ok else "")
+
+
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.
     Catches fixes applied to in-memory FM but not written to the zip."""
