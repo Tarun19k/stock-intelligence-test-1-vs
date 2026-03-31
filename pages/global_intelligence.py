@@ -7,7 +7,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as stc
 from config import GLOBAL_TOPICS, NEXT_STEPS_AI
-from utils import sanitise, safe_run, responsive_cols, log_error, safe_float
+from utils import sanitise, safe_run, responsive_cols, log_error, safe_float, safe_url
 from market_data import get_news, get_price_data
 
 
@@ -76,7 +76,7 @@ def _render_watchlist_badges(tickers: list, cur_sym: str, cb: int,
             chg = (lp - pp) / pp * 100 if pp else 0
             color = "#00c853" if chg >= 0 else "#ff1744"
             arr   = "▲" if chg >= 0 else "▼"
-            name  = sym.replace(".NS","").replace(".BO","")
+            name  = sanitise(sym.replace(".NS","").replace(".BO",""), 20)
             col.markdown(
                 f'<div style="background:#0d1117;border:1px solid {color}44;'
                 f'border-radius:8px;padding:8px;text-align:center">'
@@ -163,13 +163,14 @@ def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int,
         )
         if articles:
             for a in articles:
+                _link = a["link"] if safe_url(a["link"]) else "#"
                 st.markdown(
                     f'<div class="news-card">'
-                    f'<div class="news-title"><a href="{a["link"]}" '
+                    f'<div class="news-title"><a href="{_link}" '
                     f'target="_blank" style="color:#dde2f5;text-decoration:none">'
-                    f'{a["title"]}</a></div>'
-                    f'<div class="news-meta">{a["source"]} · {a["date"]}</div>'
-                    f'<div class="news-sum">{a["summary"]}</div>'
+                    f'{_s(a["title"], 160)}</a></div>'
+                    f'<div class="news-meta">{_s(a["source"], 60)} · {_s(a["date"], 30)}</div>'
+                    f'<div class="news-sum">{_s(a["summary"], 300)}</div>'
                     f'</div>',
                     unsafe_allow_html=True,
                 )
@@ -187,8 +188,8 @@ def render_global_intelligence(cur_sym: str = "$", cb: int = 0,
         '<div style="font-size:1.6rem;font-weight:900;color:#c8d6f0;'
         'margin-bottom:4px">🌍 Global Intelligence Centre</div>'
         '<div style="font-size:0.84rem;color:#4b6080;margin-bottom:20px">'
-        'Real-time geopolitical & technology trends · Impact chains · '
-        'Market linkages · World monitor live feed</div>',
+        'Geopolitical & technology intelligence · Impact chains · '
+        'Market linkages · World monitor</div>',
         unsafe_allow_html=True,
     )
 
@@ -220,4 +221,3 @@ def render_global_intelligence(cur_sym: str = "$", cb: int = 0,
                            selected_market=selected_market)
 
     st.divider()
-    _render_next_steps_ai()
