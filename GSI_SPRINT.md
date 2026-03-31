@@ -5,15 +5,15 @@
 # The "In Progress" column acts as a WIP lock alongside GSI_WIP.md.
 # ════════════════════════════════════════════════════════════════════════
 
-## Current Sprint: v5.33 (Planning)
+## Current Sprint: v5.34 (Planning)
 
 **Status:** Planning — not started
 **Target date:** TBD
-**Regression baseline entering sprint:** 392/392
+**Regression baseline entering sprint:** 410/410
 
 ---
 
-### Backlog (candidate items for v5.33)
+### Backlog (candidate items for v5.34)
 
 Sourced from GSI_session.json open_items and GSI_AUDIT_TRAIL.md open findings.
 Prioritised by impact and implementation effort.
@@ -37,27 +37,43 @@ Prioritised by impact and implementation effort.
 | OPEN-004 | Extract SCORING_WEIGHTS to config.py | Low | session | Policy 2 |
 | OPEN-003 | Cross-session forecast persistence (Supabase) | High | session | Policy 2 |
 | D-05 | Week Summary state persists on Dashboard navigation — no loading indicator | Low | audit | Policy 3 (UX) |
-| G-02 | Only 4 GI topic cards — insufficient for "Global Intelligence Centre" | Medium | audit | Policy 1 (data) |
 | C-02 | Macro data (Gold, Crude) not accessible to stock-level AI narrative | Medium | audit | OPEN-018 (Claude API) |
 | C-03 | RSI 36 described as "neutral momentum" in AI narrative — wrong | Medium | audit | OPEN-018 (Claude API) |
 | C-08 | Sector breadth computed but never passed to AI narrative engine | Medium | audit | OPEN-018 (Claude API) |
 | F-02 | India Impact formula static — not computed from live Crude price | Medium | audit | OPEN-018 (Claude API) |
 | F-10 | Impact chain overflows at 1280px — duplicate of G-03 | Low | audit | Policy 3 (UX) |
-| EQA-38 | GI subtitle "Real-Time" claim — partially fixed (Live Headlines gated) | Low | audit | Policy 7 (freshness) |
 | C-01 | Sector breadth not wired to narrative — partially fixed in v5.31 | Medium | audit | OPEN-018 (Claude API) |
 | OPEN-006 | Portfolio Allocator stability score UI (shipped v5.23 — needs UI polish) | Medium | session | Policy 3 (UX) |
 | OPEN-007 | DataManager M2: CacheManager + DataContract validator | High | session | Policy 2 (arch) |
-| OPEN-017 | Governance policy framework — 7 policies to enforce in regression (R25) | Low | session | Policy 2 (arch) |
 | OPEN-018 | Claude API integration — live AI narrative (Opus 4.6 / Mythos-ready) | Medium | session | Policy 4,5 |
 | C-05 | Momentum score decomposition / scale disclosure | Medium | audit | Policy 5 |
 | EQA-41 | Forecast accuracy visual baseline | Medium | audit | Policy 7 |
-| G-05 | GI subtitle "Real-Time" — remove false claim | Low | audit | Policy 7 |
+| D-02 bench | ROE benchmark: self-calculate from yfinance financials | Medium | audit | Policy 5 (data coherence) |
 
 ---
 
 ### In Progress
 
 Nothing in progress. Next session picks from Backlog above.
+
+---
+
+### Done — v5.33 (2026-03-31)
+
+| ID | Description | Verified |
+|---|---|---|
+| RISK-003 | safe_ticker_key() before yf.download() | Regression R25.P2a |
+| RISK-001 | sanitise()/safe_url() XSS in home.py + GI | Regression R25.P7b |
+| D-07 | Elder labels → plain English | Code review |
+| G-02 | GI topics 2→5 (Rate Cycle, China, Commodities) | Code review |
+| G-05 | GI subtitle "Real-Time" removed | Regression R25.P4c |
+| H-02 | Loading states: "Loading…"/"Computing…" | Code review |
+| D-09 | Forecast correction factor disclosed | Code review |
+| OPEN-017 | R25 governance checks (6 rules, 10 checks) | Regression 410/410 |
+| P0-fix | SEBI disclaimer in _tab_insights() | Regression R25.P4a |
+| P0-fix | Algo disclosure in _tab_insights() | Regression R25.P4b |
+| P0-fix | "No major red flags" blanket fallback removed | Regression R25 |
+| P0-fix | 48h Live Headlines gate in GI | Regression R25.P7a |
 
 ---
 
@@ -108,6 +124,7 @@ Nothing in progress. Next session picks from Backlog above.
 
 | Sprint | Version | Items | Sessions | Outcome |
 |---|---|---|---|---|
+| Security, compliance & governance | v5.33 | 8 | 1 | All 8 complete + 4 P0 gaps fixed, 10 R25 checks |
 | Data coherence | v5.32 | 9 | 1 | All 9 complete, 11 R23b checks |
 | P0 regulatory | v5.31 | 8 | 1 | All 8 verified by QA |
 | Lazy loading M0-M3 | v5.24–v5.25 | 6 | 2 | Complete |
