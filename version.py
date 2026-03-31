@@ -102,7 +102,23 @@ VERSION_LOG = [
               "'no red flags' blanket fallback, 48h Live Headlines gate — "
               "all were listed as v5.31 fixes but were never committed to the codebase. "
               "GSI_LOOPHOLE_LOG.md created — 6-class automation loophole registry. "
-              "Regression baseline: 400→410 (10 new R25 checks)."}
+              "Regression baseline: 400→410 (10 new R25 checks)."},
+    {"version": "v5.34", "date": "2026-04-01",
+     "notes": "Sprint manifest infrastructure + v5.33 doc debt backfill + observability dashboard + UX fixes. "
+              "GSI_SPRINT_MANIFEST.json + R27: living sprint manifest system — every committed file "
+              "must be logged with doc_updates_required or no_doc_update_reason; R27 enforces this "
+              "with Pass 1 (log completeness) + Pass 2 (must_contain checks). "
+              "Doc debt (v5.33 misses): 6 audit trail resolutions (H-02/D-07/D-09/G-02/G-05/EQA-38), "
+              "GSI_GOVERNANCE.md enforcement Planned→Implemented, RISK-T09 Open→Mitigated, "
+              "GSI_LOOPHOLE_LOG.md Class 4 Fixed, missing v5.31 version entry added. "
+              "Phase 1 — observability: market_data.py instrumentation (_cache_stats, _fetch_errors, "
+              "_fetch_latency_ms, get_health_stats(), get_rate_limit_state()); "
+              "pages/observability.py founder-only page (App Health + Program tabs, DEV_TOKEN gate); "
+              "5 new R26 regression checks. "
+              "Phase 2 — UX: D-05 loading spinner on Dashboard nav (data_stale gate); "
+              "G-03/F-10 impact chain overflow CSS fix (width:100% + box-sizing:border-box at 1280px); "
+              "F-14 West Asia quantitative claims now carry source attribution (Reuters/EIA/PPAC/Drewry). "
+              "Regression baseline: 410→415 (5 new R26 checks; R27 checks are sprint-active only)."}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
