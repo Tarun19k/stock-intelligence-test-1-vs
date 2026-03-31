@@ -11,6 +11,7 @@ PROJECT_FILES = [
     "config.py","version.py","app.py","utils.py","forecast.py","market_data.py","styles.py",
     "indicators.py","portfolio.py","data_manager.py",
     "pages/home.py","pages/dashboard.py","pages/global_intelligence.py","pages/week_summary.py",
+    "pages/observability.py",
 ]
 
 def load_files():
@@ -797,6 +798,26 @@ def run(FM):
                 _ok = _must in open(_cfile).read()
                 chk(f"R27.{_tier}", f"{_cid}:{_label}", _ok,
                     f"not found in {_cfile}: '{_must[:80]}'" if not _ok else "")
+
+
+    # R26 · Observability instrumentation contracts ────────────────────────────
+    _md_obs  = FM.get("market_data.py", "")
+    _obs_pg  = FM.get("pages/observability.py", "")
+    chk("R26", "get_health_stats_defined",
+        "def get_health_stats" in _md_obs,
+        "market_data.py missing get_health_stats()")
+    chk("R26", "get_rate_limit_state_defined",
+        "def get_rate_limit_state" in _md_obs,
+        "market_data.py missing get_rate_limit_state()")
+    chk("R26", "render_observability_defined",
+        "def render_observability" in _obs_pg,
+        "pages/observability.py missing render_observability()")
+    chk("R26", "observability_gate_present",
+        "obs_unlocked" in _obs_pg,
+        "pages/observability.py missing DEV_TOKEN gate (obs_unlocked check)")
+    chk("R26", "observability_no_yfinance",
+        "import yfinance" not in _obs_pg,
+        "pages/observability.py must not import yfinance directly")
 
 
 def verify_zip(zip_path: str):

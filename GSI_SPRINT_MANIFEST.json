@@ -60,10 +60,33 @@
       "file": "GSI_CONTEXT.md",
       "change": "Remove incorrectly added OPEN-001 (config_OLD.py confirmed absent from repo).",
       "no_doc_update_reason": "Context file — is itself the artifact being kept current; no secondary doc update required"
+    },
+    {
+      "file": "market_data.py",
+      "change": "Phase 1: instrumentation — _cache_stats, _fetch_errors, _fetch_latency_ms counters + get_health_stats() + get_rate_limit_state() getters",
+      "doc_updates_required": ["R27.B.p1.1", "R27.B.p1.2"]
+    },
+    {
+      "file": "pages/observability.py",
+      "change": "Phase 1: new founder-only observability page — App Health + Program tabs, DEV_TOKEN gate",
+      "doc_updates_required": ["R27.B.p1.3"],
+      "is_new_file": true,
+      "file_type": "page"
+    },
+    {
+      "file": "regression.py",
+      "change": "Phase 1: R26 observability checks (get_health_stats, get_rate_limit_state, render_observability)",
+      "no_doc_update_reason": "regression.py is itself the enforcement artifact; no secondary doc update required"
     }
   ],
 
-  "amendment_log": [],
+  "amendment_log": [
+    {
+      "date": "2026-03-31",
+      "session": "session_013",
+      "note": "Phase 1 files added: market_data.py instrumentation, pages/observability.py (new), regression.py R26 checks"
+    }
+  ],
 
   "checks": [
 
@@ -84,6 +107,10 @@
     {"id": "R27.B.v533.10", "tier": "B", "file": "version.py",          "must_contain": "\"v5.31\"",                       "label": "version.py has missing v5.31 entry"},
 
     {"id": "R27.B.infra.1", "tier": "B", "file": "regression.py",  "must_contain": "R27 \u00b7 Sprint Manifest", "label": "regression.py has R27 Sprint Manifest checks"},
-    {"id": "R27.B.infra.2", "tier": "B", "file": "CLAUDE.md",      "must_contain": "GSI_SPRINT_MANIFEST.json", "label": "CLAUDE.md sprint protocol references manifest"}
+    {"id": "R27.B.infra.2", "tier": "B", "file": "CLAUDE.md",      "must_contain": "GSI_SPRINT_MANIFEST.json", "label": "CLAUDE.md sprint protocol references manifest"},
+
+    {"id": "R27.B.p1.1", "tier": "B", "file": "market_data.py",          "must_contain": "get_health_stats",         "label": "market_data.py: get_health_stats() defined"},
+    {"id": "R27.B.p1.2", "tier": "B", "file": "market_data.py",          "must_contain": "get_rate_limit_state",     "label": "market_data.py: get_rate_limit_state() defined"},
+    {"id": "R27.B.p1.3", "tier": "B", "file": "pages/observability.py",  "must_contain": "render_observability",     "label": "pages/observability.py: render_observability() defined"}
   ]
 }
