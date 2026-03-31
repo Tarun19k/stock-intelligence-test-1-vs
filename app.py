@@ -215,27 +215,31 @@ if nav == "🏠 Home":
 
 elif nav == "📊 Dashboard":
     if _view_mode == "stock":
-        # v5.16 FIX: pass cache_buster=cb so Refresh button actually busts cache
-        info = get_ticker_info(selected_ticker, cache_buster=cb)
-        df   = get_price_data(selected_ticker,  cache_buster=cb)
+        # D-05: show spinner on first load so users see progress instead of a blank page
+        _spinner_label = f"Loading {selected_name}…" if st.session_state.get("data_stale") else ""
+        with st.spinner(_spinner_label):
+            # v5.16 FIX: pass cache_buster=cb so Refresh button actually busts cache
+            info = get_ticker_info(selected_ticker, cache_buster=cb)
+            df   = get_price_data(selected_ticker,  cache_buster=cb)
+            st.session_state.data_stale = False
 
-        flat_stock_map = {
-            sname: sticker
-            for grp_stocks in mkt_grps.values()
-            if isinstance(grp_stocks, dict)
-            for sname, sticker in grp_stocks.items()
-        }
-        render_dashboard(
-            ticker=selected_ticker,
-            name=selected_name,
-            country=country,
-            cur_sym=cur_sym,
-            info=info,
-            df=df,
-            cb=cb,
-            stock_map=flat_stock_map,
-            market_open=market_open,
-        )
+            flat_stock_map = {
+                sname: sticker
+                for grp_stocks in mkt_grps.values()
+                if isinstance(grp_stocks, dict)
+                for sname, sticker in grp_stocks.items()
+            }
+            render_dashboard(
+                ticker=selected_ticker,
+                name=selected_name,
+                country=country,
+                cur_sym=cur_sym,
+                info=info,
+                df=df,
+                cb=cb,
+                stock_map=flat_stock_map,
+                market_open=market_open,
+            )
 
     elif _view_mode == "group":
         # M3: only render group heatmap (49 tickers) when user has explicitly
