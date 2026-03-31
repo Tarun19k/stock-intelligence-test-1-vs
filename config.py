@@ -96,6 +96,12 @@ GLOBAL_TOPICS: dict = {
             "FMCG and logistics companies see direct margin compression."
         ),
         "watchlist": ["BPCL.NS", "IOC.NS", "ONGC.NS", "HAL.NS", "BEL.NS", "MAZDOCK.NS"],
+        "attribution": (
+            "Figures sourced from Reuters, Al Jazeera, and US EIA reports (2024–2025). "
+            "Oil price sensitivity estimates: PPAC India. "
+            "Freight cost data: Drewry World Container Index. "
+            "Content reviewed periodically; not updated in real time."
+        ),
     },
     "🤖 AI & Job Markets": {
         "color": "#4f8ef7",
