@@ -339,20 +339,20 @@ def compute_elder_screens(df: pd.DataFrame) -> dict:
     suppress_buy = False
 
     if weekly_bull and rsi < 40:
-        verdict = "BUY SETUP"
+        verdict = "Bullish setup"
         desc    = (f"Weekly tide is bullish (histogram rising) and daily RSI ({rsi:.0f}) "
                    f"has pulled back. Elder's ideal long entry: tide bullish, wave oversold.")
     elif weekly_bull and rsi >= 40:
-        verdict = "HOLD / MONITOR"
+        verdict = "Hold — wait for pullback"
         desc    = (f"Weekly tide is bullish. Daily RSI ({rsi:.0f}) is not yet oversold — "
                    f"wait for a pullback entry below RSI 40 for lower risk entry.")
     elif not weekly_bull and rsi > 65:
-        verdict = "SELL / AVOID"
+        verdict = "Bearish — sell into strength"
         desc    = (f"Weekly tide is bearish (histogram falling) and daily RSI ({rsi:.0f}) "
                    f"is extended on a bounce. Elder: sell strength in a bearish tide.")
         suppress_buy = True
     else:
-        verdict = "AVOID LONGS"
+        verdict = "Bearish — avoid buying"
         desc    = (f"Weekly tide is bearish. Daily RSI ({rsi:.0f}). "
                    f"No long entry until weekly tide turns bullish.")
         suppress_buy = True
