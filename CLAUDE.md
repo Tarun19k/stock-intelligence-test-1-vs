@@ -60,28 +60,20 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.33 — 2026-03-31)
+## Current State (v5.34 — 2026-04-01)
 
-**Regression baseline: 410/410 PASS**
+**Regression baseline: 415/415 PASS**
 
-**v5.33 sprint: ALL 8 ITEMS COMPLETE (2026-03-31)**
+**v5.34 sprint: ALL ITEMS COMPLETE (2026-04-01)**
 
 Versions since last CLAUDE.md update:
-- **v5.29** — `get_ticker_info` missing `_is_rate_limited()` gate added
-- **v5.30** — `styles.py` sidebar collapse CSS for Streamlit 1.55 (stSidebarCollapsedControl)
-- **v5.31** — QA audit P0 fixes (claims — several were not committed; fixed in v5.33)
-- **v5.32** — Data coherence sprint: calc_5d_change, P(gain) neutral zone, forecast dedup, week titles, Weinstein label, MACD label, GI market filter, LIVE badge, GI cache coherence
-- **v5.33** — Security, compliance & governance sprint:
-  - RISK-003: safe_ticker_key() before every yfinance call (XSS/injection hardening)
-  - RISK-001: sanitise()/safe_url() on all RSS output in home.py + global_intelligence.py
-  - D-07: Elder Triple Screen labels → plain English
-  - G-02: GI topics expanded 2→5 (US Rate Cycle, China Slowdown, Commodities)
-  - G-05: GI subtitle false "Real-Time" claim removed
-  - H-02: Loading states show "Loading…"/"Computing…" not silent "—"
-  - D-09: Forecast auto-correction factor disclosed before P(gain) card
-  - OPEN-017: R25 governance regression checks (6 policy enforcement rules, 10 new checks)
-  - P0 gaps found + fixed: SEBI disclaimer, algo disclosure, "no red flags" fallback, 48h gate
-  - GSI_LOOPHOLE_LOG.md created — 6-class automation loophole registry (R10b enforced)
+- **v5.33** — Security, compliance & governance sprint (see version.py for full notes)
+- **v5.34** — Sprint manifest infrastructure + observability dashboard + UX fixes:
+  - R27: GSI_SPRINT_MANIFEST.json living manifest system — every committed file logged with doc update requirements; regression enforces completeness each sprint
+  - Doc debt backfill: 6 v5.33 audit resolutions, RISK-T09 mitigated, governance enforcement updated, missing v5.31 entry added
+  - Phase 1: market_data.py observability instrumentation (`get_health_stats()`, `get_rate_limit_state()`, `_cache_stats`, `_fetch_errors`, `_fetch_latency_ms`); 5 R26 checks
+  - Phase 1: `pages/observability.py` — founder-only App Health + Program dashboard, `DEV_TOKEN` gated
+  - Phase 2: D-05 spinner on Dashboard nav (data_stale gate); G-03/F-10 impact chain overflow CSS fix; F-14 West Asia attribution
 ---
 
 ## File Structure
@@ -102,8 +94,9 @@ pages/week_summary.py   Weekly summary + group/market overview.
 pages/global_intelligence.py  Geopolitical topics + WorldMonitor link + watchlists.
 pages/home.py           Ticker bar + homepage. 3 deferred @st.fragment sections.
 pages/dashboard.py      4-tab stock dashboard: Charts | Forecast | Compare | Insights.
+pages/observability.py  Founder-only App Health + Program dashboard. DEV_TOKEN gated.
 app.py                  Entry point. Routing. No _refresh_fragment.
-regression.py           410-check regression suite. Must pass before every commit.
+regression.py           415-check regression suite. Must pass before every commit.
 requirements.txt        Python dependencies. See Environment section for constraints.
 ```
 
@@ -149,6 +142,7 @@ pages/dashboard.py  render_dashboard(ticker, name, country, cur_sym, info, df, c
                     _make_live_price_fragment(...)    # @st.fragment(run_every=5s market only)
 pages/week_summary.py render_week_summary, render_market_overview, render_group_overview
 pages/global_intelligence.py render_global_intelligence(cur_sym, cb, market_open)
+pages/observability.py render_observability() — DEV_TOKEN gated, MPA direct URL only
 market_data.py      get_ticker_bar_data_fresh(tickers) [TTL=10s]
                     get_batch_data(tickers, period, interval, cache_buster) [TTL=300s]
                     get_price_data(ticker, period, interval, cache_buster) [TTL=300s]
@@ -158,6 +152,8 @@ market_data.py      get_ticker_bar_data_fresh(tickers) [TTL=10s]
                     get_top_movers(symbols, max_symbols, cache_buster) [TTL=300s]
                     get_news(feeds, max_n, cache_buster) [TTL=600s]
                     is_ticker_cache_warm(tickers) → bool
+                    get_health_stats() → dict  [no TTL — reads module counters]
+                    get_rate_limit_state() → dict  [no TTL — reads module counters]
 indicators.py       compute_indicators(df), signal_score(df, info)
                     compute_weinstein_stage(df), compute_elder_screens(df)
                     compute_unified_verdict(sig, stage, elder, asset_class)
