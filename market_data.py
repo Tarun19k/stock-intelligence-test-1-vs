@@ -135,6 +135,7 @@ def _yf_download(ticker: str, **kwargs) -> pd.DataFrame:
             df = yf.download(ticker, **kwargs)
             return df if df is not None else pd.DataFrame()
         except Exception as exc:
+            _fetch_errors[ticker] = _fetch_errors.get(ticker, 0) + 1
             if type(exc).__name__ == "YFRateLimitError":
                 _set_rate_limited()                    # v5.27 — engage global cooldown
                 return pd.DataFrame()                  # don't retry — cooldown handles it
@@ -150,6 +151,12 @@ def _yf_download(ticker: str, **kwargs) -> pd.DataFrame:
 _ticker_cache: dict = {}
 _ticker_cache_time: dict = {}
 _TICKER_CACHE_TTL = 300  # seconds — match get_price_data TTL
+
+# ── Observability instrumentation (v5.34) ────────────────────────────────────
+# No Streamlit calls — pure counters. Read via get_health_stats() / get_rate_limit_state().
+_cache_stats: dict = {"hits": 0, "misses": 0}   # _ticker_cache read counters
+_fetch_errors: dict = {}                          # ticker → consecutive error count
+_fetch_latency_ms: list = []                      # rolling 20 yfinance fetch times (ms)
 
 
 def is_ticker_cache_warm(tickers: tuple) -> bool:
@@ -241,6 +248,8 @@ def _yf_batch_download(tickers: list, period: str = "5d",
     to_fetch = [s for s in tickers if s not in fresh]
     for s in fresh:
         result[s] = _ticker_cache[s]
+    _cache_stats["hits"]   += len(fresh)
+    _cache_stats["misses"] += len(to_fetch)
 
     if not to_fetch:
         return result
@@ -260,10 +269,15 @@ def _yf_batch_download(tickers: list, period: str = "5d",
 
         _global_throttle()
         try:
+            _t0 = time.perf_counter()
             raw = yf.download(
                 chunk, period=period, interval=interval,
                 auto_adjust=True, progress=False, group_by="ticker",
             )
+            _ms = (time.perf_counter() - _t0) * 1000
+            _fetch_latency_ms.append(_ms)
+            if len(_fetch_latency_ms) > 20:
+                _fetch_latency_ms.pop(0)
             chunk_result = _parse_batch_raw(raw, chunk)
             result.update(chunk_result)
             for sym, df in chunk_result.items():
@@ -275,6 +289,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
                 _any_429 = True
                 _set_rate_limited()                   # v5.27 — engage global cooldown
                 for sym in chunk:                     # serve stale cache for this chunk
+                    _fetch_errors[sym] = _fetch_errors.get(sym, 0) + 1
                     if sym in _ticker_cache and sym not in result:
                         result[sym] = _ticker_cache[sym]
                 break                                 # abort remaining chunks
@@ -590,3 +605,45 @@ def get_news(feeds: list, max_n: int = 8,
         except Exception as ex:
             log_error(f"get_news:{url[:40]}", ex)
     return articles[:max_n]
+
+
+# ── Observability getters (v5.34) ─────────────────────────────────────────────
+
+def get_health_stats() -> dict:
+    """
+    Return cache and fetch health metrics for the observability dashboard.
+    No yfinance calls — reads module-level counters only.
+    """
+    hits   = _cache_stats["hits"]
+    misses = _cache_stats["misses"]
+    total  = hits + misses
+    hit_rate = round(hits / total * 100, 1) if total else 0.0
+    samples  = list(_fetch_latency_ms)
+    avg_ms   = round(sum(samples) / len(samples), 1) if samples else 0.0
+    p95_ms   = round(sorted(samples)[int(len(samples) * 0.95)], 1) if len(samples) >= 2 else avg_ms
+    return {
+        "cache_hits":      hits,
+        "cache_misses":    misses,
+        "hit_rate_pct":    hit_rate,
+        "avg_fetch_ms":    avg_ms,
+        "p95_fetch_ms":    p95_ms,
+        "latency_samples": samples,
+        "error_counts":    dict(_fetch_errors),
+        "total_errors":    sum(_fetch_errors.values()),
+        "cache_size":      len(_ticker_cache),
+    }
+
+
+def get_rate_limit_state() -> dict:
+    """
+    Return rate-limit gate state for the observability dashboard.
+    No yfinance calls — reads module-level state only.
+    """
+    now          = time.monotonic()
+    in_cooldown  = _rl_cooldown_until > now
+    secs_left    = max(0.0, round(_rl_cooldown_until - now, 1)) if in_cooldown else 0.0
+    return {
+        "in_cooldown":       in_cooldown,
+        "seconds_remaining": secs_left,
+        "consecutive_429s":  _rl_hit_count[0],
+    }
