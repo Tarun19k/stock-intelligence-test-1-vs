@@ -25,7 +25,7 @@
     "claude_md": "CLAUDE.md in repo root \u2014 stable cold-start reference. Contains: file structure, run commands, do-not-undo rules, architecture decisions, environment, API behavior, scoring model, regression table. Update CLAUDE.md when architecture changes; update this manifest every session.",
     "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol.",
     "last_updated": "2026-03-29",
-    "last_session": "session_010",
+    "last_session": "session_011",
     "current_app_version": "v5.32",
     "documentation": {
       "GSI_GOVERNANCE.md": "v1.0 \u2014 7 governance policies established from audit sessions",
@@ -1075,6 +1075,12 @@
         "version.py (v5.32 entry)",
         "regression.py (R23b 11 checks, R19 updated, baseline 378\u2192391)"
       ]
+    },
+    {
+      "id": "session_011",
+      "date": "2026-03-31",
+      "version": "v5.32",
+      "summary": "Internal audit and tooling sprint. Skills set expanded to 28 commands in .claude/commands/. GSI_PRODUCT, GSI_MARKETING, GSI_RISK_REGISTER added. Cross-reference fixes: regression R10b, sync_docs, generate_context, CLAUDE.md all updated. 9 orphaned pre-governance files removed. GSI_SKILLS.md updated to v1.1 with Skill 11 (regulatory compliance), Skill 12 (shared calculation functions), and 6 new anti-patterns. Baseline 396 to 399."
     }
   ],
   "open_items": [

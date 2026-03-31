@@ -1,6 +1,6 @@
 # GSI Dashboard — Development Skills & Learned Patterns
-# Version: 1.0 | Established: 2026-03-28
-# Source: Sessions 001–009, audit reports v5.28–v5.31
+# Version: 1.1 | Updated: 2026-03-31
+# Source: Sessions 001–010, audit reports v5.28–v5.32
 # This is the accumulated institutional knowledge for building GSI correctly.
 # Read before implementing any new feature. Update after every sprint.
 
@@ -45,6 +45,14 @@
 
 ### The narrative ↔ data coherence rule
 Every statement in the narrative must be traceable to a data point in the `sig` dict. If the narrative says "momentum is healthy", RSI must be > 50. If RSI = 36, the narrative must not say "neutral momentum zone."
+
+### When integrating Claude API for narrative (OPEN-018)
+- Use `claude-haiku-4-5` for real-time dashboard calls — Opus/Sonnet are too slow and too expensive
+- Gate behind a button ("Generate AI Summary") — never auto-call on every rerun
+- Cache output with `@st.cache_data(ttl=3600)` — narrative doesn't need hourly refresh
+- API key must come from `st.secrets["ANTHROPIC_API_KEY"]` — never hardcoded
+- Every Claude-generated paragraph must carry the algorithmic disclosure label
+- Pass raw `sig` dict values to the prompt, never the verdict label — let Claude reason from data
 
 ### Learned from
 - C-01: "No major red flags" shown while RSI=36, ADX=declining, 9/12 US sectors negative
@@ -113,6 +121,12 @@ If the most recent article in a feed is older than 48 hours, the UI label must s
 
 ### The arbitration rule
 Two conflicting signals at equal visual weight with no resolution instruction is a financial harm risk. A user acting on the wrong signal because arbitration was unclear is the failure mode. Always err toward more disclosure, not less.
+
+### Override label format (v5.31+)
+When a Weinstein Stage veto fires, `align_text` must use this exact pattern:
+> "Stage [N] override applied — Weinstein Stage [N] vetoes [Elder/momentum] signal"
+
+Generic labels like "Momentum signal adjusted" are insufficient — name both frameworks.
 
 ### Learned from
 - C-04 / Expert QA #14: Elder BUY SETUP + Weinstein WAIT shown side-by-side, equal weight, no guidance (OPEN-012)
@@ -290,6 +304,62 @@ python3 -c "import streamlit, yfinance, pandas; print(streamlit.__version__, yfi
 
 ---
 
+## Skill 11 — Adding Any Feature That Displays Stock Signals
+
+**Context:** Any page file or dashboard component that shows BUY/WATCH/AVOID, price targets, or investment-oriented text to users.
+
+### DO
+- Run `/legal-review` before shipping any new signal-displaying feature
+- Every BUY/WATCH/AVOID section must carry the SEBI disclaimer — no exceptions (Hard Rule 13)
+- Every algorithmically generated text block must carry the disclosure label
+- Frame all signals as "signal visualisation for self-directed research" — never as "recommendations"
+- Check `/policy-check` for jurisdiction-specific rules if the feature targets a specific market
+
+### DO NOT
+- Do not use the words "buy", "sell", "target price", "entry level", or "exit level" in UI text
+- Do not claim data is "real-time" — yfinance has a 15–20 min delay for most markets
+- Do not display performance comparisons ("our signals beat the index") without substantiated backtests
+- Do not show Chinese A-share signals with investment-oriented framing — CSRC enforcement risk is high
+- Do not add a social sharing button that shares a specific signal result — SEBI finfluencer rules apply
+
+### The regulatory hierarchy for GSI
+India (SEBI) is the highest-risk jurisdiction. If a feature is legally safe for India, it is safe everywhere.
+If a feature is borderline for India, run it past `/legal-review` before shipping.
+
+### Learned from
+- Session 010: Full regulatory research across SEBI/SEC/MiFID II/FCA/CSRC
+- SEBI finfluencer rules: even free tools displaying live signals on social media face enforcement
+- Yahoo Finance ToS: redistribution prohibition means any commercial path requires a licensed data source
+
+---
+
+## Skill 12 — Implementing a Shared Calculation Function
+
+**Context:** Any metric calculated in more than one place (Home, Dashboard, GI page).
+
+### DO
+- Before implementing a metric, search all pages for existing calculations of the same value
+- If the same metric appears in 2+ places, extract it into `utils.py` as a shared function
+- `calc_5d_change(df)` in `utils.py` is the canonical example — use it, never re-implement inline
+- Name shared functions descriptively: `_calc_5d_change(df)` not `_get_change(df)`
+- Add a regression check that verifies the shared function is imported and used in all call sites
+
+### DO NOT
+- Do not implement the same calculation differently in two files — the results will diverge silently
+- Do not put calculation logic in page files — pages receive pre-computed data, they don't compute
+- Do not add a utility function for a calculation that only appears in one place — YAGNI
+
+### The data coherence rule (GSI_GOVERNANCE Policy 5)
+Same metric = same calculation function across all pages.
+If two pages show "5-day return" and one uses close-to-close while the other uses OHLCV-adjusted,
+users will see different numbers for the same stock on the same day. This destroys trust.
+
+### Learned from
+- OPEN-008 (H-01 audit): 5-day calculation was implemented differently in Home, Dashboard, and GI
+- Resolution: `calc_5d_change(df)` added to utils.py, all three pages updated in v5.32
+
+---
+
 ## Anti-Patterns Catalogue
 
 These patterns have caused production bugs or audit failures. Never reproduce them.
@@ -306,3 +376,8 @@ These patterns have caused production bugs or audit failures. Never reproduce th
 | `st.rerun(scope='fragment')` | StreamlitAPIException in all Streamlit versions | Use plain `st.rerun()` |
 | `_refresh_fragment` in app.py | Flooded Cloud logs every 60s — no-op | Removed v5.26. Do not re-add. |
 | Equal visual weight for conflicting signals | User acts on wrong signal — financial harm | Always show override label when arbitration fires |
+| Same metric calculated inline in multiple pages | Values diverge silently — users see different 5d returns on Home vs Dashboard | Extract to `utils.py` shared function; regression check all call sites |
+| "Real-time" label on yfinance data | yfinance has 15–20 min delay — false claim, SEBI/FCA risk | Gate "Live" label on `market_open` bool + timestamp verify |
+| Signal result shared on social media with live price | SEBI finfluencer rules apply even for free tools | Use screenshots of methodology/historical examples for social, never live signal results |
+| Hardcoded session prompt file (CLAUDE_SESSION_PROMPT.txt) | Pre-governance artefact — Claude Code never read it | Use `.claude/commands/new-session.md` — auto-loads in Claude Code |
+| Claude API narrative auto-calls on every rerun | Cost spiral + rate limits + 429 errors | Gate behind button + `@st.cache_data(ttl=3600)` |
