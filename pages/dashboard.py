@@ -1054,6 +1054,27 @@ def _tab_insights(sig: dict, cur_sym: str, ticker: str, df: pd.DataFrame,
     elif 0 < roe < 8:
         insights.append(f"<b>ROE {roe:.1f}%</b> — low return on equity. Watch margins.")
 
+    # ── Regulatory disclosure — P0 (must appear before signal columns) ──
+    st.markdown(
+        '<div style="font-size:0.72rem;color:#4b6080;background:#0d1117;'
+        'border:1px solid #1f2d40;border-radius:6px;padding:8px 12px;margin-bottom:10px">'
+        '⚠️ For informational purposes only. Not financial advice. Consult a '
+        '<b>SEBI-registered investment advisor</b> before making investment decisions. '
+        'Past performance is not indicative of future results. '
+        '<b>Algorithmically generated</b> from quantitative signals — not a human analyst opinion.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── RSI/MACD-aware Watch Out For fallback (rule 11 — never blanket "no red flags") ──
+    if not cautions:
+        if rsi > 65:
+            cautions = [f"<b>RSI {rsi:.0f}</b> — approaching overbought territory. Watch for momentum reversal."]
+        elif macdh < 0:
+            cautions = [f"<b>MACD histogram {macdh:+.3f}</b> — selling pressure present. Avoid chasing price here."]
+        else:
+            cautions = ["Momentum indicators are in a neutral zone. Monitor trend direction before adding exposure."]
+
     ci, ca, cc = responsive_cols(3)
     with ci:
         st.markdown('<p class="section-title">🔍 What the data says</p>',
@@ -1070,7 +1091,7 @@ def _tab_insights(sig: dict, cur_sym: str, ticker: str, df: pd.DataFrame,
     with cc:
         st.markdown('<p class="section-title">⚠️ Watch out for</p>',
                     unsafe_allow_html=True)
-        for c in (cautions or ["No major red flags at this time."]):
+        for c in cautions:
             st.markdown(f'<div class="warn-box">{sanitise_bold(c, 400)}</div>',
                         unsafe_allow_html=True)
 
