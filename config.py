@@ -130,6 +130,101 @@ GLOBAL_TOPICS: dict = {
         ),
         "watchlist": ["TCS.NS", "INFY.NS", "WIPRO.NS", "HCLTECH.NS", "PERSISTENT.NS", "LTIM.NS"],
     },
+    "📉 US Rate Cycle & Fed Policy": {
+        "color": "#ffd600",
+        "subtitle": "Central Bank Policy · Bond Markets · Dollar Strength · Global Liquidity",
+        "overview": (
+            "The Federal Reserve's rate cycle is the single most consequential macro variable for "
+            "global markets. Rate decisions ripple instantly into equity valuations, currency pairs, "
+            "and emerging market capital flows. India, as a high-growth EM, is acutely sensitive "
+            "to US rate direction — both through the dollar-rupee channel and FII allocation shifts."
+        ),
+        "chain": [
+            ("Fed Rate Decision",        "#f57f17", "FOMC meets 8x/year — each decision reprices global assets"),
+            ("US Bond Yields",           "#f9a825", "10Y Treasury yield anchors equity discount rates globally"),
+            ("Dollar Index (DXY)",       "#fbc02d", "Strong USD = capital outflow from EMs including India"),
+            ("FII Flows to India",       "#fdd835", "Dollar strength triggers FII selling — Nifty 50 correlation ~0.7"),
+            ("INR Depreciation Risk",    "#ffee58", "Weaker rupee inflates import bill, fuel, and tech input costs"),
+            ("RBI Policy Response",      "#fff176", "RBI forced to hold rates higher for longer to defend INR"),
+            ("India Growth Premium",     "#fff9c4", "Rate spread vs US narrows — growth stocks repriced lower"),
+        ],
+        "market_sectors": ["Banking & NBFC", "IT Services", "Real Estate", "Auto", "FMCG"],
+        "rss": [
+            "https://feeds.reuters.com/reuters/businessNews",
+            "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+        ],
+        "india_impact": (
+            "Every 25bps Fed hike historically triggers ₹1–2 INR depreciation vs USD. "
+            "FII outflows from Indian equity can exceed $3B in a single quarter during rate shock events. "
+            "Banking stocks (rate-sensitive) and IT exporters (USD revenue beneficiaries) "
+            "move in opposite directions during rate pivots."
+        ),
+        "watchlist": ["HDFCBANK.NS", "ICICIBANK.NS", "INFY.NS", "TCS.NS", "SBIN.NS", "LT.NS"],
+    },
+    "🇨🇳 China Slowdown & Trade Shifts": {
+        "color": "#ef5350",
+        "subtitle": "Export Deflation · Property Crisis · Supply Chain Realignment · India Opportunity",
+        "overview": (
+            "China's economic model — built on export-led growth and property investment — "
+            "is undergoing structural stress. The Evergrande collapse, youth unemployment above 20%, "
+            "and Western supply chain diversification are reshaping global trade flows. "
+            "India stands as both a beneficiary (manufacturing shift) and a risk recipient "
+            "(commodity demand drop, export competition)."
+        ),
+        "chain": [
+            ("Property Sector Collapse", "#b71c1c", "Evergrande + Country Garden — ¥40T debt overhang, demand destruction"),
+            ("Domestic Demand Weakness", "#c62828", "Consumer confidence at decade lows, deflation risk"),
+            ("Export Dumping Pressure",  "#d32f2f", "Cheap Chinese goods flood Asian markets, hurting local industry"),
+            ("Supply Chain Shift",       "#e53935", "Apple, Samsung, Dell diversifying to India, Vietnam, Mexico"),
+            ("Commodity Demand Drop",    "#ef5350", "Iron ore, copper, soy demand falls — commodity exporters impacted"),
+            ("India Manufacturing Gain", "#ff5252", "PLI scheme + China+1 — electronics, pharma, autos shifting in"),
+            ("Geopolitical Decoupling",  "#ff8a80", "US-China tech war creates permanent structural realignment"),
+        ],
+        "market_sectors": ["Metals & Mining", "Chemicals", "Electronics Mfg", "Pharma", "Textiles"],
+        "rss": [
+            "https://feeds.reuters.com/reuters/worldNews",
+            "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+        ],
+        "india_impact": (
+            "India's PLI scheme targets $300B in manufacturing output by 2030, directly tied to China+1. "
+            "Risks: Chinese steel dumping hits Tata Steel and JSW margins. "
+            "Opportunity: Dixon Technologies, Kaynes Technology, and Tata Electronics "
+            "are direct beneficiaries of electronics supply chain shift."
+        ),
+        "watchlist": ["TATASTEEL.NS", "JSWSTEEL.NS", "DIXON.NS", "TATAELXSI.NS", "SUNPHARMA.NS", "CIPLA.NS"],
+    },
+    "🌾 Commodities & Global Inflation": {
+        "color": "#66bb6a",
+        "subtitle": "Oil · Gold · Agriculture · Supply Shocks · Inflation Transmission",
+        "overview": (
+            "Commodity markets are the inflation transmission layer for the global economy. "
+            "Crude oil reprices every supply chain. Gold signals real-rate expectations. "
+            "Agriculture shocks (drought, conflict, export bans) create food inflation "
+            "that affects consumer spending power — particularly in India where food "
+            "constitutes nearly 40% of the CPI basket."
+        ),
+        "chain": [
+            ("Crude Oil Price (Brent)",   "#1b5e20", "OPEC+ cuts + geopolitical risk premium drive Brent"),
+            ("Natural Gas & LNG",         "#2e7d32", "Energy transition + Russia supply disruption raises prices"),
+            ("Gold (Real Rates Signal)",  "#388e3c", "Inverse to real yields — Fed pivot expectations drive gold"),
+            ("Agriculture Price Shocks",  "#43a047", "El Niño + Ukraine war disrupts wheat, corn, palm oil"),
+            ("Input Cost Surge",          "#4caf50", "Fertiliser, packaging, transport costs compress margins"),
+            ("CPI & Core Inflation",      "#66bb6a", "Food + energy = 55% of India CPI — RBI policy trigger"),
+            ("RBI Rate Response",         "#81c784", "Persistent inflation above 6% forces RBI hawkish pivot"),
+        ],
+        "market_sectors": ["Energy", "FMCG", "Agriculture", "Fertilisers", "Metals"],
+        "rss": [
+            "https://feeds.reuters.com/reuters/businessNews",
+            "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+        ],
+        "india_impact": (
+            "India imports ~87% of crude oil — Brent above $90/bbl pushes fuel subsidies "
+            "and widens the Current Account Deficit. Agricultural stocks (UPL, Coromandel) "
+            "benefit from high crop prices. FMCG companies (HUL, Nestle) face gross margin "
+            "compression when palm oil and wheat prices spike."
+        ),
+        "watchlist": ["ONGC.NS", "BPCL.NS", "HINDUNILVR.NS", "ITC.NS", "COROMANDEL.NS", "UPL.NS"],
+    },
 }
 
 NEXT_STEPS_AI: list = [
