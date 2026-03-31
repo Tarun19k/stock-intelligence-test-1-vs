@@ -2,7 +2,7 @@
 # Upload ONLY this file to Claude Project Files
 # Do NOT upload CLAUDE.md (5k tokens) or GSI_session.json (35k tokens) to Project Files
 # Regenerate: python3 generate_context.py  (auto-runs after regression.py passes)
-# Generated: 2026-03-30 | v5.32 | ALL 396 CHECKS PASS
+# Generated: 2026-03-31 | v5.32 | ALL 399 CHECKS PASS
 # Target: <1,600 tokens. Do not add verbose content here.
 
 ## Identity
@@ -11,7 +11,7 @@ Repo: https://github.com/Tarun19k/stock-intelligence-test-1-vs
 Session manifest (Gist): https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
 Stack: Python 3.14 · Streamlit 1.55 · yfinance 1.2 · pandas>=1.4.0
 Deploy: Streamlit Cloud (community) · no API keys · no database
-Current version: v5.32 | Regression: ALL 396 CHECKS PASS
+Current version: v5.32 | Regression: ALL 399 CHECKS PASS
 
 ## Architecture — one paragraph
 14-file modular app. market_data.py is the ONLY yfinance importer.
@@ -72,7 +72,10 @@ GSI_AUDIT_TRAIL.md       48 audit findings. Append-only. Never edit records.
 GSI_DEPENDENCIES.md      9 compatibility constraints. Check before upgrading.
 GSI_QA_STANDARDS.md      Test briefs, personas, finding registry
 GSI_COMPLIANCE_CHECKLIST.md  Pre-deploy gate. Tier 1-3 block deploy.
-.claude/commands/        Slash commands in Claude Code; reference docs in claude.ai
+GSI_PRODUCT.md           MVP scope, personas, dependency map, monetisation path
+GSI_MARKETING.md         Positioning, competitive analysis, launch strategy
+GSI_RISK_REGISTER.md     24 risks: technical, legal, product, operational
+.claude/commands/        28 slash commands — skills, legal, product, marketing
 .claude/rules/           Path-scoped rules — auto-load in Claude Code only (not claude.ai)
 
 ## Open items

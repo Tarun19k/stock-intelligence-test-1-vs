@@ -52,7 +52,7 @@
 - [ ] No `time.sleep()` calls outside `_yf_download()` and `_yf_batch_download()`
 
 ### Regression
-- [ ] `python3 regression.py` returns `ALL 396 CHECKS PASS` (or current baseline — check CLAUDE.md)
+- [ ] `python3 regression.py` returns `ALL 399 CHECKS PASS` (or current baseline — check CLAUDE.md)
 - [ ] `version.py` has a new VERSION_LOG entry for the version being deployed
 - [ ] CURRENT_VERSION matches the version entry being deployed
 
