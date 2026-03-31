@@ -20,17 +20,43 @@
 
 ```
 Status:        IDLE
-Session ID:    session_010
-Version:       v5.32
-Last updated:  2026-03-29
-Sprint:        v5.32 complete
+Session ID:    session_012
+Version:       v5.33
+Last updated:  2026-03-31
+Sprint:        v5.33 COMPLETE
 ```
 
 ## Active Tasks (update as each completes)
 
-None — session_010 complete. All v5.32 tasks committed and pushed.
+- [x] RISK-001: XSS sanitise() in unsafe_allow_html f-strings (dashboard.py, home.py, global_intelligence.py)
+- [x] RISK-003: safe_ticker_key() before yf.download() (market_data.py)
+- [x] G-05: Remove "Real-Time" false claim from GI subtitle (global_intelligence.py)
+- [x] H-02: First-load warmth guard state explanation (home.py)
+- [x] D-07: Elder labels → plain English (indicators.py)
+- [x] D-09: Forecast correction factor disclosed (dashboard.py)
+- [x] G-02: Expand GI topic cards (config.py — 2→5 topics)
+- [x] OPEN-017: R25 governance regression checks (regression.py)
 
-## Completed This Session
+## Completed This Session (session_012 — v5.33)
+
+- [x] GSI_LOOPHOLE_LOG.md created — 6-class automation loophole registry
+- [x] regression.py R10b: GSI_LOOPHOLE_LOG.md added (399→400)
+- [x] regression.py R25: 6 policy enforcement checks added (400→410)
+- [x] market_data.py: safe_ticker_key() gate (RISK-003)
+- [x] indicators.py: Elder labels → plain English (D-07)
+- [x] config.py: GI topics 2→5 (G-02)
+- [x] global_intelligence.py: G-05 + P0 compliance + RISK-001 XSS + 48h gate
+- [x] home.py: H-02 loading states + RISK-001 XSS
+- [x] dashboard.py: D-09 correction factor disclosure
+- [x] dashboard.py: P0 compliance gaps (SEBI, algo disclosure, "no red flags" fallback)
+- [x] version.py: v5.33 entry added
+- [x] CLAUDE.md: baseline 400→410, Current State updated to v5.33
+- [x] GSI_COMPLIANCE_CHECKLIST.md: 400→410
+- [x] .github/PULL_REQUEST_TEMPLATE.md: 400→410
+- [x] GSI_WIP.md: Status IDLE, all tasks ticked
+- [x] GSI_SPRINT.md: v5.33 moved to Done, velocity updated
+
+## Previously Completed (session_010 — v5.32)
 
 - [x] v5.32: calc_5d_change() utility (OPEN-008) — utils.py, home.py
 - [x] v5.32: P(gain) neutral zone (OPEN-009) — forecast.py
