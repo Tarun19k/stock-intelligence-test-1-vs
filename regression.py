@@ -262,6 +262,7 @@ def run(FM):
         "GSI_PRODUCT.md",
         "GSI_MARKETING.md",
         "GSI_RISK_REGISTER.md",
+        "GSI_LOOPHOLE_LOG.md",
     ]
     for doc in gov_docs:
         chk("R10b.gov_docs", f"exists:{doc}", _os.path.exists(doc),
