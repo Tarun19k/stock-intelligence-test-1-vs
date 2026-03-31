@@ -76,7 +76,22 @@ VERSION_LOG = [
               "OPEN-013: MACD chart subplots and KPI panel show (Daily) timeframe. "
               "OPEN-014: GI watchlist filters to selected market via _market_of(). "
               "OPEN-015: Market LIVE badge names specific market country. "
-              "OPEN-016: GI watchlist cache_buster=0 — price coherence with ticker bar. "}
+              "OPEN-016: GI watchlist cache_buster=0 — price coherence with ticker bar. "},
+    {"version": "v5.33", "date": "2026-03-31",
+     "notes": "Security, compliance & governance sprint (8 fixes, 10 new R25 checks). "
+              "RISK-003: safe_ticker_key() before yf.download()/_yf_batch_download(). "
+              "RISK-001: sanitise()/safe_url() XSS guards on all RSS output in home.py + GI. "
+              "D-07: Elder Triple Screen labels → plain English (Bullish setup / Hold / Bearish). "
+              "G-02: GI topics expanded 2→5 (US Rate Cycle, China Slowdown, Commodities). "
+              "G-05: GI subtitle false 'Real-Time' claim removed. "
+              "H-02: First-load cards show 'Loading…'/'Computing…' not silent '—'. "
+              "D-09: Forecast auto-correction factor disclosed before P(gain) card. "
+              "OPEN-017: R25 governance regression checks (6 policy enforcement rules). "
+              "P0 compliance gaps found + fixed: SEBI disclaimer, algo disclosure, "
+              "'no red flags' blanket fallback, 48h Live Headlines gate — "
+              "all were listed as v5.31 fixes but were never committed to the codebase. "
+              "GSI_LOOPHOLE_LOG.md created — 6-class automation loophole registry. "
+              "Regression baseline: 400→410 (10 new R25 checks)."}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
