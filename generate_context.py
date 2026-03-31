@@ -122,6 +122,7 @@ def build(root):
         "GSI_PRODUCT.md           MVP scope, personas, dependency map, monetisation path",
         "GSI_MARKETING.md         Positioning, competitive analysis, launch strategy",
         "GSI_RISK_REGISTER.md     24 risks: technical, legal, product, operational",
+        "GSI_LOOPHOLE_LOG.md      6 classes of automation-caught loopholes. Append as discovered.",
         ".claude/commands/        28 slash commands — skills, legal, product, marketing",
         ".claude/rules/           Path-scoped rules — auto-load in Claude Code only (not claude.ai)",
         "",

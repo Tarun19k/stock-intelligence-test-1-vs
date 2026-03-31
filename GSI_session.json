@@ -1592,13 +1592,13 @@
   "regression": {
     "file": "regression.py",
     "run_command": "python regression.py",
-    "expected_output": "ALL 399 CHECKS PASS",
-    "last_run": "2026-03-31 \u2014 added GSI_PRODUCT, GSI_MARKETING, GSI_RISK_REGISTER to R10b (+3 checks)",
-    "last_result": "399 / 399 PASS",
+    "expected_output": "ALL 400 CHECKS PASS",
+    "last_run": "2026-03-31 \u2014 added GSI_LOOPHOLE_LOG.md to R10b (+1 check)",
+    "last_result": "400 / 400 PASS",
     "next_run": "Required at start of every session before any new work",
     "check_list": "\u2192 see CLAUDE.md regression table",
     "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file \u2014 should check inside CSS constant only. Fix next session.",
-    "note": "R10b now checks 12 governance docs. Baseline 396 \u2192 399."
+    "note": "R10b now checks 13 governance docs. Baseline 399 \u2192 400."
   },
   "session_start_checklist": {
     "always": [

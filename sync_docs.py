@@ -249,7 +249,8 @@ def check_regression_r10b(root):
     required = {'GSI_GOVERNANCE.md','GSI_QA_STANDARDS.md','GSI_SKILLS.md',
                 'GSI_COMPLIANCE_CHECKLIST.md','GSI_AUDIT_TRAIL.md',
                 'GSI_DECISIONS.md','GSI_SPRINT.md','GSI_WIP.md','GSI_DEPENDENCIES.md',
-                'GSI_PRODUCT.md','GSI_MARKETING.md','GSI_RISK_REGISTER.md'}
+                'GSI_PRODUCT.md','GSI_MARKETING.md','GSI_RISK_REGISTER.md',
+                'GSI_LOOPHOLE_LOG.md'}
     missing = required - listed
     if missing:
         issue(f"regression.py \u2014 R10b missing: {missing}")
@@ -364,7 +365,7 @@ def main():
     check_version_py(root, session)
     check_regression_r10b(root)
     check_session_json(root, session)
-    for doc in ['GSI_PRODUCT.md', 'GSI_MARKETING.md', 'GSI_RISK_REGISTER.md']:
+    for doc in ['GSI_PRODUCT.md', 'GSI_MARKETING.md', 'GSI_RISK_REGISTER.md', 'GSI_LOOPHOLE_LOG.md']:
         if os.path.exists(os.path.join(root, doc)):
             ok(f"{doc} — present")
         else:

@@ -20,7 +20,7 @@ Two repos — ALL active work is in the modular repo:
 
 ```bash
 streamlit run app.py        # run the app locally
-python3 regression.py       # MUST pass (399/399) before any new work
+python3 regression.py       # MUST pass (400/400) before any new work
 ```
 
 Before every `git push`, also run the compliance script in `GSI_COMPLIANCE_CHECKLIST.md`:
@@ -62,7 +62,7 @@ Streamlit 1.55 notes:
 
 ## Current State (v5.31 — 2026-03-28)
 
-**Regression baseline: 399/399 PASS**
+**Regression baseline: 400/400 PASS**
 
 **v5.31 QA status: ALL 8 FIXES VERIFIED (2026-03-28)**
 
@@ -101,7 +101,7 @@ pages/global_intelligence.py  Geopolitical topics + WorldMonitor link + watchlis
 pages/home.py           Ticker bar + homepage. 3 deferred @st.fragment sections.
 pages/dashboard.py      4-tab stock dashboard: Charts | Forecast | Compare | Insights.
 app.py                  Entry point. Routing. No _refresh_fragment.
-regression.py           399-check regression suite. Must pass before every commit.
+regression.py           400-check regression suite. Must pass before every commit.
 requirements.txt        Python dependencies. See Environment section for constraints.
 ```
 
@@ -254,7 +254,7 @@ Policies 4–7 are new additions from audit session 009. Policies 1–3 were pre
 
 ## Living Documentation
 
-Five governance documents produced from audit sessions 001–010.
+Governance documents produced from audit sessions 001–010 onwards.
 Read before implementing any new feature. Update after every sprint.
 
 | Document | Purpose |
@@ -271,6 +271,7 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_PRODUCT.md` | MVP scope, user personas, dependency map, free tier constraints, monetisation path. |
 | `GSI_MARKETING.md` | Positioning, competitive analysis, channel strategy, Reddit/Product Hunt launch templates. |
 | `GSI_RISK_REGISTER.md` | 24 risks across technical, legal (SEBI/SEC/MiFID II/FCA/CSRC), product, operational. |
+| `GSI_LOOPHOLE_LOG.md` | 6 classes of loophole caught by automation. Append when new failure classes found. |
 
 Store all in repo root alongside CLAUDE.md.
 
