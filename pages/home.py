@@ -24,7 +24,7 @@ import streamlit as st
 import streamlit.components.v1 as _st_components
 from datetime import datetime, timedelta
 from config import MARKET_SESSIONS, CURRENT_VERSION
-from utils import sanitise, safe_run, responsive_cols, log_error, calc_5d_change
+from utils import sanitise, safe_run, responsive_cols, log_error, calc_5d_change, safe_url
 from market_data import (get_price_data, get_top_movers, get_news,
                          get_batch_data, get_ticker_bar_data_fresh,
                          is_ticker_cache_warm, _ticker_cache)
@@ -272,8 +272,9 @@ def _render_global_overview_prices(batch_5d: dict):
         if df is None or df.empty or len(df) < 2 or "Close" not in df.columns:
             col.markdown(
                 f'<div class="kpi-card">'
-                f'<div class="kpi-label">{name}</div>'
-                f'<div class="kpi-value" style="font-size:0.9rem;color:#4b6080">—</div>'
+                f'<div class="kpi-label">{sanitise(name, 40)}</div>'
+                f'<div class="kpi-value" style="font-size:0.75rem;color:#4b6080">'
+                f'Loading…</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
@@ -350,8 +351,9 @@ def _render_global_signals():
         if df is None or df.empty or len(df) < 10 or "Close" not in df.columns:
             col.markdown(
                 f'<div class="kpi-card">'
-                f'<div class="kpi-label">{name}</div>'
-                f'<div class="kpi-value" style="font-size:0.85rem;color:#4b6080">—</div>'
+                f'<div class="kpi-label">{sanitise(name, 40)}</div>'
+                f'<div class="kpi-value" style="font-size:0.75rem;color:#4b6080">'
+                f'Computing…</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
@@ -462,12 +464,14 @@ def _render_news_feed(cb: int):
         st.caption("Fetching headlines…")
         return
     for a in articles:
+        _link = a["link"] if safe_url(a["link"]) else "#"
         st.markdown(
             f'<div class="news-card">'
-            f'<div class="news-title"><a href="{a["link"]}" target="_blank" '
-            f'style="color:#dde2f5;text-decoration:none">{a["title"]}</a></div>'
-            f'<div class="news-meta">{a["source"]} · {a["date"]}</div>'
-            f'<div class="news-sum">{a["summary"]}</div>'
+            f'<div class="news-title"><a href="{_link}" target="_blank" '
+            f'style="color:#dde2f5;text-decoration:none">'
+            f'{sanitise(a["title"], 160)}</a></div>'
+            f'<div class="news-meta">{sanitise(a["source"], 60)} · {sanitise(a["date"], 30)}</div>'
+            f'<div class="news-sum">{sanitise(a["summary"], 300)}</div>'
             f'</div>',
             unsafe_allow_html=True,
         )
