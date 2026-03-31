@@ -32,7 +32,7 @@ def _render_impact_chain(chain: list):
             f'</div>{arrow}'
         )
     st.markdown(
-        f'<div style="overflow-x:auto">'
+        f'<div style="overflow-x:auto;width:100%;max-width:100%;box-sizing:border-box">'
         f'<div style="display:flex;align-items:stretch;gap:6px;'
         f'padding:12px 4px;min-width:max-content">'
         f'{nodes_html}</div></div>',
@@ -149,6 +149,9 @@ def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int,
                 f'<div class="group-badge">📊 Affected Sectors: {sectors}</div>',
                 unsafe_allow_html=True,
             )
+
+        if topic.get("attribution"):
+            st.caption(f"Sources: {topic['attribution']}")
 
         if topic.get("watchlist"):
             _render_watchlist_badges(topic["watchlist"], cur_sym, cb,
