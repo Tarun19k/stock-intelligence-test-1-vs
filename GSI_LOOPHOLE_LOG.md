@@ -84,11 +84,11 @@ Caught by: **partial — RISK-T09 remains open**
 
 | Loophole | Why it matters | Check | Status |
 |---|---|---|---|
-| Unsanitised `{ticker}/{name}` in `unsafe_allow_html` f-strings | XSS: a malicious ticker name containing `<script>` tags would execute in the user's browser. `sanitise()` exists but is not applied to every f-string. | RISK-001 in open backlog | Open |
+| Unsanitised `{ticker}/{name}` in `unsafe_allow_html` f-strings | XSS: a malicious ticker name containing `<script>` tags would execute in the user's browser. `sanitise()` exists but is not applied to every f-string. | sanitise()/safe_url() applied to all RSS output in home.py + GI (v5.33). safe_ticker_key() before yf calls. | Fixed (v5.33) |
 | Hardcoded file paths in automation scripts | A path specific to one developer's machine breaks CI and portable testing. | Caught in regression R23b fix (2026-03-31) | Fixed |
 | API keys in page files | If Streamlit secrets are not used and a key is hardcoded, it gets committed to git. Not current but must be prevented when Claude API is added. | Policy: always use `st.secrets` | Preventive |
 
-**Root risk:** RISK-T09 (XSS), RISK-L06 (open source licence exposure)
+**Root risk:** RISK-T09 (XSS — mitigated v5.33), RISK-L06 (open source licence exposure)
 
 ---
 
@@ -144,4 +144,5 @@ When a new category of loophole is discovered:
 | `GSI_COMPLIANCE_CHECKLIST.md` | Pre-deploy automated gate — runs the checks |
 | `GSI_GOVERNANCE.md` | 7 policies that the loophole classes map to |
 | `GSI_SKILLS.md` | Code patterns that prevent loopholes from being introduced |
-| `regression.py` | Automated enforcement — 399 checks |
+| `regression.py` | Automated enforcement — 410 checks (clean-state baseline) |
+| `GSI_SPRINT_MANIFEST.json` | Per-sprint sync checklist — R27 enforces doc updates during active sprints |

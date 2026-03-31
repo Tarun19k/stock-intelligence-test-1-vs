@@ -384,6 +384,40 @@ RESOLUTION | F-15  | 2026-03-28 | v5.31 | FIXED |
 
 <!-- BATCH: v5.32 fixes, all recorded 2026-03-29 -->
 
+<!-- BATCH: v5.33 fixes, all recorded 2026-03-31 — backfilled session_013 -->
+
+RESOLUTION | H-02  | 2026-03-31 | v5.33 | FIXED |
+  First-load loading states added to Global Trend Signals section.
+  Cards now show "Loading…" / "Computing…" while warmth guard defers data.
+  Silent dash behaviour eliminated. H-02 root cause (unexplained empty state) resolved.
+
+RESOLUTION | D-07  | 2026-03-31 | v5.33 | FIXED |
+  Elder Triple Screen verdict labels converted to plain English in indicators.py.
+  "BUY SETUP" → "Bullish setup", "WAIT" → "Hold — no clear signal",
+  "NOT YET" → "Bearish setup". Jargon removed across all three verdict states.
+
+RESOLUTION | D-09  | 2026-03-31 | v5.33 | FIXED |
+  Forecast auto-correction factor disclosed in dashboard.py _tab_forecast().
+  Correction multiplier and direction now shown in a callout before P(gain) card.
+  Silent correction behaviour eliminated.
+
+RESOLUTION | G-02  | 2026-03-31 | v5.33 | FIXED |
+  GI topic cards expanded from 2 to 5 topics in config.py GI_TOPICS.
+  Added: US Rate Cycle, China Slowdown, Commodities. Page now covers 5 macro themes
+  instead of 4, improving "Global Intelligence Centre" scope coverage.
+
+RESOLUTION | G-05  | 2026-03-31 | v5.33 | FIXED |
+  Supersedes the PARTIAL resolution from v5.31 (subtitle update was pending).
+  GI page subtitle "Real-time geopolitical & technology trends" removed entirely
+  from render_global_intelligence() — false freshness claim eliminated.
+  G-05 fully resolved. EQA-38 resolved by the same change (see below).
+
+RESOLUTION | EQA-38 | 2026-03-31 | v5.33 | FIXED |
+  Supersedes the PARTIAL resolution from v5.31 (subtitle update was pending).
+  Resolved by same change as G-05 — subtitle removed in render_global_intelligence().
+  Live Headlines 48h gate already fixed in v5.31. WorldMonitor WONT_FIX in v5.31.
+  All actionable components of EQA-38 are now resolved.
+
 RESOLUTION | H-01  | 2026-03-29 | v5.32 | FIXED |
   calc_5d_change() shared utility added to utils.py. home.py inline 5-day
   calculation replaced with the shared function. Both Home and Dashboard now
@@ -490,19 +524,19 @@ REOPEN | Finding-ID | Date | Version | Evidence | Reopened-by
 
 ---
 
-<!-- No regressions detected as of v5.32 — 2026-03-29 -->
+<!-- No regressions detected as of v5.33 — 2026-03-31 -->
 
 ---
 
 ## Section 4 — Current State View (Derived — not source of truth)
 
-**Generated:** 2026-03-29 | **Based on version:** v5.32
+**Generated:** 2026-03-31 | **Based on version:** v5.33
 **Regenerate this section after every sprint by reading Sections 1–3.**
 
 | Finding | Severity | Current status | Version resolved |
 |---|---|---|---|
 | H-01 | P1 | ✅ Fixed | v5.32 |
-| H-02 | P2 | 🔶 Open | — |
+| H-02 | P2 | ✅ Fixed | v5.33 |
 | H-03 | P1 | ✅ Fixed | v5.31 |
 | D-01 | P1 | ✅ Fixed | v5.31 |
 | D-02 | P0 | ✅ Fixed | v5.31 |
@@ -510,22 +544,22 @@ REOPEN | Finding-ID | Date | Version | Evidence | Reopened-by
 | D-04 | P1 | ✅ Fixed | v5.32 |
 | D-05 | P2 | 🔶 Open | — |
 | D-06 | P1 | ✅ Fixed | v5.32 |
-| D-07 | P2 | 🔶 Open | — |
+| D-07 | P2 | ✅ Fixed | v5.33 |
 | D-08 | P1 | ✅ Fixed | v5.32 |
-| D-09 | P2 | 🔶 Open | — |
+| D-09 | P2 | ✅ Fixed | v5.33 |
 | G-01 | P0 | ⚠️ Won't fix | v5.31 (replaced) |
-| G-02 | P2 | 🔶 Open | — |
+| G-02 | P2 | ✅ Fixed | v5.33 |
 | G-03 | P2 | 🔶 Open | — |
 | G-04 | P1 | ✅ Fixed | v5.32 |
-| G-05 | P1 | 🟡 Partial | v5.31 (subtitle pending) |
+| G-05 | P1 | ✅ Fixed | v5.33 |
 | EQA-14 | P1 | ✅ Fixed | v5.32 |
 | EQA-29 | P0 | ✅ Fixed | v5.31 |
 | EQA-32 | P0 | ✅ Fixed | v5.31 |
 | EQA-33 | P0 | ✅ Fixed | v5.31 |
-| EQA-38 | P1 | 🟡 Partial | v5.31 (subtitle pending) |
+| EQA-38 | P1 | ✅ Fixed | v5.33 |
 | EQA-41 | P2 | 🔶 Open | — |
 | EQA-43 | P3 | ⏳ Deferred | v6 roadmap |
-| C-01 | P0 | 🟡 Partial | v5.31 (breadth pending) |
+| C-01 | P0 | 🟡 Partial | v5.31 (breadth pending OPEN-018) |
 | C-02 | P1 | 🔶 Open | OPEN-018 |
 | C-03 | P1 | 🔶 Open | OPEN-018 |
 | C-04 | P1 | ✅ Fixed | v5.32 |
@@ -540,7 +574,7 @@ REOPEN | Finding-ID | Date | Version | Evidence | Reopened-by
 | F-04 | P1 | ✅ Fixed | v5.32 |
 | F-05 | P1 | ✅ Fixed | v5.32 |
 | F-06 | P0 | ✅ Fixed | v5.31 |
-| F-07 | P3 | ⏳ Deferred | v5.33 backlog |
+| F-07 | P3 | ⏳ Deferred | v5.34 backlog |
 | F-08 | P3 | ⏳ Deferred | v6 roadmap |
 | F-09 | P2 | 🚫 Disregarded | 2026-03-28 |
 | F-10 | P2 | 🔶 Open | — |
@@ -552,9 +586,9 @@ REOPEN | Finding-ID | Date | Version | Evidence | Reopened-by
 
 **Status key:** ✅ Fixed | 🟡 Partial | 🔶 Open | ⚠️ Won't fix | 🚫 Disregarded | ⏳ Deferred
 
-**Counts as of v5.32:**
-- ✅ Fixed: 23 | 🟡 Partial: 3 | 🔶 Open: 14 | ⚠️ Won't fix: 1 | 🚫 Disregarded: 2 | ⏳ Deferred: 4
-- Total findings: 48
+**Counts as of v5.33:**
+- ✅ Fixed: 29 | 🟡 Partial: 1 | 🔶 Open: 9 | ⚠️ Won't fix: 1 | 🚫 Disregarded: 2 | ⏳ Deferred: 4
+- Total findings: 48 (unchanged — no new findings this sprint, 6 findings moved to Fixed)
 
 ---
 

@@ -151,12 +151,14 @@
 ### Current (v5.31)
 Policies 4, 6, and 7 are partially enforced via regression checks (R17, R19, R21) and DO NOT UNDO rules in CLAUDE.md. Policies 5 is partially enforced by the Watch Out For RSI/MACD gate added in v5.31.
 
-### Planned (v5.33) — R25 regression checks
-New regression category R25 will verify:
-- `R25.P4` — SEBI disclaimer string present in `_tab_insights()`
-- `R25.P4` — Algorithmic disclosure string present in `_tab_insights()`
-- `R25.P4` — `_render_next_steps_ai()` not called from `render_global_intelligence()`
-- `R25.P5` — `_calc_change_pct` utility exists in `utils.py` (after OPEN-008 implemented)
-- `R25.P6` — Override label present in `_render_header_static()` for conflict case
-- `R25.P7` — `_age_h` freshness gate present in `_render_topic_card()`
-- `R25.P7` — `market_open` gates the LIVE badge in `app.py`
+### Implemented (v5.33) — R25 regression checks
+R25 regression category active since v5.33. Verifies:
+- `R25.P4a` — SEBI disclaimer string present in `_tab_insights()`
+- `R25.P4b` — Algorithmic disclosure string present in `_tab_insights()`
+- `R25.P4c` — `_render_next_steps_ai()` not called from `render_global_intelligence()`
+- `R25.P7a` — 48h freshness gate present in `global_intelligence.py`
+- `R25.P7b` — `safe_url()` applied to RSS links in `home.py`
+- `R25.P2a` — `safe_ticker_key()` present in `market_data.py`
+
+### Planned (v5.34) — R26 observability checks
+R26 will verify the observability dashboard and instrumentation contracts.

@@ -80,7 +80,6 @@ GSI_LOOPHOLE_LOG.md      6 classes of automation-caught loopholes. Append as dis
 .claude/rules/           Path-scoped rules — auto-load in Claude Code only (not claude.ai)
 
 ## Open items
-  OPEN-001 [HIGH]: git rm config_OLD.py + forecast_history.json from repo
   OPEN-003 [MEDIUM]: Cross-session forecast persistence (Supabase)
   OPEN-004 [LOW]: Extract SCORING_WEIGHTS to config.py
   OPEN-006 [MEDIUM]: Portfolio Allocator stability score UI + backtest

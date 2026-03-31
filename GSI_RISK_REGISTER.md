@@ -21,7 +21,7 @@
 | RISK-T06 | Infrastructure | Forecast session state lost on Streamlit redeploy | High | Med | Accepted | By design — filesystem storage prohibited (Hard Rule 1). Users aware forecasts are session-only. |
 | RISK-T07 | Dependency | pandas/Streamlit version incompatibility on upgrade | Med | High | Mitigated | GSI_DEPENDENCIES.md pins. regression.py catches breaking changes. |
 | RISK-T08 | Data | Single data source (yfinance) — no fallback | High | High | Open | OPEN-007 DataManager M2 will add fallback. Until then: stale fallback via _ticker_cache. |
-| RISK-T09 | Security | XSS via unsanitised {ticker}/{name} in unsafe_allow_html | Med | Med | Open | RISK-001 in backlog. safe_run() + sanitise() partially covers. Full fix pending. |
+| RISK-T09 | Security | XSS via unsanitised {ticker}/{name} in unsafe_allow_html | Med | Med | Mitigated | sanitise()/safe_url() — v5.33: all RSS output in home.py + global_intelligence.py sanitised. safe_ticker_key() before all yf calls. |
 | RISK-T10 | Infrastructure | Cold start latency spike after 12h sleep | High | Low | Accepted | Warmth guard defers heavy fetches. Document expected behaviour. |
 
 ---
@@ -67,14 +67,14 @@
 
 | Status | Count |
 |---|---|
-| Open | 10 |
-| Mitigated | 8 |
+| Open | 9 |
+| Mitigated | 9 |
 | Accepted | 6 |
 | Closed | 0 |
 | **Total** | **24** |
 
 **Critical open risks:** RISK-L02 (Yahoo ToS for commercial use), RISK-P01 (signal misinterpretation)
-**Highest priority to close before MVP launch:** RISK-T02 (RAM), RISK-T09 (XSS), RISK-L04 (social media posts)
+**Highest priority to close before MVP launch:** RISK-T02 (RAM), RISK-L04 (social media posts)
 
 ---
 

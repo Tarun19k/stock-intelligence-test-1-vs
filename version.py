@@ -66,6 +66,17 @@ VERSION_LOG = [
      "notes": "get_ticker_info: add _is_rate_limited() gate (was missing from v5.27 — "              "only _yf_download/_yf_batch_download had the gate). Stops ticker info calls "              "firing during 429 cooldown window and polluting the error log."},
     {"version": "v5.30", "date": "2026-03-27",
      "notes": "styles.py: sidebar collapse button CSS updated for Streamlit 1.55 "              "compatibility. Added stSidebarCollapsedControl selector + main-area "              "button fallback. Removed stToolbar child visibility rule that was "              "interfering with 1.55 toolbar redesign."},
+    {"version": "v5.31", "date": "2026-03-28",
+     "notes": "P0 regulatory sprint (8 fixes, QA verified). "
+              "Option B: raw Momentum Score removed from dashboard header (D-01). "
+              "ROE null guard: N/A not 0.0% (D-02). "
+              "SEBI disclaimer + algorithmic disclosure added to _tab_insights() (EQA-29, EQA-32). "
+              "Watch Out For RSI/MACD-aware fallback — 'no red flags' blanket text removed (C-01 partial). "
+              "Market status card labels shortened to IND/USA/EUR/CHN/COMM/ETF (H-03). "
+              "GI topic cards expanded=True by default (F-01, F-15). "
+              "TechCrunch RSS replaced + 48h freshness gate added (F-03). "
+              "What You Should Do Next removed from GI page — liability risk (EQA-33, F-06, F-12). "
+              "WorldMonitor CSP block: iframe replaced with external link button (G-01)."},
     {"version": "v5.32", "date": "2026-03-29",
      "notes": "Data coherence + temporal labeling sprint (9 fixes, 11 new R23b checks). "
               "OPEN-008: calc_5d_change() in utils.py — cross-page 5-day consistency. "
