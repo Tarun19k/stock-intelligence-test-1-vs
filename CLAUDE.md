@@ -20,7 +20,7 @@ Two repos — ALL active work is in the modular repo:
 
 ```bash
 streamlit run app.py        # run the app locally
-python3 regression.py       # MUST pass (400/400) before any new work
+python3 regression.py       # MUST pass (410/410) before any new work
 ```
 
 Before every `git push`, also run the compliance script in `GSI_COMPLIANCE_CHECKLIST.md`:
@@ -60,26 +60,28 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.31 — 2026-03-28)
+## Current State (v5.33 — 2026-03-31)
 
-**Regression baseline: 400/400 PASS**
+**Regression baseline: 410/410 PASS**
 
-**v5.31 QA status: ALL 8 FIXES VERIFIED (2026-03-28)**
+**v5.33 sprint: ALL 8 ITEMS COMPLETE (2026-03-31)**
 
 Versions since last CLAUDE.md update:
 - **v5.29** — `get_ticker_info` missing `_is_rate_limited()` gate added
 - **v5.30** — `styles.py` sidebar collapse CSS for Streamlit 1.55 (stSidebarCollapsedControl)
-- **v5.31** — QA audit P0 fixes (see Open Items for full audit backlog):
-  - Option B: raw Momentum score removed from header; verdict + plain-English reason only
-  - ROE 0.0% null guard → N/A (yfinance returns null for Indian tickers via safe_float→0)
-  - Watch Out For false positive fixed: RSI/MACD-aware default, never blanket "no red flags"
-  - SEBI disclaimer + algorithmic disclosure added to Insights tab (P0 regulatory fix)
-  - Market status card labels: IND/USA/EUR/CHN/COMM/ETF (prevents mid-word wrapping)
-  - TechCrunch stale RSS feeds removed from AI & Jobs config
-  - GI topic cards: expanded=True by default
-  - Live Headlines label: date-gated, only "Live" when article <48h old
-  - "What You Should Do Next" removed from GI page (liability, no market relevance)
-  - R17 regression updated: "Momentum Signal Panel" accepted as valid score label
+- **v5.31** — QA audit P0 fixes (claims — several were not committed; fixed in v5.33)
+- **v5.32** — Data coherence sprint: calc_5d_change, P(gain) neutral zone, forecast dedup, week titles, Weinstein label, MACD label, GI market filter, LIVE badge, GI cache coherence
+- **v5.33** — Security, compliance & governance sprint:
+  - RISK-003: safe_ticker_key() before every yfinance call (XSS/injection hardening)
+  - RISK-001: sanitise()/safe_url() on all RSS output in home.py + global_intelligence.py
+  - D-07: Elder Triple Screen labels → plain English
+  - G-02: GI topics expanded 2→5 (US Rate Cycle, China Slowdown, Commodities)
+  - G-05: GI subtitle false "Real-Time" claim removed
+  - H-02: Loading states show "Loading…"/"Computing…" not silent "—"
+  - D-09: Forecast auto-correction factor disclosed before P(gain) card
+  - OPEN-017: R25 governance regression checks (6 policy enforcement rules, 10 new checks)
+  - P0 gaps found + fixed: SEBI disclaimer, algo disclosure, "no red flags" fallback, 48h gate
+  - GSI_LOOPHOLE_LOG.md created — 6-class automation loophole registry (R10b enforced)
 ---
 
 ## File Structure
@@ -101,7 +103,7 @@ pages/global_intelligence.py  Geopolitical topics + WorldMonitor link + watchlis
 pages/home.py           Ticker bar + homepage. 3 deferred @st.fragment sections.
 pages/dashboard.py      4-tab stock dashboard: Charts | Forecast | Compare | Insights.
 app.py                  Entry point. Routing. No _refresh_fragment.
-regression.py           400-check regression suite. Must pass before every commit.
+regression.py           410-check regression suite. Must pass before every commit.
 requirements.txt        Python dependencies. See Environment section for constraints.
 ```
 
