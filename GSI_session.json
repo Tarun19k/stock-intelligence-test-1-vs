@@ -6,8 +6,8 @@
     "repo_monolith": "https://github.com/Tarun19k/global-gsi-intelligence",
     "manifest_version": "7.0",
     "protocol": "This manifest MUST be updated after every patch, fix, rebuild, or architectural change to the project. Updating the manifest is itself a required activity \u2014 marked IMPORTANT \u2014 and must occur before or towards the end of every session. At the start of a new session, provide the Gist URL and say: 'Here is the session manifest \u2014 continue from where we left off.' Claude will read it and resume without re-reading every file from GitHub.",
-    "current_version": "v5.27",
-    "next_version": "v5.33",
+    "current_version": "v5.34",
+    "next_version": "v5.35",
     "version_convention": "Increment minor version (v5.X) for any patch or fix. Increment major version (vX.0) for structural refactors. Always add entry to version.py VERSION_LOG before shipping.",
     "deployment_target": "Both \u2014 Streamlit Community Cloud AND local dev",
     "entry_point": "app.py (root)",
@@ -26,7 +26,7 @@
     "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol.",
     "last_updated": "2026-03-29",
     "last_session": "session_011",
-    "current_app_version": "v5.32",
+    "current_app_version": "v5.34",
     "documentation": {
       "GSI_GOVERNANCE.md": "v1.0 \u2014 7 governance policies established from audit sessions",
       "GSI_QA_STANDARDS.md": "v1.0 \u2014 QA brief templates, issue classification, data reliability matrix",
@@ -1382,29 +1382,6 @@
       "note": "Paused for QA audit fixes (session 009). Resume v5.33."
     },
     {
-      "id": "RISK-001",
-      "priority": "MEDIUM",
-      "status": "MONITOR",
-      "title": "XSS via unsafe_allow_html with unescaped ticker vars",
-      "description": "5 page files have {ticker}/{name} f-strings in unsafe_allow_html blocks. Risk LOW today (static ticker list) but becomes HIGH if tickers load dynamically. Fix: wrap all {ticker}/{name} in sanitise() calls.",
-      "created": "2026-03-27"
-    },
-    {
-      "id": "RISK-003",
-      "priority": "LOW",
-      "status": "MONITOR",
-      "title": "No safe_ticker_key() before yf.download()",
-      "description": "selected_ticker passed to _yf_download() without sanitisation. Risk NONE today (dropdown from tickers.json). Fix: add safe_ticker_key(ticker) in _yf_download() as defence-in-depth.",
-      "created": "2026-03-27"
-    },
-    {
-      "id": "OPEN-017",
-      "priority": "LOW",
-      "title": "Governance policy framework \u2014 7 policies to enforce in regression",
-      "detail": "Policies: Data & Logic Integrity, Architectural, UX & Performance, Regulatory & Compliance (new), Data Coherence (new), Signal Arbitration (new), Data Freshness Labeling (new). Add R25 regression checks for compliance.",
-      "target": "v5.33"
-    },
-    {
       "id": "OPEN-018",
       "priority": "MEDIUM",
       "title": "Claude API integration \u2014 live AI narrative with Opus 4.6 / Mythos-ready",
@@ -1592,13 +1569,13 @@
   "regression": {
     "file": "regression.py",
     "run_command": "python regression.py",
-    "expected_output": "ALL 410 CHECKS PASS",
-    "last_run": "2026-03-31 \u2014 R25 governance checks added (+10 checks)",
-    "last_result": "410 / 410 PASS",
+    "expected_output": "ALL 415 CHECKS PASS",
+    "last_run": "2026-04-01 \u2014 R26 observability checks added (+5 checks)",
+    "last_result": "415 / 415 PASS",
     "next_run": "Required at start of every session before any new work",
     "check_list": "\u2192 see CLAUDE.md regression table",
     "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file \u2014 should check inside CSS constant only. Fix next session.",
-    "note": "R25 adds 6 policy enforcement checks (10 total new checks). Baseline 400 \u2192 410."
+    "note": "R26 adds 5 observability checks. Baseline 410 \u2192 415."
   },
   "session_start_checklist": {
     "always": [
