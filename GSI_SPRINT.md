@@ -5,15 +5,15 @@
 # The "In Progress" column acts as a WIP lock alongside GSI_WIP.md.
 # ════════════════════════════════════════════════════════════════════════
 
-## Current Sprint: v5.34 (Planning)
+## Current Sprint: v5.35 (Planning)
 
 **Status:** Planning — not started
 **Target date:** TBD
-**Regression baseline entering sprint:** 410/410
+**Regression baseline entering sprint:** 415/415
 
 ---
 
-### Backlog (candidate items for v5.34)
+### Backlog (candidate items for v5.35)
 
 Sourced from GSI_session.json open_items and GSI_AUDIT_TRAIL.md open findings.
 Prioritised by impact and implementation effort.
@@ -22,39 +22,43 @@ Prioritised by impact and implementation effort.
 - Items marked `OPEN-018 (Claude API)` require AI narrative integration — future phase, do not start before OPEN-018.
 - Items marked `OPEN-007` depend on DataManager M2 — complete M2 before starting those.
 - All other items are standalone and can be picked for the next sprint.
-Prioritised by impact and implementation effort.
 
 | ID | Description | Effort | Source | Governance policy |
 |---|---|---|---|---|
-| RISK-001 | XSS guard: sanitise() in unsafe_allow_html f-strings | Low | session | Policy 2 (architecture) |
-| RISK-003 | safe_ticker_key() before yf.download() | Low | session | Policy 2 |
 | D-02 bench | ROE benchmark: self-calculate from yfinance financials | Medium | audit | Policy 5 (data coherence) |
-| H-02 | Loading state explanation on first load | Low | audit | Policy 3 (UX) |
-| D-07 | Elder labels in plain English (BUY SETUP → Bullish setup) | Low | audit | Policy 3 |
-| D-09 | Forecast correction factor disclosed to user | Low | audit | Policy 7 (freshness) |
-| G-03 | Impact chain overflow fix at 1280px | Low | audit | Policy 3 |
-| F-14 | West Asia content attribution | Low | audit | Policy 1 (data integrity) |
 | OPEN-004 | Extract SCORING_WEIGHTS to config.py | Low | session | Policy 2 |
 | OPEN-003 | Cross-session forecast persistence (Supabase) | High | session | Policy 2 |
-| D-05 | Week Summary state persists on Dashboard navigation — no loading indicator | Low | audit | Policy 3 (UX) |
 | C-02 | Macro data (Gold, Crude) not accessible to stock-level AI narrative | Medium | audit | OPEN-018 (Claude API) |
 | C-03 | RSI 36 described as "neutral momentum" in AI narrative — wrong | Medium | audit | OPEN-018 (Claude API) |
 | C-08 | Sector breadth computed but never passed to AI narrative engine | Medium | audit | OPEN-018 (Claude API) |
 | F-02 | India Impact formula static — not computed from live Crude price | Medium | audit | OPEN-018 (Claude API) |
-| F-10 | Impact chain overflows at 1280px — duplicate of G-03 | Low | audit | Policy 3 (UX) |
 | C-01 | Sector breadth not wired to narrative — partially fixed in v5.31 | Medium | audit | OPEN-018 (Claude API) |
 | OPEN-006 | Portfolio Allocator stability score UI (shipped v5.23 — needs UI polish) | Medium | session | Policy 3 (UX) |
 | OPEN-007 | DataManager M2: CacheManager + DataContract validator | High | session | Policy 2 (arch) |
 | OPEN-018 | Claude API integration — live AI narrative (Opus 4.6 / Mythos-ready) | Medium | session | Policy 4,5 |
 | C-05 | Momentum score decomposition / scale disclosure | Medium | audit | Policy 5 |
 | EQA-41 | Forecast accuracy visual baseline | Medium | audit | Policy 7 |
-| D-02 bench | ROE benchmark: self-calculate from yfinance financials | Medium | audit | Policy 5 (data coherence) |
 
 ---
 
 ### In Progress
 
 Nothing in progress. Next session picks from Backlog above.
+
+---
+
+### Done — v5.34 (2026-04-01)
+
+| ID | Description | Verified |
+|---|---|---|
+| R27 | GSI_SPRINT_MANIFEST.json living manifest system — per-file doc update enforcement | Regression R27 (sprint-active) |
+| Doc debt | 6 v5.33 audit resolutions: H-02/D-07/D-09/G-02/G-05/EQA-38 | GSI_AUDIT_TRAIL.md |
+| Doc debt | RISK-T09 Open→Mitigated, governance enforcement updated, v5.31 entry added | GSI_RISK_REGISTER.md |
+| Phase 1 | market_data.py: get_health_stats() + get_rate_limit_state() + 3 counters | Regression R26 |
+| Phase 1 | pages/observability.py: App Health + Program tabs, DEV_TOKEN gated | Regression R26 |
+| D-05 | Loading spinner on Dashboard nav (data_stale gate) | Code review |
+| G-03/F-10 | Impact chain overflow CSS fix (width:100% + box-sizing:border-box) | Code review |
+| F-14 | West Asia quantitative claims sourced (Reuters/EIA/PPAC/Drewry) | Code review |
 
 ---
 
@@ -124,6 +128,7 @@ Nothing in progress. Next session picks from Backlog above.
 
 | Sprint | Version | Items | Sessions | Outcome |
 |---|---|---|---|---|
+| Manifest + observability + UX | v5.34 | 8 | 1 | All 8 complete, 5 R26 checks, R27 manifest system |
 | Security, compliance & governance | v5.33 | 8 | 1 | All 8 complete + 4 P0 gaps fixed, 10 R25 checks |
 | Data coherence | v5.32 | 9 | 1 | All 9 complete, 11 R23b checks |
 | P0 regulatory | v5.31 | 8 | 1 | All 8 verified by QA |
