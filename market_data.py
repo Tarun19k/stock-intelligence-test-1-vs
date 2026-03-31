@@ -23,7 +23,7 @@ import warnings as _warnings
 _warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")
 import streamlit as st
 from urllib.parse import urlparse
-from utils import safe_run, log_error, safe_url
+from utils import safe_run, log_error, safe_url, safe_ticker_key
 
 # ── RSS allowlist ─────────────────────────────────────────────────────────────
 _ALLOWED_RSS_DOMAINS = {
@@ -126,6 +126,7 @@ def _yf_download(ticker: str, **kwargs) -> pd.DataFrame:
     On 429: calls _set_rate_limited() and returns empty — no per-attempt sleep.
     The global cooldown handles recovery; re-trying in 2s just burns quota.
     """
+    ticker = safe_ticker_key(ticker)           # RISK-003: strip non-ticker chars
     for attempt in range(3):
         if _is_rate_limited():                         # v5.27 — abort during cooldown
             return pd.DataFrame()
@@ -215,6 +216,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
     """
     if not tickers:
         return {}
+    tickers = [safe_ticker_key(t) for t in tickers]   # RISK-003: strip non-ticker chars
 
     # v5.27 — Gate 1: global cooldown active → serve stale cache, no fetch
     if _is_rate_limited():
