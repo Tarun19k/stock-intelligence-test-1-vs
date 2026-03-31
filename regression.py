@@ -715,6 +715,44 @@ def run(FM):
         "def unavailable(" in dm,
         "unavailable() factory function must be defined — never return None from DataManager")
 
+    # R25 · v5.33 governance policy enforcement (OPEN-017) ───────────────────
+    # Verifies the 7 governance policies (GSI_GOVERNANCE.md) are enforced
+    # in code, not just documented. Each check maps to a specific policy.
+    import re as _re25
+    db   = FM.get("pages/dashboard.py", "")
+    home = FM.get("pages/home.py", "")
+    gi   = FM.get("pages/global_intelligence.py", "")
+    md   = FM.get("market_data.py", "")
+
+    # Policy 4 — Regulatory & Compliance
+    chk("R25.P4a", "sebi_disclaimer_in_dashboard",
+        "SEBI-registered investment advisor" in db,
+        "SEBI disclaimer missing from dashboard.py — P0 regulatory requirement")
+
+    chk("R25.P4b", "algo_disclosure_in_dashboard",
+        "algorithmically generated" in db.lower(),
+        "Algorithmic disclosure label missing from dashboard.py — Policy 4")
+
+    _next_calls = _re25.findall(r"(?<!def )_render_next_steps_ai\(\)", gi)
+    chk("R25.P4c", "next_steps_ai_not_called_from_gi",
+        len(_next_calls) == 0,
+        "_render_next_steps_ai() still called from GI page — liability risk (rule 14)")
+
+    # Policy 7 — Data Freshness Labeling
+    chk("R25.P7a", "freshness_48h_gate_in_gi",
+        "48h" in gi or "48 hours" in gi,
+        "No 48h freshness gate in global_intelligence.py — Policy 7 (Live Headlines must be date-gated)")
+
+    chk("R25.P7b", "safe_url_in_home_news",
+        "safe_url" in home,
+        "home.py news section must validate link URLs via safe_url() — RISK-001 / Policy 7")
+
+    # Policy 2 — Architectural: ticker sanitisation gate
+    chk("R25.P2a", "safe_ticker_key_in_market_data",
+        "safe_ticker_key" in md,
+        "market_data.py must call safe_ticker_key() before yf.download() — RISK-003 / Policy 2")
+
+
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.
     Catches fixes applied to in-memory FM but not written to the zip."""
