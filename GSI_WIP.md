@@ -44,9 +44,9 @@ Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS, 16 R27 checks)
 - [x] GSI_CONTEXT.md: Remove incorrectly added OPEN-001; close OPEN-001/OPEN-005
 
 ### Phase 1 — Observability dashboard (prerequisites for UX items)
-- [ ] market_data.py: instrumentation (rate-limit getter, hit/miss counters, error counter, fetch latency)
-- [ ] pages/observability.py: new founder-only page (App Health + Program tabs)
-- [ ] regression.py: R26 observability checks (syntax + instrumentation contracts)
+- [x] market_data.py: instrumentation (rate-limit getter, hit/miss counters, error counter, fetch latency)
+- [x] pages/observability.py: new founder-only page (App Health + Program tabs)
+- [x] regression.py: R26 observability checks (syntax + instrumentation contracts)
 
 ### Phase 2 — UX items (after Phase 1 complete + passing)
 - [ ] D-05: Week Summary loading indicator on Dashboard navigation
