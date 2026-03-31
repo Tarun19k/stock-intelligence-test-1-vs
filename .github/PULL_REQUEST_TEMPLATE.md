@@ -13,7 +13,7 @@
 ```
 python3 regression.py
 ```
-- [ ] ALL 400 CHECKS PASS (or current baseline)
+- [ ] ALL 410 CHECKS PASS (or current baseline)
 
 ## Compliance (Tier 1–3 must all pass before merge)
 
