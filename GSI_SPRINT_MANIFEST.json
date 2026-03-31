@@ -77,6 +77,26 @@
       "file": "regression.py",
       "change": "Phase 1: R26 observability checks (get_health_stats, get_rate_limit_state, render_observability)",
       "no_doc_update_reason": "regression.py is itself the enforcement artifact; no secondary doc update required"
+    },
+    {
+      "file": "pages/observability.py",
+      "change": "Phase 1 Humanizer pass: em dashes removed from chart/metric titles, 'COOLING DOWN' normalised",
+      "no_doc_update_reason": "copy-only update to an already-committed file; no structural change"
+    },
+    {
+      "file": "app.py",
+      "change": "D-05: spinner added on Dashboard nav when data_stale is True",
+      "doc_updates_required": ["R27.A.2"]
+    },
+    {
+      "file": "pages/global_intelligence.py",
+      "change": "G-03/F-10: impact chain overflow CSS fix (width:100%, box-sizing:border-box). F-14: attribution rendering for topics with attribution field",
+      "no_doc_update_reason": "CSS patch + conditional rendering; no new module contracts"
+    },
+    {
+      "file": "config.py",
+      "change": "F-14: attribution field added to West Asia Conflict topic",
+      "no_doc_update_reason": "data-only change in GLOBAL_TOPICS dict; no structural change"
     }
   ],
 

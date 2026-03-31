@@ -49,9 +49,9 @@ Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS, 16 R27 checks)
 - [x] regression.py: R26 observability checks (syntax + instrumentation contracts)
 
 ### Phase 2 — UX items (after Phase 1 complete + passing)
-- [ ] D-05: Week Summary loading indicator on Dashboard navigation
-- [ ] G-03/F-10: Impact chain overflow fix at 1280px
-- [ ] F-14: West Asia content attribution
+- [x] D-05: Week Summary loading indicator on Dashboard navigation
+- [x] G-03/F-10: Impact chain overflow fix at 1280px
+- [x] F-14: West Asia content attribution
 
 ### Phase 3 — Sprint close
 - [ ] version.py: v5.34 VERSION_LOG entry
