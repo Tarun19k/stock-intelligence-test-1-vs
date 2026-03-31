@@ -2,7 +2,7 @@
 # Upload ONLY this file to Claude Project Files
 # Do NOT upload CLAUDE.md (5k tokens) or GSI_session.json (35k tokens) to Project Files
 # Regenerate: python3 generate_context.py  (auto-runs after regression.py passes)
-# Generated: 2026-03-31 | v5.33 | ALL 410 CHECKS PASS
+# Generated: 2026-04-01 | v5.34 | ALL 415 CHECKS PASS
 # Target: <1,600 tokens. Do not add verbose content here.
 
 ## Identity
@@ -11,10 +11,10 @@ Repo: https://github.com/Tarun19k/stock-intelligence-test-1-vs
 Session manifest (Gist): https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
 Stack: Python 3.14 · Streamlit 1.55 · yfinance 1.2 · pandas>=1.4.0
 Deploy: Streamlit Cloud (community) · no API keys · no database
-Current version: v5.33 | Regression: ALL 410 CHECKS PASS
+Current version: v5.34 | Regression: ALL 415 CHECKS PASS
 
 ## Architecture — one paragraph
-14-file modular app. market_data.py is the ONLY yfinance importer.
+15-file modular app. market_data.py is the ONLY yfinance importer.
 indicators / forecast / portfolio have ZERO Streamlit calls.
 Pages receive pre-computed data — never fetch directly.
 4-state routing in app.py: stock → group → market → week.
@@ -23,6 +23,8 @@ DataManager M1 exists (data_manager.py) — BYPASS MODE until M4.
 calc_5d_change() in utils.py is the ONLY 5-day calculation function.
 GI watchlist uses cache_buster=0 — matches ticker bar cache key.
 tickers.json is the single source of truth for all 559 tickers and 38 groups.
+pages/observability.py is a founder-only internal page (DEV_TOKEN gated, MPA direct URL).
+market_data.py exposes get_health_stats() + get_rate_limit_state() for observability — no yfinance calls.
 
 ## DO NOT UNDO — hard rules (sourced live from CLAUDE.md)
  1. Do NOT revert `forecast.py` to filesystem persistence. — Cloud wipes filesystem on redeploy.
@@ -76,6 +78,7 @@ GSI_PRODUCT.md           MVP scope, personas, dependency map, monetisation path
 GSI_MARKETING.md         Positioning, competitive analysis, launch strategy
 GSI_RISK_REGISTER.md     24 risks: technical, legal, product, operational
 GSI_LOOPHOLE_LOG.md      6 classes of automation-caught loopholes. Append as discovered.
+GSI_SPRINT_MANIFEST.json Sprint-active living doc — R27 enforces file log completeness.
 .claude/commands/        28 slash commands — skills, legal, product, marketing
 .claude/rules/           Path-scoped rules — auto-load in Claude Code only (not claude.ai)
 
@@ -87,9 +90,6 @@ GSI_LOOPHOLE_LOG.md      6 classes of automation-caught loopholes. Append as dis
   OPEN-018 [MEDIUM]: Claude API integration — live AI narrative with Opus 4.6
   OPEN-019 [LOW]: Momentum Score decomposition bar chart (C-05)
   OPEN-020 [LOW]: WorldMonitor self-hosted (Leaflet.js + ACLED/GDELT API)
-  D-05 [LOW]: Week Summary state persists on Dashboard nav — no loading indicator
-  G-03 [LOW]: Impact chain overflow fix at 1280px
-  F-14 [LOW]: West Asia content attribution
 
 ## Sprint discipline
 Max 9 items per sprint — verified ceiling for single-session completion
