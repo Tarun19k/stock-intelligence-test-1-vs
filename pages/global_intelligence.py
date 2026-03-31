@@ -154,13 +154,26 @@ def _render_topic_card(topic_name: str, topic: dict, cur_sym: str, cb: int,
             _render_watchlist_badges(topic["watchlist"], cur_sym, cb,
                                      selected_market=selected_market)
 
-        # Live news
-        st.markdown('<p class="section-title">📰 Live Headlines</p>',
-                    unsafe_allow_html=True)
+        # Live news — label gated on freshness (Policy 7: recency claims must be verified)
+        # "Live Headlines" only when newest article is within 48h; else "Recent Headlines"
         articles = safe_run(
             lambda: get_news(topic.get("rss", []), max_n=5, cache_buster=cb),
             context=f"gi:news:{topic_name[:20]}", default=[]
         )
+        _news_label = "📰 Live Headlines" if not articles else "📰 Recent Headlines"
+        if articles:
+            from email.utils import parsedate_to_datetime as _parsedate
+            from datetime import datetime as _dt, timedelta as _td, timezone as _tz
+            try:
+                _newest = _parsedate(articles[0]["date"] + " 00:00:00"
+                                     if len(articles[0]["date"]) <= 11
+                                     else articles[0]["date"])
+                _age_h  = (_dt.now(_tz.utc) - _newest.astimezone(_tz.utc)).total_seconds() / 3600
+                _news_label = "📰 Live Headlines" if _age_h < 48 else "📰 Recent Headlines"
+            except Exception:
+                _news_label = "📰 Headlines"
+        st.markdown(f'<p class="section-title">{_news_label}</p>',
+                    unsafe_allow_html=True)
         if articles:
             for a in articles:
                 _link = a["link"] if safe_url(a["link"]) else "#"
