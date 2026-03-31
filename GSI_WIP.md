@@ -33,15 +33,15 @@ Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS, 16 R27 checks)
 - [x] regression.py: R27 sprint manifest sync checks added
 - [x] GSI_SPRINT_MANIFEST.json: manifest created (16 checks: 4 Tier A + 10 Tier B v5.33 + 2 Tier B infra)
 - [x] CLAUDE.md: Rule 2 updated (manifest step), Rule 7 added (amendment workflow)
-- [ ] GSI_WIP.md: Status ACTIVE (this file — in progress)
+- [x] GSI_WIP.md: Status ACTIVE (this file — in progress)
 
 ### Phase 0 — Doc debt backfill (v5.33 misses)
-- [ ] GSI_AUDIT_TRAIL.md: 6 resolution records (H-02, D-07, D-09, G-02, G-05, EQA-38) + Section 4 regen
-- [ ] GSI_GOVERNANCE.md: Enforcement section Planned → Implemented (v5.33)
-- [ ] GSI_RISK_REGISTER.md: RISK-T09 Open → Mitigated
-- [ ] GSI_LOOPHOLE_LOG.md: Class 4 RISK-001 → Fixed (v5.33); 399 → 410
-- [ ] version.py: Add missing v5.31 entry
-- [ ] GSI_CONTEXT.md: Remove incorrectly added OPEN-001; close OPEN-001/OPEN-005
+- [x] GSI_AUDIT_TRAIL.md: 6 resolution records (H-02, D-07, D-09, G-02, G-05, EQA-38) + Section 4 regen
+- [x] GSI_GOVERNANCE.md: Enforcement section Planned → Implemented (v5.33)
+- [x] GSI_RISK_REGISTER.md: RISK-T09 Open → Mitigated
+- [x] GSI_LOOPHOLE_LOG.md: Class 4 RISK-001 → Fixed (v5.33); 399 → 410
+- [x] version.py: Add missing v5.31 entry
+- [x] GSI_CONTEXT.md: Remove incorrectly added OPEN-001; close OPEN-001/OPEN-005
 
 ### Phase 1 — Observability dashboard (prerequisites for UX items)
 - [ ] market_data.py: instrumentation (rate-limit getter, hit/miss counters, error counter, fetch latency)
