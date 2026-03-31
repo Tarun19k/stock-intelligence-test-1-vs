@@ -19,6 +19,7 @@ from config import HELP_TEXT, GROUPS, CURRENCY
 from forecast import (
     store_forecast, resolve_forecasts,
     render_forecast_accuracy, get_weekly_accuracy_report,
+    compute_correction_factor,
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -657,6 +658,20 @@ def _tab_forecast(ticker: str, df: pd.DataFrame, sig: dict,
             f'<div class="warn-box" style="font-size:0.82rem">'
             f'⚠️ {sanitise(warning_txt)}</div>',
             unsafe_allow_html=True)
+
+    # ── Correction factor disclosure (D-09) ──────────────────────
+    _cf = safe_run(lambda: compute_correction_factor(ticker), context="forecast:cf", default=1.0)
+    if _cf != 1.0:
+        st.markdown(
+            f'<div style="font-size:0.78rem;color:#ff9800;background:#1a1200;'
+            f'border-left:3px solid #ff9800;border-radius:6px;'
+            f'padding:8px 12px;margin-bottom:10px">'
+            f'⚙️ <b>Auto-correction active</b> — past forecasts for this stock averaged '
+            f'below 95% accuracy. A correction factor of <b>{_cf:.4f}×</b> is being '
+            f'applied to today\'s projections. See Accuracy Tracker below for details.'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
     # ── Headline P(gain) card ─────────────────────────────────────
     pg_col   = "#00c853" if p_gain >= 55 else "#ff9800" if p_gain >= 45 else "#ff1744"
