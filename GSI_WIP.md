@@ -19,12 +19,12 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
+Status:        IDLE
 Session ID:    session_013
 Version:       v5.34
-Last updated:  2026-03-31
-Sprint:        v5.34 IN PROGRESS
-Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS, 16 R27 checks)
+Last updated:  2026-04-01
+Sprint:        v5.34 COMPLETE
+Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.json (COMPLETE)
 ```
 
 ## Active Tasks — v5.34 (update as each completes)
@@ -54,12 +54,12 @@ Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS, 16 R27 checks)
 - [x] F-14: West Asia content attribution
 
 ### Phase 3 — Sprint close
-- [ ] version.py: v5.34 VERSION_LOG entry
-- [ ] CLAUDE.md: Current State updated to v5.34
-- [ ] GSI_CONTEXT.md: header updated to v5.34
-- [ ] GSI_SPRINT.md: v5.34 moved to Done
-- [ ] GSI_SPRINT_MANIFEST.json: status → COMPLETE, archive to docs/sprint_archive/
-- [ ] GSI_WIP.md: Status → IDLE
+- [x] version.py: v5.34 VERSION_LOG entry
+- [x] CLAUDE.md: Current State updated to v5.34
+- [x] GSI_CONTEXT.md: header updated to v5.34
+- [x] GSI_SPRINT.md: v5.34 moved to Done
+- [x] GSI_SPRINT_MANIFEST.json: status → COMPLETE, archive to docs/sprint_archive/
+- [x] GSI_WIP.md: Status → IDLE
 
 ## Completed This Session (session_012 — v5.33)
 
