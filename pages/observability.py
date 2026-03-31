@@ -78,7 +78,7 @@ def _tab_app_health() -> None:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric(
         "Rate limit",
-        "COOLING DOWN" if rl["in_cooldown"] else "clear",
+        "cooling down" if rl["in_cooldown"] else "clear",
         delta=f"{rl['seconds_remaining']}s left" if rl["in_cooldown"] else None,
         delta_color="inverse",
     )
@@ -108,7 +108,7 @@ def _tab_app_health() -> None:
             name="fetch ms",
         ))
         fig.update_layout(
-            title="Fetch latency — last 20 samples (ms)",
+            title="Fetch latency: last 20 samples (ms)",
             height=200,
             margin={"t": 36, "b": 24, "l": 32, "r": 8},
             yaxis_title="ms",
@@ -123,7 +123,7 @@ def _tab_app_health() -> None:
 
     # Row 3 — error counts
     errors = stats["error_counts"]
-    st.markdown(f"**Fetch errors — {stats['total_errors']} total**")
+    st.markdown(f"**Fetch errors: {stats['total_errors']} total**")
     if errors:
         err_rows = sorted(errors.items(), key=lambda x: x[1], reverse=True)
         cols = st.columns(min(4, len(err_rows)))
