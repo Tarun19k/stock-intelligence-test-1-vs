@@ -329,3 +329,7 @@ def render_observability() -> None:
 
     with tab_program:
         _tab_program()
+
+
+# Streamlit MPA: execute when this file is served directly via /observability
+render_observability()
