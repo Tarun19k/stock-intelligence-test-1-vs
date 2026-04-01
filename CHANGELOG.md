@@ -203,6 +203,18 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 
 - styles.py: sidebar collapse button CSS updated for Streamlit 1.55.
 
+## v5.31 — 2026-03-28
+
+- P0 regulatory sprint (8 fixes, QA verified).
+
 ## v5.32 — 2026-03-29
 
 - Data coherence + temporal labeling sprint (9 fixes, 11 new R23b checks).
+
+## v5.33 — 2026-03-31
+
+- Security, compliance & governance sprint (8 fixes, 10 new R25 checks).
+
+## v5.34 — 2026-04-01
+
+- Sprint manifest infrastructure + v5.33 doc debt backfill + observability dashboard + UX fixes.
