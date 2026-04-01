@@ -62,7 +62,7 @@ Streamlit 1.55 notes:
 
 ## Current State (v5.34 — 2026-04-01)
 
-**Regression baseline: 415/415 PASS**
+**Regression baseline: 427/427 PASS**
 
 **v5.34 sprint: ALL ITEMS COMPLETE (2026-04-01)**
 
@@ -96,7 +96,7 @@ pages/home.py           Ticker bar + homepage. 3 deferred @st.fragment sections.
 pages/dashboard.py      4-tab stock dashboard: Charts | Forecast | Compare | Insights.
 pages/observability.py  Founder-only App Health + Program dashboard. DEV_TOKEN gated.
 app.py                  Entry point. Routing. No _refresh_fragment.
-regression.py           415-check regression suite. Must pass before every commit.
+regression.py           427-check regression suite. Must pass before every commit.
 requirements.txt        Python dependencies. See Environment section for constraints.
 ```
 
@@ -270,6 +270,7 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_MARKETING.md` | Positioning, competitive analysis, channel strategy, Reddit/Product Hunt launch templates. |
 | `GSI_RISK_REGISTER.md` | 24 risks across technical, legal (SEBI/SEC/MiFID II/FCA/CSRC), product, operational. |
 | `GSI_LOOPHOLE_LOG.md` | 6 classes of loophole caught by automation. Append when new failure classes found. |
+| `GSI_SESSION_LEARNINGS.md` | Per-session log of stale context, confusions, hallucinations, and new learnings. Append-only. Updated via /log-learnings (Phase 3 close step). |
 
 Store all in repo root alongside CLAUDE.md.
 
@@ -316,6 +317,16 @@ When starting a new sprint or implementation task:
    - Tier B checks (sprint-specific): one check per audit finding fixed, risk mitigated, governance change, or new ADR
    - `file_change_log` entries for all files you know will change
 4. Begin implementation — regression R27 now enforces the manifest automatically
+
+**Permanent Tier A checks — add to EVERY sprint manifest, no exceptions:**
+```json
+{ "id": "sync_docs_passes",             "tier": "A", "must_contain": ["see sync_docs.py exit 0"], "target_file": "sync_docs.py output" },
+{ "id": "compliance_baseline_current",  "tier": "A", "must_contain": ["ALL {N} CHECKS PASS"], "target_file": "GSI_COMPLIANCE_CHECKLIST.md" },
+{ "id": "pr_template_baseline_current", "tier": "A", "must_contain": ["ALL {N} CHECKS PASS"], "target_file": ".github/PULL_REQUEST_TEMPLATE.md" },
+{ "id": "decisions_has_sprint_adr",     "tier": "A", "must_contain": ["v{sprint_version}"],   "target_file": "GSI_DECISIONS.md" },
+{ "id": "qa_standards_has_brief",       "tier": "A", "must_contain": ["v{sprint_version}"],   "target_file": "GSI_QA_STANDARDS.md" }
+```
+Replace `{N}` with the post-sprint regression count; `{sprint_version}` with e.g. `v5.35`.
 
 ### Rule 3 — Commit after every file (git-first discipline)
 Never batch multiple files into a single commit during active development.

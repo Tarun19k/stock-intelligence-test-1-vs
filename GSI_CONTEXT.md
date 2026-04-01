@@ -2,7 +2,7 @@
 # Upload ONLY this file to Claude Project Files
 # Do NOT upload CLAUDE.md (5k tokens) or GSI_session.json (35k tokens) to Project Files
 # Regenerate: python3 generate_context.py  (auto-runs after regression.py passes)
-# Generated: 2026-04-01 | v5.34 | ALL 415 CHECKS PASS
+# Generated: 2026-04-01 | v5.34 | ALL 427 CHECKS PASS
 # Target: <1,600 tokens. Do not add verbose content here.
 
 ## Identity
@@ -11,7 +11,7 @@ Repo: https://github.com/Tarun19k/stock-intelligence-test-1-vs
 Session manifest (Gist): https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
 Stack: Python 3.14 · Streamlit 1.55 · yfinance 1.2 · pandas>=1.4.0
 Deploy: Streamlit Cloud (community) · no API keys · no database
-Current version: v5.34 | Regression: ALL 415 CHECKS PASS
+Current version: v5.34 | Regression: ALL 427 CHECKS PASS
 
 ## Architecture — one paragraph
 14-file modular app. market_data.py is the ONLY yfinance importer.
@@ -76,7 +76,8 @@ GSI_PRODUCT.md           MVP scope, personas, dependency map, monetisation path
 GSI_MARKETING.md         Positioning, competitive analysis, launch strategy
 GSI_RISK_REGISTER.md     24 risks: technical, legal, product, operational
 GSI_LOOPHOLE_LOG.md      6 classes of automation-caught loopholes. Append as discovered.
-.claude/commands/        28 slash commands — skills, legal, product, marketing
+GSI_SESSION_LEARNINGS.md Per-session stale-info/confusion/hallucination log. Append-only via /log-learnings.
+.claude/commands/        29 slash commands — skills, legal, product, marketing
 .claude/rules/           Path-scoped rules — auto-load in Claude Code only (not claude.ai)
 
 ## Open items
@@ -103,3 +104,13 @@ Checkpoint protocol: write CHECKPOINT block to GSI_WIP.md if context runs low
 regression.py passes → compliance Tier 1-3 (GSI_COMPLIANCE_CHECKLIST.md)
 → version.py entry added → GSI_WIP.md updated (Status: IDLE) → GSI_SPRINT.md updated
 → commit per file (never batch) → push → update Gist
+
+## Phase 3 sprint close protocol (full sequence)
+1. /log-learnings → GSI_SESSION_LEARNINGS.md (stale/confusion/learning records)
+2. python3 sync_docs.py (auto-update CHANGELOG, README, AGENTS)
+3. Update baseline count in GSI_COMPLIANCE_CHECKLIST.md + .github/PULL_REQUEST_TEMPLATE.md
+4. Append ADR → GSI_DECISIONS.md; append QA brief → GSI_QA_STANDARDS.md
+5. version.py entry; CLAUDE.md baseline + Current State; GSI_CONTEXT.md header
+6. GSI_SPRINT.md Done; GSI_WIP.md Status IDLE
+7. regression.py final pass — all checks must pass
+8. Commit, push, update Gist
