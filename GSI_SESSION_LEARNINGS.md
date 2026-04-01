@@ -81,6 +81,14 @@
 
 ---
 
+## RECORD-007 | 2026-04-01 | session_013 | v5.34 | LEARNING
+**Finding:** `pages/observability.py` defined `render_observability()` but never called it at module level. Streamlit MPA runs page files top-to-bottom — without a module-level call, `/observability` served a blank page with no PIN prompt visible. The gate logic itself (`st.text_input` + Unlock button + `DEV_TOKEN` validation) was correct; the entry point was simply missing.
+**Source:** User report ("there's no provision to enter the pin") + code inspection of `pages/observability.py`
+**Impact:** HIGH — founder-only observability page was completely inaccessible on both local and Cloud deployments since v5.34.
+**Fix applied:** Added `render_observability()` call at module level at end of file. Also created `.streamlit/secrets.toml` locally with `DEV_TOKEN = "gsi-dev-2026"`. CEO must mirror this in Streamlit Cloud secrets before deployment.
+
+---
+
 ## Template for new records
 
 ```

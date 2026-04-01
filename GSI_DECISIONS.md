@@ -286,6 +286,21 @@
 
 ---
 
+## ADR-018 | 2026-04-01 | v5.34+ | ACTIVE
+**Title:** Consolidated CXO + Talent-Ops management layer as Claude skills
+
+**Context:** Program needed executive-level oversight (CTO/COO/CFO/Program Chief) and talent/operations management as the tool approached MVP launch. The question was whether to build three separate skills or consolidate.
+
+**Decision:** Two skills: (1) `talent-ops.md` — consolidated Talent & Operations because they share source data (same governance docs) and outputs are interdependent; (2) `cxo.md` — Executive Suite with four named modes (CTO/COO/CFO/Program Chief), default Program Chief. CXO reads `reports/gsi-cto-brief.html` as its primary strategic document and feeds from talent-ops output.
+
+**Alternatives rejected:**
+- Three separate skills (Talent Manager, Operations Manager, CXO): Redundant file reads; talent requirements flow directly from ops analysis, making separation wasteful
+- Single unified skill: Too broad; loses the executive lens distinction that makes CTO vs. CFO vs. Program Chief outputs actionable
+
+**Consequences:** `/cxo` is the default program management entry point. `/talent-ops` feeds into CXO. Both kept active at all times per CEO instruction. First Program Chief run produced 5 CEO sign-off decisions (S-01 to S-05), confirmed 2 MVP launch blockers (WorldMonitor + landing page), and generated v5.35 sprint manifest.
+
+---
+
 ## Template for new ADRs
 
 ```

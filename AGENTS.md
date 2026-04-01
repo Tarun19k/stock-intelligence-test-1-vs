@@ -15,7 +15,7 @@ Python 3.14. No API keys. No database. No secrets.
 
 ## Before any commit
 ```bash
-python3 regression.py   # ALL 415 CHECKS PASS required
+python3 regression.py   # ALL 427 CHECKS PASS required
 ```
 
 ## Critical rules (never violate)

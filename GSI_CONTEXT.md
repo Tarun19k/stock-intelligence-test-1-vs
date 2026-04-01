@@ -78,7 +78,7 @@ GSI_RISK_REGISTER.md     24 risks: technical, legal, product, operational
 GSI_LOOPHOLE_LOG.md      6 classes of automation-caught loopholes. Append as discovered.
 GSI_SESSION_LEARNINGS.md Per-session stale-info/confusion/hallucination/deviation log. Append-only via /log-learnings.
 GSI_SESSION_SNAPSHOT.md  Per-session Q&A snapshot of 10 key invariants. Compared at session start to detect semantic drift.
-.claude/commands/        29 slash commands — skills, legal, product, marketing
+.claude/commands/        36 slash commands — skills, legal, product, marketing, management
 .claude/rules/           Path-scoped rules — auto-load in Claude Code only (not claude.ai)
 
 ## Open items
