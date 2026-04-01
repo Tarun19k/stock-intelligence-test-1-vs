@@ -162,10 +162,6 @@ def _render_header_static(ticker, name, country, cur_sym, info,
         f'font-size:0.92rem;display:inline-block;margin-bottom:6px">'
         f'🎯 {sanitise(fsig)}</span>'
         f'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px">'
-        f'<span title="{tip_score}" style="background:#1a2332;'
-        f'border:1px solid #2d3a5e;border-radius:6px;'
-        f'padding:3px 10px;font-size:0.72rem;color:#9aa0b4;cursor:help">'
-        f'Momentum: {score}/100</span>'
         f'<span style="font-size:0.72rem;color:{align_color};font-weight:600">'
         f'{align_icon} {align_text}</span>'
         f'<span title="{tip_ticker}" style="background:#1a2332;'
@@ -338,8 +334,9 @@ def _render_kpi_panel(sig: dict, cur_sym: str, asset_class: str = "equity"):
              f'{pe_str} · {sig["pb"]:.2f}x',
              _color(sig["pe"], lambda v: 0 < v < 22, lambda v: v > 40),
              tip=HELP_TEXT["pe_pb"])
+        roe_str = f'{sig["roe"]:.1f}%' if sig["roe"] != 0 else "N/A"
         _kpi(row2[3], "ROE · Rev Growth",
-             f'{sig["roe"]:.1f}% · {sig["revg"]:.1f}%',
+             f'{roe_str} · {sig["revg"]:.1f}%',
              _color(sig["roe"], lambda v: v > 15, lambda v: v < 5),
              tip=HELP_TEXT["roe_revg"])
         _kpi(row2[4], "OBV · Volume",
