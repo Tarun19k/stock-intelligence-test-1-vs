@@ -256,6 +256,36 @@
 
 ---
 
+## ADR-016 | 2026-04-01 | v5.34 | ACTIVE
+**Title:** Living sprint manifest with per-file doc update contracts (R27)
+
+**Context:** v5.33 completed with 6 doc update misses — audit trail, governance, risk register, loophole log, and a missing version entry were never updated despite being required. The root cause was no machine-enforced link between "file committed" and "docs updated".
+
+**Decision:** Each sprint writes a `GSI_SPRINT_MANIFEST.json` at the start. Every file committed during the sprint must have an entry in `file_change_log` with either `doc_updates_required` (list of check IDs) or `no_doc_update_reason`. R27 regression checks enforce this during the sprint (Pass 1: log completeness; Pass 2: must_contain string checks on target files). Manifest is archived to `docs/sprint_archive/` on close.
+
+**Alternatives rejected:**
+- End-of-sprint checklist only: Same as before — relies on memory, proven to miss items
+- Hardcoded per-file rules in regression.py: Not sprint-aware; would permanently inflate the baseline with checks that only apply during specific sprints
+
+**Consequences:** Baseline inflates during a sprint (R27 checks are active), returns to structural baseline on close. Rule 2 and Rule 7 added to CLAUDE.md to enforce the workflow. Amendment log in manifest handles unplanned mid-sprint file changes.
+
+---
+
+## ADR-017 | 2026-04-01 | v5.34 | ACTIVE
+**Title:** Observability page gated by st.secrets DEV_TOKEN, not by route obscurity
+
+**Context:** The founder-only observability page (`pages/observability.py`) needed to be inaccessible to public users while still being reachable via direct Streamlit MPA URL for the developer.
+
+**Decision:** Gate via `st.secrets["DEV_TOKEN"]` PIN entry stored in `st.session_state["obs_unlocked"]`. The page is hidden from the public nav via the existing CSS that suppresses the MPA sidebar. No security through obscurity — an active PIN gate is required.
+
+**Alternatives rejected:**
+- Route obscurity only (no PIN): Easily bypassed by anyone who reads the source code
+- Separate Streamlit app: Operational overhead; would require separate deploy and secrets management
+
+**Consequences:** `DEV_TOKEN` must be set in Streamlit Cloud secrets before the page is accessible on deployment. R26 regression check enforces the `obs_unlocked` gate is present in the page source.
+
+---
+
 ## Template for new ADRs
 
 ```
