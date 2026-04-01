@@ -13,39 +13,35 @@
 # RULES:
 #   1. Claude writes a snapshot block at the START of every session,
 #      AFTER reading GSI_WIP.md, CLAUDE.md, and GSI_CONTEXT.md.
-#   2. Claude reads the PREVIOUS block before writing the new one.
-#   3. Any answer that differs meaningfully from the previous session's
+#   2. Questions come from GSI_SNAPSHOT_QUESTIONS.md (active, non-retired).
+#      Do NOT answer from memory — trace every answer to a source file.
+#   3. Claude reads the PREVIOUS block before writing the new one.
+#   4. Any answer that differs meaningfully from the previous session's
 #      answer is a DEVIATION — log it in GSI_SESSION_LEARNINGS.md as
 #      type DEVIATION before starting any implementation work.
-#   4. Legitimate changes (e.g. baseline incremented, sprint changed)
+#   5. Legitimate changes (e.g. baseline incremented, sprint changed)
 #      are NOT deviations — note them as UPDATED.
-#   5. Append only. Never edit a previous block.
-#
-# QUESTION SET (fixed — do not reorder or rephrase):
-#   Q1.  What is the current regression baseline (exact number)?
-#   Q2.  What does R27 enforce and when is it active?
-#   Q3.  Which files are banned from importing yfinance directly?
-#   Q4.  What is the DataManager bypass mode rule?
-#   Q5.  What is the signal arbitration hierarchy when Weinstein and
-#        Elder conflict?
-#   Q6.  What is the M3 routing guard (grp_explicitly_selected) and
-#        why does it exist?
-#   Q7.  What does DO NOT UNDO rule 12 prohibit?
-#   Q8.  What are the 5 Permanent Tier A manifest checks?
-#   Q9.  What is the current sprint and its status?
-#   Q10. What is the single most important thing to check before push?
+#   6. Append only. Never edit a previous block.
+#   7. Each block header records the QSet version used (from
+#      GSI_SNAPSHOT_QUESTIONS.md VERSION LOG). If QSet version changed,
+#      note which questions are new (no prior comparison) and which
+#      were retired (skip comparison for those).
 #
 # DEVIATION vs UPDATED:
 #   DEVIATION — the same fact is described differently, incompletely, or
 #               contradictorily. Investigate the discrepancy before coding.
 #   UPDATED   — a value legitimately changed (new baseline, sprint closed,
 #               new rule added). No investigation needed, just log it.
+#   NEW       — question added this session (QSet version bumped).
+#               No prior answer exists; first comparison will be next session.
+#
+# To change the question set: edit GSI_SNAPSHOT_QUESTIONS.md, not this file.
 # ════════════════════════════════════════════════════════════════════════
 
 ---
 
-## SNAPSHOT-001 | 2026-04-01 | session_013 | v5.34
-*Written at session close as the seed snapshot. All future sessions compare against the previous block.*
+## SNAPSHOT-001 | 2026-04-01 | session_013 | v5.34 | QSet-v1
+*Seed snapshot — written at session close. No prior block to compare against. All future sessions compare against the previous block.*
 
 **Q1. Regression baseline:**
 427. Composed of: 415 structural checks + 5 R26 permanent observability checks + 7 R27 checks that run regardless of manifest status (manifest_valid_json + per-file change_log_complete gates). R27 content checks (Tier A/B must_contain) only run when manifest status == IN_PROGRESS.

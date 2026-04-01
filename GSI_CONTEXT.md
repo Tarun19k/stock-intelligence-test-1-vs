@@ -108,10 +108,13 @@ regression.py passes → compliance Tier 1-3 (GSI_COMPLIANCE_CHECKLIST.md)
 
 ## Phase 3 sprint close protocol (full sequence)
 1. /log-learnings → GSI_SESSION_LEARNINGS.md (stale/confusion/learning records)
-2. python3 sync_docs.py (auto-update CHANGELOG, README, AGENTS)
-3. Update baseline count in GSI_COMPLIANCE_CHECKLIST.md + .github/PULL_REQUEST_TEMPLATE.md
-4. Append ADR → GSI_DECISIONS.md; append QA brief → GSI_QA_STANDARDS.md
-5. version.py entry; CLAUDE.md baseline + Current State; GSI_CONTEXT.md header
-6. GSI_SPRINT.md Done; GSI_WIP.md Status IDLE
-7. regression.py final pass — all checks must pass
-8. Commit, push, update Gist
+2. Trigger review: scan GSI_SNAPSHOT_QUESTIONS.md checklist — did this sprint add/change
+   regression checks, modules, DO NOT UNDO rules, or major invariants? If yes, add/retire
+   questions in GSI_SNAPSHOT_QUESTIONS.md and bump QSet version.
+3. python3 sync_docs.py (auto-update CHANGELOG, README, AGENTS)
+4. Update baseline count in GSI_COMPLIANCE_CHECKLIST.md + .github/PULL_REQUEST_TEMPLATE.md
+5. Append ADR → GSI_DECISIONS.md; append QA brief → GSI_QA_STANDARDS.md
+6. version.py entry; CLAUDE.md baseline + Current State; GSI_CONTEXT.md header
+7. GSI_SPRINT.md Done; GSI_WIP.md Status IDLE
+8. regression.py final pass — all checks must pass
+9. Commit, push, update Gist

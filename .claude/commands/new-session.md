@@ -26,21 +26,24 @@ Confirm output matches the baseline in CLAUDE.md. If it does not match, stop and
 
 ## Step 4 — Snapshot deviation check (CRITICAL — do not skip)
 
-Read `GSI_SESSION_SNAPSHOT.md`. Find the most recent SNAPSHOT block.
+Read `GSI_SNAPSHOT_QUESTIONS.md`. Note the current QSet version and all ACTIVE (non-RETIRED) questions. For each active question, read the source files listed in the question's **Source** field — do not answer from memory.
 
-Answer all 10 questions from the fixed question set (Q1–Q10) based on what you extracted from the files in Steps 2–3. Write your answers mentally.
+Read `GSI_SESSION_SNAPSHOT.md`. Find the most recent SNAPSHOT block and note its QSet version.
 
-Compare your answers to the previous snapshot's answers. For each question:
-- If your answer differs in substance from the previous snapshot → mark as **DEVIATION**
-- If a value legitimately changed (new baseline, sprint closed, new rule) → mark as **UPDATED**
-- If identical → no action needed
+For each active question, compare your extracted answer to the previous snapshot's answer:
+- Answer differs in substance → **DEVIATION** — log in `GSI_SESSION_LEARNINGS.md` before writing any code; report to user
+- Value legitimately changed (new baseline, sprint closed, new rule) → **UPDATED** — note in new snapshot header
+- QSet version changed since last snapshot → questions added since then get status **NEW** (no prior answer to compare)
+- Identical → no action
 
-If any DEVIATIONs are found:
-1. Log each one in `GSI_SESSION_LEARNINGS.md` as type DEVIATION before writing any code
-2. Investigate the cause: did a doc change ambiguously? did a file get updated without the snapshot being updated?
-3. Report the deviations to the user before asking what to work on
+Write the new SNAPSHOT block to `GSI_SESSION_SNAPSHOT.md` (append only):
+```
+## SNAPSHOT-[NNN] | [date] | [session_NNN] | [vX.XX] | [QSet-vN]
+*Compared to SNAPSHOT-[NNN-1] (QSet-[vN]). Deviations: [list or "none"]. Updated: [list or "none"]. New questions: [list or "none"].*
 
-Write the new SNAPSHOT block to `GSI_SESSION_SNAPSHOT.md` (append — do not edit previous blocks).
+**Q01. Regression baseline:** [answer extracted from regression.py output + CLAUDE.md]
+...
+```
 
 ## Step 5 — Session summary
 
