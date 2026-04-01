@@ -270,7 +270,8 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_MARKETING.md` | Positioning, competitive analysis, channel strategy, Reddit/Product Hunt launch templates. |
 | `GSI_RISK_REGISTER.md` | 24 risks across technical, legal (SEBI/SEC/MiFID II/FCA/CSRC), product, operational. |
 | `GSI_LOOPHOLE_LOG.md` | 6 classes of loophole caught by automation. Append when new failure classes found. |
-| `GSI_SESSION_LEARNINGS.md` | Per-session log of stale context, confusions, hallucinations, and new learnings. Append-only. Updated via /log-learnings (Phase 3 close step). |
+| `GSI_SESSION_LEARNINGS.md` | Per-session log of stale context, confusions, hallucinations, deviations, and new learnings. Append-only. Updated via /log-learnings (Phase 3 close step). |
+| `GSI_SESSION_SNAPSHOT.md` | Per-session Q&A snapshot of 10 key system invariants. Written at session START after reading context. Compared to previous session's snapshot to detect semantic drift before any code is written. |
 
 Store all in repo root alongside CLAUDE.md.
 

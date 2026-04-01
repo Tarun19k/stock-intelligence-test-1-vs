@@ -28,6 +28,9 @@ Record types:
   outdated information
 - CONFUSION: Claude misread or misapplied something (near-miss)
 - HALLUCINATION: Claude generated a fact not present in the codebase or files
+- DEVIATION: snapshot Q&A answer differed from the previous session's answer for the
+  same question — possible semantic drift in Claude's understanding. Always include
+  which Q-number, what the previous answer was, what the new answer is, and root cause.
 - CORRECTION: amends a prior record — reference the original RECORD-NNN
 
 ## What qualifies
