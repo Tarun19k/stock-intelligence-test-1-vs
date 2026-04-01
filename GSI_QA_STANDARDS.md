@@ -190,6 +190,7 @@ All audit reports received, version tested, and key findings:
 | Data Dependency Report | v5.28 | 2026-03-28 | 2/10 | C-01: No red flags while 9/12 sectors negative |
 | 360° Bird's Eye View | v5.31 | 2026-03-28 | 5.5/10 | Meta-synthesis + v5.31 live verification |
 | v5.32 QA Brief | v5.32 | 2026-03-29 | TBD | 9 fixes: data coherence + temporal labeling |
+| v5.34 QA Brief | v5.34 | 2026-04-01 | TBD | 5 fixes: observability, UX, P0 compliance |
 
 ---
 
@@ -701,3 +702,91 @@ Findings still open, mapped to their OPEN-XXX tracking ID:
 | F-14 | West Asia content unsourced | — | v5.33 consideration |
 | D-02 benchmark | ROE card with no industry comparator | OPEN-ROE | v5.33 |
 
+
+---
+
+## 11. v5.34 QA Brief — Observability, UX, P0 Compliance
+
+**Version:** v5.34 | **Date:** 2026-04-01 | **Fixes:** 5 | **Regression baseline:** 415/415
+
+---
+
+### Fix 1 — Observability dashboard (Phase 1)
+**Files changed:** `market_data.py`, `pages/observability.py`
+
+**What changed:** New founder-only internal page accessible via direct Streamlit MPA URL. Gated by `st.secrets["DEV_TOKEN"]` PIN. Two tabs: App Health (live cache/rate-limit stats, latency chart, market sessions) and Program (sprint manifest, audit counts, risk register, compliance check, velocity chart).
+
+**Where to look:** Navigate directly to the observability page URL (e.g. `<app_url>/observability`).
+
+**Before:** No internal visibility into cache health, rate-limit state, or program status.
+
+**After:** App Health tab shows cache hit rate, P95 fetch latency, rate-limit cooldown state, and all 9 market session statuses. Program tab shows sprint manifest summary, audit trail counts, inline 8-gate compliance check.
+
+**Pass criteria:**
+- Without `DEV_TOKEN` set in secrets: page shows PIN entry form, nothing else visible
+- With correct PIN: App Health tab renders within 5s, all metric tiles have values
+- Program tab: compliance check shows 8/8 passed; version log shows v5.34 as latest
+
+---
+
+### Fix 2 — D-05: Loading indicator on Dashboard navigation
+**Audit ref:** D-05 | **File changed:** `app.py`
+
+**What changed:** When a user selects a new stock, `data_stale=True` triggers `st.spinner("Loading <stock name>…")` wrapping the data fetch and dashboard render. Spinner clears after render.
+
+**Where to look:** Sidebar → select any market → select a group → select a stock.
+
+**Before:** After clicking a stock, the page went blank (or showed stale content) with no indication that data was loading. Could take 2–4s with no feedback.
+
+**After:** "Loading <stock name>…" spinner appears immediately on stock selection, disappears when the dashboard renders.
+
+**Pass criteria:** Select a stock not previously visited in the session. A spinner with the stock name appears within 0.5s of selection and disappears when the dashboard header is visible.
+
+---
+
+### Fix 3 — G-03 / F-10: Impact chain overflow at 1280px
+**Audit ref:** G-03, F-10 | **File changed:** `pages/global_intelligence.py`
+
+**What changed:** `width:100%; max-width:100%; box-sizing:border-box` added to the outer `div` of `_render_impact_chain()`. The `overflow-x:auto` scroll was already present but the container lacked explicit width constraints.
+
+**Where to look:** Global Intelligence tab → any topic card → expand → scroll to the Impact Chain section.
+
+**Before:** At 1280px viewport, the impact chain nodes would overflow the column boundary, causing horizontal scrolling of the full page rather than just the chain container.
+
+**After:** At 1280px, the chain container scrolls horizontally within its column bounds. The rest of the page layout is unaffected.
+
+**Pass criteria:** Open at 1280px width (or use browser dev tools). Expand any topic card. The impact chain should show a horizontal scrollbar confined to the chain container. The page-level scrollbar should be vertical only.
+
+---
+
+### Fix 4 — F-14: West Asia quantitative attribution
+**Audit ref:** F-14 | **Files changed:** `config.py`, `pages/global_intelligence.py`
+
+**What changed:** An `attribution` field added to the West Asia Conflict topic in `GLOBAL_TOPICS`. Rendered as `st.caption("Sources: …")` above the watchlist badges when present.
+
+**Where to look:** Global Intelligence tab → expand "🔴 West Asia Conflict" → look below the India Impact box.
+
+**Before:** Specific quantitative claims (oil sensitivity: ₹1.2L cr per $10/bbl; freight: +30%; rupee impact: 50–80 paise) had no source attribution.
+
+**After:** A caption line reads: "Sources: Figures sourced from Reuters, Al Jazeera, and US EIA reports (2024–2025). Oil price sensitivity estimates: PPAC India. Freight cost data: Drewry World Container Index. Content reviewed periodically; not updated in real time."
+
+**Pass criteria:** The attribution caption is visible in the West Asia card. No other topic card shows an attribution caption (it is conditional on the field being present).
+
+---
+
+### Fix 5 — P0 compliance: raw score removed from header; ROE null guard
+**Files changed:** `pages/dashboard.py`
+
+**What changed:**
+- `Momentum: {score}/100` span removed from `_render_header_static()` — score now only visible in the KPI panel
+- `roe_str` null guard added: `sig["roe"] == 0` (yfinance null) now displays `"N/A"` instead of `"0.0%"`
+
+**Where to look:** Select any stock → Dashboard header area (below the stock name).
+
+**Before:** A small grey badge reading e.g. "Momentum: 62/100" appeared beside the verdict badge in the header. For Indian stocks where yfinance returns null ROE, the KPI panel showed "ROE: 0.0%".
+
+**After:** Header shows only the verdict badge and the plain-English alignment note. ROE KPI shows "N/A" when the data is unavailable.
+
+**Pass criteria:**
+- Header: no "Momentum: XX/100" text visible anywhere in the header card. Score is visible only in the KPI panel row.
+- ROE: select an Indian stock (e.g. RELIANCE.NS). If ROE data is unavailable, the KPI panel should show "N/A · X.X%" not "0.0% · X.X%".
