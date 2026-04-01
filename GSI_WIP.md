@@ -23,9 +23,9 @@ Status:        IDLE
 Session ID:    session_013
 Version:       v5.34
 Last updated:  2026-04-01
-Sprint:        v5.34 COMPLETE
-Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.json (COMPLETE)
-Next session:  session_014 — v5.35 (pending infra fix below before sprint items)
+Sprint:        v5.34 COMPLETE → v5.35 manifest written, sign-offs complete
+Manifest:      GSI_SPRINT_MANIFEST.json (v5.35 IN_PROGRESS — ready for session_014)
+Next session:  session_014 — execute v5.35 sprint (infra fix first, then sprint items)
 ```
 
 ---
@@ -66,12 +66,49 @@ before declaring sprint COMPLETE (currently absent from the protocol entirely).
 ### Implementation scope (session_014)
 1. Edit CLAUDE.md Rule 2, step 3 — add Permanent Tier A section (5 checks)
 2. Edit CLAUDE.md Phase 3 close protocol — add sync_docs.py step
-3. Run regression.py — expect 415/415 (CLAUDE.md change does not affect R-checks)
+3. Run regression.py — expect 427/427 (CLAUDE.md change does not affect R-checks)
 4. Commit: "infra: add permanent Tier A manifest checks + sync_docs to Phase 3 protocol"
-5. Then proceed to v5.35 sprint planning
+5. Then execute v5.35 sprint items below
 
 No new regression checks needed — R27 already enforces Tier A; adding checks to
 the template means they appear automatically in the next sprint's manifest.
+
+---
+
+## Active Tasks — v5.35 Launch Readiness (session_014)
+
+### Phase 0 — Infra fix (MUST complete before sprint items)
+- [ ] CLAUDE.md: Rule 2 Permanent Tier A section + Phase 3 sync_docs step
+- [ ] regression.py: confirm 427/427 still passes
+- [ ] Commit infra fix
+
+### Phase 1 — Launch blockers (Claude-executable)
+- [ ] global_intelligence.py: remove WorldMonitor iframe, add external link button (S-01)
+- [ ] app.py + requirements.txt: streamlit-analytics integration (S-03)
+- [ ] docs/social-media-guidelines.md: new file for RISK-L04 (S-04 prerequisite)
+- [ ] GSI_RISK_REGISTER.md: RISK-L04 Open → Mitigated
+
+### Phase 2 — CEO-action items (requires Tarun to run the app)
+- [ ] CEO: run `streamlit run app.py`, capture 3–4 screenshots
+  - Dashboard tab (stock with BUY verdict — e.g. a Nifty 50 stock)
+  - Global Intelligence page (topics visible)
+  - Week Summary / Group Overview
+  - Portfolio Allocator (optional)
+- [ ] CEO: hand screenshots to Claude for README + landing page integration
+
+### Phase 3 — Landing page (GitHub Pages)
+- [ ] docs/index.html: one-page GitHub Pages site using /design skill
+  (depends on screenshots from Phase 2, but can build placeholder structure first)
+
+### Phase 4 — Sprint close
+- [ ] version.py: v5.35 VERSION_LOG entry
+- [ ] CLAUDE.md: Current State updated to v5.35
+- [ ] ADR-018: WorldMonitor stopgap decision in GSI_DECISIONS.md
+- [ ] QA brief: v5.35 in GSI_QA_STANDARDS.md
+- [ ] /log-learnings: session_014 learnings
+- [ ] python3 sync_docs.py
+- [ ] GSI_SPRINT_MANIFEST.json: status → COMPLETE, archive
+- [ ] GSI_WIP.md: Status → IDLE
 
 ---
 

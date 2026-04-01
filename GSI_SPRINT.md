@@ -5,11 +5,19 @@
 # The "In Progress" column acts as a WIP lock alongside GSI_WIP.md.
 # ════════════════════════════════════════════════════════════════════════
 
-## Current Sprint: v5.35 (Planning)
+## Current Sprint: v5.35 — Launch Readiness
 
-**Status:** Planning — not started
-**Target date:** TBD
-**Regression baseline entering sprint:** 415/415
+**Status:** Planning — sign-offs complete, ready to execute
+**Target date:** Next 1–2 sessions
+**Regression baseline entering sprint:** 427/427
+**Goal:** Clear all MVP launch blockers. Ship private beta.
+
+### CEO Sign-offs recorded (2026-04-01)
+- S-01: WorldMonitor → stopgap link button now, Leaflet+GDELT in v5.36
+- S-02: Landing page → GitHub Pages one-pager
+- S-03: Analytics → streamlit-analytics
+- S-04: Launch sequence → private beta first → Reddit → Product Hunt
+- S-05: Yahoo ToS → educational/non-commercial confirmed for MVP
 
 ---
 

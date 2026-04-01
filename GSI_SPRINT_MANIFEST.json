@@ -1,152 +1,71 @@
 {
   "_comment": "Sprint manifest — read by regression.py R27. Set status to COMPLETE when sprint closes. Archive to docs/sprint_archive/ on close.",
-  "sprint": "v5.34",
-  "session": "session_013",
-  "opened": "2026-03-31",
-  "status": "COMPLETE",
-  "closed": "2026-04-01",
-  "baseline_before": 410,
-  "target_version": "v5.34",
-  "description": "Sprint manifest infrastructure + v5.33 doc debt backfill + observability dashboard + UX items",
+  "sprint": "v5.35",
+  "session": "session_014",
+  "opened": "2026-04-01",
+  "status": "PLANNED",
+  "closed": null,
+  "goal": "Clear all MVP launch blockers. Ship private beta.",
+  "baseline_entering": 427,
+  "ceo_signoffs": {
+    "S-01_worldmonitor": "stopgap_link_button_now_leaflet_gdelt_v536",
+    "S-02_landing_page": "github_pages_one_pager",
+    "S-03_analytics": "streamlit_analytics",
+    "S-04_launch_sequence": "private_beta_then_reddit_then_producthunt",
+    "S-05_yahoo_tos": "educational_noncommercial_confirmed"
+  },
+  "checks": [
+    {"id": "version_entry",             "tier": "A", "must_contain": ["v5.35"],              "target_file": "version.py"},
+    {"id": "claude_md_version",         "tier": "A", "must_contain": ["v5.35"],              "target_file": "CLAUDE.md"},
+    {"id": "context_header",            "tier": "A", "must_contain": ["v5.35"],              "target_file": "GSI_CONTEXT.md"},
+    {"id": "sprint_done_entry",         "tier": "A", "must_contain": ["v5.35"],              "target_file": "GSI_SPRINT.md"},
+    {"id": "compliance_baseline",       "tier": "A", "must_contain": ["ALL"],                "target_file": "GSI_COMPLIANCE_CHECKLIST.md"},
+    {"id": "pr_template_baseline",      "tier": "A", "must_contain": ["ALL"],                "target_file": ".github/PULL_REQUEST_TEMPLATE.md"},
+    {"id": "decisions_has_adr",         "tier": "A", "must_contain": ["v5.35"],              "target_file": "GSI_DECISIONS.md"},
+    {"id": "qa_standards_has_brief",    "tier": "A", "must_contain": ["v5.35"],              "target_file": "GSI_QA_STANDARDS.md"},
 
+    {"id": "worldmonitor_iframe_removed","tier": "B", "must_contain": ["WorldMonitor"],       "target_file": "pages/global_intelligence.py"},
+    {"id": "analytics_in_app",          "tier": "B", "must_contain": ["streamlit_analytics"],"target_file": "app.py"},
+    {"id": "analytics_in_requirements", "tier": "B", "must_contain": ["streamlit-analytics"],"target_file": "requirements.txt"},
+    {"id": "social_guidelines_exist",   "tier": "B", "must_contain": ["SEBI"],               "target_file": "docs/social-media-guidelines.md"},
+    {"id": "risk_l04_mitigated",        "tier": "B", "must_contain": ["RISK-L04"],            "target_file": "GSI_RISK_REGISTER.md"}
+  ],
   "file_change_log": [
     {
-      "file": "regression.py",
-      "change": "R27 sprint manifest sync checks added (Pass 1: log completeness, Pass 2: must_contain)",
-      "doc_updates_required": ["R27.B.infra.1"]
-    },
-    {
-      "file": "GSI_SPRINT_MANIFEST.json",
-      "change": "New file — sprint manifest system. Lives in repo root during sprint, archived on close.",
-      "doc_updates_required": ["R27.B.infra.2"],
-      "is_new_file": true,
-      "file_type": "sprint_artifact"
-    },
-    {
-      "file": "CLAUDE.md",
-      "change": "Rule 2 updated to include manifest write step. Rule 7 added: amendment workflow for mid-sprint file changes.",
-      "doc_updates_required": ["R27.B.infra.2"]
-    },
-    {
-      "file": "GSI_WIP.md",
-      "change": "Status: ACTIVE for session_013 / v5.34 sprint",
-      "no_doc_update_reason": "Workflow mutex file — no secondary doc update required"
-    },
-    {
-      "file": "GSI_AUDIT_TRAIL.md",
-      "change": "v5.33 resolution records added: H-02, D-07, D-09, G-02, G-05 (PARTIAL→FIXED), EQA-38 (PARTIAL→FIXED). Section 4 current state view regenerated.",
-      "doc_updates_required": ["R27.B.v533.1", "R27.B.v533.2", "R27.B.v533.3", "R27.B.v533.4", "R27.B.v533.5", "R27.B.v533.6"]
-    },
-    {
-      "file": "GSI_GOVERNANCE.md",
-      "change": "Enforcement section updated: R25 'Planned (v5.33)' → 'Implemented (v5.33)'",
-      "doc_updates_required": ["R27.B.v533.7"]
-    },
-    {
-      "file": "GSI_RISK_REGISTER.md",
-      "change": "RISK-T09 status: Open → Mitigated. Mitigation column updated with v5.33 fix details.",
-      "doc_updates_required": ["R27.B.v533.8"]
-    },
-    {
-      "file": "GSI_LOOPHOLE_LOG.md",
-      "change": "Class 4 table: RISK-001 status updated to Fixed (v5.33). Regression count 399 → 410.",
-      "doc_updates_required": ["R27.B.v533.9"]
-    },
-    {
-      "file": "version.py",
-      "change": "Missing v5.31 VERSION_LOG entry added (sprint was completed but never recorded).",
-      "doc_updates_required": ["R27.B.v533.10"]
-    },
-    {
-      "file": "GSI_CONTEXT.md",
-      "change": "Remove incorrectly added OPEN-001 (config_OLD.py confirmed absent from repo).",
-      "no_doc_update_reason": "Context file — is itself the artifact being kept current; no secondary doc update required"
-    },
-    {
-      "file": "market_data.py",
-      "change": "Phase 1: instrumentation — _cache_stats, _fetch_errors, _fetch_latency_ms counters + get_health_stats() + get_rate_limit_state() getters",
-      "doc_updates_required": ["R27.B.p1.1", "R27.B.p1.2"]
-    },
-    {
-      "file": "pages/observability.py",
-      "change": "Phase 1: new founder-only observability page — App Health + Program tabs, DEV_TOKEN gate",
-      "doc_updates_required": ["R27.B.p1.3"],
-      "is_new_file": true,
-      "file_type": "page"
-    },
-    {
-      "file": "regression.py",
-      "change": "Phase 1: R26 observability checks (get_health_stats, get_rate_limit_state, render_observability)",
-      "no_doc_update_reason": "regression.py is itself the enforcement artifact; no secondary doc update required"
-    },
-    {
-      "file": "pages/observability.py",
-      "change": "Phase 1 Humanizer pass: em dashes removed from chart/metric titles, 'COOLING DOWN' normalised",
-      "no_doc_update_reason": "copy-only update to an already-committed file; no structural change"
+      "file": "pages/global_intelligence.py",
+      "change": "Remove WorldMonitor iframe — replace with external link button (S-01 stopgap)",
+      "doc_updates_required": ["ADR-018 in GSI_DECISIONS.md", "worldmonitor_iframe_removed"]
     },
     {
       "file": "app.py",
-      "change": "D-05: spinner added on Dashboard nav when data_stale is True",
-      "doc_updates_required": ["R27.A.2"]
+      "change": "streamlit-analytics integration (S-03)",
+      "doc_updates_required": ["analytics_in_app", "CLAUDE.md file structure + entry points"]
     },
     {
-      "file": "pages/global_intelligence.py",
-      "change": "G-03/F-10: impact chain overflow CSS fix (width:100%, box-sizing:border-box). F-14: attribution rendering for topics with attribution field",
-      "no_doc_update_reason": "CSS patch + conditional rendering; no new module contracts"
+      "file": "requirements.txt",
+      "change": "Add streamlit-analytics",
+      "doc_updates_required": ["analytics_in_requirements", "GSI_DEPENDENCIES.md entry if version constraint found"]
     },
     {
-      "file": "config.py",
-      "change": "F-14: attribution field added to West Asia Conflict topic",
-      "no_doc_update_reason": "data-only change in GLOBAL_TOPICS dict; no structural change"
+      "file": "docs/social-media-guidelines.md",
+      "change": "New file — social media post rules for RISK-L04 mitigation",
+      "doc_updates_required": ["social_guidelines_exist", "RISK-L04 status Open→Mitigated in GSI_RISK_REGISTER.md"]
     },
     {
-      "file": "GSI_session.json",
-      "change": "Phase 0: regression baseline updated 400→410 to reflect v5.33 R25 additions",
-      "no_doc_update_reason": "dynamic session state file — no secondary doc update required"
+      "file": "CLAUDE.md",
+      "change": "Infra fix (Rule 2 Permanent Tier A + Phase 3 sync_docs) + v5.35 Current State update",
+      "doc_updates_required": ["claude_md_version"]
     },
     {
-      "file": "GSI_SPRINT.md",
-      "change": "Phase 3: v5.34 moved to Done section with velocity entry",
-      "doc_updates_required": ["R27.A.4"]
+      "file": "version.py",
+      "change": "v5.35 VERSION_LOG entry",
+      "doc_updates_required": ["version_entry"]
     }
   ],
-
-  "amendment_log": [
-    {
-      "date": "2026-03-31",
-      "session": "session_013",
-      "note": "Phase 1 files added: market_data.py instrumentation, pages/observability.py (new), regression.py R26 checks"
-    },
-    {
-      "date": "2026-04-01",
-      "session": "session_013",
-      "note": "Phase 2 files added: app.py (D-05), pages/global_intelligence.py (G-03/F-10/F-14), config.py (F-14), observability.py Humanizer pass. GSI_session.json and GSI_SPRINT.md backfilled to log (missed in Phase 0 entry)"
-    }
+  "notes": [
+    "Landing page (docs/index.html) and README screenshots are CEO-action items requiring app screenshots — not Claude-executable. Tracked in GSI_WIP.md as pending CEO actions.",
+    "Memory profiling (RISK-T02) deferred to post-beta — add to v5.36 backlog if beta users surface RAM issues.",
+    "Infra fix from session_013 (CLAUDE.md Rule 2 Permanent Tier A) is the first task in session_014 before sprint items begin."
   ],
-
-  "checks": [
-
-    {"id": "R27.A.1",  "tier": "A", "file": "version.py",           "must_contain": "\"v5.34\"",               "label": "version.py has v5.34 VERSION_LOG entry"},
-    {"id": "R27.A.2",  "tier": "A", "file": "CLAUDE.md",            "must_contain": "v5.34",                   "label": "CLAUDE.md Current State references v5.34"},
-    {"id": "R27.A.3",  "tier": "A", "file": "GSI_CONTEXT.md",       "must_contain": "v5.34",                   "label": "GSI_CONTEXT.md header references v5.34"},
-    {"id": "R27.A.4",  "tier": "A", "file": "GSI_SPRINT.md",        "must_contain": "Done — v5.34",            "label": "GSI_SPRINT.md has v5.34 Done section"},
-
-    {"id": "R27.B.v533.1",  "tier": "B", "file": "GSI_AUDIT_TRAIL.md", "must_contain": "H-02  | 2026-03-31 | v5.33",      "label": "AUDIT: H-02 resolved in v5.33"},
-    {"id": "R27.B.v533.2",  "tier": "B", "file": "GSI_AUDIT_TRAIL.md", "must_contain": "D-07  | 2026-03-31 | v5.33",      "label": "AUDIT: D-07 resolved in v5.33"},
-    {"id": "R27.B.v533.3",  "tier": "B", "file": "GSI_AUDIT_TRAIL.md", "must_contain": "D-09  | 2026-03-31 | v5.33",      "label": "AUDIT: D-09 resolved in v5.33"},
-    {"id": "R27.B.v533.4",  "tier": "B", "file": "GSI_AUDIT_TRAIL.md", "must_contain": "G-02  | 2026-03-31 | v5.33",      "label": "AUDIT: G-02 resolved in v5.33"},
-    {"id": "R27.B.v533.5",  "tier": "B", "file": "GSI_AUDIT_TRAIL.md", "must_contain": "G-05  | 2026-03-31 | v5.33 | FIXED",  "label": "AUDIT: G-05 PARTIAL→FIXED in v5.33"},
-    {"id": "R27.B.v533.6",  "tier": "B", "file": "GSI_AUDIT_TRAIL.md", "must_contain": "EQA-38 | 2026-03-31 | v5.33 | FIXED", "label": "AUDIT: EQA-38 PARTIAL→FIXED in v5.33"},
-    {"id": "R27.B.v533.7",  "tier": "B", "file": "GSI_GOVERNANCE.md",  "must_contain": "Implemented (v5.33)",              "label": "GOVERNANCE: R25 enforcement marked Implemented"},
-    {"id": "R27.B.v533.8",  "tier": "B", "file": "GSI_RISK_REGISTER.md","must_contain": "safe_url() \u2014 v5.33",         "label": "RISK: RISK-T09 mitigation updated with v5.33 fix"},
-    {"id": "R27.B.v533.9",  "tier": "B", "file": "GSI_LOOPHOLE_LOG.md", "must_contain": "Fixed (v5.33)",                   "label": "LOOPHOLE: Class 4 RISK-001 marked Fixed (v5.33)"},
-    {"id": "R27.B.v533.10", "tier": "B", "file": "version.py",          "must_contain": "\"v5.31\"",                       "label": "version.py has missing v5.31 entry"},
-
-    {"id": "R27.B.infra.1", "tier": "B", "file": "regression.py",  "must_contain": "R27 \u00b7 Sprint Manifest", "label": "regression.py has R27 Sprint Manifest checks"},
-    {"id": "R27.B.infra.2", "tier": "B", "file": "CLAUDE.md",      "must_contain": "GSI_SPRINT_MANIFEST.json", "label": "CLAUDE.md sprint protocol references manifest"},
-
-    {"id": "R27.B.p1.1", "tier": "B", "file": "market_data.py",          "must_contain": "get_health_stats",         "label": "market_data.py: get_health_stats() defined"},
-    {"id": "R27.B.p1.2", "tier": "B", "file": "market_data.py",          "must_contain": "get_rate_limit_state",     "label": "market_data.py: get_rate_limit_state() defined"},
-    {"id": "R27.B.p1.3", "tier": "B", "file": "pages/observability.py",  "must_contain": "render_observability",     "label": "pages/observability.py: render_observability() defined"}
-  ]
+  "amendment_log": []
 }
