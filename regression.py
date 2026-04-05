@@ -787,17 +787,21 @@ def run(FM):
             # Pass 2 — all declared must_contain checks
             for _c in _manifest.get("checks", []):
                 _cid   = _c.get("id", "?")
-                _cfile = _c.get("file", "?")
-                _must  = _c.get("must_contain", "")
+                _cfile = _c.get("target_file", _c.get("file", "?"))
+                _musts = _c.get("must_contain", [])
+                if isinstance(_musts, str):
+                    _musts = [_musts]
                 _label = _c.get("label", _cid)
                 _tier  = _c.get("tier", "?")
                 if not os.path.exists(_cfile):
                     chk(f"R27.{_tier}", f"{_cid}:{_label}", False,
                         f"{_cfile} not found on disk")
                     continue
-                _ok = _must in open(_cfile).read()
-                chk(f"R27.{_tier}", f"{_cid}:{_label}", _ok,
-                    f"not found in {_cfile}: '{_must[:80]}'" if not _ok else "")
+                _content = open(_cfile).read()
+                for _must in _musts:
+                    _ok = _must in _content
+                    chk(f"R27.{_tier}", f"{_cid}:{_label}", _ok,
+                        f"not found in {_cfile}: '{_must[:80]}'" if not _ok else "")
 
 
     # R26 · Observability instrumentation contracts ────────────────────────────
