@@ -19,14 +19,215 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_013
-Version:       v5.34
-Last updated:  2026-04-01
-Sprint:        v5.34 COMPLETE → v5.35 manifest written, sign-offs complete
-Manifest:      GSI_SPRINT_MANIFEST.json (v5.35 IN_PROGRESS — ready for session_014)
-Next session:  session_014 — execute v5.35 sprint (infra fix first, then sprint items)
+Status:        ACTIVE
+Session ID:    session_015
+Version:       v5.34.1
+Last updated:  2026-04-05
+Sprint:        v5.34.1 PLANNED — Claude Code hook infrastructure (micro-sprint before v5.35)
+Manifest:      GSI_SPRINT_MANIFEST.json (update to v5.34.1 at sprint start; v5.35 follows after)
+Next session:  session_015 — execute v5.34.1 hook sprint, then v5.35 launch sprint
 ```
+
+---
+
+## v5.34.1 + v5.34.2 Sprint Plan — Claude Code Hook Infrastructure
+
+**Decision (2026-04-05):** Original v5.34.1 had ~15 items — split into two micro-sprints to stay under Rule 5 (9-item limit). v5.34.1 delivers the core hooks. v5.34.2 hardens regression and closes.
+
+**Risk summary (audit):** 4 BLOCKER · 5 TIER-A · 1 PROTECTION · 2 DEBT — all resolved in plan below.
+
+---
+
+## v5.34.1 — Core Hook Implementation (session_015, 8 items)
+
+### PHASE 0 — Pre-flight (developer runs manually before session_015 starts)
+
+- [ ] Archive v5.35 PLANNED manifest → `docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.35_PLANNED.json`
+      WHY: BLOCKER — 6 CEO sign-off items (S-01→S-05 + RISK-L04) will be lost if manifest is overwritten without archiving
+- [ ] `mkdir -p .claude/hooks` in repo root
+      WHY: BLOCKER — Write tool cannot create files in non-existent directory
+- [ ] Confirm `git check-ignore .claude/hooks/pre_commit.sh` returns nothing
+      WHY: Hook scripts are source code; must not be gitignored
+
+---
+
+### PHASE 1 — Sprint start (Claude executes in order)
+
+- [ ] `GSI_SPRINT_MANIFEST.json` — rewrite for v5.34.1
+      Set: sprint_version="v5.34.1", status="IN_PROGRESS"
+      Add Permanent Tier A checks (with "v5.34.1" as must_contain value)
+      Add Tier B checks: compliance_check.py exists, hooks block in settings.json, all 3 hook scripts exist
+      Add file_change_log for all 16 files listed in Files Changing section below
+      NOTE: v5.35 entries are safe in the Phase 0 archive — do not carry them over
+- [ ] `GSI_WIP.md` — set Status → ACTIVE
+- [ ] `python3 regression.py` — confirm 427/427 clean baseline before any code changes
+
+---
+
+### PHASE 2 — Blockers first, then implementation (one commit per file)
+
+- [ ] `regression.py` — Fix R27 schema bugs (BLOCKER — must be first commit)
+      Fix 1: `_c.get("file","?")` → `_c.get("target_file", _c.get("file","?"))` (manifest uses "target_file")
+      Fix 2: `must_contain` is a list in manifest — iterate as list, not treat as string (else TypeError on IN_PROGRESS)
+      Run regression after — expect 427/427. Commit: "fix: R27 schema — target_file field + must_contain list iteration"
+
+- [ ] `settings.json` — Pre-authorize hook writes and execution (BLOCKER — must precede hook script creation)
+      Add to allow: `"Write(.claude/hooks/*)"` — .sh files not currently covered
+      Add to allow: `"Bash(chmod +x .claude/hooks/*.sh)"` — chmod not in allow list
+      Add to allow: `"Bash(mkdir -p .claude/hooks)"` — for reproducibility
+      Commit: "infra: settings.json — pre-authorize hook write + chmod permissions"
+
+- [ ] `compliance_check.py` — NEW FILE (must precede pre_push.sh)
+      Extract inline script from CLAUDE.md lines 29-36 — copy VERBATIM (Rules 11-14 depend on exact string matching)
+      Add CWD detection: cd to repo root if called from hook context
+      Add clean exit 0 on pass / exit 1 on fail with structured output (N/8 checks passed)
+      WARNING: preserve exact quoting in '"No major red flags at this time."' and lookbehind regex in Rule 14
+      Run regression after — 427/427. Commit: "feat: compliance_check.py — extracted from CLAUDE.md"
+
+- [ ] `.claude/hooks/pre_commit.sh` — NEW FILE
+      PreToolUse on Bash; parse tool_input.command via Python stdin; fires on git commit
+      Check .claude/run_state.json: skip if result=="PASS" and hash==current HEAD (dedup)
+      On cache miss: run python3 regression.py; exit 2 on fail; write run_state.json
+      chmod +x immediately after write
+      Run regression after — 427/427. Commit: "feat: .claude/hooks/pre_commit.sh — regression gate"
+
+- [ ] `.claude/hooks/pre_push.sh` — NEW FILE (depends on compliance_check.py existing)
+      PreToolUse on Bash; parse tool_input.command via Python stdin; fires on git push
+      Calls: python3 $CLAUDE_PROJECT_DIR/compliance_check.py
+      Exit 2 on failure; exit 0 on pass
+      chmod +x immediately after write
+      Run regression after — 427/427. Commit: "feat: .claude/hooks/pre_push.sh — compliance gate"
+
+- [ ] `.claude/hooks/post_edit.sh` — NEW FILE
+      PostToolUse on Write|Edit; filters for *.md via tool_input.file_path
+      Calls: python3 $CLAUDE_PROJECT_DIR/sync_docs.py --check
+      On clean pass: output {"suppressOutput": true}; exit 0 (silent)
+      On issues: print output; exit 0 (PostToolUse cannot block)
+      chmod +x immediately after write
+      Run regression after — 427/427. Commit: "feat: .claude/hooks/post_edit.sh — doc audit on *.md"
+
+- [ ] `settings.json` — Add full hooks block
+      Add "hooks" block with all 3 hooks using $CLAUDE_PROJECT_DIR paths
+      Move "Bash(python3 sync_docs.py --check)" into allow list (from settings.local.json)
+      Run regression after — 427/427. Commit: "feat: settings.json — add hooks block (3 Claude Code hooks)"
+
+- [ ] `settings.local.json` — Remove duplicate sync_docs entry
+      Remove: "Bash(python3 sync_docs.py --check)" (now in settings.json)
+      Commit: "chore: settings.local.json — remove migrated sync_docs permission"
+
+- [ ] `CLAUDE.md` — Three targeted changes
+      Change 1: Replace inline python3 -c block in Run Commands with `python3 compliance_check.py`
+      Change 2: Add compliance_check.py to File Structure section (utility module, rebuild-safe)
+      Change 3: Update Current State version → v5.34.1
+      Run regression after — 427/427. Commit: "docs: CLAUDE.md — compliance_check.py ref + v5.34.1 state"
+
+---
+
+### PHASE 3 — Regression hardening
+
+- [ ] `regression.py` — Add R28 hook infrastructure checks
+      R28a: .claude/hooks/pre_commit.sh exists
+      R28b: .claude/hooks/pre_push.sh exists
+      R28c: .claude/hooks/post_edit.sh exists
+      R28d: compliance_check.py exists in repo root
+      R28e: settings.json contains "hooks" keyword
+      NOTE: do NOT add compliance_check.py to PROJECT_FILES (module-level exit() breaks R1 syntax checks)
+      Run regression after — expect 427+5 = 432/432. Commit: "feat: regression.py R28 — hook infrastructure checks"
+
+- [ ] `GSI_COMPLIANCE_CHECKLIST.md` — Update baseline count to 432
+      Commit: "docs: GSI_COMPLIANCE_CHECKLIST.md — baseline 427→432"
+
+- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — Update baseline count to 432
+      Commit: "docs: .github/PULL_REQUEST_TEMPLATE.md — baseline 427→432"
+
+---
+
+### PHASE 4 — Sprint close (per CLAUDE.md sprint close protocol)
+
+- [ ] `version.py` — Add v5.34.1 VERSION_LOG entry
+      Notes: hook infrastructure, compliance_check.py, 3 hooks, R27 bugfix, R28 checks, baseline 432/432
+      Commit: "chore: version.py — v5.34.1 VERSION_LOG entry"
+
+- [ ] `GSI_QA_STANDARDS.md` — Add v5.34.1 QA brief
+      Infrastructure sprint — no UI changes. Test plan: verify each hook fires (attempt failing commit, push, md edit)
+      Per Rule 15: must include before/after description, not just numbered steps
+      Commit: "docs: GSI_QA_STANDARDS.md — v5.34.1 QA brief"
+
+- [ ] `GSI_DECISIONS.md` — Verify "v5.34.1" appears (ADR-019/020 already written; check string presence)
+
+- [ ] `GSI_SPRINT.md` — Add v5.34.1 Done entry
+      Commit: "docs: GSI_SPRINT.md — v5.34.1 sprint board entry"
+
+- [ ] `python3 sync_docs.py` — Full sync (rebuilds CHANGELOG, README, AGENTS; prompts for SEMI items)
+
+- [ ] `python3 regression.py` — Final confirm 432/432
+
+- [ ] `GSI_SPRINT_MANIFEST.json` — status → COMPLETE; archive to docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.1.json
+      NEXT: rebuild v5.35 manifest from docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.35_PLANNED.json
+
+- [ ] `GSI_WIP.md` — Status → IDLE; move active tasks to Completed; write session_015 summary
+
+- [ ] `CLAUDE.md Open Items` — Add OPEN-XXX for observability.py _inline_compliance_check() duplication (Policy 5 debt)
+
+---
+
+### Deferred to future sprint (not in v5.34.1)
+
+- SessionStart hook — auto-check GSI_WIP.md status on session open
+- Stop hook — end-of-session GSI_WIP.md reminder
+- statusMessage UX polish on regression gate hook
+- Dedup hook for explicit mid-session python3 regression.py calls
+- Hook testing dry-run strategy (force-fail a check to verify exit 2 blocks)
+- observability.py _inline_compliance_check() → call compliance_check.py instead (OPEN-XXX)
+
+---
+
+### Files Changing — v5.34.1 only (8 implementation files)
+
+**New (4):** compliance_check.py · .claude/hooks/pre_commit.sh · .claude/hooks/pre_push.sh · .claude/hooks/post_edit.sh
+**Modified (3):** regression.py (R27 fix only) · .claude/settings.json (×2 commits) · .claude/settings.local.json
+**Docs (1):** CLAUDE.md (inline script replacement + file structure entry + v5.34.1 Current State)
+
+---
+
+## v5.34.2 — Hardening + Sprint Close (session_016, 7 items)
+
+### PHASE 3 — Regression hardening
+
+- [ ] `regression.py` — Add R28 hook existence checks (5 checks: 3 hooks + compliance_check.py + settings.json hooks block)
+      Run regression → expect 427+5 = 432/432
+      Commit: "feat: regression.py R28 — hook infrastructure existence checks"
+
+- [ ] `GSI_COMPLIANCE_CHECKLIST.md` — Update baseline 427→432
+      Commit: "docs: GSI_COMPLIANCE_CHECKLIST.md — baseline 427→432"
+
+- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — Update baseline 427→432
+      Commit: "docs: .github/PULL_REQUEST_TEMPLATE.md — baseline 427→432"
+
+### PHASE 4 — Sprint close
+
+- [ ] `version.py` — Add v5.34.2 VERSION_LOG entry
+      Notes: R28 hook existence checks, baseline 432/432
+      Commit: "chore: version.py — v5.34.2 VERSION_LOG entry"
+
+- [ ] `GSI_QA_STANDARDS.md` — Add v5.34.2 QA brief
+      Infrastructure sprint — no UI changes. Hook verification test plan (per Rule 15: before/after, not just numbered steps)
+      Commit: "docs: GSI_QA_STANDARDS.md — v5.34.2 QA brief"
+
+- [ ] `GSI_SPRINT.md` — Add v5.34.1 + v5.34.2 Done entries
+      Commit: "docs: GSI_SPRINT.md — v5.34.1/v5.34.2 done entries"
+
+- [ ] Sprint close sequence (no individual commits — per close protocol):
+      python3 sync_docs.py → python3 regression.py → manifest COMPLETE + archive → GSI_WIP.md IDLE
+      Add OPEN-021 to CLAUDE.md: observability.py _inline_compliance_check() drift (Policy 5 debt)
+
+### Files Changing — v5.34.2 only (7 files)
+
+**Modified (2):** regression.py (R28 checks) · version.py
+**Docs (3):** GSI_QA_STANDARDS.md · GSI_SPRINT.md · CLAUDE.md (OPEN-021 + baseline update)
+**Baseline counts (2):** GSI_COMPLIANCE_CHECKLIST.md · .github/PULL_REQUEST_TEMPLATE.md
+**Auto-generated:** CHANGELOG.md · README.md · AGENTS.md · GSI_CONTEXT.md
+**Archived:** docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.1.json · docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.2.json
 
 ---
 
