@@ -132,7 +132,19 @@ VERSION_LOG = [
               "settings.json: full hooks block wired (3 hooks, $CLAUDE_PROJECT_DIR paths); "
               "sync_docs --check migrated from settings.local.json allow list. "
               "R27: schema bugfixes (target_file field + must_contain list iteration). "
-              "Regression baseline: 427 pre-sprint (450 total checks mid-sprint including 23 R27 checks)."}
+              "Regression baseline: 427 pre-sprint (450 total checks mid-sprint including 23 R27 checks)."},
+    {"version": "v5.34.2", "date": "2026-04-05",
+     "notes": "Regression hardening + sprint close for v5.34.1 CTO review fixes. "
+              "R28: 5 hook infrastructure existence checks added — pre_commit.sh, pre_push.sh, "
+              "post_edit.sh, compliance_check.py, settings.json hooks block. Baseline 427→432. "
+              "CTO review fixes applied (v5.34.1): C-1 sync_docs.py exit code (1 on issues, not 0); "
+              "C-2 observability.py path (dashboard.py→pages/dashboard.py); "
+              "M-1 git rev-parse replaces CLAUDE_PROJECT_DIR in all hooks (permanent, env-var-free); "
+              "M-2 compliance_check.py __main__ guard (prevents R1 syntax check breakage); "
+              "M-4 settings.json Write(*.sh) removed (overbroad permission). "
+              "GSI_LOOPHOLE_LOG.md Class 2 added (governance script with hardcoded wrong path). "
+              ".gitignore: RALPH_PROMPT.md + .claude/ralph-loop.local.md added. "
+              "Regression baseline: 432/432 PASS."}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
