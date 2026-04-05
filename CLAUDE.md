@@ -23,17 +23,9 @@ streamlit run app.py        # run the app locally
 python3 regression.py       # MUST pass (410/410) before any new work
 ```
 
-Before every `git push`, also run the compliance script in `GSI_COMPLIANCE_CHECKLIST.md`:
+Before every `git push`, also run the compliance script:
 ```bash
-# Quick inline version (copy from GSI_COMPLIANCE_CHECKLIST.md §Quick compliance script)
-python3 -c "
-import re
-files = {'db':open('dashboard.py').read(),'gi':open('pages/global_intelligence.py').read(),'md':open('market_data.py').read(),'ind':open('indicators.py').read()}
-checks=[('SEBI disclaimer','SEBI-registered investment advisor' in files['db']),('Algo disclosure','algorithmically generated' in files['db'].lower()),('No raw score','Momentum: {score}/100' not in files['db']),('No red flags fallback','"No major red flags at this time."' not in files['db']),('ROE guard','roe_str' in files['db']),('Next steps removed',len(re.findall(r'(?<!def )_render_next_steps_ai\(\)',files['gi']))==0),('RATES CONTEXT','RATES CONTEXT' in files['ind']),('Rate limit gate','_is_rate_limited()' in files['md'])]
-fails=[n for n,ok in checks if not ok]
-print(f'{len(checks)-len(fails)}/{len(checks)} compliance checks passed')
-[print(f'  FAIL: {n}') for n in fails] if fails else print('Safe to push')
-"
+python3 compliance_check.py
 ```
 
 Deploy: Streamlit Community Cloud (1GB RAM) + local dev.
@@ -60,11 +52,11 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.34 — 2026-04-01)
+## Current State (v5.34.1 — 2026-04-05)
 
-**Regression baseline: 427/427 PASS**
+**Regression baseline: 427/427 PASS** *(pre-sprint; v5.34.1 in progress — 444/450 mid-sprint)*
 
-**v5.34 sprint: ALL ITEMS COMPLETE (2026-04-01)**
+**v5.34.1 sprint: IN PROGRESS (session_015)**
 
 Versions since last CLAUDE.md update:
 - **v5.33** — Security, compliance & governance sprint (see version.py for full notes)
@@ -74,6 +66,12 @@ Versions since last CLAUDE.md update:
   - Phase 1: market_data.py observability instrumentation (`get_health_stats()`, `get_rate_limit_state()`, `_cache_stats`, `_fetch_errors`, `_fetch_latency_ms`); 5 R26 checks
   - Phase 1: `pages/observability.py` — founder-only App Health + Program dashboard, `DEV_TOKEN` gated
   - Phase 2: D-05 spinner on Dashboard nav (data_stale gate); G-03/F-10 impact chain overflow CSS fix; F-14 West Asia attribution
+- **v5.34.1** — Claude Code hook infrastructure:
+  - compliance_check.py: 8-check pre-push gate extracted from CLAUDE.md inline script
+  - .claude/hooks/pre_commit.sh: PreToolUse regression gate (exit 2 blocks)
+  - .claude/hooks/pre_push.sh: PreToolUse compliance gate (exit 2 blocks)
+  - .claude/hooks/post_edit.sh: PostToolUse doc audit on *.md (suppressOutput on pass)
+  - settings.json: hooks block wired (3 hooks), sync_docs --check migrated from local
 ---
 
 ## File Structure
@@ -97,6 +95,7 @@ pages/dashboard.py      4-tab stock dashboard: Charts | Forecast | Compare | Ins
 pages/observability.py  Founder-only App Health + Program dashboard. DEV_TOKEN gated.
 app.py                  Entry point. Routing. No _refresh_fragment.
 regression.py           427-check regression suite. Must pass before every commit.
+compliance_check.py     8-check pre-push gate. Extracted from CLAUDE.md inline script.
 requirements.txt        Python dependencies. See Environment section for constraints.
 ```
 
