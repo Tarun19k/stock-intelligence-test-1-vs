@@ -9,7 +9,7 @@
 
 **Status:** Planning — sign-offs complete, ready to execute
 **Target date:** Next 1–2 sessions
-**Regression baseline entering sprint:** 427/427
+**Regression baseline entering sprint:** 432/432
 **Goal:** Clear all MVP launch blockers. Ship private beta.
 
 ### CEO Sign-offs recorded (2026-04-01)
@@ -52,6 +52,22 @@ Prioritised by impact and implementation effort.
 ### In Progress
 
 Nothing in progress. Next session picks from Backlog above.
+
+---
+
+### Done — v5.34.2 (2026-04-05)
+
+| ID | Description | Verified |
+|---|---|---|
+| R28 | regression.py R28 — 5 hook infrastructure existence checks (+5, baseline 427→432) | `python3 regression.py` → ALL 432 CHECKS PASS |
+| Bugfix | CTO C-1: sync_docs.py exit code — exits 1 on issues (was 0, made post_edit error branch unreachable) | `python3 sync_docs.py --check` exits non-zero on issues |
+| Bugfix | CTO C-2: observability.py path — dashboard.py→pages/dashboard.py (false compliance failures) | `python3 compliance_check.py` → 8/8 |
+| Bugfix | CTO M-1: git rev-parse replaces CLAUDE_PROJECT_DIR in all 3 hooks (permanent fix) | Hooks fire without unbound variable errors |
+| Bugfix | CTO M-2: compliance_check.py __main__ guard added (prevented R1 syntax check from running) | R1 syntax checks pass; module importable |
+| Bugfix | CTO M-4: settings.json Write(*.sh) permission removed (was overbroad scope) | Settings reviewed |
+| Bugfix | jq installed (brew install jq 1.8.1) — ralph-loop stop hook dependency | ralph-loop functional |
+| Doc | .gitignore: RALPH_PROMPT.md + .claude/ralph-loop.local.md (ephemeral ralph state) | git status clean |
+| Doc | GSI_LOOPHOLE_LOG.md Class 2: governance script hardcoded wrong path | Class 2 documented |
 
 ---
 
@@ -149,6 +165,8 @@ Nothing in progress. Next session picks from Backlog above.
 
 | Sprint | Version | Items | Sessions | Outcome |
 |---|---|---|---|---|
+| Regression hardening + sprint close | v5.34.2 | 9 | 1 | All 9 complete, R28 +5 checks, baseline 432/432 |
+| Hook infrastructure + CTO review | v5.34.1 | 8+fixes | 2 | All items complete + all CTO findings fixed |
 | Manifest + observability + UX | v5.34 | 8 | 1 | All 8 complete, 5 R26 checks, R27 manifest system |
 | Security, compliance & governance | v5.33 | 8 | 1 | All 8 complete + 4 P0 gaps fixed, 10 R25 checks |
 | Data coherence | v5.32 | 9 | 1 | All 9 complete, 11 R23b checks |
