@@ -57,6 +57,8 @@ Caught by: **regression.py** (R17, R22) + **compliance checklist Tier 2**
 | Stale RSS feeds in a "Live Headlines" section | If the most recent article is >90 days old, the feed is dead. Showing it as live news misrepresents information recency. | Compliance checklist Tier 2: "No feed in 'Live Headlines' with newest article older than 90 days" |
 | Momentum score (X/100) visible in dashboard header | Displaying a raw algorithmic score without context quantifies confidence in a way that implies precision the model does not have. Option B (verdict + plain-English reason) is the correct replacement. | Compliance script: `'Momentum: {score}/100' not in files['db']` |
 
+| Governance script with a hardcoded wrong path | `CLAUDE.md` inline compliance script referenced `open('dashboard.py')` at repo root. File is at `pages/dashboard.py`. Script would raise `FileNotFoundError` if run directly. Undetected for 2+ sprints because the inline script was documentation-only, never executed as a gate. When `observability.py` copied the same inline script verbatim into `_inline_compliance_check()`, empty-string reads caused 3 compliance checks to silently report false failures on the Program tab every load. Fixed v5.34.1. | Compliance script and observability path now both use `pages/dashboard.py`. Add path smoke-test to regression when adding new file references to governance scripts. |
+
 **Root risk:** RISK-P03 (signal accuracy trust), RISK-P01 (misinterpretation as advice)
 
 ---
