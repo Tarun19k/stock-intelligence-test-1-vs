@@ -218,3 +218,7 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 ## v5.34 — 2026-04-01
 
 - Sprint manifest infrastructure + v5.33 doc debt backfill + observability dashboard + UX fixes.
+
+## v5.34.1 — 2026-04-05
+
+- Claude Code hook infrastructure sprint.

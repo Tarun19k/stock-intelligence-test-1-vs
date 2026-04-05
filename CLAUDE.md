@@ -54,7 +54,7 @@ Streamlit 1.55 notes:
 
 ## Current State (v5.34.1 — 2026-04-05)
 
-**Regression baseline: 427/427 PASS** *(pre-sprint; v5.34.1 in progress — 444/450 mid-sprint)*
+**Regression baseline: 450/450 PASS**
 
 **v5.34.1 sprint: IN PROGRESS (session_015)**
 
