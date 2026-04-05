@@ -1569,9 +1569,9 @@
   "regression": {
     "file": "regression.py",
     "run_command": "python regression.py",
-    "expected_output": "ALL 450 CHECKS PASS",
-    "last_run": "2026-04-05 \u2014 v5.34.1 hook infrastructure sprint complete",
-    "last_result": "450 / 450 PASS",
+    "expected_output": "ALL 427 CHECKS PASS",
+    "last_run": "2026-04-05 \u2014 v5.34.1 COMPLETE (R27 adds 23 checks during active sprints only)",
+    "last_result": "427 / 427 PASS",
     "next_run": "Required at start of every session before any new work",
     "check_list": "\u2192 see CLAUDE.md regression table",
     "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file \u2014 should check inside CSS constant only. Fix next session.",

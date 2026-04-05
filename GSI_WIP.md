@@ -19,13 +19,14 @@
 ## Session Status
 
 ```
-Status:        ACTIVE (interrupted — checkpoint below)
-Session ID:    session_015
+Status:        IDLE
+Session ID:    session_015 (COMPLETE)
 Version:       v5.34.1
 Last updated:  2026-04-05
-Sprint:        v5.34.1 IN_PROGRESS — Claude Code hook infrastructure
-Manifest:      GSI_SPRINT_MANIFEST.json (update to v5.34.1 at sprint start; v5.35 follows after)
-Next session:  session_015 — execute v5.34.1 hook sprint, then v5.35 launch sprint
+Sprint:        v5.34.1 COMPLETE — Claude Code hook infrastructure
+Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.1.json (archived)
+Next session:  session_016 — v5.34.2 hardening sprint (R28 checks, baseline 450→455)
+               OR v5.35 launch sprint (see GSI_SPRINT.md backlog)
 ```
 
 ---
