@@ -22,7 +22,8 @@
       "Write(.claude/hooks/*)",
       "Write(*.sh)",
       "Bash(chmod +x .claude/hooks/*.sh)",
-      "Bash(mkdir -p .claude/hooks)"
+      "Bash(mkdir -p .claude/hooks)",
+      "Bash(python3 sync_docs.py --check)"
     ],
     "deny": [
       "Bash(pip install *)",
@@ -31,6 +32,34 @@
       "Bash(curl *)",
       "Bash(wget *)",
       "Bash(streamlit run *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/pre_commit.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/pre_push.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/post_edit.sh"
+          }
+        ]
+      }
     ]
   },
   "model": "claude-sonnet-4-6",
