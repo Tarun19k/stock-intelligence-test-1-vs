@@ -10,9 +10,9 @@
 #
 # ADR-020: PostToolUse cannot block; suppressOutput on clean pass.
 
-set -euo pipefail
+set -uo pipefail
 
-REPO="$CLAUDE_PROJECT_DIR"
+REPO=$(git rev-parse --show-toplevel)
 
 # --- Parse stdin JSON to get the file path ---
 INPUT=$(cat)
@@ -29,11 +29,9 @@ if [[ "$FILE_PATH" != *.md ]]; then
 fi
 
 # --- Run doc audit ---
+# Use `if` to capture exit code without triggering set -e on non-zero exit.
 cd "$REPO"
-OUTPUT=$(python3 sync_docs.py --check 2>&1)
-EXIT_CODE=$?
-
-if [ $EXIT_CODE -eq 0 ]; then
+if OUTPUT=$(python3 sync_docs.py --check 2>&1); then
     # Clean pass — suppress output to avoid cluttering the conversation
     echo '{"suppressOutput": true}'
 else
