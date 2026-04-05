@@ -195,7 +195,7 @@ def _parse_sprint_velocity(text: str) -> list:
 def _inline_compliance_check() -> dict:
     """Run the 8 compliance checks inline. Returns dict of name → bool."""
     try:
-        db  = _read_file_safe("dashboard.py")
+        db  = _read_file_safe("pages/dashboard.py")
         gi  = _read_file_safe("pages/global_intelligence.py")
         md  = _read_file_safe("market_data.py")
         ind = _read_file_safe("indicators.py")
