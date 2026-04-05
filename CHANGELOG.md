@@ -222,3 +222,7 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 ## v5.34.1 — 2026-04-05
 
 - Claude Code hook infrastructure sprint.
+
+## v5.34.2 — 2026-04-05
+
+- Regression hardening + sprint close for v5.34.1 CTO review fixes.

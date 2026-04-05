@@ -340,6 +340,23 @@ Use `$CLAUDE_PROJECT_DIR` for all paths (built-in env var — portable, no hardc
 
 ---
 
+## ADR-021 | 2026-04-05 | v5.34.2 | ACTIVE
+**Title:** Hook repo-root resolution via `git rev-parse` (permanent fix for CLAUDE_PROJECT_DIR unreliability)
+
+**Context:** After v5.34.1 hook deployment, all three hook scripts (pre_commit.sh, pre_push.sh, post_edit.sh) failed with "CLAUDE_PROJECT_DIR: unbound variable" errors. The variable is not reliably set in all Claude Code hook execution contexts. A permanent, environment-variable-free solution was required.
+
+**Decision:** Replace all `$CLAUDE_PROJECT_DIR` references in hook scripts with `REPO=$(git rev-parse --show-toplevel)`. This resolves the repo root from git's own metadata — git is always available in any git repository context, and `--show-toplevel` works from any subdirectory. All scripts use `set -euo pipefail` (pre_edit uses `set -uo pipefail`), which means the script exits immediately if git is unavailable (correct failure mode). The settings.json hooks block retains `$CLAUDE_PROJECT_DIR` in the hook command strings — that is a Claude Code platform variable used to locate the hook file, not used inside the script itself.
+
+**Alternatives rejected:**
+- Keep `$CLAUDE_PROJECT_DIR` inside scripts: Unreliable — not set in all hook execution contexts (CTO finding M-1).
+- Hardcode absolute path: Non-portable across developer machines.
+- `dirname "$0"`: Unreliable when scripts are invoked via bash path substitution.
+- Export `CLAUDE_PROJECT_DIR` in shell profile: Fragile — requires every developer to configure their environment.
+
+**Consequences:** Hook scripts are permanently environment-variable-independent for repo root resolution. Fix applies to all 3 hooks. Any future hooks added to this repo should follow the same `git rev-parse --show-toplevel` pattern.
+
+---
+
 ## Template for new ADRs
 
 ```

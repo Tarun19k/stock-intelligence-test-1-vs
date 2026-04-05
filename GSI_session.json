@@ -6,7 +6,7 @@
     "repo_monolith": "https://github.com/Tarun19k/global-gsi-intelligence",
     "manifest_version": "7.0",
     "protocol": "This manifest MUST be updated after every patch, fix, rebuild, or architectural change to the project. Updating the manifest is itself a required activity \u2014 marked IMPORTANT \u2014 and must occur before or towards the end of every session. At the start of a new session, provide the Gist URL and say: 'Here is the session manifest \u2014 continue from where we left off.' Claude will read it and resume without re-reading every file from GitHub.",
-    "current_version": "v5.34.1",
+    "current_version": "v5.34.2",
     "next_version": "v5.35",
     "version_convention": "Increment minor version (v5.X) for any patch or fix. Increment major version (vX.0) for structural refactors. Always add entry to version.py VERSION_LOG before shipping.",
     "deployment_target": "Both \u2014 Streamlit Community Cloud AND local dev",
@@ -26,7 +26,7 @@
     "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol.",
     "last_updated": "2026-04-05",
     "last_session": "session_015",
-    "current_app_version": "v5.34.1",
+    "current_app_version": "v5.34.2",
     "documentation": {
       "GSI_GOVERNANCE.md": "v1.0 \u2014 7 governance policies established from audit sessions",
       "GSI_QA_STANDARDS.md": "v1.0 \u2014 QA brief templates, issue classification, data reliability matrix",
@@ -1569,13 +1569,13 @@
   "regression": {
     "file": "regression.py",
     "run_command": "python regression.py",
-    "expected_output": "ALL 427 CHECKS PASS",
-    "last_run": "2026-04-05 \u2014 v5.34.1 COMPLETE (R27 adds 23 checks during active sprints only)",
-    "last_result": "427 / 427 PASS",
+    "expected_output": "ALL 432 CHECKS PASS",
+    "last_run": "2026-04-05 \u2014 v5.34.2 COMPLETE (R27 adds checks during active sprints only)",
+    "last_result": "432 / 432 PASS",
     "next_run": "Required at start of every session before any new work",
     "check_list": "\u2192 see CLAUDE.md regression table",
     "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file \u2014 should check inside CSS constant only. Fix next session.",
-    "note": "R26 adds 5 observability checks. Baseline 410 \u2192 415."
+    "note": "R28 adds 5 hook existence checks. Baseline 427 \u2192 432."
   },
   "session_start_checklist": {
     "always": [

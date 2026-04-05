@@ -52,11 +52,11 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.34.1 — 2026-04-05)
+## Current State (v5.34.2 — 2026-04-05)
 
-**Regression baseline: 427/427 PASS** *(stable; R27 sprint-manifest checks add 23 checks during active sprints)*
+**Regression baseline: 432/432 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
 
-**v5.34.1 sprint: IN PROGRESS (session_015)**
+**v5.34.2 sprint: COMPLETE**
 
 Versions since last CLAUDE.md update:
 - **v5.33** — Security, compliance & governance sprint (see version.py for full notes)
@@ -72,6 +72,9 @@ Versions since last CLAUDE.md update:
   - .claude/hooks/pre_push.sh: PreToolUse compliance gate (exit 2 blocks)
   - .claude/hooks/post_edit.sh: PostToolUse doc audit on *.md (suppressOutput on pass)
   - settings.json: hooks block wired (3 hooks), sync_docs --check migrated from local
+- **v5.34.2** — Regression hardening + CTO review fixes:
+  - R28: 5 hook infrastructure existence checks (baseline 427→432)
+  - CTO fixes: sync_docs exit code, observability path, git rev-parse in hooks, __main__ guard, permission scope
 ---
 
 ## File Structure
@@ -230,6 +233,7 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 | OPEN-018 | C-01 | Feed sector breadth into AI narrative engine (full C-01 fix) |
 | OPEN-019 | C-05 | Momentum Score decomposition bar chart |
 | OPEN-020 | G-01 | WorldMonitor self-hosted (Leaflet.js + ACLED/GDELT API) |
+| OPEN-021 | Policy 5 | observability.py `_inline_compliance_check()` — refactor to call `compliance_check.py` instead of duplicating check logic (Policy 5: same metric = same function) |
 
 ## Governance Policy Framework (v5.31)
 

@@ -19,25 +19,34 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
-Session ID:    session_016
+Status:        IDLE
+Session ID:    session_016 (COMPLETE)
 Version:       v5.34.2
 Last updated:  2026-04-05
-Sprint:        v5.34.2 IN_PROGRESS — regression hardening + sprint close
-Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Sprint:        v5.34.2 COMPLETE — regression hardening + sprint close
+Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.2.json (archived)
+Next session:  session_017 — v5.35 launch readiness sprint
 ```
 
-## v5.34.2 Sprint Checklist — session_016
+## v5.34.2 Sprint Checklist — session_016 (ALL COMPLETE)
 
-- [ ] STEP 1: GSI_WIP.md → ACTIVE session_016
-- [ ] STEP 2: GSI_SPRINT_MANIFEST.json → v5.34.2 IN_PROGRESS
-- [ ] STEP 3: regression.py → R28 hook existence checks (+5, 427→432)
-- [ ] STEP 4: GSI_COMPLIANCE_CHECKLIST.md → baseline 427→432
-- [ ] STEP 5: .github/PULL_REQUEST_TEMPLATE.md → baseline 427→432
-- [ ] STEP 6: version.py → v5.34.2 VERSION_LOG entry
-- [ ] STEP 7: GSI_QA_STANDARDS.md → v5.34.2 QA brief
-- [ ] STEP 8: GSI_SPRINT.md → v5.34.2 done entry + current sprint → v5.35
-- [ ] STEP 9: Sprint close (CLAUDE.md + sync_docs + manifest COMPLETE + archive + WIP IDLE)
+- [x] STEP 1: GSI_WIP.md → ACTIVE session_016
+- [x] STEP 2: GSI_SPRINT_MANIFEST.json → v5.34.2 IN_PROGRESS
+- [x] STEP 3: regression.py → R28 hook existence checks (+5, 427→432)
+- [x] STEP 4: GSI_COMPLIANCE_CHECKLIST.md → baseline 427→432
+- [x] STEP 5: .github/PULL_REQUEST_TEMPLATE.md → baseline 427→432
+- [x] STEP 6: version.py → v5.34.2 VERSION_LOG entry
+- [x] STEP 7: GSI_QA_STANDARDS.md → v5.34.2 QA brief
+- [x] STEP 8: GSI_SPRINT.md → v5.34.2 done entry + current sprint → v5.35
+- [x] STEP 9: Sprint close (CLAUDE.md + sync_docs + manifest COMPLETE + archive + WIP IDLE)
+
+## session_016 Summary
+
+v5.34.2 sprint completed cleanly in session_016. All 9 steps executed in order.
+R28 adds 5 hook infrastructure existence checks — baseline 427→432.
+CTO review fixes from v5.34.1 (C-1/C-2/M-1/M-2/M-4) all verified passing.
+Final state: 432/432 PASS, 0 failures. ADR-021 added (git rev-parse pattern).
+OPEN-021 added to CLAUDE.md (observability.py compliance check duplication).
 
 ---
 

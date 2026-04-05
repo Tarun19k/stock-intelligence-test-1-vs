@@ -2,7 +2,7 @@
 # Universal AI agent context file (Claude Code, Cursor, Codex, Zed, OpenCode)
 # Mirrors CLAUDE.md for cross-tool compatibility.
 # Keep in sync with CLAUDE.md on every version update.
-# Last synced: 2026-04-05 v5.34.1
+# Last synced: 2026-04-06 v5.34.2
 
 ## Project
 Multi-market stock intelligence dashboard. Python + Streamlit.
@@ -15,7 +15,7 @@ Python 3.14. No API keys. No database. No secrets.
 
 ## Before any commit
 ```bash
-python3 regression.py   # ALL 427 CHECKS PASS required
+python3 regression.py   # ALL 432 CHECKS PASS required
 ```
 
 ## Critical rules (never violate)
@@ -44,4 +44,4 @@ Run GSI_COMPLIANCE_CHECKLIST.md compliance script before pushing.
 - data_manager.py → M1 skeleton, bypass mode until M4
 
 ## Version
-v5.34.1 | Regression: 378/378
+v5.34.2 | Regression: 378/378
