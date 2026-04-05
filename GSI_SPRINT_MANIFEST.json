@@ -3,7 +3,7 @@
   "sprint_version": "v5.34.1",
   "session": "session_015",
   "opened": "2026-04-05",
-  "status": "PLANNED",
+  "status": "IN_PROGRESS",
   "closed": null,
   "goal": "Wire Claude Code hook infrastructure: compliance_check.py + 3 hooks (pre_commit, pre_push, post_edit). Fix R27 schema bug. Pre-authorize hook permissions.",
   "baseline_entering": 427,
