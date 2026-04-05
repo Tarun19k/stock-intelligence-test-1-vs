@@ -20,7 +20,6 @@
       "Write(*.json)",
       "Write(*.txt)",
       "Write(.claude/hooks/*)",
-      "Write(*.sh)",
       "Bash(chmod +x .claude/hooks/*.sh)",
       "Bash(mkdir -p .claude/hooks)",
       "Bash(python3 sync_docs.py --check)"
