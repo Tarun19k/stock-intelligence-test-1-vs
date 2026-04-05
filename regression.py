@@ -823,6 +823,27 @@ def run(FM):
         "import yfinance" not in _obs_pg,
         "pages/observability.py must not import yfinance directly")
 
+    # R28 · Hook infrastructure existence checks ───────────────────────────────
+    # Verifies that all Claude Code hook scripts and compliance tooling are present.
+    # These are source-code artifacts — if absent, the hook pipeline is broken.
+    # regression.py is always run from repo root; relative paths are sufficient.
+    chk("R28", "pre_commit_hook_exists",
+        os.path.exists(".claude/hooks/pre_commit.sh"),
+        ".claude/hooks/pre_commit.sh missing — regression gate hook not installed")
+    chk("R28", "pre_push_hook_exists",
+        os.path.exists(".claude/hooks/pre_push.sh"),
+        ".claude/hooks/pre_push.sh missing — compliance gate hook not installed")
+    chk("R28", "post_edit_hook_exists",
+        os.path.exists(".claude/hooks/post_edit.sh"),
+        ".claude/hooks/post_edit.sh missing — doc audit hook not installed")
+    chk("R28", "compliance_check_py_exists",
+        os.path.exists("compliance_check.py"),
+        "compliance_check.py missing — compliance script not in repo root")
+    chk("R28", "settings_json_has_hooks",
+        "hooks" in open(".claude/settings.json").read()
+        if os.path.exists(".claude/settings.json") else False,
+        ".claude/settings.json missing or does not contain 'hooks' key")
+
 
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.
