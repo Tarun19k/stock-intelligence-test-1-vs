@@ -117,4 +117,4 @@ else:
 "
 ```
 
-**Regression baseline:** ALL 427 CHECKS PASS (updated 2026-04-05 — v5.34.1; R27 sprint checks add 23 during active sprints)
+**Regression baseline:** ALL 432 CHECKS PASS (updated 2026-04-05 — v5.34.2; R28 hook existence checks added +5; R27 sprint checks add additional during active sprints)
