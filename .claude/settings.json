@@ -40,11 +40,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/pre_commit.sh"
+            "command": "bash .claude/hooks/pre_commit.sh"
           },
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/pre_push.sh"
+            "command": "bash .claude/hooks/pre_push.sh"
           }
         ]
       }
@@ -55,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/post_edit.sh"
+            "command": "bash .claude/hooks/post_edit.sh"
           }
         ]
       }
