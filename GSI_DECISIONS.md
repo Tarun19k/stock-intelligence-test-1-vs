@@ -301,6 +301,45 @@
 
 ---
 
+## ADR-019 | 2026-04-05 | v5.34+ | ACTIVE
+**Title:** No maxTokens cap in Claude Code settings.json
+
+**Context:** Session_014 planning — evaluating token budget mechanisms for Claude Code automation. Considered setting `maxTokens` in `settings.json` to reduce verbose responses and limit context consumption per turn.
+
+**Decision:** Do NOT set `maxTokens`. Token budget is managed behaviourally and via run_state dedup, not via a hard output cap.
+
+**Alternatives rejected:**
+- `maxTokens: 8192`: Files in this repo (dashboard.py, regression.py, pages/) run 400–700+ lines (~7,000 tokens). A hard output cap risks truncating a Write tool call mid-function — producing broken code silently with no obvious error. Quality risk outweighs token saving.
+
+**Consequences:** Verbosity is controlled by instruction (concise responses) rather than mechanical cap. Token efficiency comes from the run_state dedup mechanism — skipping redundant regression runs when the git HEAD hash and PASS result are both fresh. This saves the most real context waste per session without any quality risk.
+
+---
+
+## ADR-020 | 2026-04-05 | v5.34.1 | ACTIVE
+**Title:** Claude Code hook architecture — 3-hook design with exit-2 gate model
+
+**Context:** Session_014 planning — automating the regression gate, compliance gate, and doc audit that are currently discipline-only (run manually). Full schema verified against live Claude Code documentation before deciding.
+
+**Decision:** Wire three hooks in `.claude/settings.json`:
+1. **PreToolUse on Bash** — regression gate on `git commit`. Parses `tool_input.command` via Python stdin. Checks `run_state.json`: skips if PASS cached on current git HEAD. Exits `2` to block on failure.
+2. **PreToolUse on Bash** — compliance gate on `git push`. Calls `compliance_check.py`. Exits `2` to block on failure.
+3. **PostToolUse on Write|Edit** — doc audit on any `*.md` change. Calls `sync_docs.py --check`. Outputs `{"suppressOutput": true}` on clean pass (silent). Non-blocking (PostToolUse cannot block).
+Use `$CLAUDE_PROJECT_DIR` for all paths (built-in env var — portable, no hardcoded paths). Parse stdin with Python (`jq` not installed). `run_state.json` caches `{hash, timestamp, result}` — dedup applies only when `result == "PASS"`.
+
+**Alternatives rejected:**
+- `exit 1` to block: Incorrect. Claude Code hook schema uses exit `2` for blocking; exit `1` is a non-blocking error shown only in verbose mode. The gate would silently allow all commits through.
+- `jq` for stdin parsing: Not installed on this machine. Python used instead.
+- Hardcoded absolute paths: Non-portable. `$CLAUDE_PROJECT_DIR` solves this cleanly.
+- Compliance check inline in hook: Shell quoting complexity; extracted to `compliance_check.py` for reliability and testability.
+- PostToolUse on Write only (not Edit): Edit is the preferred tool for modifying existing files per CLAUDE.md. Write-only coverage misses most doc edits.
+- Per-edit doc audit noise: Resolved by `suppressOutput` — hook is invisible on clean pass.
+
+**Deferred to future sprint:** `SessionStart` hook (auto-check GSI_WIP.md status), `Stop` hook (end-of-session GSI_WIP.md reminder), `statusMessage` UX polish, dedup hook for explicit mid-session regression calls.
+
+**Consequences:** Regression gate, compliance gate, and doc audit become structural enforcement. Commits cannot bypass the 427-check suite. Push cannot bypass the 8-check compliance gate. Doc drift is surfaced immediately after each edit. Hook work requires its own sprint entry (and manifest file_change_log entries) before implementation begins.
+
+---
+
 ## Template for new ADRs
 
 ```
