@@ -63,6 +63,10 @@ htmlcov/
 
 # Claude Code hook state (ephemeral session cache — not source code)
 .claude/run_state.json
+.claude/ralph-loop.local.md
+
+# Ralph Loop task files (ephemeral — created and deleted per session)
+RALPH_PROMPT.md
 
 # Generated reports and screenshots (not source code)
 reports/
