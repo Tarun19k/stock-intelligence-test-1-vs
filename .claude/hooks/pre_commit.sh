@@ -9,6 +9,8 @@
 # ADR-020: exit 2 (not 1) to block; $CLAUDE_PROJECT_DIR for portability;
 #          Python stdin parse (jq not installed on all systems).
 
+: "${CLAUDE_PROJECT_DIR:?CLAUDE_PROJECT_DIR is not set — hook cannot run}"
+
 set -euo pipefail
 
 REPO="$CLAUDE_PROJECT_DIR"
