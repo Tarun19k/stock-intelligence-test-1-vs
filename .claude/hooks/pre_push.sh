@@ -6,14 +6,13 @@
 # Calls compliance_check.py; exit 2 blocks the push on any failure.
 # Exit 0 allows the push when all compliance checks pass.
 #
-# ADR-020: exit 2 (not 1) to block; $CLAUDE_PROJECT_DIR for portability;
+# ADR-020: exit 2 (not 1) to block; git rev-parse --show-toplevel for repo root
+#          (replaces $CLAUDE_PROJECT_DIR — unreliable across execution contexts);
 #          Python stdin parse (jq not installed on all systems).
-
-: "${CLAUDE_PROJECT_DIR:?CLAUDE_PROJECT_DIR is not set — hook cannot run}"
 
 set -euo pipefail
 
-REPO="$CLAUDE_PROJECT_DIR"
+REPO=$(git rev-parse --show-toplevel)
 
 # --- Parse stdin JSON to get the command being attempted ---
 INPUT=$(cat)

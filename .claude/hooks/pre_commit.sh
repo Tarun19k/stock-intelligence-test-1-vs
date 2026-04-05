@@ -6,14 +6,13 @@
 # Deduplicates: skips regression if run_state.json shows PASS for current HEAD.
 # Exit 2 blocks the tool call. Exit 0 allows it.
 #
-# ADR-020: exit 2 (not 1) to block; $CLAUDE_PROJECT_DIR for portability;
+# ADR-020: exit 2 (not 1) to block; git rev-parse --show-toplevel for repo root
+#          (replaces $CLAUDE_PROJECT_DIR — unreliable across execution contexts);
 #          Python stdin parse (jq not installed on all systems).
-
-: "${CLAUDE_PROJECT_DIR:?CLAUDE_PROJECT_DIR is not set — hook cannot run}"
 
 set -euo pipefail
 
-REPO="$CLAUDE_PROJECT_DIR"
+REPO=$(git rev-parse --show-toplevel)
 RUN_STATE="$REPO/.claude/run_state.json"
 
 # --- Parse stdin JSON to get the command being attempted ---
