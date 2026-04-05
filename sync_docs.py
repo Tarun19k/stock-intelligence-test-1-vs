@@ -392,7 +392,7 @@ def main():
         for i, msg in enumerate(ISSUES, 1):
             print(f"  {i}. {msg}")
         print(f"{'='*62}\n")
-        sys.exit(1 if not dry_run else 0)
+        sys.exit(1)
     else:
         print(f"  \u2705 All checks passed \u2014 documentation in sync")
         print(f"{'='*62}\n")
