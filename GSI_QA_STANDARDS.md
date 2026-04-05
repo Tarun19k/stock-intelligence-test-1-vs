@@ -849,3 +849,81 @@ Findings still open, mapped to their OPEN-XXX tracking ID:
 
 **Note on exit codes (ADR-020):** Exit 2 blocks PreToolUse; exit 1 is non-blocking (common mistake to avoid). PostToolUse hooks always exit 0 — they cannot block operations.
 
+
+---
+
+## v5.34.2 QA Brief — Regression Hardening + Sprint Close
+**Sprint type:** Infrastructure (no UI changes)
+**Date:** 2026-04-05
+**Baseline change:** 427 → 432 PASS (R28 adds 5 hook existence checks)
+
+### Area 1 — R28 regression checks
+
+**Before:** No automated verification that hook scripts and compliance tooling exist on disk. If files were deleted or missed during setup, the pipeline would silently break.
+**After:** 5 R28 checks run every time `python3 regression.py` is executed.
+
+**Test procedure:**
+1. Run `python3 regression.py`
+2. **Expected output:** `ALL 432 CHECKS PASS` (exact text)
+3. Verify R28 section shows 5/5 OK in the per-category breakdown
+4. Negative test: rename `.claude/hooks/pre_commit.sh` temporarily → regression reports R28 failure; restore and re-run to confirm 432/432 again
+
+**Pass criteria:** `ALL 432 CHECKS PASS` with R28 showing 0 failures.
+
+---
+
+### Area 2 — CTO review fixes verification
+
+**C-1: sync_docs.py exit code fix**
+**Before:** `sync_docs.py --check` exited 0 even when issues were found, making the post_edit.sh error branch unreachable.
+**After:** Exits 1 on issues, 0 on clean pass.
+
+**Test procedure:**
+1. Run `python3 sync_docs.py --check`
+2. **Expected (clean repo):** exits 0, output ends with `All checks passed`
+3. Deliberate-issue test: introduce a version mismatch (e.g. edit a doc to reference a non-existent version), then run `python3 sync_docs.py --check` — **expected:** non-zero exit (you can verify with `echo $?`)
+4. Restore the deliberate change
+
+**Pass criteria:** Clean repo exits 0. Dirty repo exits non-zero.
+
+---
+
+**C-2: observability.py path fix**
+**Before:** `_read_file_safe("dashboard.py")` at repo root returned empty (file is at `pages/dashboard.py`), causing false compliance failures on the Program tab.
+**After:** Path corrected to `pages/dashboard.py`.
+
+**Test procedure:**
+1. Run `python3 compliance_check.py`
+2. **Expected output:** `8/8 compliance checks passed` (exact text) followed by `✅ All compliance checks passed — safe to deploy`
+
+**Pass criteria:** `8/8 compliance checks passed` with no FAIL lines.
+
+---
+
+**M-1: git rev-parse replaces CLAUDE_PROJECT_DIR in hooks**
+**Before:** Hook scripts used `CLAUDE_PROJECT_DIR` env variable (not always set in hook execution context), causing bash errors.
+**After:** All hooks use `REPO=$(git rev-parse --show-toplevel)` — git-native, always reliable.
+
+**Test procedure:**
+1. Attempt a git commit via Claude Code (modify any tracked file)
+2. **Expected:** pre_commit.sh fires, runs regression, no "CLAUDE_PROJECT_DIR: unbound variable" errors
+3. Attempt a git push via Claude Code
+4. **Expected:** pre_push.sh fires, runs compliance check, no bash variable errors
+
+**Pass criteria:** No unbound variable errors in hook output.
+
+---
+
+### Area 3 — Hook wiring end-to-end smoke test
+
+**Before:** Hook infrastructure was new in v5.34.1; CTO review found path and exit-code bugs.
+**After:** All 3 bugs fixed; hooks are confirmed working.
+
+**Test procedure (Claude Code session):**
+1. Ask Claude Code to edit any `.md` file (e.g. add a blank line to CLAUDE.md)
+2. **Expected:** post_edit.sh fires silently (no output) on clean pass
+3. Ask Claude Code to commit the change
+4. **Expected:** pre_commit.sh runs regression; commit proceeds if 432/432 pass
+5. Verify run_state.json is written to `.claude/run_state.json` (dedup cache)
+
+**Pass criteria:** All 3 hooks fire without errors. Commit succeeds with 432/432.
