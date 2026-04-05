@@ -19,15 +19,25 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_015 (COMPLETE)
-Version:       v5.34.1
+Status:        ACTIVE
+Session ID:    session_016
+Version:       v5.34.2
 Last updated:  2026-04-05
-Sprint:        v5.34.1 COMPLETE — Claude Code hook infrastructure
-Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.1.json (archived)
-Next session:  session_016 — v5.34.2 hardening sprint (R28 checks, baseline 450→455)
-               OR v5.35 launch sprint (see GSI_SPRINT.md backlog)
+Sprint:        v5.34.2 IN_PROGRESS — regression hardening + sprint close
+Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
 ```
+
+## v5.34.2 Sprint Checklist — session_016
+
+- [ ] STEP 1: GSI_WIP.md → ACTIVE session_016
+- [ ] STEP 2: GSI_SPRINT_MANIFEST.json → v5.34.2 IN_PROGRESS
+- [ ] STEP 3: regression.py → R28 hook existence checks (+5, 427→432)
+- [ ] STEP 4: GSI_COMPLIANCE_CHECKLIST.md → baseline 427→432
+- [ ] STEP 5: .github/PULL_REQUEST_TEMPLATE.md → baseline 427→432
+- [ ] STEP 6: version.py → v5.34.2 VERSION_LOG entry
+- [ ] STEP 7: GSI_QA_STANDARDS.md → v5.34.2 QA brief
+- [ ] STEP 8: GSI_SPRINT.md → v5.34.2 done entry + current sprint → v5.35
+- [ ] STEP 9: Sprint close (CLAUDE.md + sync_docs + manifest COMPLETE + archive + WIP IDLE)
 
 ---
 
