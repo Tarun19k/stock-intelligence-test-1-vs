@@ -18,7 +18,11 @@
       "Write(*.py)",
       "Write(*.md)",
       "Write(*.json)",
-      "Write(*.txt)"
+      "Write(*.txt)",
+      "Write(.claude/hooks/*)",
+      "Write(*.sh)",
+      "Bash(chmod +x .claude/hooks/*.sh)",
+      "Bash(mkdir -p .claude/hooks)"
     ],
     "deny": [
       "Bash(pip install *)",
