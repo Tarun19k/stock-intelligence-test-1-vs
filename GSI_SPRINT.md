@@ -55,6 +55,19 @@ Nothing in progress. Next session picks from Backlog above.
 
 ---
 
+### Done — v5.34.1 (2026-04-05)
+
+| ID | Description | Verified |
+|---|---|---|
+| Infra | compliance_check.py — 8-check pre-push gate (fixed path bug: dashboard.py→pages/dashboard.py) | `python3 compliance_check.py` passes 8/8 |
+| Infra | .claude/hooks/pre_commit.sh — PreToolUse regression gate, exit 2, dedup via run_state.json | Regression R27.B pre_commit_hook ✓ |
+| Infra | .claude/hooks/pre_push.sh — PreToolUse compliance gate, exit 2 | Regression R27.B pre_push_hook ✓ |
+| Infra | .claude/hooks/post_edit.sh — PostToolUse doc audit on *.md, suppressOutput on pass | Regression R27.B post_edit_hook ✓ |
+| Infra | settings.json — hooks block (3 hooks), sync_docs --check migrated from settings.local.json | Regression R27.B hooks_block_added ✓ |
+| Bugfix | regression.py R27 schema — target_file field + must_contain list iteration | Regression R27.B r27_bug_fixed ✓ |
+
+---
+
 ### Done — v5.34 (2026-04-01)
 
 | ID | Description | Verified |

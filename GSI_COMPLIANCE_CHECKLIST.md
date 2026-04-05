@@ -117,4 +117,4 @@ else:
 "
 ```
 
-**Regression baseline:** ALL 427 CHECKS PASS (updated 2026-04-01 — v5.34+)
+**Regression baseline:** ALL 450 CHECKS PASS (updated 2026-04-05 — v5.34.1)
