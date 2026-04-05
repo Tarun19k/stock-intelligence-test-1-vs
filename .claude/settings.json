@@ -51,7 +51,16 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post_edit.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
