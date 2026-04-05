@@ -790,3 +790,62 @@ Findings still open, mapped to their OPEN-XXX tracking ID:
 **Pass criteria:**
 - Header: no "Momentum: XX/100" text visible anywhere in the header card. Score is visible only in the KPI panel row.
 - ROE: select an Indian stock (e.g. RELIANCE.NS). If ROE data is unavailable, the KPI panel should show "N/A · X.X%" not "0.0% · X.X%".
+
+---
+
+## v5.34.1 QA Brief — Claude Code Hook Infrastructure (2026-04-05)
+
+**Sprint type:** Infrastructure — no UI changes. No visual before/after possible.
+**Regression baseline before sprint:** 427/427 PASS
+**Regression baseline after sprint:** 446/450 (4 Tier-A sprint-close doc checks pending; not implementation failures)
+
+**What was built:**
+- `compliance_check.py` — 8-check pre-push gate (extracted from CLAUDE.md inline script)
+- `.claude/hooks/pre_commit.sh` — blocks `git commit` via Claude Code if regression fails
+- `.claude/hooks/pre_push.sh` — blocks `git push` via Claude Code if compliance checks fail
+- `.claude/hooks/post_edit.sh` — audits doc coherence after any `*.md` write/edit
+- `settings.json` — hooks block wired; sync_docs --check migrated from settings.local.json
+
+**How to verify each hook fires correctly:**
+
+### Hook 1 — pre_commit.sh (regression gate)
+**Before:** Claude Code can issue `git commit` even if regression is failing.
+**After:** Claude Code `git commit` is blocked (exit 2) when `python3 regression.py` fails.
+
+**Test procedure:**
+1. Introduce a deliberate regression failure (e.g. add `'Momentum: {score}/100'` to `pages/dashboard.py`)
+2. Ask Claude Code to commit the file
+3. **Expected:** Claude Code is blocked — you should see the regression output and `BLOCKED` message; the commit does not proceed
+
+**Pass criteria:** The commit does not happen. Revert the test change.
+
+---
+
+### Hook 2 — pre_push.sh (compliance gate)
+**Before:** Claude Code can `git push` even if compliance checks fail.
+**After:** Claude Code `git push` is blocked (exit 2) when `python3 compliance_check.py` fails.
+
+**Test procedure:**
+1. Temporarily remove the SEBI disclaimer line from `pages/dashboard.py`
+2. Ask Claude Code to push to GitHub
+3. **Expected:** Push is blocked — you should see `FAIL: SEBI disclaimer` and `BLOCKED` message; no network push occurs
+
+**Pass criteria:** The push does not reach GitHub. Revert the test change.
+
+---
+
+### Hook 3 — post_edit.sh (doc audit)
+**Before:** No automatic doc coherence check after markdown edits.
+**After:** Any `*.md` write/edit triggers `sync_docs.py --check`; clean passes are silent (suppressOutput).
+
+**Test procedure:**
+1. Ask Claude Code to make a small edit to any `*.md` file
+2. **Expected clean pass:** No output from the hook — the edit appears with no extra messages
+3. To see a non-silent result: introduce a deliberate doc inconsistency (ask Claude to check `sync_docs.py --check` independently to understand what it checks)
+
+**Pass criteria:** Clean edits produce no hook output. The hook does not block any write (PostToolUse cannot block).
+
+---
+
+**Note on exit codes (ADR-020):** Exit 2 blocks PreToolUse; exit 1 is non-blocking (common mistake to avoid). PostToolUse hooks always exit 0 — they cannot block operations.
+
