@@ -329,6 +329,13 @@ When starting a new sprint or implementation task:
 ```
 Replace `{N}` with the post-sprint regression count; `{sprint_version}` with e.g. `v5.35`.
 
+### Sprint close protocol — run before declaring any sprint COMPLETE
+After the final implementation commit and before updating manifest status or GSI_WIP.md:
+1. Run `python3 sync_docs.py` — auto-rebuilds CHANGELOG.md, README.md, AGENTS.md and checks all governance docs. Respond to any SEMI-auto prompts.
+2. Run `python3 regression.py` — confirm baseline still passes after sync.
+3. Update `GSI_SPRINT_MANIFEST.json` status → COMPLETE and archive to `docs/sprint_archive/`.
+4. Set `GSI_WIP.md` Status → IDLE.
+
 ### Rule 3 — Commit after every file (git-first discipline)
 Never batch multiple files into a single commit during active development.
 Commit sequence: implement file → run regression → commit → then next file.
