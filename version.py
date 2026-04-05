@@ -118,7 +118,21 @@ VERSION_LOG = [
               "Phase 2 — UX: D-05 loading spinner on Dashboard nav (data_stale gate); "
               "G-03/F-10 impact chain overflow CSS fix (width:100% + box-sizing:border-box at 1280px); "
               "F-14 West Asia quantitative claims now carry source attribution (Reuters/EIA/PPAC/Drewry). "
-              "Regression baseline: 410→415 (5 new R26 checks; R27 checks are sprint-active only)."}
+              "Regression baseline: 410→415 (5 new R26 checks; R27 checks are sprint-active only)."},
+    {"version": "v5.34.1", "date": "2026-04-05",
+     "notes": "Claude Code hook infrastructure sprint. "
+              "compliance_check.py: 8-check pre-push gate extracted from CLAUDE.md inline script "
+              "(fixed dashboard.py→pages/dashboard.py path bug; CWD auto-correction for hook context). "
+              ".claude/hooks/pre_commit.sh: PreToolUse regression gate — exit 2 blocks git commit on "
+              "regression failure; deduplicates via run_state.json (skips if PASS at current HEAD). "
+              ".claude/hooks/pre_push.sh: PreToolUse compliance gate — exit 2 blocks git push on any "
+              "compliance_check.py failure. "
+              ".claude/hooks/post_edit.sh: PostToolUse doc audit — fires on Write|Edit of *.md files; "
+              "calls sync_docs.py --check; suppressOutput on clean pass (PostToolUse cannot block). "
+              "settings.json: full hooks block wired (3 hooks, $CLAUDE_PROJECT_DIR paths); "
+              "sync_docs --check migrated from settings.local.json allow list. "
+              "R27: schema bugfixes (target_file field + must_contain list iteration). "
+              "Regression baseline: 427 pre-sprint (450 total checks mid-sprint including 23 R27 checks)."}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
