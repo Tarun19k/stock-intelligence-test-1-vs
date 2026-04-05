@@ -19,11 +19,11 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
+Status:        ACTIVE (interrupted — checkpoint below)
 Session ID:    session_015
 Version:       v5.34.1
 Last updated:  2026-04-05
-Sprint:        v5.34.1 PLANNED — Claude Code hook infrastructure (micro-sprint before v5.35)
+Sprint:        v5.34.1 IN_PROGRESS — Claude Code hook infrastructure
 Manifest:      GSI_SPRINT_MANIFEST.json (update to v5.34.1 at sprint start; v5.35 follows after)
 Next session:  session_015 — execute v5.34.1 hook sprint, then v5.35 launch sprint
 ```
@@ -39,6 +39,65 @@ Next session:  session_015 — execute v5.34.1 hook sprint, then v5.35 launch sp
 ---
 
 ## v5.34.1 — Core Hook Implementation (session_015, 8 items)
+
+## CHECKPOINT — 2026-04-05 session_015
+
+```
+Status:              ACTIVE (interrupted mid-sprint)
+Regression baseline: 427/427 (manifest IN_PROGRESS — R27 showing 11 expected failures)
+Last commit:         27dfae0 — GSI_SPRINT_MANIFEST.json status → IN_PROGRESS
+Git state:           GSI_WIP.md uncommitted (this checkpoint edit)
+
+Completed — all committed:
+  - CLAUDE.md ✓ (sprint close protocol added — 19fd41c)
+  - .gitignore ✓ (run_state.json, reports/, screenshots/ — 53cb9d7)
+  - GSI_DECISIONS.md ✓ (ADR-019, ADR-020 — 213a5b0)
+  - docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.35_PLANNED.json ✓ (b31bd77)
+  - GSI_SPRINT_MANIFEST.json ✓ (v5.34.1 created — 78b0ddd; IN_PROGRESS — 27dfae0)
+  - GSI_WIP.md ✓ (two-sprint split plan — 8965da6)
+  - regression.py ✓ (R27 schema bugfix — 7c6309b)
+  - .claude/hooks/ directory ✓ (created via python3, not committed — empty dir)
+
+Not yet started (next task is FIRST):
+  1. settings.json — add Write(.claude/hooks/*) + Bash(chmod +x .claude/hooks/*.sh)
+     to allow list (BLOCKER — must precede writing hook scripts)
+  2. compliance_check.py — extract 8-check script verbatim from CLAUDE.md lines 29-36;
+     add CWD detection; exit 0/1
+  3. .claude/hooks/pre_commit.sh + chmod +x — regression gate (exit 2)
+  4. .claude/hooks/pre_push.sh + chmod +x — compliance gate (exit 2)
+  5. .claude/hooks/post_edit.sh + chmod +x — doc audit (suppressOutput on pass)
+  6. settings.json — add full hooks block (3 hooks, $CLAUDE_PROJECT_DIR paths)
+  7. settings.local.json — remove duplicate sync_docs --check entry
+  8. CLAUDE.md — replace inline python3 -c with compliance_check.py ref;
+     add to File Structure; update Current State → v5.34.1
+
+R27 live status (run python3 regression.py to see progress):
+  Tier-A fails (5 — close items, not implementation): version_entry, claude_md_version,
+    context_header, sprint_done_entry, qa_standards_has_brief
+  Tier-B fails (6 — still to build): hooks_block_added, compliance_check_py,
+    pre_commit_hook, pre_push_hook, post_edit_hook, claude_md_inline_fixed
+  Tier-B passes (1 — done): r27_bug_fixed ✓
+
+Key decisions made this session (already in GSI_DECISIONS.md):
+  - ADR-019: no maxTokens cap (file write truncation risk)
+  - ADR-020: exit 2 (not 1) to block; matcher = tool name only; $CLAUDE_PROJECT_DIR
+    for portability; Python stdin parse (jq not installed); dedup on PASS only
+
+Critical implementation notes for next session:
+  - compliance_check.py: copy inline script VERBATIM — string quoting is non-trivial
+    ('"No major red flags at this time."' and lookbehind regex in _render_next_steps_ai check)
+  - Hook stdin JSON path: tool_input.command (not top-level command)
+  - Exit 2 blocks PreToolUse; exit 0 allows; exit 1 is non-blocking (common mistake)
+  - PostToolUse cannot block — post_edit.sh always exits 0
+  - suppressOutput: output {"suppressOutput": true} as JSON to stdout on clean pass
+  - v5.34.2 (session_016) handles: R28 checks, baseline counts, version.py, QA brief,
+    sprint board, full close
+
+Resume instruction: Read this checkpoint, confirm 427/427 baseline, then start with
+  settings.json allow list update (Write + chmod permissions) as the first commit.
+```
+
+---
 
 ### PHASE 0 — Pre-flight (developer runs manually before session_015 starts)
 
