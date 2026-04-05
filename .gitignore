@@ -61,6 +61,13 @@ htmlcov/
 *.swo
 *~
 
+# Claude Code hook state (ephemeral session cache — not source code)
+.claude/run_state.json
+
+# Generated reports and screenshots (not source code)
+reports/
+screenshots/
+
 # Windows
 Thumbs.db
 desktop.ini
