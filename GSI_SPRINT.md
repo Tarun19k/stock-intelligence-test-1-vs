@@ -190,13 +190,14 @@ Nothing in progress. Next session picks from Backlog above.
 
 ### Sprint Velocity
 
-| Sprint | Version | Items | Sessions | Outcome |
-|---|---|---|---|---|
-| Regression hardening + sprint close | v5.34.2 | 9 | 1 | All 9 complete, R28 +5 checks, baseline 432/432 |
-| Hook infrastructure + CTO review | v5.34.1 | 8+fixes | 2 | All items complete + all CTO findings fixed |
-| Manifest + observability + UX | v5.34 | 8 | 1 | All 8 complete, 5 R26 checks, R27 manifest system |
-| Security, compliance & governance | v5.33 | 8 | 1 | All 8 complete + 4 P0 gaps fixed, 10 R25 checks |
-| Data coherence | v5.32 | 9 | 1 | All 9 complete, 11 R23b checks |
-| P0 regulatory | v5.31 | 8 | 1 | All 8 verified by QA |
-| Lazy loading M0-M3 | v5.24–v5.25 | 6 | 2 | Complete |
-| Portfolio allocator | v5.23 | 1 major | 1 | Complete |
+| Sprint | Version | Items | Sessions | Est. Tokens | Optimisations | Outcome |
+|---|---|---|---|---|---|---|
+| Launch readiness | v5.35 | 5+R29 | 1 | ~150k (actual) | 3 parallel agents saved ~45k main-ctx; sync_docs debug loop wasted ~10k (RECORD-008) | All 5 complete, R29 +1 check, 433/433 |
+| Regression hardening + sprint close | v5.34.2 | 9 | 1 | ~80k (est) | — | All 9 complete, R28 +5 checks, baseline 432/432 |
+| Hook infrastructure + CTO review | v5.34.1 | 8+fixes | 2 | ~120k (est) | — | All items complete + all CTO findings fixed |
+| Manifest + observability + UX | v5.34 | 8 | 1 | ~90k (est) | — | All 8 complete, 5 R26 checks, R27 manifest system |
+| Security, compliance & governance | v5.33 | 8 | 1 | ~90k (est) | — | All 8 complete + 4 P0 gaps fixed, 10 R25 checks |
+| Data coherence | v5.32 | 9 | 1 | ~80k (est) | — | All 9 complete, 11 R23b checks |
+| P0 regulatory | v5.31 | 8 | 1 | ~80k (est) | — | All 8 verified by QA |
+| Lazy loading M0-M3 | v5.24–v5.25 | 6 | 2 | ~100k (est) | — | Complete |
+| Portfolio allocator | v5.23 | 1 major | 1 | ~60k (est) | — | Complete |

@@ -358,6 +358,28 @@ When starting a new sprint or implementation task:
 ```
 Reference costs: sequential item ~8–12k · parallel agent item ~20–25k · regression run ~3k · sync_docs ~2k · large file read (GSI_WIP.md 520 lines) ~4k · context compaction overhead ~12k.
 
+**Token optimisation log — add to every sprint manifest alongside token_budget:**
+```json
+"token_optimisations": [
+  {
+    "decision": "short label",
+    "type": "parallelise | batch | split | read_avoidance | scope_narrow | defer",
+    "items_affected": ["item-id"],
+    "saving_est": "~Xk tokens",
+    "detail": "what was done and what alternative was rejected"
+  }
+]
+```
+Optimisation types:
+- **parallelise** — moved item from sequential to parallel agent, freeing main context
+- **batch** — grouped N doc-only updates into one agent instead of N sequential passes
+- **split** — broke an oversized item into sub-items (a/b) to avoid single >20k task
+- **read_avoidance** — used Grep/Glob instead of full Read; skipped re-reading unchanged files
+- **scope_narrow** — gave agent a precise file+function target instead of exploratory prompt
+- **defer** — removed item from sprint (pushed to backlog) because cost exceeded value this sprint
+
+Fill this block BEFORE implementation. After sprint close, update `saving_est` with actuals where known. This log feeds the velocity table — track cumulative savings across sprints.
+
 **Permanent Tier A checks — add to EVERY sprint manifest, no exceptions:**
 ```json
 { "id": "sync_docs_passes",             "tier": "A", "must_contain": ["see sync_docs.py exit 0"], "target_file": "sync_docs.py output" },
