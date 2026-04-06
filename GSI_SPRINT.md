@@ -165,11 +165,26 @@ Nothing in progress. Next session picks from Backlog above.
 
 ### Sprint Planning Rules
 
-1. **Max 9 items per sprint** — v5.32 was the ceiling. Larger sprints fragment context and risk mid-session limits.
-2. **Group by file** — batch changes to the same file in the same sprint. Cross-file changes in separate sprints.
-3. **Regression check before adding** — every new item must have a clear R-check definition before entering "In Progress".
-4. **No item enters "In Progress" without a WIP entry** — update GSI_WIP.md simultaneously.
-5. **Commit after every file** — do not batch multiple files into a single commit. If Claude hits a limit, only uncommitted files are at risk.
+1. **Tiered capacity budget** — replace the flat 9-item cap with three independent budgets:
+
+   | Lane | Definition | Limit |
+   |---|---|---|
+   | Sequential | Items that depend on each other or touch shared files | ≤ 6 |
+   | Parallel agent | Fully independent file changes — dispatched as worktree agents per Rule 8 | ≤ 6 |
+   | Risky / high-judgment | Page files, compliance, market_data.py, tickers.json, any P0 change | ≤ 4 (regardless of lane) |
+
+   Effective ceiling: **~14 items per sprint** (6 seq + 6 parallel, with risky items counted against their own cap).
+   A sprint with only sequential items is still capped at 6 — the old 9 ceiling applied when parallelism wasn't available.
+
+2. **Token budget in manifest** — before implementation starts, fill the `token_budget` block in `GSI_SPRINT_MANIFEST.json`.
+   Each item gets: `mode` (sequential | parallel_agent), `files_touched` (count), `est_tokens` (range), `risk` (low | medium | high).
+   Sprint-level totals: main-context tokens (sequential only) + agent tokens (parallel only) + overhead.
+   Reference costs: sequential item ~8–12k, parallel agent item ~20–25k (isolated), regression run ~3k, sync_docs ~2k, large-file read (GSI_WIP.md) ~4k.
+
+3. **Group by file** — batch changes to the same file in the same sprint. Cross-file changes in separate sprints.
+4. **Regression check before adding** — every new item must have a clear R-check definition before entering "In Progress".
+5. **No item enters "In Progress" without a WIP entry** — update GSI_WIP.md simultaneously.
+6. **Commit after every file** — do not batch multiple files into a single commit. If Claude hits a limit, only uncommitted files are at risk.
 
 ---
 

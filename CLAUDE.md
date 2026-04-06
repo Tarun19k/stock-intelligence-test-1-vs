@@ -327,7 +327,36 @@ When starting a new sprint or implementation task:
    - Tier A checks (always-required): version.py entry, CLAUDE.md version, GSI_CONTEXT.md header, GSI_SPRINT.md Done section
    - Tier B checks (sprint-specific): one check per audit finding fixed, risk mitigated, governance change, or new ADR
    - `file_change_log` entries for all files you know will change
+   - `token_budget` block (see template below) — fill before any implementation
 4. Begin implementation — regression R27 now enforces the manifest automatically
+
+**Token budget template — add to every sprint manifest:**
+```json
+"token_budget": {
+  "items": [
+    {
+      "id": "item-id",
+      "mode": "sequential | parallel_agent",
+      "files_touched": 1,
+      "risk": "low | medium | high",
+      "est_tokens": "8k–12k"
+    }
+  ],
+  "overhead": {
+    "session_start_context": "~15k",
+    "regression_runs": "N × 3k",
+    "sync_docs": "~2k",
+    "sprint_close_sequence": "~10k"
+  },
+  "totals": {
+    "main_context_est": "sequential items + overhead (parallel agents are isolated)",
+    "agent_est": "sum of parallel_agent items",
+    "grand_total_est": "main_context + agent (rough ceiling for cost awareness)"
+  },
+  "notes": "Flag any item > 20k as a split candidate"
+}
+```
+Reference costs: sequential item ~8–12k · parallel agent item ~20–25k · regression run ~3k · sync_docs ~2k · large file read (GSI_WIP.md 520 lines) ~4k · context compaction overhead ~12k.
 
 **Permanent Tier A checks — add to EVERY sprint manifest, no exceptions:**
 ```json
