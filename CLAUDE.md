@@ -370,13 +370,22 @@ Reference costs: sequential item ~8–12k · parallel agent item ~20–25k · re
   }
 ]
 ```
-Optimisation types:
-- **parallelise** — moved item from sequential to parallel agent, freeing main context
-- **batch** — grouped N doc-only updates into one agent instead of N sequential passes
-- **split** — broke an oversized item into sub-items (a/b) to avoid single >20k task
-- **read_avoidance** — used Grep/Glob instead of full Read; skipped re-reading unchanged files
-- **scope_narrow** — gave agent a precise file+function target instead of exploratory prompt
-- **defer** — removed item from sprint (pushed to backlog) because cost exceeded value this sprint
+Optimisation types and quality floors:
+
+| Type | Saves | Quality floor — non-negotiable |
+|---|---|---|
+| **parallelise** | ~20k main-context per item | CTO must Read agent output before committing — not just run regression |
+| **batch** | ~5k per extra agent avoided | Only for doc-only changes (*.md, *.json config). Never batch code files. |
+| **split** | ~15k per avoided oversized task | Sub-items must be committed independently; sub-item B cannot start until sub-item A's regression passes |
+| **read_avoidance** | ~3–4k per skipped Read | **BANNED for files being edited.** Grep/Glob only for files being searched but not modified. Always Read before Edit — no exceptions. |
+| **scope_narrow** | ~5–8k per agent | Agent prompt must include: file path, target function, and the relevant CLAUDE.md scoped rules for that file type |
+| **defer** | full item cost | Deferred items must be added to GSI_SPRINT.md backlog in the same session — not silently dropped |
+
+**Quality is never a budget variable.** Token savings are only valid if:
+1. `python3 regression.py` still passes (433 checks — enforced by pre_commit.sh)
+2. `python3 compliance_check.py` passes (8 P0 checks — enforced by pre_push.sh)
+3. The QA brief covers every user-visible change in the sprint
+4. No scoped rule from CLAUDE.md was skipped because of a narrow agent prompt
 
 Fill this block BEFORE implementation. After sprint close, update `saving_est` with actuals where known. This log feeds the velocity table — track cumulative savings across sprints.
 

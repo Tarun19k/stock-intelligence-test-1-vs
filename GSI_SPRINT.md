@@ -176,10 +176,11 @@ Nothing in progress. Next session picks from Backlog above.
    Effective ceiling: **~14 items per sprint** (6 seq + 6 parallel, with risky items counted against their own cap).
    A sprint with only sequential items is still capped at 6 — the old 9 ceiling applied when parallelism wasn't available.
 
-2. **Token budget in manifest** — before implementation starts, fill the `token_budget` block in `GSI_SPRINT_MANIFEST.json`.
+2. **Token budget + optimisation log in manifest** — before implementation starts, fill both `token_budget` and `token_optimisations` blocks in `GSI_SPRINT_MANIFEST.json`.
    Each item gets: `mode` (sequential | parallel_agent), `files_touched` (count), `est_tokens` (range), `risk` (low | medium | high).
    Sprint-level totals: main-context tokens (sequential only) + agent tokens (parallel only) + overhead.
    Reference costs: sequential item ~8–12k, parallel agent item ~20–25k (isolated), regression run ~3k, sync_docs ~2k, large-file read (GSI_WIP.md) ~4k.
+   **Quality floor — optimisations may never remove:** regression gate · compliance gate · QA brief · CTO Read-before-commit on agent output · Read-before-Edit rule.
 
 3. **Group by file** — batch changes to the same file in the same sprint. Cross-file changes in separate sprints.
 4. **Regression check before adding** — every new item must have a clear R-check definition before entering "In Progress".
