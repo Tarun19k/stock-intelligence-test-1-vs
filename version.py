@@ -144,7 +144,19 @@ VERSION_LOG = [
               "M-4 settings.json Write(*.sh) removed (overbroad permission). "
               "GSI_LOOPHOLE_LOG.md Class 2 added (governance script with hardcoded wrong path). "
               ".gitignore: RALPH_PROMPT.md + .claude/ralph-loop.local.md added. "
-              "Regression baseline: 432/432 PASS."}
+              "Regression baseline: 432/432 PASS."},
+    {"version": "v5.35", "date": "2026-04-06",
+     "notes": "Launch readiness sprint. CEO sign-offs S-01 through S-05 executed. "
+              "S-01: WorldMonitor CSP stopgap — link button already implemented; "
+              "ADR-022 formal decision record added to GSI_DECISIONS.md. "
+              "S-02: docs/index.html — GitHub Pages one-page landing site. Dark-theme, "
+              "mobile-responsive, SEBI disclaimer, 6-feature grid, 9-market coverage, "
+              "3 screenshot placeholder slots (replace when screenshots available). "
+              "S-03: streamlit-analytics2 integrated in app.py (fail-safe try/except import). "
+              "requirements.txt updated. R29 regression check added (433/433 baseline). "
+              "S-04: docs/social-media-guidelines.md — SEBI Finfluencer rules, prohibited content, "
+              "platform-specific rules. GSI_RISK_REGISTER.md RISK-L04 Open → Mitigated. "
+              "Regression baseline: 432→433 PASS (R29 analytics import check added)."}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
