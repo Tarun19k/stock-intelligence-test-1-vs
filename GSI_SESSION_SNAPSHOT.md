@@ -81,6 +81,31 @@ python3 regression.py (all 427 checks must pass) AND python3 -c "..." compliance
 
 ---
 
+## SNAPSHOT-002 | 2026-04-06 | session_017 | v5.34.2 | QSet-v1
+*Compared to SNAPSHOT-001 (QSet-v1). Deviations: none. Updated: Q01 (baseline 427→432), Q09 (sprint advanced to v5.35), Q10 (compliance now compliance_check.py script). New questions: none.*
+
+**Q01. Regression baseline:** 432/432 PASS. Confirmed by running python3 regression.py this session. Composition: 422 structural/contract checks + 5 R26 observability checks + 5 R28 hook infrastructure checks. R27 content checks inactive (manifest status = COMPLETE for v5.34.2). Always-on R27 structural checks (manifest_valid_json, change_log_complete) included in the 432 total.
+
+**Q02. R27 enforcement and activation:** R27 enforces GSI_SPRINT_MANIFEST.json. Current manifest is COMPLETE (v5.34.2), so Tier A/B must_contain content checks are inactive. Only structural checks (valid JSON, change_log_complete per-file gates) run — these are always-on regardless of manifest status. Content checks reactivate when status = "IN_PROGRESS" at start of next sprint.
+
+**Q03. yfinance import restriction:** Only market_data.py may import yfinance. All other modules (pages, indicators, forecast, portfolio, app.py) are banned. R3 regression check enforces this. Unchanged from SNAPSHOT-001.
+
+**Q04. DataManager bypass mode:** DataManager M1 skeleton exists in data_manager.py. BYPASS MODE active until M4 ships (OPEN-007). Pages must NOT call DataManager.fetch() — they call market_data.py functions directly. R24 regression check enforces the bypass. Unchanged from SNAPSHOT-001.
+
+**Q05. Signal arbitration hierarchy:** Weinstein Stage > Elder Triple Screen > raw signal score. Stage 4 (distribution/decline) vetoes a BUY from Elder screens. Veto must be visibly disclosed in the UI (Policy 6). Enforced in indicators.py compute_unified_verdict(). Unchanged from SNAPSHOT-001.
+
+**Q06. M3 routing guard (grp_explicitly_selected):** Session_state flag set only on explicit user click of a market group. Gates 49-ticker batch download to prevent rate limit spirals on cold start/reload. DO NOT remove. R22 regression check enforces it. Unchanged from SNAPSHOT-001.
+
+**Q07. DO NOT UNDO rule 12:** Raw Momentum score (X/100) must NOT appear in dashboard header _render_header_static(). Option B is final: verdict badge + plain-English reason only. Score is permitted in the KPI "Momentum Signal Panel" section below the header. ADR-008 is the final record. Unchanged from SNAPSHOT-001.
+
+**Q08. Five Permanent Tier A manifest checks:** Every sprint manifest must contain all 5: (1) sync_docs_passes — python3 sync_docs.py exits 0; (2) compliance_baseline_current — GSI_COMPLIANCE_CHECKLIST.md contains "ALL {N} CHECKS PASS"; (3) pr_template_baseline_current — .github/PULL_REQUEST_TEMPLATE.md contains "ALL {N} CHECKS PASS"; (4) decisions_has_sprint_adr — GSI_DECISIONS.md contains "v{sprint_version}"; (5) qa_standards_has_brief — GSI_QA_STANDARDS.md contains "v{sprint_version}". Unchanged from SNAPSHOT-001.
+
+**Q09. Current sprint and status:** v5.34.2 COMPLETE (2026-04-05). Current sprint is v5.35 — Launch Readiness, status: Planning (sign-offs complete, ready to execute). No pending pre-sprint infrastructure tasks — GSI_WIP.md is IDLE. UPDATED from SNAPSHOT-001 (was v5.34 COMPLETE → v5.35 Planning).
+
+**Q10. Pre-push gate:** Two commands required: (1) python3 regression.py — all 432 checks must pass; (2) python3 compliance_check.py — 8/8 gates (SEBI disclaimer, algo disclosure, no raw score, no red flags fallback, ROE guard, next steps removed, RATES CONTEXT, rate limit gate). As of v5.34.1, compliance_check.py is a dedicated script (extracted from the inline python3 -c block). UPDATED from SNAPSHOT-001 (compliance now runs via compliance_check.py, not inline).
+
+---
+
 ## How to write a new snapshot block
 
 ```

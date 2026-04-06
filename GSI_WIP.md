@@ -19,13 +19,13 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_016 (COMPLETE)
-Version:       v5.34.2
-Last updated:  2026-04-05
-Sprint:        v5.34.2 COMPLETE — regression hardening + sprint close
-Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.34.2.json (archived)
-Next session:  session_017 — v5.35 launch readiness sprint
+Status:        ACTIVE
+Session ID:    session_017 (IN PROGRESS)
+Version:       v5.35
+Last updated:  2026-04-06
+Sprint:        v5.35 — Launch Readiness
+Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Next session:  session_018
 ```
 
 ## v5.34.2 Sprint Checklist — session_016 (ALL COMPLETE)
