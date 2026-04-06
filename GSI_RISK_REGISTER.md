@@ -33,7 +33,7 @@
 | RISK-L01 | Regulatory | SEBI: displaying BUY/WATCH/AVOID signals without registration | High | Critical | Mitigated | All signal sections have SEBI disclaimer. Framed as "educational signal visualisation". No target prices or entry/exit levels. regression.py R17 enforces disclaimer presence. |
 | RISK-L02 | Legal | Yahoo Finance ToS: prohibits data redistribution and commercial use | High | Critical | Accepted (MVP) | Educational framing + disclaimer. "Not for commercial use" label. For commercial launch, must switch to licensed data source (Polygon.io, Quandl). |
 | RISK-L03 | Regulatory | yfinance: not endorsed/licensed by Yahoo — research/education only | High | Med | Accepted | yfinance disclaimer in app + docs. Explicit "educational only" framing. |
-| RISK-L04 | Regulatory | SEBI Finfluencer rules: social media posts about the tool | Med | High | Open | Social posts must frame as "developer sharing a tool" not "giving stock tips". Never post specific stock signal results on social media. Use demo screenshots only. |
+| RISK-L04 | Regulatory | SEBI Finfluencer rules: social media posts about the tool | Med | High | Mitigated | docs/social-media-guidelines.md created v5.35. Rules: no live signal screenshots, "developer sharing a tool" framing only, no BUY/SELL/target prices in posts. Platform-specific rules for Reddit/PH/Twitter/LinkedIn. |
 | RISK-L05 | Privacy | GDPR: analytics data if EU users visit | Low | Med | Open | streamlit-analytics uses no PII. No cookies. If adding Claude API, check Anthropic data processing terms. |
 | RISK-L06 | Legal | Open source licence: ensure all dependencies are compatible | Low | Med | Open | Apache 2.0 + MIT dependencies. cvxpy is Apache 2.0. Check before adding new packages. |
 
@@ -67,8 +67,8 @@
 
 | Status | Count |
 |---|---|
-| Open | 9 |
-| Mitigated | 9 |
+| Open | 8 |
+| Mitigated | 10 |
 | Accepted | 6 |
 | Closed | 0 |
 | **Total** | **24** |
