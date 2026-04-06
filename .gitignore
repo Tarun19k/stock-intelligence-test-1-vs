@@ -70,7 +70,7 @@ RALPH_PROMPT.md
 
 # Generated reports and screenshots (not source code)
 reports/
-screenshots/
+/screenshots/
 
 # Windows
 Thumbs.db
