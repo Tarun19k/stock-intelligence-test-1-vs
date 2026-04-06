@@ -54,7 +54,7 @@ Streamlit 1.55 notes:
 
 ## Current State (v5.35.1 — 2026-04-06)
 
-**Regression baseline: 433/433 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
+**Regression baseline: 434/434 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
 
 **v5.35 sprint: COMPLETE**
 
@@ -85,7 +85,8 @@ Versions since last CLAUDE.md update:
   - Fix: `tickers.json` — `AMBUJACEMENT.NS` → `AMBUJACEM.NS` typo; Zomato + Paytm removed from IT & Technology (misclassified)
   - Governance: CLAUDE.md Rule 8 (parallel agent git discipline); sprint close protocol step 0 (dual version-field requirement)
   - Planning: tiered sprint capacity (9-item flat → 3-lane: ≤6 seq / ≤6 parallel / ≤4 risky); `token_budget` + `token_optimisations` manifest fields with quality floor guardrails
-  - Regression baseline: 433/433 PASS (unchanged)
+  - Regression baseline: 433/433 PASS (v5.35.1 base)
+- **v5.35.1 governance patch** — GSI_FILE_IMPACT.md new change-type → file map; sync_docs.py velocity + learnings checks; R10b extended (433→434)
 ---
 
 ## File Structure
@@ -288,6 +289,7 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_SESSION_SNAPSHOT.md` | Per-session Q&A snapshot of 10 key system invariants. Written at session START after reading context. Compared to previous session's snapshot to detect semantic drift before any code is written. |
 | `docs/social-media-guidelines.md` | SEBI Finfluencer rules for social media posts about the tool. Prohibited content, approved framing, platform-specific rules. RISK-L04 mitigation. |
 | `docs/index.html` | GitHub Pages landing page. Static one-pager with hero, features, market coverage, SEBI disclaimer. Screenshot slots ready for real images. |
+| `GSI_FILE_IMPACT.md` | Pre-change file impact map. Look up change type → every file that must be updated. Single source of truth for documentation accountability. |
 
 Store all in repo root alongside CLAUDE.md.
 

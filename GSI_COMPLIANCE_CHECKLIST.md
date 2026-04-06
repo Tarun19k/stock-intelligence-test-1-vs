@@ -117,4 +117,4 @@ else:
 "
 ```
 
-**Regression baseline:** ALL 433 CHECKS PASS (updated 2026-04-06 — v5.35; R29 analytics import check added +1; R27 sprint checks add additional during active sprints)
+**Regression baseline:** ALL 434 CHECKS PASS (updated 2026-04-06 — v5.35; R29 analytics import check added +1; R27 sprint checks add additional during active sprints)

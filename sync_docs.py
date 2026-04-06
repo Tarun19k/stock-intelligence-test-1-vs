@@ -28,6 +28,9 @@ Coverage map:
   CHECK GSI_DECISIONS.md       current version has at least one ADR
   CHECK GSI_SKILLS.md          prompt if sprint patterns suggest new skill
   CHECK GSI_DEPENDENCIES.md    prompt if new library behaviour encountered
+  CHECK GSI_SPRINT.md          velocity table has a row for current version
+  CHECK GSI_SESSION_LEARNINGS.md  has a RECORD entry for current session (advisory)
+  CHECK GSI_FILE_IMPACT.md     present (governance doc — enforced by R10b)
 """
 
 import json, re, os, sys, ast
@@ -348,6 +351,31 @@ def check_dependencies(root, session):
     else:
         ok("GSI_DEPENDENCIES.md \u2014 no new constraints detected")
 
+def check_velocity_table(root, session):
+    """Sprint Velocity table in GSI_SPRINT.md must have a row for current version."""
+    version = session['meta']['current_app_version']
+    sprint  = load(root, 'GSI_SPRINT.md')
+    # Look for the version in the velocity table section
+    vel_section = sprint[sprint.find('### Sprint Velocity'):]
+    if version in vel_section:
+        ok(f"GSI_SPRINT.md \u2014 velocity table has row for {version} \u2713")
+    else:
+        issue(f"GSI_SPRINT.md \u2014 velocity table missing row for {version}")
+        info(f"Add a row: | [sprint name] | {version} | [items] | [sessions] | [est tokens] | [optimisations] | [outcome] |")
+
+def check_session_learnings(root, session):
+    """GSI_SESSION_LEARNINGS.md should have at least one RECORD for any non-trivial sprint."""
+    version  = session['meta']['current_app_version']
+    learnings = load(root, 'GSI_SESSION_LEARNINGS.md')
+    # Find records for this version
+    records = re.findall(rf'RECORD-\d+.*?{re.escape(version)}', learnings)
+    if records:
+        ok(f"GSI_SESSION_LEARNINGS.md \u2014 {len(records)} record(s) for {version} \u2713")
+    else:
+        warn(f"GSI_SESSION_LEARNINGS.md \u2014 no RECORD entry found for {version}")
+        info("Add RECORD entries if any stale context, confusion, or new learning occurred")
+        info("(Advisory — hotfix versions with no surprises may have zero records)")
+
 # ── MAIN ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -396,6 +424,8 @@ def main():
     check_decisions(root, session)
     check_skills(root, session)
     check_dependencies(root, session)
+    check_velocity_table(root, session)
+    check_session_learnings(root, session)
 
     print(f"\n\u2500\u2500 COMMIT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500")
     print(f"  git add CHANGELOG.md README.md AGENTS.md")
