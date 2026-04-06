@@ -89,6 +89,38 @@
 
 ---
 
+## RECORD-008 | 2026-04-06 | session_017 | v5.35 | STALE
+**Finding:** `GSI_session.json` has two separate version fields that must both be updated when the app version changes: the top-level `current_version` / `next_version` and the nested `meta.current_app_version` / `meta.next_version`. The summary from the prior session (session_016 → session_017 handoff) only updated the top-level fields. `sync_docs.py` exclusively reads `session['meta']['current_app_version']`, so it continued to see v5.34.2 and exited 1 with "version.py — last entry is v5.35, expected v5.34.2". The stale field caused sync_docs.py to fail on the first two runs of the sprint close.
+**Source:** `sync_docs.py` output line "GSI Documentation Sync — v5.34.2" despite version.py having v5.35 as the last entry.
+**Impact:** MEDIUM — blocked sprint close; required diagnosing which field sync_docs.py reads before fixing.
+**Fix applied:** Updated `meta.current_app_version` from `v5.34.2` → `v5.35` in GSI_session.json. Note for all future sprint closes: update BOTH `current_version` (top-level) AND `meta.current_app_version` when incrementing the app version.
+
+---
+
+## RECORD-009 | 2026-04-06 | session_017 | v5.35 | LEARNING
+**Finding:** Keeping `GSI_SPRINT_MANIFEST.json` at `status: "PLANNED"` during active sprint implementation is the correct pattern. Setting it to `IN_PROGRESS` mid-sprint activates Tier B regression checks, which fail on unimplemented items and cause `pre_commit.sh` to exit 2, blocking every commit. The correct flow is PLANNED → (all items implemented) → IN_PROGRESS (final acceptance run) → COMPLETE (same session, immediately after all Tier B pass). The manifest `IN_PROGRESS` state is a gate, not a progress tracker.
+**Source:** Observed during sprint manifest setup — pre-commit hook blocked commits when Tier B checks were active with unfinished items.
+**Impact:** MEDIUM — if not understood, every mid-sprint commit is blocked and the developer must force-bypass the hook (violating Rule 3 / hook integrity).
+**Fix applied:** Documented pattern: manifest stays PLANNED throughout sprint; switches to IN_PROGRESS only for the final regression acceptance run in the sprint close sequence.
+
+---
+
+## RECORD-010 | 2026-04-06 | session_017 | v5.35 | LEARNING
+**Finding:** Parallel worktree agents (isolation: worktree) successfully write files but cannot execute git commands — the Bash tool returns "Permission to use Bash has been denied" when attempting `git commit` inside the worktree. However, file writes made by worktree agents persist in the main working tree after the worktree is cleaned up. The correct pattern is: agents write files → worktrees clean up → CTO (main conversation) inspects content, runs regression, and commits per Rule 3 (one commit per file).
+**Source:** Three parallel agents (requirements.txt, ADR-022, social-media-guidelines.md) all completed writes but all failed git commit with permission denied.
+**Impact:** LOW — sprint was not blocked; files persisted and CTO committed them correctly. But the pattern must be understood before launching agents to avoid confusion when git steps fail.
+**Fix applied:** Documented only — no code change needed. Agents do not need git permissions; CTO handles all commits.
+
+---
+
+## RECORD-011 | 2026-04-06 | session_017 | v5.35 | CONFUSION
+**Finding:** The Vercel/Next.js session plugin fired guidance about `pages/**` routes and the Next.js App Router when `pages/global_intelligence.py` was being edited. The plugin matched on the `pages/` path prefix pattern, which coincidentally mirrors Next.js conventions, but the file is a Streamlit Python module — entirely unrelated to Next.js. This is a false positive from context-unaware plugin pattern matching. No action was taken; the guidance was ignored.
+**Source:** Vercel plugin system-reminder firing during `pages/global_intelligence.py` edit.
+**Impact:** LOW — recognized immediately and ignored. No incorrect code was written.
+**Fix applied:** Documented only. Vercel plugin guidance should be treated as inapplicable whenever the matched file is a Python/Streamlit file, regardless of its directory path.
+
+---
+
 ## Template for new records
 
 ```
