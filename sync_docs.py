@@ -17,8 +17,8 @@ Coverage map:
   NOTE  GSI_CONTEXT.md         managed by regression.py (not here)
   SEMI  GSI_SPRINT.md          move completed items to Done
   SEMI  GSI_QA_STANDARDS.md    detect missing QA brief for current version
-  CHECK GSI_WIP.md             verify Status: IDLE before commit
-  CHECK CLAUDE.md              no stale regression count references
+  CHECK GSI_WIP.md             verify Status: IDLE + Version field matches current version
+  CHECK CLAUDE.md              no stale regression count references + Current State header matches version
   CHECK GSI_COMPLIANCE_CHECKLIST.md  baseline count is current
   CHECK .github/PULL_REQUEST_TEMPLATE.md  baseline count is current
   CHECK version.py             syntax clean, last entry = current version
@@ -186,16 +186,27 @@ def check_context_freshness(root, session):
         info("Run: python3 regression.py  (auto-regenerates on 0 failures)")
         info("Then re-upload to Claude Project Files")
 
-def check_wip(root):
-    wip = load(root, 'GSI_WIP.md')
-    if 'IDLE' in wip:
+def check_wip(root, session):
+    wip     = load(root, 'GSI_WIP.md')
+    version = session['meta']['current_app_version']
+    if 'Status:        IDLE' in wip or 'Status: IDLE' in wip:
         ok("GSI_WIP.md \u2014 Status: IDLE")
     else:
         issue("GSI_WIP.md \u2014 Status is NOT IDLE \u2014 resolve before committing")
+    # Version field must match current_app_version
+    m = re.search(r'Version:\s+(\S+)', wip)
+    if m and m.group(1) == version:
+        ok(f"GSI_WIP.md \u2014 Version: {version} \u2713")
+    elif m:
+        issue(f"GSI_WIP.md \u2014 Version field is '{m.group(1)}', expected '{version}'")
+        info(f"Update 'Version:' line in Session Status block to {version}")
+    else:
+        issue("GSI_WIP.md \u2014 Version field not found in Session Status block")
 
 def check_baseline_staleness(root, session):
     """All files with hardcoded baseline counts must match current."""
     baseline = session['regression']['expected_output']
+    version  = session['meta']['current_app_version']
     count    = re.search(r'(\d+)', baseline).group(1)
     targets  = {
         'CLAUDE.md':                        'stale 378 reference',
@@ -207,7 +218,6 @@ def check_baseline_staleness(root, session):
         if not content:
             warn(f"{fname} \u2014 not found on disk")
             continue
-        # CLAUDE.md: check for any 378 (stale previous count)
         if fname == 'CLAUDE.md' and '378' in content:
             issue(f"{fname} \u2014 stale '378' count found")
             info(f"Replace all '378' references with '{count}'")
@@ -216,6 +226,16 @@ def check_baseline_staleness(root, session):
             info(f"Update to: {baseline}")
         else:
             ok(f"{fname} \u2014 baseline count current")
+    # CLAUDE.md Current State header must contain current version
+    claude = load(root, 'CLAUDE.md')
+    header_match = re.search(r'## Current State \(([^)]+)\)', claude)
+    if header_match and version in header_match.group(1):
+        ok(f"CLAUDE.md \u2014 Current State header: {header_match.group(1)} \u2713")
+    elif header_match:
+        issue(f"CLAUDE.md \u2014 Current State header shows '{header_match.group(1)}', expected '{version}'")
+        info(f"Update '## Current State (...)' header to include {version}")
+    else:
+        issue("CLAUDE.md \u2014 Current State header not found")
 
 def check_version_py(root, session):
     ver_src = load(root, 'version.py')
@@ -360,7 +380,7 @@ def main():
 
     print(f"\n\u2500\u2500 CONTENT ACCURACY \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500")
     check_context_freshness(root, session)
-    check_wip(root)
+    check_wip(root, session)
     check_baseline_staleness(root, session)
     check_version_py(root, session)
     check_regression_r10b(root)
@@ -385,6 +405,10 @@ def main():
     gist = (session.get('gist_index', {}) or {}).get('url', '')
     if gist: print(f"  Push Gist: {gist}")
     print(f"  Re-upload GSI_CONTEXT.md to Claude Project Files")
+    print(f"")
+    print(f"  \u2500\u2500 MANUAL (outside repo \u2014 not auto-checked) \u2500\u2500")
+    print(f"  memory/project_overview.md \u2014 version + baseline + ticker count")
+    print(f"  memory/project_open_items.md \u2014 closed items removed, new watch items added")
 
     print(f"\n{'='*62}")
     if ISSUES:
