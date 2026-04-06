@@ -19,14 +19,30 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
-Session ID:    session_017 (IN PROGRESS)
+Status:        IDLE
+Session ID:    session_017 (COMPLETE)
 Version:       v5.35
 Last updated:  2026-04-06
-Sprint:        v5.35 — Launch Readiness
-Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Sprint:        v5.35 — COMPLETE → v5.36 Planning
+Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.35.json (COMPLETE)
 Next session:  session_018
 ```
+
+## session_017 Summary
+
+v5.35 Launch Readiness sprint completed in session_017.
+All 5 CEO sign-offs (S-01→S-05) delivered. R29 analytics check added (+1, 432→433).
+Final state: 433/433 PASS, 0 failures, manifest COMPLETE, sync_docs exit 0 (all green).
+
+Items delivered:
+  - S-01: ADR-022 WorldMonitor CSP stopgap decision record (code already in v5.34)
+  - S-02: docs/index.html GitHub Pages one-page landing site (placeholder, screenshots pending CEO)
+  - S-03: streamlit-analytics2 fail-safe integration in app.py + requirements.txt
+  - S-04: docs/social-media-guidelines.md (SEBI finfluencer compliance) + RISK-L04 Mitigated
+  - R29: regression check — streamlit_analytics import in app.py (432→433)
+
+Architecture note: 3 parallel worktree agents used (Lead Programmer, Lead Developer, QA).
+File writes persisted post-cleanup; CTO (main branch) ran regression + committed per Rule 3.
 
 ## v5.34.2 Sprint Checklist — session_016 (ALL COMPLETE)
 
