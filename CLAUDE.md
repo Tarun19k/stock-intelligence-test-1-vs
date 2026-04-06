@@ -341,6 +341,11 @@ Replace `{N}` with the post-sprint regression count; `{sprint_version}` with e.g
 
 ### Sprint close protocol — run before declaring any sprint COMPLETE
 After the final implementation commit and before updating manifest status or GSI_WIP.md:
+0. Update `GSI_session.json` version fields — **both** must be updated together before running sync_docs:
+   - `current_version` (top-level) → new version
+   - `meta.current_app_version` (nested) → same new version
+   - `meta.next_version` → version + 1 minor
+   sync_docs.py reads `meta.current_app_version` exclusively; stale top-level fields cause false "expected vX.XX" errors.
 1. Run `python3 sync_docs.py` — auto-rebuilds CHANGELOG.md, README.md, AGENTS.md and checks all governance docs. Respond to any SEMI-auto prompts.
 2. Run `python3 regression.py` — confirm baseline still passes after sync.
 3. Update `GSI_SPRINT_MANIFEST.json` status → COMPLETE and archive to `docs/sprint_archive/`.
@@ -382,6 +387,13 @@ See GSI_SPRINT.md for sprint planning rules.
 Any decision that took more than 30 seconds to make gets an ADR record.
 If the session ends before this is done, note the pending decisions in
 the CHECKPOINT block of GSI_WIP.md.
+
+### Rule 8 — Parallel agent discipline (worktree agents)
+When dispatching parallel agents via `isolation: worktree`:
+- Agent prompt **must** include: "Write the file and run `python3 regression.py` only. Do NOT attempt `git add`, `git commit`, or any git command."
+- Agents cannot execute git commands (permission denied in worktree context) — asking wastes tokens.
+- After worktrees close, all file writes persist in the main working tree. CTO (main conversation) inspects content, runs one final regression, then commits per Rule 3.
+- One regression run by CTO after all agents complete is sufficient — agents do not need to run regression individually.
 
 ### Rule 7 — Amend the manifest for every mid-sprint file change
 Before committing any file during a sprint — whether planned or not:
