@@ -357,6 +357,22 @@ Use `$CLAUDE_PROJECT_DIR` for all paths (built-in env var — portable, no hardc
 
 ---
 
+## ADR-022 | 2026-04-06 | v5.35 | ACTIVE
+**Title:** WorldMonitor CSP stopgap — iframe replaced with external link button
+
+**Context:** The Global Intelligence page originally embedded the WorldMonitor live events map via an `<iframe>`. After deployment to Streamlit Community Cloud (*.streamlit.app domain), users saw a blank grey box where the map should appear. The cause: WorldMonitor sets a `Content-Security-Policy: frame-ancestors` header that blocks framing from any origin other than their own domain. This is a server-side CSP enforcement — no client-side workaround exists. Policy 2 (Architecture) requires that any embed failing CSP must be replaced with a link button rather than left silently broken. The issue was discovered during v5.34.x QA; the fix was implemented before v5.35 sprint start.
+
+**Decision:** Replace the iframe with a styled anchor link button inside the same expander (`🗺️ WorldMonitor — Live Interactive Global Events Map`). The button opens `https://worldmonitor.app` in a new browser tab (`target="_blank"`). A `st.caption` below the button explains why embedding is unavailable: "WorldMonitor cannot be embedded here due to their Content Security Policy. Click above to open the live map in a new tab." This keeps the feature discoverable and functional while honestly communicating the limitation. Implementation is in `pages/global_intelligence.py` lines 212–230.
+
+**Alternatives rejected:**
+- **iframe embed (original approach):** Rejected — WorldMonitor's `frame-ancestors` CSP header blocks the *.streamlit.app origin at the browser level. No amount of iframe attribute changes (sandbox, allow, referrerpolicy) can override a server-sent CSP header. Leaving a broken iframe would silently fail for all users with no explanation.
+- **Self-hosted WorldMonitor replacement (Leaflet.js + ACLED/GDELT API):** Deferred, not rejected. Logged as OPEN-020. Requires significant infrastructure (self-hosted tile server or commercial tile API, ACLED/GDELT data licensing, custom Leaflet.js embed). Out of scope for a CSP stopgap fix. Remains the planned long-term resolution.
+- **Proxy iframe via Streamlit Cloud subdomain:** Not viable — CSP `frame-ancestors` is evaluated at the framing origin, not the src origin. A proxy would still load from *.streamlit.app and be blocked.
+
+**Consequences:** The WorldMonitor section is functional (accessible via click) rather than silently broken. Users understand why direct embedding is unavailable. OPEN-020 (self-hosted Leaflet.js world map) remains the correct long-term fix and is tracked in the backlog for v5.36+. When WorldMonitor updates their CSP to allow *.streamlit.app (unlikely but possible), CONSTRAINT-009 in GSI_DEPENDENCIES.md should be removed and the iframe can be restored — this ADR would be superseded at that point.
+
+---
+
 ## Template for new ADRs
 
 ```
