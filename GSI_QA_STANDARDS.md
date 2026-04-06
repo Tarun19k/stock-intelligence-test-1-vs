@@ -927,3 +927,190 @@ Findings still open, mapped to their OPEN-XXX tracking ID:
 5. Verify run_state.json is written to `.claude/run_state.json` (dedup cache)
 
 **Pass criteria:** All 3 hooks fire without errors. Commit succeeds with 432/432.
+
+---
+
+## v5.35 QA Brief — Launch Readiness Sprint
+
+**Version:** v5.35 | **Date:** 2026-04-06 | **Fixes:** 4 | **Regression baseline:** 433/433
+
+**Sprint summary:** MVP launch readiness. Analytics integration (S-03), GitHub Pages landing page (S-02), social media compliance guidelines (S-04 / RISK-L04), and formal ADR for WorldMonitor CSP stopgap (S-01 — no UI change, doc-only).
+
+**Personas to test:** Complete Beginner (landing page), Financial Advisor/PM (disclaimer copy), Developer (analytics/hook verification).
+
+---
+
+### Fix 1 — streamlit-analytics2 integration (S-03)
+
+**Audit ref:** S-03 (CEO sign-off)
+**Files changed:** `app.py`, `requirements.txt`
+**Function changed:** module-level (top of app.py routing section)
+
+#### What changed
+`streamlit_analytics.start_tracking()` and `stop_tracking()` now wrap the full routing section of `app.py`; `streamlit-analytics2` added to `requirements.txt`. The integration is fail-safe — if the package is absent, `_ANALYTICS_ENABLED = False` and the app runs normally.
+
+#### Where to look
+Page: Any — analytics is invisible to end users during normal operation.
+Navigate to: Open app in a browser → navigate between Home, Dashboard, and Global Intelligence tabs.
+Admin view: Append `?analytics=on` to the app URL (if streamlit-analytics2 admin panel is enabled — password-protected or open depending on version).
+
+#### Before (v5.34.2)
+No usage tracking. No data on which markets, stocks, or pages are accessed. No page view counts.
+
+#### After (v5.35)
+Page views tracked silently. No visible change to the user interface. App startup does not slow down. No new UI elements on any page.
+
+#### Pass criteria
+App loads normally on first visit. No Python traceback visible in the app. Navigation between all pages (Home → Dashboard → Global Intelligence) works without error. If the analytics admin panel loads at `?analytics=on`, it shows page view counts > 0 after a few navigations.
+
+#### Fail criteria
+- Any `ModuleNotFoundError: No module named 'streamlit_analytics'` visible in the app
+- App throws an exception on startup related to the analytics import
+- Any new UI element appearing on Home, Dashboard, or Global Intelligence pages that was not there before
+
+#### Note
+Analytics admin panel appearance depends on streamlit-analytics2 version and whether a password is configured. Absence of the admin panel is NOT a failure — only errors in app startup or navigation are failures.
+
+---
+
+### Fix 2 — GitHub Pages landing page (S-02)
+
+**Audit ref:** S-02 (CEO sign-off)
+**Files changed:** `docs/index.html`
+**Function changed:** New file — static HTML
+
+#### What changed
+A single-page GitHub Pages landing site was created at `docs/index.html`. Sections: sticky nav, hero with CTA, stats bar (9 markets / 559 tickers / 38 groups / 4 tabs), screenshot placeholder slots (3), signal engine demo with mock verdict table, 6-feature grid, 9-market coverage grid, SEBI disclaimer box, CTA band, footer.
+
+#### Where to look
+Page: GitHub Pages — `https://tarun19k.github.io/stock-intelligence-test-1-vs/` (after GitHub Pages is enabled in repo settings → Pages → branch: main, folder: /docs)
+Navigate to: Open the URL directly in a browser. Scroll top-to-bottom.
+Alternatively: Open `docs/index.html` in a local browser by double-clicking the file.
+
+#### Before (v5.34.2)
+No landing page existed. `docs/` directory only contained `sprint_archive/`. No public marketing presence.
+
+#### After (v5.35)
+`docs/index.html` is a complete dark-theme one-pager with: hero headline + two CTAs, 4-stat bar, 3 screenshot placeholder slots, signal engine explainer with live-looking verdict mockup, 6-feature cards, 9-market flag grid, legal disclaimer box with SEBI language, footer with GitHub and app links.
+
+#### Pass criteria
+- Page loads without browser errors in Chrome/Safari/Firefox
+- All 3 CTAs ("Open Dashboard →") link to the Streamlit app URL
+- SEBI disclaimer section is visible without scrolling more than 80% down the page
+- Page is readable on a mobile viewport (320px wide): no horizontal overflow, text is legible
+- At 1280px viewport: no element overflows its container
+
+#### Fail criteria
+- Broken layout at 1280px (content overflows, columns collapse incorrectly)
+- Missing SEBI disclaimer box (regulatory requirement — P0 if absent)
+- "Open Dashboard →" buttons link to the wrong URL or 404
+- Screenshot slots show broken images instead of placeholder text
+
+#### Note
+Screenshot slots are intentionally empty (placeholder text) until CEO provides actual app screenshots. Replacing them requires editing the `screenshot-slot` div classes — see HTML comment in the file. Absence of real screenshots is NOT a failure for v5.35.
+
+---
+
+### Fix 3 — Social media guidelines doc (S-04 / RISK-L04)
+
+**Audit ref:** RISK-L04 (Risk Register)
+**Files changed:** `docs/social-media-guidelines.md` (new), `GSI_RISK_REGISTER.md`
+**Function changed:** New doc file; risk register row update
+
+#### What changed
+`docs/social-media-guidelines.md` created with 5 sections: approved content, prohibited content, platform-specific rules (Reddit, Product Hunt, Twitter/X, LinkedIn), SEBI Finfluencer rules, and launch sequence. `GSI_RISK_REGISTER.md` RISK-L04 status updated `Open → Mitigated`.
+
+#### Where to look
+Doc: Open `docs/social-media-guidelines.md` in any Markdown viewer or text editor.
+Risk register: Open `GSI_RISK_REGISTER.md` and search for `RISK-L04`.
+
+#### Before (v5.34.2)
+RISK-L04 was `Open` with a brief note in the risk register only. No actionable guidance existed for what to post or not post on social media about the tool.
+
+#### After (v5.35)
+`docs/social-media-guidelines.md` provides explicit rules. Examples of prohibited content: "Screenshot showing RELIANCE.NS: BUY — this is prohibited even with a disclaimer." Examples of approved content: methodology diagrams, historical examples, developer progress updates. RISK-L04 is `Mitigated` in the risk register.
+
+#### Pass criteria
+- `docs/social-media-guidelines.md` exists and opens without error
+- The word "SEBI" appears in the document (required for manifest check)
+- Section 2 (Prohibited Content) explicitly names live BUY/WATCH/AVOID screenshots as prohibited
+- `GSI_RISK_REGISTER.md` RISK-L04 row shows `Mitigated` (not `Open`)
+- Risk Summary Dashboard shows `Open: 8` and `Mitigated: 10`
+
+#### Fail criteria
+- `docs/social-media-guidelines.md` missing or empty
+- RISK-L04 still shows `Open` in the risk register
+- No explicit prohibition on live signal screenshots in the document
+
+#### Note
+This is a policy document, not a code change. No app UI changes are expected. Full enforcement depends on human behaviour — the doc mitigates the risk by documenting intent, not by technical controls.
+
+---
+
+### Fix 4 — WorldMonitor CSP stopgap — ADR-022 (S-01 formal record)
+
+**Audit ref:** G-01, ADR-022
+**Files changed:** `GSI_DECISIONS.md`
+**Function changed:** Append-only doc change; no code change
+
+#### What changed
+ADR-022 formally records the WorldMonitor iframe → link-button decision (already implemented in a prior session). No UI change in this sprint. The expander and link button already exist in `pages/global_intelligence.py`.
+
+#### Where to look
+App: Open app → Global Intelligence tab → expand "🗺️ WorldMonitor — Live Interactive Global Events Map"
+Doc: Open `GSI_DECISIONS.md` and search for `ADR-022`
+
+#### Before (v5.34.2)
+The link button was already present in the UI (no change). ADR-022 did not exist as a formal decision record.
+
+#### After (v5.35)
+`GSI_DECISIONS.md` contains ADR-022 documenting: why the iframe was replaced, what alternatives were rejected (proxy, CSP header override), and what the long-term fix is (OPEN-020 Leaflet.js).
+
+#### Pass criteria
+- In the app: "🗺️ WorldMonitor — Live Interactive Global Events Map" expander is visible on the Global Intelligence page
+- Clicking "🗺️ Open WorldMonitor Live Map" opens `https://worldmonitor.app` in a new browser tab
+- Caption below the button reads: "WorldMonitor cannot be embedded here due to their Content Security Policy. Click above to open the live map in a new tab."
+- In `GSI_DECISIONS.md`: `ADR-022` section exists with "WorldMonitor" in the title
+
+#### Fail criteria
+- Blank/grey area where WorldMonitor should appear (CSP block showing as broken embed — means the iframe was accidentally restored)
+- Link button missing from the expander
+- ADR-022 absent from GSI_DECISIONS.md
+
+#### Note
+The worldmonitor.app URL is external and not controlled by this project. If the site itself is down or unavailable, that is not a failure of this fix. Only verify that the link button exists and points to the correct URL.
+
+---
+
+### Cross-page spot check (Section 9 baseline)
+
+Record these 6 values at the start of each test session and compare to previous run:
+
+| Reading | Value | Expected |
+|---|---|---|
+| Nifty 50 5-day % on Home page | ___ | Must match Dashboard within ±0.1% |
+| Nifty 50 5-day % on Dashboard (same session) | ___ | Must match Home within ±0.1% |
+| Crude WTI price in ticker bar | ___ | Must match GI West Asia watchlist within ±0.5% |
+| Crude WTI price in GI West Asia watchlist | ___ | Must match ticker bar within ±0.5% |
+| Verdict for RELIANCE.NS | ___ | Record only — no expected value (market-dependent) |
+| ROE shown for RELIANCE.NS | ___ | Must show `N/A` or a non-zero % (never `0.0%`) |
+
+Discrepancies greater than tolerance are **P1 data coherence bugs**. OPEN-008 and OPEN-016 (fixed v5.32) — if values diverge, report as regression.
+
+---
+
+### What I need back from QA
+
+**Must-have (block ship if missing):**
+- [ ] Fix 1 pass/fail: does the app load without `streamlit_analytics` error?
+- [ ] Fix 2 pass/fail: does `docs/index.html` render correctly at 1280px and mobile?
+- [ ] Fix 2: is the SEBI disclaimer box visible on the landing page?
+- [ ] Fix 4: does the WorldMonitor link button open the correct URL?
+- [ ] Cross-page spot check completed (6 readings recorded)
+
+**Good-to-have (ship regardless, note for v5.36):**
+- [ ] Fix 2: screenshot on mobile viewport (320px) showing no horizontal overflow
+- [ ] Fix 2: feedback on landing page copy — does the hero headline land with a non-technical reader?
+- [ ] Fix 3: is the prohibited content list specific enough, or are there edge cases to add?
+- [ ] Analytics admin panel confirmed working at `?analytics=on`
+- [ ] Landing page CTA clicks tracked in analytics (confirms full integration)
