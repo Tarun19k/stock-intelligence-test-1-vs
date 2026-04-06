@@ -2,6 +2,11 @@
 import streamlit as st
 import pytz
 from datetime import datetime
+try:
+    import streamlit_analytics
+    _ANALYTICS_ENABLED = True
+except ImportError:
+    _ANALYTICS_ENABLED = False
 from config import CURRENT_VERSION, MARKET_SESSIONS, CURRENCY, GROUPS
 from styles import inject_css
 from utils import init_session_state, render_error_log
@@ -193,6 +198,10 @@ with st.sidebar:
 cb = st.session_state.cb
 st.session_state.market_open = market_open  # fragment reads this
 
+# S-03: Usage analytics — fail-safe (disabled gracefully if package absent)
+if _ANALYTICS_ENABLED:
+    streamlit_analytics.start_tracking()
+
 # ── Routing ──────────────────────────────────────────────────────────────────
 # Determine view mode for Dashboard routing:
 #   "stock"   — stock explicitly selected
@@ -268,3 +277,6 @@ elif nav == "📊 Dashboard":
 elif nav == "🌍 Global Intelligence":
     render_global_intelligence(cur_sym=cur_sym, cb=cb, market_open=market_open,
                                selected_market=country)
+
+if _ANALYTICS_ENABLED:
+    streamlit_analytics.stop_tracking()
