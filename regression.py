@@ -844,6 +844,12 @@ def run(FM):
         if os.path.exists(".claude/settings.json") else False,
         ".claude/settings.json missing or does not contain 'hooks' key")
 
+    # R29 · Analytics integration checks ──────────────────────────────────────
+    _app = FM.get("app.py", "")
+    chk("R29", "analytics_import_in_app",
+        "streamlit_analytics" in _app,
+        "streamlit_analytics not imported in app.py — S-03 analytics integration missing")
+
 
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.
