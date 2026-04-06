@@ -5,12 +5,12 @@
 # The "In Progress" column acts as a WIP lock alongside GSI_WIP.md.
 # ════════════════════════════════════════════════════════════════════════
 
-## Current Sprint: v5.35 — Launch Readiness
+## Current Sprint: v5.36 — Post-Launch Hardening
 
-**Status:** Planning — sign-offs complete, ready to execute
-**Target date:** Next 1–2 sessions
-**Regression baseline entering sprint:** 432/432
-**Goal:** Clear all MVP launch blockers. Ship private beta.
+**Status:** Planning — backlog candidates below
+**Target date:** TBD
+**Regression baseline entering sprint:** 433/433
+**Goal:** Address post-beta feedback, DataManager M2, observability improvements, landing page screenshots.
 
 ### CEO Sign-offs recorded (2026-04-01)
 - S-01: WorldMonitor → stopgap link button now, Leaflet+GDELT in v5.36
@@ -52,6 +52,18 @@ Prioritised by impact and implementation effort.
 ### In Progress
 
 Nothing in progress. Next session picks from Backlog above.
+
+---
+
+### Done — v5.35 (2026-04-06)
+
+| ID | Description | Verified |
+|---|---|---|
+| S-01 | ADR-022: WorldMonitor CSP stopgap formal decision record | ADR-022 in GSI_DECISIONS.md ✓ |
+| S-02 | docs/index.html: GitHub Pages landing page (dark-theme, mobile-responsive, SEBI disclaimer) | File exists, SEBI disclaimer present ✓ |
+| S-03 | streamlit-analytics2: requirements.txt + app.py integration (fail-safe) | R29 check passes 433/433 ✓ |
+| S-04 | docs/social-media-guidelines.md: SEBI finfluencer rules + RISK-L04 → Mitigated | social_guidelines_exist ✓ |
+| R29 | regression.py R29: analytics import check in app.py (+1 check, 432→433) | `python3 regression.py` → ALL 433 CHECKS PASS ✓ |
 
 ---
 
