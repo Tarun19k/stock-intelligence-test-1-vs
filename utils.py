@@ -81,8 +81,8 @@ def sanitise_bold(text: str, max_len: int = 400) -> str:
     return escaped
 
 def safe_ticker_key(ticker: str) -> str:
-    """Sanitise ticker before use as dict/JSON key. Allows A-Za-z0-9.-^= only."""
-    return re.sub(r"[^A-Za-z0-9.\-^=]", "", str(ticker))[:20]
+    """Sanitise ticker before use as dict/JSON key. Allows A-Za-z0-9.-^=& only."""
+    return re.sub(r"[^A-Za-z0-9.\-^=&]", "", str(ticker))[:20]
 
 
 def safe_url(url: str) -> bool:
