@@ -21,18 +21,20 @@
 ```
 Status:        IDLE
 Session ID:    session_017 (COMPLETE)
-Version:       v5.35
+Version:       v5.35.1
 Last updated:  2026-04-06
-Sprint:        v5.35 — COMPLETE → v5.36 Planning
+Sprint:        v5.35 + v5.35.1 — COMPLETE → v5.36 Planning
 Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.35.json (COMPLETE)
 Next session:  session_018
 ```
 
 ## session_017 Summary
 
-v5.35 Launch Readiness sprint completed in session_017.
-All 5 CEO sign-offs (S-01→S-05) delivered. R29 analytics check added (+1, 432→433).
-Final state: 433/433 PASS, 0 failures, manifest COMPLETE, sync_docs exit 0 (all green).
+v5.35 Launch Readiness sprint + v5.35.1 post-sprint hotfix completed in session_017.
+v5.35: All 5 CEO sign-offs (S-01→S-05) delivered. R29 analytics check added (+1, 432→433).
+v5.35.1: 3 ticker bugfixes (M&M.NS ampersand, AMBUJACEM typo, Zomato/Paytm misclassification).
+Governance: Rule 8 (parallel agent discipline), sprint close step 0 (dual version-field), tiered capacity model, token_budget + token_optimisations manifest fields with quality floor guardrails.
+Final state: 433/433 PASS, 0 failures, sync_docs exit 0 (all green), ADR-023 recorded.
 
 Items delivered:
   - S-01: ADR-022 WorldMonitor CSP stopgap decision record (code already in v5.34)
