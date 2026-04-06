@@ -156,7 +156,16 @@ VERSION_LOG = [
               "requirements.txt updated. R29 regression check added (433/433 baseline). "
               "S-04: docs/social-media-guidelines.md — SEBI Finfluencer rules, prohibited content, "
               "platform-specific rules. GSI_RISK_REGISTER.md RISK-L04 Open → Mitigated. "
-              "Regression baseline: 432→433 PASS (R29 analytics import check added)."}
+              "Regression baseline: 432→433 PASS (R29 analytics import check added)."},
+    {"version": "v5.35.1", "date": "2026-04-06",
+     "notes": ("Post-sprint hotfix + governance improvements. "
+               "Fixes: safe_ticker_key now allows & (M&M.NS was stripped to MM.NS — delisted). "
+               "tickers.json: AMBUJACEMENT→AMBUJACEM typo; Zomato + Paytm removed from IT & Technology (misclassified — food delivery / fintech). "
+               "Governance: CLAUDE.md Rule 8 (parallel agent discipline — no git in worktree agents); "
+               "sprint close protocol step 0 (both meta.current_app_version AND current_version must be updated before sync_docs). "
+               "Sprint planning: 9-item flat cap → tiered 3-lane budget (≤6 seq, ≤6 parallel, ≤4 risky). "
+               "Manifest template: token_budget + token_optimisations fields with quality floor guardrails. "
+               "Regression baseline: 433/433 PASS (unchanged).")}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

@@ -55,6 +55,21 @@ Nothing in progress. Next session picks from Backlog above.
 
 ---
 
+### Done — v5.35.1 (2026-04-06)
+
+| ID | Description | Verified |
+|---|---|---|
+| Bugfix | `safe_ticker_key` — allow `&`; `M&M.NS` was stripped to `MM.NS` (delisted phantom on group load) | Regression 433/433 ✓ |
+| Bugfix | `tickers.json` — `AMBUJACEMENT.NS` → `AMBUJACEM.NS` (typo; correct NSE ticker) | No 404 on NIFTY Next 50 load ✓ |
+| Bugfix | `tickers.json` — Zomato removed from IT & Technology (food delivery, not IT) | Remains in Nifty Next 50 ✓ |
+| Bugfix | `tickers.json` — Paytm removed from IT & Technology (fintech, not IT) | Remains in Nifty Next 50 ✓ |
+| Governance | CLAUDE.md Rule 8: parallel agent discipline — no git commands in worktree agents | Documented ✓ |
+| Governance | Sprint close protocol step 0: dual version-field update in GSI_session.json before sync_docs | Documented ✓ |
+| Planning | Tiered sprint capacity: 9-item flat cap → 3-lane budget (≤6 seq / ≤6 parallel / ≤4 risky) | GSI_SPRINT.md + CLAUDE.md ✓ |
+| Planning | `token_budget` + `token_optimisations` manifest fields with per-type quality floor guardrails | CLAUDE.md Rule 2 ✓ |
+
+---
+
 ### Done — v5.35 (2026-04-06)
 
 | ID | Description | Verified |
@@ -193,6 +208,7 @@ Nothing in progress. Next session picks from Backlog above.
 
 | Sprint | Version | Items | Sessions | Est. Tokens | Optimisations | Outcome |
 |---|---|---|---|---|---|---|
+| Post-sprint hotfix + governance | v5.35.1 | 8 | 0.5 | ~40k (actual) | All sequential; no agents needed for targeted fixes | 3 bugfixes, 2 governance rules, 2 planning upgrades, 433/433 |
 | Launch readiness | v5.35 | 5+R29 | 1 | ~150k (actual) | 3 parallel agents saved ~45k main-ctx; sync_docs debug loop wasted ~10k (RECORD-008) | All 5 complete, R29 +1 check, 433/433 |
 | Regression hardening + sprint close | v5.34.2 | 9 | 1 | ~80k (est) | — | All 9 complete, R28 +5 checks, baseline 432/432 |
 | Hook infrastructure + CTO review | v5.34.1 | 8+fixes | 2 | ~120k (est) | — | All items complete + all CTO findings fixed |

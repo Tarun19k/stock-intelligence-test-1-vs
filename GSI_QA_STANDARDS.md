@@ -1114,3 +1114,110 @@ Discrepancies greater than tolerance are **P1 data coherence bugs**. OPEN-008 an
 - [ ] Fix 3: is the prohibited content list specific enough, or are there edge cases to add?
 - [ ] Analytics admin panel confirmed working at `?analytics=on`
 - [ ] Landing page CTA clicks tracked in analytics (confirms full integration)
+
+---
+
+## v5.35.1 QA Brief — Post-Sprint Hotfix (2026-04-06)
+
+**Tester:** Tarun Kochhar (self-verify — no UI design changes)
+**Scope:** 3 ticker bugfixes with visible runtime behaviour. Governance/planning changes have no UI surface.
+
+---
+
+## Fix 1 — M&M.NS ampersand preserved (safe_ticker_key)
+
+**File changed:** `utils.py`
+**Function changed:** `safe_ticker_key()`
+
+### What changed
+`[^A-Za-z0-9.\-^=]` → `[^A-Za-z0-9.\-^=&]` — ampersand now passes through the sanitiser.
+
+### Where to look
+Page: Dashboard → Nifty 50 group or any group containing Mahindra & Mahindra
+Navigate to: Home → select India → select NIFTY 50 group → scroll to M&M
+
+### Before
+Terminal showed: `$MM.NS: possibly delisted; no price data found` — Mahindra & Mahindra card showed no data or error state.
+
+### After
+M&M.NS fetches cleanly. Mahindra & Mahindra card shows price, signals, and KPIs normally.
+
+### Pass criteria
+No `MM.NS` error in terminal. Mahindra & Mahindra card loads with a price and verdict.
+
+### Fail criteria
+Terminal still shows `MM.NS` 404 error after reload.
+
+---
+
+## Fix 2 — Ambuja Cements ticker corrected (AMBUJACEM.NS)
+
+**File changed:** `tickers.json`
+
+### What changed
+`AMBUJACEMENT.NS` → `AMBUJACEM.NS` (typo — extra "ENT" suffix not part of NSE symbol).
+
+### Where to look
+Page: Dashboard → Nifty Next 50 group → Ambuja Cements card
+
+### Before
+Terminal showed: `HTTP Error 404: Quote not found for symbol: AMBUJACEMENT.NS`
+
+### After
+`AMBUJACEM.NS` fetches cleanly. Ambuja Cements card shows price and signals.
+
+### Pass criteria
+No `AMBUJACEMENT.NS` 404 error in terminal. Ambuja Cements card loads data.
+
+### Fail criteria
+404 error persists for `AMBUJACEMENT.NS`.
+
+---
+
+## Fix 3 — Zomato + Paytm removed from IT & Technology group
+
+**File changed:** `tickers.json`
+
+### What changed
+Zomato and Paytm removed from `IT & Technology` sector group (food delivery and fintech respectively). Both remain in Nifty Next 50.
+
+### Where to look
+Page: Dashboard → IT & Technology sector group
+
+### Before
+Zomato and Paytm appeared in IT & Technology ticker list.
+
+### After
+IT & Technology no longer contains Zomato or Paytm. Both still appear in Nifty Next 50.
+
+### Pass criteria
+IT & Technology group does not contain Zomato or Paytm entries. Nifty Next 50 still shows both.
+
+### Fail criteria
+Either stock still visible in the IT & Technology group.
+
+### Note
+Governance and planning changes (Rule 8, tiered capacity, token budget fields) have no UI surface — not in scope for QA.
+
+---
+
+## Cross-page spot check — v5.35.1
+
+| Reading | Location A | Location B | Match? |
+|---|---|---|---|
+| 5-day % for RELIANCE.NS | Home ticker bar | Dashboard KPI panel | |
+| Verdict badge for TCS.NS | Home group card | Dashboard header | |
+| Market status (India) | Home LIVE badge | Dashboard tab label | |
+| Nifty 50 index price | Home indices row | Week Summary market card | |
+| HDFC Bank RSI | Dashboard KPI panel | Dashboard chart tooltip | |
+| Sector breadth | Week Summary group view | Global Intelligence watchlist | |
+
+## What I need back from QA
+
+**Must-have:**
+- [ ] Fix 1 pass/fail: M&M.NS loads without terminal error
+- [ ] Fix 2 pass/fail: AMBUJACEM.NS loads without terminal error
+- [ ] Fix 3 pass/fail: Zomato/Paytm absent from IT & Technology
+
+**Good-to-have:**
+- [ ] Vodafone Idea (IDEA.NS) — does it load or show intermittent errors? (watch item for v5.36)

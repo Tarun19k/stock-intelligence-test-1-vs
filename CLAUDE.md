@@ -52,7 +52,7 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.35 — 2026-04-06)
+## Current State (v5.35.1 — 2026-04-06)
 
 **Regression baseline: 433/433 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
 
@@ -80,6 +80,12 @@ Versions since last CLAUDE.md update:
   - S-02: `docs/index.html` GitHub Pages landing page (dark-theme, mobile-responsive, SEBI disclaimer)
   - S-03: `streamlit-analytics2` integration in `app.py` + `requirements.txt`; R29 check (baseline 432→433)
   - S-04: `docs/social-media-guidelines.md` new file; RISK-L04 Open → Mitigated in risk register
+- **v5.35.1** — Post-sprint hotfix + governance improvements:
+  - Fix: `safe_ticker_key` allows `&` — `M&M.NS` was stripped to `MM.NS` (delisted phantom)
+  - Fix: `tickers.json` — `AMBUJACEMENT.NS` → `AMBUJACEM.NS` typo; Zomato + Paytm removed from IT & Technology (misclassified)
+  - Governance: CLAUDE.md Rule 8 (parallel agent git discipline); sprint close protocol step 0 (dual version-field requirement)
+  - Planning: tiered sprint capacity (9-item flat → 3-lane: ≤6 seq / ≤6 parallel / ≤4 risky); `token_budget` + `token_optimisations` manifest fields with quality floor guardrails
+  - Regression baseline: 433/433 PASS (unchanged)
 ---
 
 ## File Structure

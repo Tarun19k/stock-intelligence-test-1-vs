@@ -231,3 +231,6 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 
 - Launch readiness sprint.
 - CEO sign-offs S-01 through S-05 executed.
+
+## v5.35.1 — 2026-04-06
+

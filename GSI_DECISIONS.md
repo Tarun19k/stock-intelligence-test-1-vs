@@ -373,6 +373,21 @@ Use `$CLAUDE_PROJECT_DIR` for all paths (built-in env var — portable, no hardc
 
 ---
 
+## ADR-023 | 2026-04-06 | v5.35.1 | ACTIVE
+**Title:** Tiered sprint capacity + token budget/optimisation framework
+
+**Context:** The flat 9-item sprint cap was designed for Claude.ai context-window limits. With Claude Code's automatic context compaction and parallel worktree agents, the constraint shifted from context window to CTO oversight bandwidth. Simultaneously, a post-sprint token audit of v5.35 revealed ~65k tokens wasted on agent git failures and ~10k on a sync_docs debug loop — both preventable with better upfront planning.
+
+**Decision:** Replace the 9-item cap with a 3-lane tiered budget (≤6 sequential / ≤6 parallel agent / ≤4 risky). Add `token_budget` and `token_optimisations` blocks to every sprint manifest, filled before implementation starts. Quality floor guardrails prevent optimisation types from compromising regression, compliance, QA brief, or the Read-before-Edit rule. `read_avoidance` banned for files being edited. Parallel agents must not attempt git commands (Rule 8).
+
+**Alternatives rejected:**
+- Raise flat cap to 15: No lane separation — risky items would not be bounded independently.
+- No budget tracking at all: Waste repeats every sprint with no visibility or learning.
+
+**Consequences:** Every future sprint manifest requires `token_budget` + `token_optimisations` fields. Sprint velocity table now tracks Est. Tokens + Optimisations columns. RECORD-008/009/010 in GSI_SESSION_LEARNINGS.md feed the optimisation library over time.
+
+---
+
 ## Template for new ADRs
 
 ```
