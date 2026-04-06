@@ -34,7 +34,7 @@ Requires Python 3.14. No API keys. No database. No secrets.
 
 ### Before any commit
 ```bash
-python3 regression.py          # must be ALL 433 CHECKS PASS
+python3 regression.py          # must be ALL 434 CHECKS PASS
 ```
 
 ### Before any push to main
@@ -107,4 +107,4 @@ Human-readable changelog: `CHANGELOG.md`.
 
 Private repository. Not licensed for redistribution.
 
-Current version: v5.35.1 | Regression: ALL 433 CHECKS PASS
+Current version: v5.35.1 | Regression: ALL 434 CHECKS PASS
