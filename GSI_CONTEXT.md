@@ -2,7 +2,7 @@
 # Upload ONLY this file to Claude Project Files
 # Do NOT upload CLAUDE.md (5k tokens) or GSI_session.json (35k tokens) to Project Files
 # Regenerate: python3 generate_context.py  (auto-runs after regression.py passes)
-# Generated: 2026-04-06 | v5.34.2 | ALL 432 CHECKS PASS
+# Generated: 2026-04-06 | v5.34.2 | ALL 433 CHECKS PASS
 # Target: <1,600 tokens. Do not add verbose content here.
 
 ## Identity
@@ -11,7 +11,7 @@ Repo: https://github.com/Tarun19k/stock-intelligence-test-1-vs
 Session manifest (Gist): https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
 Stack: Python 3.14 · Streamlit 1.55 · yfinance 1.2 · pandas>=1.4.0
 Deploy: Streamlit Cloud (community) · no API keys · no database
-Current version: v5.34.2 | Regression: ALL 432 CHECKS PASS
+Current version: v5.34.2 | Regression: ALL 433 CHECKS PASS
 
 ## Architecture — one paragraph
 14-file modular app. market_data.py is the ONLY yfinance importer.

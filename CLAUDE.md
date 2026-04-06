@@ -52,11 +52,11 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.34.2 — 2026-04-05)
+## Current State (v5.35 — 2026-04-06)
 
-**Regression baseline: 432/432 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
+**Regression baseline: 433/433 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
 
-**v5.34.2 sprint: COMPLETE**
+**v5.35 sprint: COMPLETE**
 
 Versions since last CLAUDE.md update:
 - **v5.33** — Security, compliance & governance sprint (see version.py for full notes)
@@ -75,6 +75,11 @@ Versions since last CLAUDE.md update:
 - **v5.34.2** — Regression hardening + CTO review fixes:
   - R28: 5 hook infrastructure existence checks (baseline 427→432)
   - CTO fixes: sync_docs exit code, observability path, git rev-parse in hooks, __main__ guard, permission scope
+- **v5.35** — Launch readiness sprint:
+  - S-01: ADR-022 WorldMonitor CSP stopgap formal record (link button already implemented)
+  - S-02: `docs/index.html` GitHub Pages landing page (dark-theme, mobile-responsive, SEBI disclaimer)
+  - S-03: `streamlit-analytics2` integration in `app.py` + `requirements.txt`; R29 check (baseline 432→433)
+  - S-04: `docs/social-media-guidelines.md` new file; RISK-L04 Open → Mitigated in risk register
 ---
 
 ## File Structure
@@ -275,6 +280,8 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_LOOPHOLE_LOG.md` | 6 classes of loophole caught by automation. Append when new failure classes found. |
 | `GSI_SESSION_LEARNINGS.md` | Per-session log of stale context, confusions, hallucinations, deviations, and new learnings. Append-only. Updated via /log-learnings (Phase 3 close step). |
 | `GSI_SESSION_SNAPSHOT.md` | Per-session Q&A snapshot of 10 key system invariants. Written at session START after reading context. Compared to previous session's snapshot to detect semantic drift before any code is written. |
+| `docs/social-media-guidelines.md` | SEBI Finfluencer rules for social media posts about the tool. Prohibited content, approved framing, platform-specific rules. RISK-L04 mitigation. |
+| `docs/index.html` | GitHub Pages landing page. Static one-pager with hero, features, market coverage, SEBI disclaimer. Screenshot slots ready for real images. |
 
 Store all in repo root alongside CLAUDE.md.
 
