@@ -226,3 +226,8 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 ## v5.34.2 — 2026-04-05
 
 - Regression hardening + sprint close for v5.34.1 CTO review fixes.
+
+## v5.35 — 2026-04-06
+
+- Launch readiness sprint.
+- CEO sign-offs S-01 through S-05 executed.
