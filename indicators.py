@@ -87,6 +87,30 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     return df.dropna(subset=["SMA20"])
 
 
+def _calc_roe(info: dict) -> float:
+    """
+    Self-calculate ROE (%) from yfinance info fields.
+
+    Formula: netIncomeToCommon / (bookValue × sharesOutstanding) × 100
+    Matches standard trailing-twelve-month ROE calculation.
+
+    Falls back to info["returnOnEquity"] × 100 when the raw fields are
+    unavailable (common for smaller or international tickers).
+    Returns 0.0 if neither source yields a valid non-zero result.
+    """
+    net_income = safe_float(info.get("netIncomeToCommon", 0))
+    book_value = safe_float(info.get("bookValue", 0))          # per share
+    shares     = safe_float(info.get("sharesOutstanding", 0))
+
+    if net_income and book_value and shares:
+        equity = book_value * shares
+        if equity > 0:
+            return (net_income / equity) * 100
+
+    # Fallback: use yfinance pre-computed value
+    return safe_float(info.get("returnOnEquity", 0)) * 100
+
+
 def signal_score(df: pd.DataFrame, info: dict) -> dict:
     """
     Compute composite signal score (0–100) from latest indicator row.
@@ -121,7 +145,7 @@ def signal_score(df: pd.DataFrame, info: dict) -> dict:
 
     pe   = safe_float(info.get("trailingPE", 0))
     pb   = safe_float(info.get("priceToBook", 0))
-    roe  = safe_float(info.get("returnOnEquity", 0)) * 100
+    roe  = _calc_roe(info)
     revg = safe_float(info.get("revenueGrowth", 0)) * 100
 
     score = 0

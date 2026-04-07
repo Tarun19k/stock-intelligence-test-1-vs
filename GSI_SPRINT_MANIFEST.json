@@ -80,6 +80,13 @@
       "no_doc_update_reason": "IS a governance doc — updated directly"
     },
     {
+      "file": "indicators.py",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "no new public entry points — _calc_roe is internal helper"
+    },
+    {
       "file": "CLAUDE.md",
       "change_type": "modified",
       "committed": false,
