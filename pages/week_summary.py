@@ -1132,6 +1132,49 @@ def _render_forecast_accuracy_report():
     _kpi_card(c3, "P25–P75 Hit Rate",   b2575,   exp_2575)
     _kpi_card(c4, "P10–P90 Hit Rate",   b1090,   exp_1090)
 
+    # ── EQA-41: Calibration visual baseline ──────────────────────
+    # Bar chart: actual metric vs theoretical target for each accuracy dimension.
+    # Shown only when at least one metric has resolved data.
+    _metrics_avail = [v for v in (dir_acc, b2575, b1090) if v is not None]
+    if _metrics_avail:
+        _labels  = ["Direction Accuracy", "P25–P75 Hit Rate", "P10–P90 Hit Rate"]
+        _actuals = [dir_acc   if dir_acc  is not None else 0,
+                    b2575     if b2575    is not None else 0,
+                    b1090     if b1090    is not None else 0]
+        _targets = [exp_dir, exp_2575, exp_1090]
+        _colors  = [
+            "#00c853" if (v is not None and v >= t) else "#ff9800"
+            for v, t in zip([dir_acc, b2575, b1090], _targets)
+        ]
+
+        _fig_cal = go.Figure()
+        _fig_cal.add_trace(go.Bar(
+            x=_actuals, y=_labels, orientation="h",
+            marker_color=_colors, name="Actual",
+            text=[f"{v:.1f}%" if v else "—" for v in _actuals],
+            textposition="inside", insidetextanchor="start",
+        ))
+        # Baseline reference markers
+        for lbl, tgt in zip(_labels, _targets):
+            _fig_cal.add_shape(
+                type="line",
+                x0=tgt, x1=tgt,
+                y0=_labels.index(lbl) - 0.4,
+                y1=_labels.index(lbl) + 0.4,
+                line=dict(color="#4f8ef7", width=2, dash="dot"),
+            )
+        _fig_cal.update_layout(
+            template="plotly_dark", height=180,
+            paper_bgcolor="#0e1117", plot_bgcolor="#0e1117",
+            font=dict(color="#9aa0b4", size=11),
+            xaxis=dict(range=[0, 105], ticksuffix="%", gridcolor="#1a2540"),
+            yaxis=dict(tickfont=dict(size=11)),
+            margin=dict(l=10, r=10, t=10, b=10),
+            showlegend=False,
+        )
+        st.plotly_chart(_fig_cal, config={"responsive": True})
+        st.caption("Dotted line = calibration target. Green = at or above target.")
+
     # ── Calibration explanation ───────────────────────────────────
     notes = []
     if dir_acc is not None:

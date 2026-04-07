@@ -84,7 +84,7 @@
       "change_type": "modified",
       "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "no new entry points — stability UI added inside existing _run_and_display_allocation"
+      "no_doc_update_reason": "no new entry points — stability UI + EQA-41 chart added inside existing functions"
     },
     {
       "file": "indicators.py",
