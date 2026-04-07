@@ -505,8 +505,27 @@ Note: `.claude/settings.json` (permission rules) and `.claude/rules/` (path-scop
 only activate automatically in **Claude Code**. In Claude.ai, the Scoped Rules section
 above covers the same content, and command files are used as reference documents.
 
-**Using Claude Code?** Run `/new-session` to auto-load all context.
-Run `/compliance-check` before pushing. Run `/qa-brief` to generate QA briefs.
+**Using Claude Code?** Follow this sequence every session:
+
+```bash
+# 1. Outside Claude Code — check sprint board (zero tokens, pure Python)
+python3 litellm-proxy/sprint_planner.py
+
+# 2a. Proxy items on board today → set env vars, then launch
+source litellm-proxy/.env
+export ANTHROPIC_BASE_URL=http://localhost:4000
+export ANTHROPIC_AUTH_TOKEN=$LITELLM_MASTER_KEY
+claude
+
+# 2b. Subscription items only → launch directly (no env vars)
+claude
+```
+
+Inside Claude Code: `/new-session` to load context · `/compliance-check` before push · `/qa-brief` for QA briefs.
+
+Proxy runs via launchd (auto-starts on login, no second terminal needed).
+Active tiers: `hf-reasoning` (Groq 70B) · `hf-code` (Groq 20B) · `hf-fast` (Groq 8B).
+Paid tiers (Anthropic API, OpenAI, Gemini, Perplexity) need billing activation — see `litellm-proxy/README.md`.
 
 **Using Claude.ai?** The `.claude/commands/` files work as reference documents:
 - Ask Claude to "follow the new-session command" → reads `.claude/commands/new-session.md`

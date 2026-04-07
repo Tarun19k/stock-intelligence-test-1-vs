@@ -15,6 +15,10 @@ venv/
 env/
 .env
 
+# LiteLLM proxy — isolated Python 3.11 venv and secrets
+litellm-proxy/.venv/
+litellm-proxy/.env
+
 # Runtime data — NOT source code
 forecast_history.json
 
