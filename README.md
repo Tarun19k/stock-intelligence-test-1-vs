@@ -107,4 +107,4 @@ Human-readable changelog: `CHANGELOG.md`.
 
 Private repository. Not licensed for redistribution.
 
-Current version: v5.35.1 | Regression: ALL 434 CHECKS PASS
+Current version: v5.36 | Regression: ALL 434 CHECKS PASS

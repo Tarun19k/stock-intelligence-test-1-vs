@@ -388,6 +388,22 @@ Use `$CLAUDE_PROJECT_DIR` for all paths (built-in env var — portable, no hardc
 
 ---
 
+## ADR-024 | 2026-04-07 | v5.36 | ACTIVE
+**Title:** Proxy env-var lifecycle — two-launch sequence; PROXY-08 parked
+
+**Context:** During v5.36 sprint, the litellm proxy was enabled by setting `ANTHROPIC_BASE_URL` and `ANTHROPIC_AUTH_TOKEN` after Claude Code was already running. Subsequent Bash tool calls still hit Anthropic directly because child processes inherit env vars at fork time (OS-level immutability). Setting vars inside a running process does not retroactively affect the already-forked Claude Code binary. The "set vars after `/new-session`" pattern in the original proxy startup guide was therefore broken.
+
+**Decision:** Document the correct two-launch sequence in CLAUDE.md and `sprint_planner.py`'s YELLOW warning: **Launch 1** (no proxy vars) — run `claude` → `/new-session` → load context → exit. **Launch 2** (vars set before launch) — `source litellm-proxy/.env && export ANTHROPIC_BASE_URL && export ANTHROPIC_AUTH_TOKEN && claude`. This is zero-code, zero-friction, and permanently correct. The litellm-specific fix (a proxy wrapper that rewrites API calls regardless of env) is parked as **PROXY-08** in the backlog for a future sprint when proxy cost savings justify the implementation effort.
+
+**Alternatives rejected:**
+- Set vars inside running session via `!export VAR=val`: Bash tool runs in isolated subshell; parent process env unchanged.
+- `launchd` plist with env vars baked in: Works for daemon mode but requires re-editing the plist on key rotation; adds operational friction.
+- Proxy wrapper script intercepting all `claude` invocations: Cleaner long-term solution but requires PATH manipulation — parked as PROXY-08.
+
+**Consequences:** CLAUDE.md proxy startup guide and `sprint_planner.py` YELLOW warning both updated to show the two-launch sequence. All sessions requiring proxy routing must follow the two-launch flow. PROXY-08 is tracked in GSI_SPRINT.md backlog. v5.36 proxy items (D-02/OPEN-006/EQA-41) were executed under subscription mode rather than proxy, with zero proxy savings this sprint.
+
+---
+
 ## Template for new ADRs
 
 ```

@@ -231,6 +231,7 @@ Nothing in progress. Next session picks from Backlog above.
 
 | Sprint | Version | Items | Sessions | Est. Tokens | Optimisations | Outcome |
 |---|---|---|---|---|---|---|
+| Post-launch hardening | v5.36 | 10 | 1 | ~100k (est) | Proxy savings forfeited (env-var lifecycle bug); D-02/OPEN-006/EQA-41 run under subscription (PROXY-08 deferred) | 7 proxy items + 3 feature items, ADR-024, PROXY-08 parked, 434/434 |
 | Post-sprint hotfix + governance | v5.35.1 | 8 | 0.5 | ~40k (actual) | All sequential; no agents needed for targeted fixes | 3 bugfixes, 2 governance rules, 2 planning upgrades, 433/433 |
 | Launch readiness | v5.35 | 5+R29 | 1 | ~150k (actual) | 3 parallel agents saved ~45k main-ctx; sync_docs debug loop wasted ~10k (RECORD-008) | All 5 complete, R29 +1 check, 433/433 |
 | Regression hardening + sprint close | v5.34.2 | 9 | 1 | ~80k (est) | — | All 9 complete, R28 +5 checks, baseline 432/432 |

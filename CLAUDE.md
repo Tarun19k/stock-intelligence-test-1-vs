@@ -52,7 +52,7 @@ Streamlit 1.55 notes:
 
 ---
 
-## Current State (v5.35.1 — 2026-04-06)
+## Current State (v5.36 — 2026-04-07)
 
 **Regression baseline: 434/434 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
 

@@ -130,3 +130,11 @@
 **Impact:** LOW | MEDIUM | HIGH
 **Fix applied:** [exact change made, or "documented only — fix pending session_NNN"]
 ```
+
+---
+
+## RECORD-012 | 2026-04-07 | session_019 | v5.36 | LEARNING
+**Finding:** LiteLLM proxy environment variables (`ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`) must be exported **before** launching `claude` — they cannot be set after launch. Each Bash tool call runs in an isolated subshell that does not propagate changes back to the parent process. Even if `export VAR=val` succeeds in a Bash tool call, the already-running Claude Code binary inherits its env at fork time and is unaffected. The "set vars after `/new-session`" approach in the original proxy startup guide was therefore fundamentally broken at the OS level.
+**Source:** Attempted `export ANTHROPIC_BASE_URL=...` via Bash tool; subsequent `curl` confirmed env vars visible in subshell but `python3 -c "import os; print(os.environ.get('ANTHROPIC_BASE_URL'))"` confirmed the Claude process itself still saw `None`.
+**Impact:** MEDIUM — delayed proxy work; wasted tokens diagnosing; proxy items D-02/OPEN-006/EQA-41 run under subscription instead. Documented as PROXY-08 in backlog.
+**Fix applied:** CLAUDE.md proxy startup guide and `sprint_planner.py` YELLOW warning both corrected to show the two-launch sequence. ADR-024 recorded.

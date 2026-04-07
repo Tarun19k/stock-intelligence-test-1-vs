@@ -165,7 +165,22 @@ VERSION_LOG = [
                "sprint close protocol step 0 (both meta.current_app_version AND current_version must be updated before sync_docs). "
                "Sprint planning: 9-item flat cap → tiered 3-lane budget (≤6 seq, ≤6 parallel, ≤4 risky). "
                "Manifest template: token_budget + token_optimisations fields with quality floor guardrails. "
-               "Regression baseline: 433/433 PASS (unchanged).")}
+               "Regression baseline: 433/433 PASS (unchanged).")},
+    {"version": "v5.36", "date": "2026-04-07",
+     "notes": ("Post-Launch Hardening sprint (session_019). "
+               "PROXY-01–07: litellm proxy infrastructure hardening. "
+               "classifier_keywords.py: single source of truth for task-classification keyword lists (approval_hook + sprint_planner import from it). "
+               "approval_hook.py: PROXY-02 fallback transparency (async_success_callback logs model substitutions); "
+               "PROXY-07 tool-use guard (tools detected → force deep-reasoning; Groq does not support tool_use). "
+               "sprint_planner.py: PROXY-01 shared keywords import; PROXY-04 optional Depends column; "
+               "PROXY-05 staleness check via git log age (_sprint_file_age_days); YELLOW NameError bugfix. "
+               "validate_models.py: PROXY-06 --spend flag (LiteLLM /spend endpoint, per-provider cost table). "
+               "review_gate.py: PROXY-03 [proxy:model] commit tag convention; unreviewed proxy commit gate (exit 1). "
+               "D-02 bench: _calc_roe() self-calculates ROE from netIncomeToCommon/bookValue/sharesOutstanding (yfinance returnOnEquity is unreliable). "
+               "OPEN-006: portfolio stability score UI in week_summary.py (10× ±5% perturbation test; KPI card + per-stock weight sensitivity). "
+               "EQA-41: forecast accuracy calibration Plotly bar chart with dotted reference baselines. "
+               "PROXY-08 parked: env-var lifecycle fix (vars locked at process launch; two-launch sequence documented). "
+               "Regression baseline: 434/434 PASS (unchanged from v5.35.1 governance patch).")}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

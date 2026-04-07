@@ -19,12 +19,12 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
+Status:        IDLE
 Session ID:    session_019
 Version:       v5.36
 Last updated:  2026-04-07
-Sprint:        v5.36 — Post-Launch Hardening (IN_PROGRESS)
-Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Sprint:        v5.36 — Post-Launch Hardening (COMPLETE)
+Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE — archived to docs/sprint_archive/)
 Next session:  session_020
 ```
 
@@ -38,10 +38,33 @@ Next session:  session_020
 - [x] PROXY-06: validate_models.py --spend flag
 - [x] PROXY-07: approval_hook.py tool-use guard
 - [x] Housekeeping: GSI_SPRINT.md Done section, manifest, WIP → ACTIVE
-- [ ] D-02 bench: ROE benchmark (subscription — proxy deferred to PROXY-08)
-- [ ] OPEN-006: Portfolio Allocator stability score UI (subscription)
-- [ ] EQA-41: Forecast accuracy visual baseline (subscription)
-- [ ] Sprint close: version.py, GSI_QA_STANDARDS.md, GSI_DECISIONS.md ADR, sync_docs, manifest COMPLETE
+- [x] D-02 bench: ROE benchmark (subscription — proxy deferred to PROXY-08)
+- [x] OPEN-006: Portfolio Allocator stability score UI (subscription)
+- [x] EQA-41: Forecast accuracy visual baseline (subscription)
+- [x] Sprint close: version.py, GSI_QA_STANDARDS.md, GSI_DECISIONS.md ADR, sync_docs, manifest COMPLETE
+
+---
+
+## session_019 Summary
+
+v5.36 Post-Launch Hardening sprint completed in session_019.
+7 PROXY items (PROXY-01–07) delivered: classifier_keywords.py shared keyword source, approval_hook.py fallback transparency + tool-use guard, sprint_planner.py staleness check + Depends column + YELLOW bugfix, validate_models.py --spend flag, review_gate.py commit-tag gate.
+3 feature items under subscription: D-02 _calc_roe() self-calculated ROE, OPEN-006 portfolio stability score UI, EQA-41 forecast calibration bar chart.
+Proxy env-var lifecycle bug discovered and documented: vars locked at process launch; two-launch sequence documented in CLAUDE.md + sprint_planner.py; PROXY-08 parked in backlog.
+ADR-024 recorded. RECORD-012 added to SESSION_LEARNINGS.
+Final state: 434/434 PASS, 455/455 active (R27 sprint-manifest included), sync_docs exit 0.
+
+Items delivered:
+  - PROXY-01: classifier_keywords.py — single keyword source shared by approval_hook + sprint_planner
+  - PROXY-02: approval_hook.py — async_success_callback for fallback transparency logging
+  - PROXY-03: review_gate.py — [proxy:model] commit tag gate, exit 1 on unreviewed proxy commits
+  - PROXY-04: sprint_planner.py — optional Depends column support
+  - PROXY-05: sprint_planner.py — staleness check via git log (_sprint_file_age_days)
+  - PROXY-06: validate_models.py — --spend flag with per-provider cost table
+  - PROXY-07: approval_hook.py — tool-use guard (tools detected → force deep-reasoning)
+  - D-02: indicators.py — _calc_roe() from netIncomeToCommon/bookValue/sharesOutstanding
+  - OPEN-006: pages/week_summary.py — stability score UI (10× perturbation test, KPI badge, weight sensitivity)
+  - EQA-41: pages/week_summary.py — calibration bar chart with dotted reference baselines
 
 ---
 

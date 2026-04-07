@@ -1221,3 +1221,133 @@ Governance and planning changes (Rule 8, tiered capacity, token budget fields) h
 
 **Good-to-have:**
 - [ ] Vodafone Idea (IDEA.NS) — does it load or show intermittent errors? (watch item for v5.36)
+
+---
+
+# QA Brief — v5.36 Post-Launch Hardening
+
+**Sprint:** v5.36 | **Date:** 2026-04-07 | **Session:** session_019
+**Scope:** Proxy infrastructure (PROXY-01–07) + D-02 bench + OPEN-006 stability UI + EQA-41 calibration chart
+**Regression baseline entering:** 434 | **Baseline exiting:** 434
+
+---
+
+## Fix 1 — Portfolio stability score added to Portfolio Allocator (OPEN-006)
+
+**File changed:** `pages/week_summary.py`
+
+### What changed
+After the metric cards in the Portfolio Allocator tab, a new "Allocation Stability" section appears. It runs a 10× perturbation test (±5% noise on return scenarios) and reports STABLE / MODERATE / UNSTABLE with a colour-coded KPI badge. An expandable panel shows per-stock weight sensitivity (coloured horizontal bars).
+
+### Where to look
+Page: Week Summary → any sector group → Portfolio Allocator tab → scroll below metric cards
+
+### Before
+No stability indication. User had to trust allocation output blindly.
+
+### After
+Green badge: STABLE (weights consistent across perturbations). Orange: MODERATE. Red: UNSTABLE. Expandable details show which stocks drive instability.
+
+### Pass criteria
+- [ ] Portfolio Allocator tab shows "Allocation Stability" section below metric cards
+- [ ] Badge colour matches verdict (green/orange/red)
+- [ ] Expandable "Weight sensitivity" panel opens and shows per-stock bars
+- [ ] No Python exception in terminal when section renders
+
+### Fail criteria
+- Section missing entirely
+- `AttributeError` on `compute_stability_score`
+- Badge always shows UNKNOWN regardless of portfolio
+
+---
+
+## Fix 2 — Forecast accuracy calibration chart (EQA-41)
+
+**File changed:** `pages/week_summary.py`
+
+### What changed
+The Forecast Accuracy report section (Week Summary → group view → Forecast Accuracy tab) now includes a Plotly horizontal bar chart below the KPI cards. Each bar shows actual accuracy vs the target baseline, with dotted reference lines. Bars are colour-coded: green = on/above target, red = below target.
+
+### Where to look
+Page: Week Summary → any sector group → Forecast Accuracy tab (if resolved forecasts exist)
+
+### Before
+KPI cards only (plain metric numbers). No visual calibration.
+
+### After
+Horizontal bar chart below the KPI cards. X-axis is percentage, Y-axis is each metric. Dotted vertical reference lines at each target.
+
+### Pass criteria
+- [ ] Calibration chart appears below KPI cards when at least one metric has resolved data
+- [ ] Chart absent (no error) when no resolved forecast data exists
+- [ ] Bars green for ≥target, red for <target
+- [ ] Reference lines visible at each target value
+
+### Fail criteria
+- `ImportError` on plotly in week_summary
+- Chart renders with all-zero bars when data exists
+- Section crashes with no resolved forecasts
+
+---
+
+## Fix 3 — ROE self-calculation via _calc_roe() (D-02 bench)
+
+**File changed:** `indicators.py`
+
+### What changed
+`signal_score()` no longer reads `returnOnEquity` directly from yfinance info (unreliable — often None or 0). New `_calc_roe()` helper calculates ROE from first principles: `(netIncomeToCommon) / (bookValue × sharesOutstanding) × 100`. Falls back to yfinance's field if inputs are unavailable.
+
+### Where to look
+Page: Dashboard → any stock → KPI panel → ROE figure
+
+### Before
+ROE showed 0.0% or N/A for many stocks where yfinance's `returnOnEquity` was blank.
+
+### After
+ROE shows a calculated value for stocks where netIncomeToCommon, bookValue, and sharesOutstanding are available. N/A guard still applies (0.0 treated as data gap per financial-safety rule).
+
+### Pass criteria
+- [ ] ROE non-zero for at least one large-cap stock (e.g. TCS.NS, RELIANCE.NS)
+- [ ] ROE shows N/A (not 0.0%) for stocks with missing income/book data
+- [ ] No AttributeError or KeyError in terminal from `_calc_roe`
+
+### Fail criteria
+- All stocks show N/A (regression — calc_roe not triggering)
+- ROE shows raw 0.0% (null guard bypassed)
+
+---
+
+## Proxy infrastructure (PROXY-01–07) — No UI surface, tooling-only
+
+These items affect the litellm proxy CLI tools in `litellm-proxy/`. No Streamlit UI changes. Verify at the terminal level only.
+
+| Item | File | Check |
+|---|---|---|
+| PROXY-01 | `classifier_keywords.py` + both importers | `python3 litellm-proxy/approval_hook.py` imports without error |
+| PROXY-02 | `approval_hook.py` | `async_success_callback` method exists |
+| PROXY-03 | `review_gate.py` | `python3 litellm-proxy/review_gate.py --help` exits 0 |
+| PROXY-04 | `sprint_planner.py` | Depends column shown if present in board |
+| PROXY-05 | `sprint_planner.py` | Staleness warning shown for old in-progress items |
+| PROXY-06 | `validate_models.py` | `python3 litellm-proxy/validate_models.py --help` shows `--spend` flag |
+| PROXY-07 | `approval_hook.py` | Tool-use guard block present in `async_pre_call_hook` |
+
+---
+
+## Cross-page spot check — v5.36
+
+| Reading | Location A | Location B | Match? |
+|---|---|---|---|
+| ROE for RELIANCE.NS | Dashboard KPI panel | — | Non-zero % or N/A |
+| Stability badge for any group | Portfolio Allocator tab | — | STABLE/MODERATE/UNSTABLE |
+| Calibration chart | Forecast Accuracy tab | — | Visible if resolved forecasts |
+
+## What I need back from QA
+
+**Must-have:**
+- [ ] Fix 1 pass/fail: Stability score renders in Portfolio Allocator
+- [ ] Fix 2 pass/fail: Calibration chart renders in Forecast Accuracy (or absent cleanly)
+- [ ] Fix 3 pass/fail: ROE non-zero for at least one stock
+
+**Good-to-have:**
+- [ ] PROXY-06 `--spend` flag visible in `--help` output
+- [ ] `review_gate.py --help` exits 0
