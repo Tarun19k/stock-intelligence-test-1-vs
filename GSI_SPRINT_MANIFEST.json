@@ -78,6 +78,20 @@
       "committed": false,
       "doc_updates_required": false,
       "no_doc_update_reason": "IS a governance doc — updated directly"
+    },
+    {
+      "file": "CLAUDE.md",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "fixing incorrect proxy session startup guide"
+    },
+    {
+      "file": "litellm-proxy/sprint_planner.py",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "proxy tooling — fixing YELLOW warning text"
     }
   ],
 
@@ -104,11 +118,11 @@
 
   "token_optimisations": [
     {
-      "decision": "proxy items via hf-reasoning",
-      "type": "scope_narrow",
+      "decision": "D-02/OPEN-006/EQA-41 → subscription (proxy deferred)",
+      "type": "defer",
       "items_affected": ["D-02-bench", "OPEN-006", "EQA-41"],
-      "saving_est": "~30k tokens vs subscription",
-      "detail": "Medium-effort single-file items routed to Groq 70B. Regression + CTO Read-before-commit is the quality gate."
+      "saving_est": "0 (proxy savings forfeited this sprint)",
+      "detail": "Proxy env-var lifecycle issue discovered: env vars set after claude launch are not inherited by the running process. Two-launch sequence required but adds friction. Decision: run remaining items under subscription for v5.36; proxy execution flow fix parked as PROXY-08 in backlog."
     }
   ]
 }

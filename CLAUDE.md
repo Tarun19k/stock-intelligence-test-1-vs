@@ -511,7 +511,11 @@ above covers the same content, and command files are used as reference documents
 # 1. Outside Claude Code — check sprint board (zero tokens, pure Python)
 python3 litellm-proxy/sprint_planner.py
 
-# 2a. Proxy items on board today → set env vars, then launch
+# 2a. Proxy items on board today → two-launch sequence required:
+#     Launch 1 (subscription — /new-session needs tool use, Groq does not support it)
+claude
+#     → /new-session → context loaded → exit claude
+#     Launch 2 (proxy active — env vars must be set BEFORE launching)
 source litellm-proxy/.env
 export ANTHROPIC_BASE_URL=http://localhost:4000
 export ANTHROPIC_AUTH_TOKEN=$LITELLM_MASTER_KEY

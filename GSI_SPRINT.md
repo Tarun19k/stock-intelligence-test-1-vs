@@ -53,6 +53,7 @@ Prioritised by impact and implementation effort.
 | PROXY-05 | Sprint board staleness check — sprint_planner.py warns when GSI_SPRINT.md In Progress items are older than 2 sessions | Low | proxy | Policy 7 |
 | PROXY-06 | Spend visibility — `--spend` flag in validate_models.py calls LiteLLM `/spend` endpoint; shows daily per-provider cost summary | Low | proxy | Policy 3 (UX) |
 | PROXY-07 | Tool-use guard in approval_hook — detect `tools` key in request data; block routing to Groq (no tool-use support); escalate to `deep-reasoning` or reject with clear error | Low | proxy | Policy 2 (arch) |
+| PROXY-08 | Proxy execution flow fix — env vars locked at process start; implement two-launch sequence in CLAUDE.md + sprint_planner.py; validate with live proxy test | Low | proxy | Policy 2 (arch) |
 
 ---
 

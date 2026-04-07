@@ -38,9 +38,9 @@ Next session:  session_020
 - [x] PROXY-06: validate_models.py --spend flag
 - [x] PROXY-07: approval_hook.py tool-use guard
 - [x] Housekeeping: GSI_SPRINT.md Done section, manifest, WIP → ACTIVE
-- [ ] D-02 bench: ROE benchmark (hf-reasoning — enable proxy first)
-- [ ] OPEN-006: Portfolio Allocator stability score UI (hf-reasoning)
-- [ ] EQA-41: Forecast accuracy visual baseline (hf-reasoning)
+- [ ] D-02 bench: ROE benchmark (subscription — proxy deferred to PROXY-08)
+- [ ] OPEN-006: Portfolio Allocator stability score UI (subscription)
+- [ ] EQA-41: Forecast accuracy visual baseline (subscription)
 - [ ] Sprint close: version.py, GSI_QA_STANDARDS.md, GSI_DECISIONS.md ADR, sync_docs, manifest COMPLETE
 
 ---
