@@ -13,8 +13,8 @@ from forecast import get_weekly_accuracy_report, get_pending_forecast_summary
 from portfolio import (compute_log_returns, winsorize_returns,
                        bootstrap_scenarios, optimise_mean_cvar,
                        compute_efficient_frontier, detect_stress_regime,
-                       check_regime_conflicts, N_SCENARIOS,
-                       CVXPY_AVAILABLE, RISK_AVERSION)
+                       check_regime_conflicts, compute_stability_score,
+                       N_SCENARIOS, CVXPY_AVAILABLE, RISK_AVERSION)
 
 # ── Week date range ────────────────────────────────────────────────────────────
 def _get_week_range():
@@ -861,6 +861,63 @@ def _run_and_display_allocation(returns_raw, names, excluded, df_dict, stock_row
         f'<div class="kpi-delta" style="color:#4b6080">{result["n_stocks"]} stocks</div></div>',
         unsafe_allow_html=True,
     )
+
+    # ── Stability score (OPEN-006) ────────────────────────────────
+    _STAB_COLOR = {"STABLE": "#00c853", "MODERATE": "#ff9800",
+                   "UNSTABLE": "#ff1744", "UNKNOWN": "#6b7280"}
+    with st.spinner("Computing allocation stability…"):
+        stab = safe_run(
+            lambda: compute_stability_score(scenarios, names, risk_aversion=risk_av),
+            context="alloc:stability", default={"score": "UNKNOWN", "weight_std": {}},
+        )
+    stab_score = stab.get("score", "UNKNOWN")
+    stab_clr   = _STAB_COLOR.get(stab_score, "#6b7280")
+    max_std    = stab.get("max_std", 0)
+    stab_note  = {
+        "STABLE":   "allocation holds under ±5% return shocks",
+        "MODERATE": "some weights shift under return shocks",
+        "UNSTABLE": "weights vary significantly — treat with caution",
+        "UNKNOWN":  "could not compute (cvxpy unavailable)",
+    }.get(stab_score, "")
+
+    sc1, sc2 = st.columns([1, 3])
+    with sc1:
+        st.markdown(
+            f'<div class="kpi-card" style="border-left-color:{stab_clr}">'
+            f'<div class="kpi-label">Allocation Stability</div>'
+            f'<div class="kpi-value" style="color:{stab_clr}">{stab_score}</div>'
+            f'<div class="kpi-delta" style="color:#4b6080">'
+            f'max weight σ {max_std:.1f}%</div></div>',
+            unsafe_allow_html=True,
+        )
+    with sc2:
+        st.markdown(
+            f'<div style="font-size:0.76rem;color:#6b7a90;padding:14px 0 4px">'
+            f'ℹ️ {stab_note.capitalize()}. '
+            f'Perturbation test: 10 re-runs with ±5% scenario noise. '
+            f'Weights with σ &gt; 15% are flagged UNSTABLE.</div>',
+            unsafe_allow_html=True,
+        )
+
+    weight_std = stab.get("weight_std", {})
+    if weight_std:
+        with st.expander("Show per-stock weight sensitivity"):
+            for stock_name, std_val in sorted(weight_std.items(),
+                                              key=lambda x: x[1], reverse=True):
+                bar_clr = "#ff1744" if std_val >= 15 else (
+                          "#ff9800" if std_val >= 8 else "#00c853")
+                st.markdown(
+                    f'<div style="display:flex;align-items:center;gap:8px;'
+                    f'margin:3px 0;font-size:0.76rem">'
+                    f'<div style="flex:2;color:#c8d6f0">{stock_name}</div>'
+                    f'<div style="flex:3;background:#0d1a2e;border-radius:3px;'
+                    f'height:6px;overflow:hidden">'
+                    f'<div style="width:{min(std_val*3, 95):.0f}%;height:6px;'
+                    f'background:{bar_clr};border-radius:3px"></div></div>'
+                    f'<div style="min-width:40px;text-align:right;color:{bar_clr}">'
+                    f'σ {std_val:.1f}%</div></div>',
+                    unsafe_allow_html=True,
+                )
 
     # Leverage disclaimer on aggressive
     if profile_key == "aggressive":

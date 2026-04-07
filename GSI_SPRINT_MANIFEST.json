@@ -80,6 +80,13 @@
       "no_doc_update_reason": "IS a governance doc — updated directly"
     },
     {
+      "file": "pages/week_summary.py",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "no new entry points — stability UI added inside existing _run_and_display_allocation"
+    },
+    {
       "file": "indicators.py",
       "change_type": "modified",
       "committed": false,
