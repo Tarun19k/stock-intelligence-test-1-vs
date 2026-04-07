@@ -9,7 +9,7 @@
 
 **Status:** Planning — backlog candidates below
 **Target date:** TBD
-**Regression baseline entering sprint:** 433/433
+**Regression baseline entering sprint:** 434/434
 **Goal:** Address post-beta feedback, DataManager M2, observability improvements, landing page screenshots.
 
 ### CEO Sign-offs recorded (2026-04-01)
@@ -21,7 +21,7 @@
 
 ---
 
-### Backlog (candidate items for v5.35)
+### Backlog (candidate items for v5.36)
 
 Sourced from GSI_session.json open_items and GSI_AUDIT_TRAIL.md open findings.
 Prioritised by impact and implementation effort.
@@ -46,12 +46,34 @@ Prioritised by impact and implementation effort.
 | OPEN-018 | Claude API integration — live AI narrative (Opus 4.6 / Mythos-ready) | Medium | session | Policy 4,5 |
 | C-05 | Momentum score decomposition / scale disclosure | Medium | audit | Policy 5 |
 | EQA-41 | Forecast accuracy visual baseline | Medium | audit | Policy 7 |
+| PROXY-01 | Classifier alignment — sync keyword lists between sprint_planner.py and approval_hook.py (shared config or automated sync-check) | Low | proxy | Policy 2 (arch) |
+| PROXY-02 | Fallback transparency — log notification when paid model falls back to Groq (post-call hook or LiteLLM success_handler) | Low | proxy | Policy 7 (freshness labeling) |
+| PROXY-03 | Post-proxy diff review gate — commit tagging convention `[proxy:model]`; script to flag un-reviewed proxy commits before push | Medium | proxy | Policy 2 |
+| PROXY-04 | Depends column in sprint_planner.py — detect cross-tier dependencies (subscription item needed before proxy item can start); warn in execution guide | Medium | proxy | Policy 2 |
+| PROXY-05 | Sprint board staleness check — sprint_planner.py warns when GSI_SPRINT.md In Progress items are older than 2 sessions | Low | proxy | Policy 7 |
+| PROXY-06 | Spend visibility — `--spend` flag in validate_models.py calls LiteLLM `/spend` endpoint; shows daily per-provider cost summary | Low | proxy | Policy 3 (UX) |
+| PROXY-07 | Tool-use guard in approval_hook — detect `tools` key in request data; block routing to Groq (no tool-use support); escalate to `deep-reasoning` or reject with clear error | Low | proxy | Policy 2 (arch) |
 
 ---
 
 ### In Progress
 
 Nothing in progress. Next session picks from Backlog above.
+
+---
+
+### Done — v5.36 (2026-04-07)
+
+| ID | Description | Verified |
+|---|---|---|
+| PROXY-01 | `classifier_keywords.py` — shared keyword config; `approval_hook.py` + `sprint_planner.py` import from it | Both files import cleanly ✓ |
+| PROXY-02 | `approval_hook.py` — `async_success_callback` logs when actual model ≠ requested | Code review ✓ |
+| PROXY-03 | `review_gate.py` — `[proxy:model]` tag convention; `--mark SHA` (git note); `--all` flag | `python3 litellm-proxy/review_gate.py` → exit 0 ✓ |
+| PROXY-04 | `sprint_planner.py` — optional `Depends` column; warns inline when prerequisite not in Done | Code review ✓ |
+| PROXY-05 | `sprint_planner.py` — git-log staleness check; warns when in-progress items >14 days old | Code review ✓ |
+| PROXY-06 | `validate_models.py` — `--spend` flag → `/spend` endpoint → per-provider cost summary | `--help` shows flag ✓ |
+| PROXY-07 | `approval_hook.py` — tool-use guard: forces `deep-reasoning` when `tools` key present | Code review ✓ |
+| Bugfix | `sprint_planner.py` — `YELLOW` NameError on execution guide render; exit 1 → 0 | `python3 litellm-proxy/sprint_planner.py` → exit 0 ✓ |
 
 ---
 

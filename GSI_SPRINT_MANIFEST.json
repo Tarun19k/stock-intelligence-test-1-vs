@@ -1,132 +1,114 @@
 {
   "_comment": "Sprint manifest — read by regression.py R27. Set status to IN_PROGRESS when implementation starts. Archive to docs/sprint_archive/ on close.",
-  "sprint_version": "v5.35",
-  "session": "session_017",
-  "opened": "2026-04-06",
-  "status": "COMPLETE",
-  "closed": "2026-04-06",
-  "goal": "Clear all MVP launch blockers. Ship private beta.",
-  "baseline_entering": 432,
-  "ceo_signoffs": {
-    "S-01_worldmonitor": "stopgap_link_button_ALREADY_DONE_in_prior_session",
-    "S-02_landing_page": "github_pages_one_pager",
-    "S-03_analytics": "streamlit_analytics",
-    "S-04_launch_sequence": "private_beta_then_reddit_then_producthunt",
-    "S-05_yahoo_tos": "educational_noncommercial_confirmed"
-  },
-  "checks": [
-    {"id": "sync_docs_passes",             "tier": "A", "must_contain": ["v5.35"],                "target_file": "CHANGELOG.md"},
-    {"id": "compliance_baseline_current",  "tier": "A", "must_contain": ["ALL 433 CHECKS PASS"], "target_file": "GSI_COMPLIANCE_CHECKLIST.md"},
-    {"id": "pr_template_baseline_current", "tier": "A", "must_contain": ["ALL 433 CHECKS PASS"], "target_file": ".github/PULL_REQUEST_TEMPLATE.md"},
-    {"id": "decisions_has_sprint_adr",     "tier": "A", "must_contain": ["v5.35"],               "target_file": "GSI_DECISIONS.md"},
-    {"id": "qa_standards_has_brief",       "tier": "A", "must_contain": ["v5.35"],               "target_file": "GSI_QA_STANDARDS.md"},
-    {"id": "version_entry",                "tier": "A", "must_contain": ["v5.35"],               "target_file": "version.py"},
-    {"id": "sprint_done_entry",            "tier": "A", "must_contain": ["v5.35"],               "target_file": "GSI_SPRINT.md"},
-    {"id": "context_header",               "tier": "A", "must_contain": ["v5.35"],               "target_file": "GSI_CONTEXT.md"},
-    {"id": "claude_md_version",            "tier": "A", "must_contain": ["v5.35"],               "target_file": "CLAUDE.md"},
+  "sprint_version": "v5.36",
+  "sprint_name": "Post-Launch Hardening",
+  "status": "IN_PROGRESS",
+  "created": "2026-04-07",
+  "session": "session_019",
+  "regression_baseline_entering": 434,
 
-    {"id": "worldmonitor_link_present",    "tier": "B", "must_contain": ["WorldMonitor"],        "target_file": "pages/global_intelligence.py"},
-    {"id": "analytics_in_app",             "tier": "B", "must_contain": ["streamlit_analytics"], "target_file": "app.py"},
-    {"id": "analytics_in_requirements",    "tier": "B", "must_contain": ["streamlit-analytics"], "target_file": "requirements.txt"},
-    {"id": "r29_analytics_check",          "tier": "B", "must_contain": ["R29"],                 "target_file": "regression.py"},
-    {"id": "adr_022_worldmonitor",         "tier": "B", "must_contain": ["ADR-022"],             "target_file": "GSI_DECISIONS.md"},
-    {"id": "social_guidelines_exist",      "tier": "B", "must_contain": ["SEBI"],                "target_file": "docs/social-media-guidelines.md"},
-    {"id": "risk_l04_mitigated",           "tier": "B", "must_contain": ["Mitigated"],           "target_file": "GSI_RISK_REGISTER.md"},
-    {"id": "landing_page_exists",          "tier": "B", "must_contain": ["Global Stock Intelligence"], "target_file": "docs/index.html"}
+  "_close_checklist": "Manual steps at sprint close (not machine-checked): (1) python3 sync_docs.py exits 0 — verifies CHANGELOG/README/AGENTS rebuilt; (2) python3 regression.py → 434 PASS after sync.",
+
+  "checks": [
+    { "id": "compliance_baseline_current",  "tier": "A", "must_contain": ["ALL 434 CHECKS PASS"], "target_file": "GSI_COMPLIANCE_CHECKLIST.md" },
+    { "id": "pr_template_baseline_current", "tier": "A", "must_contain": ["ALL 434 CHECKS PASS"], "target_file": ".github/PULL_REQUEST_TEMPLATE.md" },
+    { "id": "decisions_has_sprint_adr",     "tier": "A", "must_contain": ["v5.36"],               "target_file": "GSI_DECISIONS.md" },
+    { "id": "qa_standards_has_brief",       "tier": "A", "must_contain": ["v5.36"],               "target_file": "GSI_QA_STANDARDS.md" },
+
+    { "id": "proxy01_keywords_shared",      "tier": "B", "must_contain": ["classifier_keywords"],  "target_file": "litellm-proxy/approval_hook.py" },
+    { "id": "proxy07_tool_use_guard",       "tier": "B", "must_contain": ["tool-use guard"],       "target_file": "litellm-proxy/approval_hook.py" },
+    { "id": "proxy03_review_gate_exists",   "tier": "B", "must_contain": ["review_gate"],          "target_file": "litellm-proxy/review_gate.py" },
+    { "id": "proxy06_spend_flag",           "tier": "B", "must_contain": ["--spend"],              "target_file": "litellm-proxy/validate_models.py" },
+    { "id": "proxy05_staleness_check",      "tier": "B", "must_contain": ["STALE_DAYS"],           "target_file": "litellm-proxy/sprint_planner.py" }
   ],
+
   "file_change_log": [
     {
-      "file": "requirements.txt",
-      "change": "Add streamlit-analytics2 (S-03 analytics integration)",
-      "doc_updates_required": ["analytics_in_requirements", "GSI_DEPENDENCIES.md if new constraint found"]
+      "file": "litellm-proxy/classifier_keywords.py",
+      "change_type": "new_file",
+      "committed": true,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "proxy tooling — not in CLAUDE.md file structure"
     },
     {
-      "file": "app.py",
-      "change": "streamlit_analytics start_tracking/stop_tracking wrapping routing section (S-03)",
-      "doc_updates_required": ["analytics_in_app", "CLAUDE.md entry points section"]
+      "file": "litellm-proxy/approval_hook.py",
+      "change_type": "modified",
+      "committed": true,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "proxy tooling — no regression or governance doc impact"
     },
     {
-      "file": "regression.py",
-      "change": "Add R29: verify streamlit_analytics import present in app.py (+1 check, 432→433)",
-      "doc_updates_required": ["r29_analytics_check"]
+      "file": "litellm-proxy/sprint_planner.py",
+      "change_type": "modified",
+      "committed": true,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "proxy tooling — feature additions to existing script"
     },
     {
-      "file": "GSI_DECISIONS.md",
-      "change": "Append ADR-022: WorldMonitor CSP stopgap decision (S-01 formal record)",
-      "doc_updates_required": ["adr_022_worldmonitor", "decisions_has_sprint_adr"]
+      "file": "litellm-proxy/validate_models.py",
+      "change_type": "modified",
+      "committed": true,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "proxy tooling — --spend flag addition only"
     },
     {
-      "file": "docs/social-media-guidelines.md",
-      "change": "New file: SEBI-aware social media rules for RISK-L04 mitigation (S-04)",
-      "doc_updates_required": ["social_guidelines_exist", "CLAUDE.md Living Documentation table"]
-    },
-    {
-      "file": "GSI_RISK_REGISTER.md",
-      "change": "RISK-L04 Status Open → Mitigated; update Risk Summary counts",
-      "doc_updates_required": ["risk_l04_mitigated"]
-    },
-    {
-      "file": "docs/index.html",
-      "change": "New file: GitHub Pages one-page landing site (S-02). Placeholder structure with screenshot markers.",
-      "doc_updates_required": ["landing_page_exists"]
-    },
-    {
-      "file": "version.py",
-      "change": "Add v5.35 VERSION_LOG entry",
-      "doc_updates_required": ["version_entry"]
-    },
-    {
-      "file": "CLAUDE.md",
-      "change": "Update Current State to v5.35; add docs/social-media-guidelines.md to Living Documentation; update baseline to 433/433",
-      "doc_updates_required": ["claude_md_version"]
+      "file": "litellm-proxy/review_gate.py",
+      "change_type": "new_file",
+      "committed": true,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "proxy tooling — not in CLAUDE.md file structure"
     },
     {
       "file": "GSI_SPRINT.md",
-      "change": "Add v5.35 Done entry; advance Current Sprint to v5.36",
-      "doc_updates_required": ["sprint_done_entry"]
-    },
-    {
-      "file": "GSI_QA_STANDARDS.md",
-      "change": "Append v5.35 QA brief",
-      "doc_updates_required": ["qa_standards_has_brief"]
-    },
-    {
-      "file": "GSI_COMPLIANCE_CHECKLIST.md",
-      "change": "Update baseline to ALL 433 CHECKS PASS",
-      "doc_updates_required": ["compliance_baseline_current"]
-    },
-    {
-      "file": ".github/PULL_REQUEST_TEMPLATE.md",
-      "change": "Update baseline to ALL 433 CHECKS PASS",
-      "doc_updates_required": ["pr_template_baseline_current"]
-    },
-    {
-      "file": "GSI_WIP.md",
-      "change": "Status ACTIVE session_017; v5.35 sprint checklist",
-      "no_doc_update_reason": "session mutex file — no regression check"
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "IS a governance doc — updated directly"
     },
     {
       "file": "GSI_SPRINT_MANIFEST.json",
-      "change": "v5.35 IN_PROGRESS manifest (this file)",
-      "no_doc_update_reason": "manifest itself — no regression check on its own content"
+      "change_type": "new_sprint",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "IS the manifest — self-referential"
     },
     {
-      "file": "GSI_CONTEXT.md",
-      "change": "Auto-regenerated by regression.py on each run; header updated to v5.35",
-      "doc_updates_required": ["context_header"]
+      "file": "GSI_WIP.md",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "IS a governance doc — updated directly"
     }
   ],
-  "notes": [
-    "S-01 WorldMonitor stopgap is ALREADY IMPLEMENTED in global_intelligence.py (link button present since v5.34+). Sprint deliverable is ADR-022 formal record only.",
-    "streamlit-analytics2 used (maintained fork of streamlit-analytics). Imports as streamlit_analytics — same API. Manifest check passes because 'streamlit-analytics' is substring of 'streamlit-analytics2'.",
-    "Landing page (docs/index.html) built as placeholder structure. Screenshot integration deferred to CEO-action Phase 2 when Tarun provides screenshots.",
-    "baseline_entering corrected to 432 from PLANNED manifest (which had 427 — stale from pre-v5.34.2).",
-    "Final baseline expected: 433 (432 + R29 analytics check)."
-  ],
-  "amendment_log": [
+
+  "token_budget": {
+    "items": [
+      { "id": "PROXY-01-07",  "mode": "sequential", "files_touched": 5, "risk": "low",    "est_tokens": "20k–30k" },
+      { "id": "D-02-bench",   "mode": "sequential", "files_touched": 1, "risk": "medium", "est_tokens": "8k–12k" },
+      { "id": "OPEN-006",     "mode": "sequential", "files_touched": 1, "risk": "medium", "est_tokens": "8k–12k" },
+      { "id": "EQA-41",       "mode": "sequential", "files_touched": 1, "risk": "medium", "est_tokens": "8k–12k" }
+    ],
+    "overhead": {
+      "session_start_context": "~15k",
+      "regression_runs": "4 × 3k = ~12k",
+      "sync_docs": "~2k",
+      "sprint_close_sequence": "~10k"
+    },
+    "totals": {
+      "main_context_est": "~85k–100k",
+      "agent_est": "0 (no parallel agents planned)",
+      "grand_total_est": "~85k–100k"
+    },
+    "notes": "D-02/OPEN-006/EQA-41 are proxy-tier — routed via hf-reasoning after /new-session completes"
+  },
+
+  "token_optimisations": [
     {
-      "date": "2026-04-06",
-      "note": "Manifest promoted from PLANNED (session_014) to IN_PROGRESS (session_017). baseline_entering corrected 427→432. S-01 status updated: already implemented, only ADR-022 needed. R29 check added."
+      "decision": "proxy items via hf-reasoning",
+      "type": "scope_narrow",
+      "items_affected": ["D-02-bench", "OPEN-006", "EQA-41"],
+      "saving_est": "~30k tokens vs subscription",
+      "detail": "Medium-effort single-file items routed to Groq 70B. Regression + CTO Read-before-commit is the quality gate."
     }
   ]
 }

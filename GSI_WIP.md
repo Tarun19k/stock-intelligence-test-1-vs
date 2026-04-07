@@ -19,14 +19,31 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_017 (COMPLETE)
-Version:       v5.35.1
-Last updated:  2026-04-06
-Sprint:        v5.35 + v5.35.1 — COMPLETE → v5.36 Planning
-Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.35.json (COMPLETE)
-Next session:  session_018
+Status:        ACTIVE
+Session ID:    session_019
+Version:       v5.36
+Last updated:  2026-04-07
+Sprint:        v5.36 — Post-Launch Hardening (IN_PROGRESS)
+Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Next session:  session_020
 ```
+
+## session_019 — v5.36 Active Tasks
+
+- [x] PROXY-01: classifier_keywords.py shared config
+- [x] PROXY-02: approval_hook.py fallback transparency
+- [x] PROXY-03: review_gate.py post-proxy diff gate
+- [x] PROXY-04: sprint_planner.py Depends column
+- [x] PROXY-05: sprint_planner.py staleness check
+- [x] PROXY-06: validate_models.py --spend flag
+- [x] PROXY-07: approval_hook.py tool-use guard
+- [x] Housekeeping: GSI_SPRINT.md Done section, manifest, WIP → ACTIVE
+- [ ] D-02 bench: ROE benchmark (hf-reasoning — enable proxy first)
+- [ ] OPEN-006: Portfolio Allocator stability score UI (hf-reasoning)
+- [ ] EQA-41: Forecast accuracy visual baseline (hf-reasoning)
+- [ ] Sprint close: version.py, GSI_QA_STANDARDS.md, GSI_DECISIONS.md ADR, sync_docs, manifest COMPLETE
+
+---
 
 ## session_017 Summary
 
