@@ -1,0 +1,95 @@
+model_list:
+
+  # === TIER 1: Deep reasoning (Anthropic) ===
+  - model_name: deep-reasoning
+    litellm_params:
+      model: anthropic/claude-opus-4-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      max_budget: 20.0
+      budget_duration: 1d
+
+  # === TIER 2: Code generation (OpenAI) ===
+  - model_name: code-gen
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+      max_budget: 15.0
+      budget_duration: 1d
+
+  # === TIER 3: Fast/cheap tasks (Gemini) ===
+  - model_name: fast-cheap
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+      max_budget: 5.0
+      budget_duration: 1d
+
+  # === TIER 4: Research tasks (Perplexity) ===
+  - model_name: research
+    litellm_params:
+      model: perplexity/sonar-pro
+      api_key: os.environ/PERPLEXITY_API_KEY
+      api_base: https://api.perplexity.ai
+      max_budget: 10.0
+      budget_duration: 1d
+
+  # === TIER 5: Lightweight Q&A (OpenAI Mini) ===
+  - model_name: quick-qa
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+      max_budget: 3.0
+      budget_duration: 1d
+
+  # === TIER 6: Open-source fallback — reasoning (Groq) ===
+  # Llama-3.3-70B on Groq: strongest open-source reasoning model, free tier.
+  # Groq free: 1,000 req/day, 6,000 tokens/min. No billing required.
+  # Get key: console.groq.com → API Keys → Create
+  - model_name: hf-reasoning
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+      max_budget: 0.0        # free tier — no spend cap needed
+      budget_duration: 1d
+
+  # === TIER 7: Open-source fallback — code (Groq) ===
+  # openai/gpt-oss-20b on Groq: 1,000 tokens/sec, strong at code tasks, free tier.
+  - model_name: hf-code
+    litellm_params:
+      model: groq/openai/gpt-oss-20b
+      api_key: os.environ/GROQ_API_KEY
+      max_budget: 0.0
+      budget_duration: 1d
+
+  # === TIER 8: Open-source fallback — fast/lightweight (Groq) ===
+  # Llama-3.1-8B-Instant: 560 tokens/sec, confirmed active, near-instant Q&A.
+  - model_name: hf-fast
+    litellm_params:
+      model: groq/llama-3.1-8b-instant
+      api_key: os.environ/GROQ_API_KEY
+      max_budget: 0.0
+      budget_duration: 1d
+
+router_settings:
+  # Auto-fallback chain: paid tiers first, HF open-source as zero-cost safety net.
+  # Cascade: primary paid → secondary paid → HF open-source equivalent
+  fallbacks:
+    - {"deep-reasoning": ["code-gen", "hf-reasoning", "fast-cheap"]}
+    - {"code-gen": ["hf-code", "fast-cheap"]}
+    - {"fast-cheap": ["hf-fast"]}
+    - {"research": ["code-gen", "hf-reasoning"]}
+    - {"quick-qa": ["hf-fast", "fast-cheap"]}
+    - {"hf-reasoning": ["hf-code"]}   # HF-to-HF fallback if one model is down
+  num_retries: 2
+  retry_after: 5                            # seconds before retry on 429
+  routing_strategy: "least-busy"   # no DB required; routes to model with fewest active requests
+
+litellm_settings:
+  drop_params: true   # silently ignore unsupported params per provider
+  set_verbose: false
+  callbacks: ["approval_hook.approval_layer"]   # points to module-level instance, not class
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  disable_spend_logs: true      # no DB required for spend tracking
+  store_model_in_db: false      # models defined in config.yaml only, not DB

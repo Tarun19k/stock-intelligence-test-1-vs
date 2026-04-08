@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.gsi.litellm-proxy</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/home/Agentic Tools - Projects/stock-intelligence-test-1-vs/litellm-proxy/start.sh</string>
+    </array>
+
+    <!-- Auto-restart if the proxy crashes -->
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Start on login -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Log output to files for debugging -->
+    <key>StandardOutPath</key>
+    <string>/Users/home/Library/Logs/litellm-proxy.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/home/Library/Logs/litellm-proxy-error.log</string>
+
+    <!-- Wait 5s before restarting on crash -->
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+</dict>
+</plist>
