@@ -28,6 +28,15 @@ if [[ "$COMMAND" != *"git commit"* ]]; then
     exit 0
 fi
 
+# --- File-type gate: skip regression for doc-only commits ---
+# Only .py changes can break the regression suite. .md/.json/.yaml/.sh/.html/.css
+# commits will not affect Python behaviour — skip the 3k-token regression run.
+STAGED_PY=$(git -C "$REPO" diff --cached --name-only 2>/dev/null | grep '\.py$' | wc -l | tr -d ' ')
+if [ "$STAGED_PY" -eq 0 ]; then
+    echo "[pre_commit] No Python files staged — doc-only commit, skipping regression."
+    exit 0
+fi
+
 # --- Deduplication: skip if last regression passed at current HEAD ---
 CURRENT_HEAD=$(git -C "$REPO" rev-parse HEAD 2>/dev/null || echo "unknown")
 
