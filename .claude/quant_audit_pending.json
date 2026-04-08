@@ -1,0 +1,8 @@
+{
+  "pending": false,
+  "pending_domains": [],
+  "last_triggered_by": null,
+  "last_triggered_at": null,
+  "last_full_audit": null,
+  "_note": "Written by post_quant_flag.sh hook. Read by new-session.md and quant-reviewer.md. last_full_audit set by quant-reviewer Step 6 after a completed audit."
+}

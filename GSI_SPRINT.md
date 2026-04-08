@@ -54,6 +54,9 @@ Prioritised by impact and implementation effort.
 | PROXY-06 | Spend visibility — `--spend` flag in validate_models.py calls LiteLLM `/spend` endpoint; shows daily per-provider cost summary | Low | proxy | Policy 3 (UX) |
 | PROXY-07 | Tool-use guard in approval_hook — detect `tools` key in request data; block routing to Groq (no tool-use support); escalate to `deep-reasoning` or reject with clear error | Low | proxy | Policy 2 (arch) |
 | PROXY-08 | Proxy execution flow fix — env vars locked at process start; implement two-launch sequence in CLAUDE.md + sprint_planner.py; validate with live proxy test | Low | proxy | Policy 2 (arch) |
+| HOOK-01 | R28 regression check: add existence check for `.claude/hooks/post_quant_flag.sh` — baseline moves 434→435. Also add `.claude/quant_audit_pending.json` to R10b list. **Dependency: if ALERT-01 ships first, this check must target `gsi_alerts.json` instead of `quant_audit_pending.json` — do not implement HOOK-01 independently after ALERT-01 is merged.** | Low | session_020 | Policy 2 (arch) |
+| ALERT-01 | **⭐ HIGH PRIORITY — pick up next sprint.** Generalised alert system: replace `quant_audit_pending.json` with `gsi_alerts.json` — unified flag file for P0_LAUNCH_BLOCKER, CEO_DECISION, SKILL_STALE, SESSION_CLEANUP, SPRINT_CLOSE_PENDING alert types. Pre-populate with: README screenshots, ADR-025, beta list, cxo.md stale, ui-test.md stale, last_session drift. Add `post_sprint_close.sh` hook. new-session surfaces grouped summary. Foundation for top-notch governance visibility across all program state. | Medium | session_020 | Policy 2 (arch) |
+| QUANT-01 | First `/quant-reviewer` full audit run (all 5 domains) — **P0 pre-beta launch blocker**. No audit has ever been run (`last_full_audit: null`). Domains 1+2+5 via worktree agent; Domain 3 requires CEO filing cross-check; Domain 4 deferred (insufficient forecast history). | Medium | session_020 | Policy 5 (data coherence) |
 
 ---
 

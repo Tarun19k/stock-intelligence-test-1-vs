@@ -45,12 +45,24 @@ Write the new SNAPSHOT block to `GSI_SESSION_SNAPSHOT.md` (append only):
 ...
 ```
 
-## Step 5 — Session summary
+## Step 5 — Quant audit flag check
+
+Read `.claude/quant_audit_pending.json`. Report as part of the session summary below:
+
+- If `pending: true` → **"⚠️ Quant audit pending — domains: [list] triggered by [file] on [date]. Run /quant-reviewer before next release."**
+- If `last_full_audit` is null → **"⚠️ No quant audit has ever been run. Required before public beta launch."**
+- If `last_full_audit` is set: compute days since today. If >90 → **"⚠️ Quarterly quant audit due — last run was [N] days ago ([date]). Run /quant-reviewer this session."**
+- If pending: false and <90 days since last audit → no action, suppress output.
+
+---
+
+## Step 6 — Session summary
 
 Report:
 - Current app version + regression baseline
 - Snapshot result: "No deviations" or list of deviations found
 - Any pending pre-sprint infrastructure tasks from GSI_WIP.md
+- Quant audit status (from Step 5 — include only if action needed)
 - All OPEN items sorted by priority (HIGH first)
 - Last session summary (1 sentence from GSI_session.json)
 
