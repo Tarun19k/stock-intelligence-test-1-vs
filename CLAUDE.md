@@ -246,6 +246,14 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 | OPEN-019 | C-05 | Momentum Score decomposition bar chart |
 | OPEN-020 | G-01 | WorldMonitor self-hosted (Leaflet.js + ACLED/GDELT API) |
 | OPEN-021 | Policy 5 | observability.py `_inline_compliance_check()` — refactor to call `compliance_check.py` instead of duplicating check logic (Policy 5: same metric = same function) |
+| OPEN-022 | P0 | SEBI disclaimer absent in week_summary.py Signal Summary tab (lines 649–679) and Portfolio Allocator table (lines 956–968). compliance_check.py only gates dashboard.py — silent gap. |
+| OPEN-023 | P1 | litellm-proxy hf-code model name `groq/openai/gpt-oss-20b` invalid — should be `groq/qwen-qwq-32b`. hf-code tier broken at runtime. |
+| OPEN-024 | P2 | mean_acc extracted in _render_forecast_accuracy_report (week_summary.py:1104) but never rendered. Docstring promises Mean Price Accuracy KPI. |
+| OPEN-025 | P2 | UNSTABLE threshold boundary: code fires at `>= 15` but comment + UI text say `> 15`. Align all three. |
+| OPEN-026 | P3 | CLAUDE.md Key Entry Points not updated: `_render_forecast_accuracy_report` + `compute_stability_score` missing from EP tables; compute_stability_score also missing from regression R8. |
+| OPEN-027 | **P0** | **SEBI disclaimer absent in `_render_global_signals()` (home.py lines 371–393). BUY/WATCH/AVOID index signals render every 60s with only a short caption — no SEBI regulatory text. Fix: st.caption after line 343.** |
+| OPEN-028 | **P0** | **FS-01 + FS-06: `_render_watchlist_badges()` (global_intelligence.py lines 60–90) shows named stocks with price/change but no BUY/WATCH/AVOID verdict (FS-06) and no SEBI disclaimer (FS-01). Section title "Related Stocks to Watch" implies action. Fix: (a) add SEBI caption after section title; (b) fetch and display cached verdict per ticker.** |
+| OPEN-029 | **P0** | **SEBI disclaimer absent from `_render_header_static()` (dashboard.py lines 159–163). The verdict badge is tab-independent — visible on Charts, Forecast, Compare tabs with zero regulatory coverage. The Insights tab disclaimer (line 1059) does NOT cover this. Fix: add compact st.caption after header markdown block (after line 178).** |
 
 ## Governance Policy Framework (v5.31)
 
@@ -345,9 +353,14 @@ When starting a new sprint or implementation task:
     {
       "id": "item-id",
       "mode": "sequential | parallel_agent",
+      "model": "haiku | sonnet | opus",
+      "model_rationale": "one sentence — why this model is sufficient/required",
+      "agents": "1 × sequential | 3 × worktree-parallel | 2 × haiku-scoring",
       "files_touched": 1,
       "risk": "low | medium | high",
-      "est_tokens": "8k–12k"
+      "est_tokens": "8k–12k",
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "PLAYWRIGHT-ID: Navigate … Assert … Edge cases: … | N/A — reason"
     }
   ],
   "overhead": {
@@ -390,10 +403,22 @@ Optimisation types and quality floors:
 | **defer** | full item cost | Deferred items must be added to GSI_SPRINT.md backlog in the same session — not silently dropped |
 
 **Quality is never a budget variable.** Token savings are only valid if:
-1. `python3 regression.py` still passes (433 checks — enforced by pre_commit.sh)
+1. `python3 regression.py` still passes (434 checks — enforced by pre_commit.sh)
 2. `python3 compliance_check.py` passes (8 P0 checks — enforced by pre_push.sh)
 3. The QA brief covers every user-visible change in the sprint
 4. No scoped rule from CLAUDE.md was skipped because of a narrow agent prompt
+5. Playwright test cases pass for every UI-touching item (>95% hygiene target)
+
+**Permission pre-approval protocol (Rule 9):** At sprint start, Claude posts a single `permissions_required` manifest aggregated across all planned items. User approves once for the sprint. Permissions are categorised as:
+- `file-read` — Read/Glob/Grep on any file (auto-approved in normal mode)
+- `file-write` — Edit/Write to existing or new files
+- `bash-python3` — `python3 regression.py`, `python3 compliance_check.py`, `python3 sync_docs.py`
+- `bash-git` — git log, git diff, git show, git commit, git push
+- `bash-gh` — gh CLI (PR/issue interaction)
+- `worktree-agent` — spawning isolated worktree agents (Rule 8)
+- `playwright-browser` — Playwright MCP browser automation (ui-test skill)
+- `mcp-tool` — any other MCP server tool use (Figma, Supabase, Canva, etc.)
+If a mid-sprint tool call requires a permission not listed in the sprint manifest, Claude pauses and requests explicit approval before proceeding.
 
 Fill this block BEFORE implementation. After sprint close, update `saving_est` with actuals where known. This log feeds the velocity table — track cumulative savings across sprints.
 
@@ -416,6 +441,7 @@ After the final implementation commit and before updating manifest status or GSI
    sync_docs.py reads `meta.current_app_version` exclusively; stale top-level fields cause false "expected vX.XX" errors.
 1. Run `python3 sync_docs.py` — auto-rebuilds CHANGELOG.md, README.md, AGENTS.md and checks all governance docs. Respond to any SEMI-auto prompts.
 2. Run `python3 regression.py` — confirm baseline still passes after sync.
+2a. Run Playwright suite via `ui-test` skill — all PLAYWRIGHT-ID cases defined in the sprint must pass. Failures block sprint close.
 3. Update `GSI_SPRINT_MANIFEST.json` status → COMPLETE and archive to `docs/sprint_archive/`.
 4. Set `GSI_WIP.md` Status → IDLE.
 

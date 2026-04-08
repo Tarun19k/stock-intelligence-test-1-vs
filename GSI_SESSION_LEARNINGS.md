@@ -138,3 +138,51 @@
 **Source:** Attempted `export ANTHROPIC_BASE_URL=...` via Bash tool; subsequent `curl` confirmed env vars visible in subshell but `python3 -c "import os; print(os.environ.get('ANTHROPIC_BASE_URL'))"` confirmed the Claude process itself still saw `None`.
 **Impact:** MEDIUM — delayed proxy work; wasted tokens diagnosing; proxy items D-02/OPEN-006/EQA-41 run under subscription instead. Documented as PROXY-08 in backlog.
 **Fix applied:** CLAUDE.md proxy startup guide and `sprint_planner.py` YELLOW warning both corrected to show the two-launch sequence. ADR-024 recorded.
+
+---
+
+## RECORD-013 | 2026-04-08 | session_021 | v5.37 | LEARNING
+**Finding:** CTO code-review skill is PR-centric (runs gh CLI checks for PR eligibility in steps 1 and 7). For direct-to-main repos without a PR workflow, these steps become dead code that consumes tokens. Two parallel Haiku agents were dispatched to run steps 1+7 (PR eligibility checks), both failed with "gh: command not found", burning ~10k tokens on eligibility checks that will never be needed. Solution: for direct-to-main repos, skip steps 1+7 entirely and substitute a git log scan to identify the review scope via commit SHA ranges and commit messages instead of PR metadata.
+**Source:** code-review:code-review skill execution; two agent failures; elapsed time diagnosis during review session.
+**Impact:** MEDIUM — 10k wasted tokens per review session across a direct-to-main repo. Compounds if reviews become regular.
+**Fix applied:** Documented only — fix requires skill modification outside this repo scope.
+
+---
+
+## RECORD-014 | 2026-04-08 | session_021 | v5.37 | LEARNING
+**Finding:** Agents 3 and 4 (git history scan vs prior loophole pattern matching) were redundant when no PR workflow exists. Both read GSI_SESSION_LEARNINGS.md and GSI_LOOPHOLE_LOG.md and produced heavily overlapping findings (e.g., both flagged the same `_calc_roe` issue, same SEBI disclaimer gap in multiple places). ~25k tokens wasted on duplicate issue detection. Root cause: without PR diff boundaries, two agents scanning the same historical patterns naturally converge on the same high-signal issues.
+**Source:** Side-by-side review output comparison; both agents returned identical issue categories with different line numbers in the same files.
+**Impact:** MEDIUM — architectural inefficiency; ~25k wasted tokens per code review session.
+**Fix applied:** Documented only — fix requires merging history + pattern agents into one consolidated 'code history + governance patterns' agent when no PR workflow exists.
+
+---
+
+## RECORD-015 | 2026-04-08 | session_021 | v5.37 | LEARNING
+**Finding:** Code review agent (Agent 5, comments audit) read pre-existing portfolio.py docstring documentation (e.g., confidence interval notation: `conf_lo`/`conf_hi` vs ±1 std dev semantics) that existed long before v5.36 and had no bearing on the current sprint. All findings scored below threshold as minor. This happened because the agent prompt did not constrain scope to "only lines introduced or modified in commits SHA1..SHA2" — it read the entire file looking for issues. ~15k tokens burned on pre-existing code analysis that should have been out of scope.
+**Source:** Agent 5 output included issues from lines 1–50 of portfolio.py (unmodified in sprint); commits in v5.36 only touched lines 120–140.
+**Impact:** MEDIUM — noise inflation; agent findings less actionable when mixed with pre-existing code smells; ~15k wasted tokens per review.
+**Fix applied:** Documented only — agent prompt template for code-review:code-review must include explicit "only modified lines per git diff" constraint in future calls.
+
+---
+
+## RECORD-016 | 2026-04-08 | session_021 | v5.37 | LEARNING
+**Finding:** Scoring agents (Haiku tier) re-read file sections that review agents (Sonnet tier) had already quoted and analyzed. Each scoring agent verified an issue by opening the source file again and reading ~20 lines of context. This happened 6+ times across the review session. ~6k wasted tokens on redundant file I/O. Better pattern: review agents return exact quotes + line numbers; scoring agents score from the quote without re-reading.
+**Source:** Network request logs showing repeated `Read file_path` calls with overlapping byte ranges; cross-referenced with agent output timestamps.
+**Impact:** LOW — efficiency issue but does not affect correctness; ~6k avoidable per session.
+**Fix applied:** Documented only — requires coordination between review agent output format and scoring agent prompt expectations.
+
+---
+
+## RECORD-017 | 2026-04-08 | session_021 | v5.37 | LEARNING
+**Finding:** The pre_commit.sh SHA dedup cache was supposed to skip full regression runs if HEAD had not changed. However, doc-only commits (CLAUDE.md, GSI_SPRINT_MANIFEST.json, etc.) change HEAD without introducing any *.py changes, invalidating the SHA cache. This caused a full 434-check regression run on every doc commit unnecessarily. Root cause: hook checked SHA equality but not whether the committed changes were `.py` files. Fix: file-type gate checks `git diff --cached --name-only | grep '\.py$'` before attempting regression; doc-only commits bypass regression entirely, saving ~3k tokens per doc commit and ~9–15k per sprint with multiple doc updates.
+**Source:** pre_commit.sh hook behavior analysis; regression runs on doc-only commits; hook output showing "no .py changes detected".
+**Impact:** LOW → HIGH depending on sprint commit frequency — 9–15k saved per sprint if doc commits are frequent.
+**Fix applied:** pre_commit.sh hook modified to add file-type gate; doc-only commits now skip regression, committed and verified.
+
+---
+
+## RECORD-018 | 2026-04-08 | session_021 | v5.37 | LEARNING
+**Finding:** Action 2 (financial compliance scan — 8 checks for SEBI/regulatory statements in code) can be completed with 3 Haiku-heavy agents instead of 5 Sonnet agents. Compliance rules are binary string-presence checks with no subjective reasoning. Proposed pipeline: Agent A (Haiku, ~3k) extracts the checklist rules into a structured matrix; Agent B (Haiku, ~4k) performs grep-based file×rule matching across codebase; Agent C (Sonnet, ~8k) reads only the ±20-line context around each flagged gap to confirm false positives. No separate scoring round needed — rules are explicit enough for self-scoring. Total: ~30–40k tokens vs ~130k for the full CTO code review (which includes architectural + pattern analysis).
+**Source:** Compliance check infrastructure review; token burn analysis across review agents; compliance rule categorization by automation-readiness.
+**Impact:** MEDIUM — efficiency opportunity; compliance scans could run faster as a lightweight standalone task rather than embedded in full code review.
+**Fix applied:** Documented only — pattern available for future lightweight compliance audit requests; not yet integrated into automated workflow.

@@ -404,6 +404,27 @@ Use `$CLAUDE_PROJECT_DIR` for all paths (built-in env var — portable, no hardc
 
 ---
 
+## ADR-025 | 2026-04-08 | v5.37 | ACTIVE
+**Title:** Sprint governance upgrade — model/agent declaration, Playwright test mandate, permission pre-approval
+
+**Context:** Session_021 CTO review post-mortem identified ~85k tokens wasted per review session from five root causes: PR eligibility checks on a direct-to-main repo, redundant agent pairs (history vs prior-PR), scope creep into pre-existing code, scoring agents re-reading files, and doc-only commits triggering full regression runs. Separately, sprint items lacked structured specification of which model to use, how many agents, what permissions were needed upfront, and what the acceptance criteria (user-visible test cases) looked like. This caused per-tool-call approval friction and no systematic way to verify UI changes were correct post-implementation.
+
+**Decision:** Three new standing rules added to GSI_SPRINT.md (Sprint Planning Rules 7+8) and CLAUDE.md (Rule 9):
+1. **Rule 7 — Model + agent + token + permission declaration:** Every sprint item, backlog entry, and action item must declare `model` (haiku|sonnet|opus + rationale), `agents` (count + mode), `est_tokens` (range), and `permissions_required` (categorised list) before implementation starts. Fields added to the `token_budget` manifest template.
+2. **Rule 8 — Playwright test mandate:** Every UI-touching sprint item must define at least one `PLAYWRIGHT-[ID]` test case (happy path + 2 edge cases) before implementation begins. Claude runs the `ui-test` skill to execute the suite at sprint close. >95% pass rate required. Non-UI items mark `playwright: N/A` with reason.
+3. **Rule 9 — Permission pre-approval:** Claude posts a single aggregated `permissions_required` manifest at sprint start covering all planned items. User approves once per sprint. Mid-sprint unlisted permissions require an explicit pause-and-request.
+
+Additionally: `pre_commit.sh` file-type gate implemented — doc-only commits skip the 434-check regression suite, saving ~3k tokens per doc commit (~9–15k per sprint).
+
+**Alternatives rejected:**
+- Per-item model selection without rationale: Model choice becomes implicit and hard to audit in sprint reviews.
+- Playwright only on user-reported bugs: Reactive — compliance gaps reach production. Proactive suite required given SEBI regulatory exposure.
+- Keep per-call permission approvals: Creates friction during sprint execution. Sprint-level pre-approval trades one upfront decision for zero mid-sprint interruptions.
+
+**Consequences:** Every future sprint manifest requires `model`, `model_rationale`, `agents`, `permissions_required`, and `playwright` fields per item. Sprint close protocol gains step 2a (Playwright suite). Permission manifest is the first message in every sprint kickoff. RECORD-013 through RECORD-018 in GSI_SESSION_LEARNINGS.md document the token waste evidence behind this decision.
+
+---
+
 ## Template for new ADRs
 
 ```

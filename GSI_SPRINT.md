@@ -5,12 +5,12 @@
 # The "In Progress" column acts as a WIP lock alongside GSI_WIP.md.
 # ════════════════════════════════════════════════════════════════════════
 
-## Current Sprint: v5.36 — Post-Launch Hardening
+## Current Sprint: v5.37 — Planning
 
-**Status:** Planning — backlog candidates below
+**Status:** Planning — backlog candidates below (sprint not yet opened)
 **Target date:** TBD
 **Regression baseline entering sprint:** 434/434
-**Goal:** Address post-beta feedback, DataManager M2, observability improvements, landing page screenshots.
+**Goal:** TBD — pending Action 2 (financial analyst / SEBI compliance review) findings before sprint is locked.
 
 ### CEO Sign-offs recorded (2026-04-01)
 - S-01: WorldMonitor → stopgap link button now, Leaflet+GDELT in v5.36
@@ -33,7 +33,6 @@ Prioritised by impact and implementation effort.
 
 | ID | Description | Effort | Source | Governance policy |
 |---|---|---|---|---|
-| D-02 bench | ROE benchmark: self-calculate from yfinance financials | Medium | audit | Policy 5 (data coherence) |
 | OPEN-004 | Extract SCORING_WEIGHTS to config.py | Low | session | Policy 2 |
 | OPEN-003 | Cross-session forecast persistence (Supabase) | High | session | Policy 2 |
 | C-02 | Macro data (Gold, Crude) not accessible to stock-level AI narrative | Medium | audit | OPEN-018 (Claude API) |
@@ -45,7 +44,6 @@ Prioritised by impact and implementation effort.
 | OPEN-007 | DataManager M2: CacheManager + DataContract validator | High | session | Policy 2 (arch) |
 | OPEN-018 | Claude API integration — live AI narrative (Opus 4.6 / Mythos-ready) | Medium | session | Policy 4,5 |
 | C-05 | Momentum score decomposition / scale disclosure | Medium | audit | Policy 5 |
-| EQA-41 | Forecast accuracy visual baseline | Medium | audit | Policy 7 |
 | PROXY-01 | Classifier alignment — sync keyword lists between sprint_planner.py and approval_hook.py (shared config or automated sync-check) | Low | proxy | Policy 2 (arch) |
 | PROXY-02 | Fallback transparency — log notification when paid model falls back to Groq (post-call hook or LiteLLM success_handler) | Low | proxy | Policy 7 (freshness labeling) |
 | PROXY-03 | Post-proxy diff review gate — commit tagging convention `[proxy:model]`; script to flag un-reviewed proxy commits before push | Medium | proxy | Policy 2 |
@@ -53,10 +51,18 @@ Prioritised by impact and implementation effort.
 | PROXY-05 | Sprint board staleness check — sprint_planner.py warns when GSI_SPRINT.md In Progress items are older than 2 sessions | Low | proxy | Policy 7 |
 | PROXY-06 | Spend visibility — `--spend` flag in validate_models.py calls LiteLLM `/spend` endpoint; shows daily per-provider cost summary | Low | proxy | Policy 3 (UX) |
 | PROXY-07 | Tool-use guard in approval_hook — detect `tools` key in request data; block routing to Groq (no tool-use support); escalate to `deep-reasoning` or reject with clear error | Low | proxy | Policy 2 (arch) |
-| PROXY-08 | Proxy execution flow fix — env vars locked at process start; implement two-launch sequence in CLAUDE.md + sprint_planner.py; validate with live proxy test | Low | proxy | Policy 2 (arch) |
+| PROXY-08 | Proxy execution flow fix — env vars locked at process start; implement two-launch sequence in CLAUDE.md + sprint_planner.py; validate with live proxy test. **Batch: implement in same sequential block as HOOK-01 + OPEN-023 (all 3 touch non-UI, low-risk files — single regression run at end of block saves ~6k tokens).** | Low | proxy | Policy 2 (arch) |
 | HOOK-01 | R28 regression check: add existence check for `.claude/hooks/post_quant_flag.sh` — baseline moves 434→435. Also add `.claude/quant_audit_pending.json` to R10b list. **Dependency: if ALERT-01 ships first, this check must target `gsi_alerts.json` instead of `quant_audit_pending.json` — do not implement HOOK-01 independently after ALERT-01 is merged.** | Low | session_020 | Policy 2 (arch) |
+| **OPEN-022** | **P0-REGULATORY: SEBI disclaimer absent in two week_summary.py signal sections — Signal Summary tab (lines 649–679, BUY/WATCH/AVOID count cards) and Portfolio Allocator allocation table (lines 956–968, per-stock badges). Neither contains "SEBI" or "investment advisor". compliance_check.py only gates dashboard.py so this passes the pre-push gate silently. Fix: add co-located SEBI disclaimer in each section. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 4 (regulatory) |
+| **OPEN-023** | **P1: litellm-proxy hf-code model name malformed — config.yaml line 59 has `groq/openai/gpt-oss-20b`; README documents "Groq Qwen-QwQ-32B". Double-slash format is invalid LiteLLM Groq syntax; hf-code tier will error at runtime and break the hf-reasoning→hf-code fallback chain silently. Fix: `groq/qwen-qwq-32b` (verify exact Groq model slug). Score: 85 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 2 (arch) |
+| **OPEN-024** | **P2: mean_acc dead variable in _render_forecast_accuracy_report (week_summary.py line 1104) — extracted from report dict but never rendered. Docstring promises "Mean price accuracy (how close was P50 to actual?)". Fix: add 4th KPI card or calibration note for mean_acc. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 5 (data coherence) |
+| **OPEN-025** | **P2: UNSTABLE threshold boundary mismatch — portfolio.py lines 370–375 trigger UNSTABLE at `>= 15` (else branch), but portfolio.py comment (line 347) and week_summary.py UI text (line 898) both say `> 15`. Fix: align comment + UI to `>= 15` or change code to `> 15`. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 5 (data coherence) |
+| **OPEN-026** | **P3-DOC: CLAUDE.md Key Entry Points not updated for two v5.36 functions — `_render_forecast_accuracy_report` in regression.py R8 EP list but absent from CLAUDE.md week_summary EP table; `compute_stability_score` absent from both CLAUDE.md portfolio EP table and regression R8 list. Fix: add both to CLAUDE.md; add compute_stability_score to regression R8. Score: 100 (CTO review 2026-04-08). Batch: same worktree agent as OPEN-025 (both doc/regression only, no .py logic — one regression run covers both, saves ~3k tokens).** | Low | cto_review_v5.36 | Policy 2 (arch) |
 | ALERT-01 | **⭐ HIGH PRIORITY — pick up next sprint.** Generalised alert system: replace `quant_audit_pending.json` with `gsi_alerts.json` — unified flag file for P0_LAUNCH_BLOCKER, CEO_DECISION, SKILL_STALE, SESSION_CLEANUP, SPRINT_CLOSE_PENDING alert types. Pre-populate with: README screenshots, ADR-025, beta list, cxo.md stale, ui-test.md stale, last_session drift. Add `post_sprint_close.sh` hook. new-session surfaces grouped summary. Foundation for top-notch governance visibility across all program state. | Medium | session_020 | Policy 2 (arch) |
 | QUANT-01 | First `/quant-reviewer` full audit run (all 5 domains) — **P0 pre-beta launch blocker**. No audit has ever been run (`last_full_audit: null`). Domains 1+2+5 via worktree agent; Domain 3 requires CEO filing cross-check; Domain 4 deferred (insufficient forecast history). | Medium | session_020 | Policy 5 (data coherence) |
+| **OPEN-027** | **P0-REGULATORY (Action 2): SEBI disclaimer absent from `_render_global_signals()` (home.py:343). BUY/WATCH/AVOID index signals refresh every 60s; existing caption is non-SEBI. Fix: st.caption with full SEBI text after line 343, before column loop. Playwright: verify disclaimer visible on Home page → Global Signals section.** | Low | action2_sebi | Policy 4 (regulatory) |
+| **OPEN-028** | **P0-REGULATORY (Action 2): FS-01 + FS-06 in `_render_watchlist_badges()` (global_intelligence.py:60–90). Named stocks shown with price/% but no BUY/WATCH/AVOID verdict (FS-06) and no SEBI disclaimer (FS-01). Section title "Related Stocks to Watch" implies action. Fix: (a) add SEBI caption after section header line 61; (b) fetch and display cached verdict per ticker for FS-06 compliance. Playwright: verify disclaimer + verdict badge visible in GI watchlist section.** | Medium | action2_sebi | Policy 4 (regulatory) + Policy 5 |
+| **OPEN-029** | **P0-REGULATORY (Action 2): SEBI disclaimer absent from `_render_header_static()` (dashboard.py:159–163). Verdict badge is tab-independent — visible on Charts/Forecast/Compare tabs; Insights tab disclaimer (line 1059) does NOT cover these tabs. Fix: add compact st.caption after header markdown block (after line 178). Playwright: navigate Dashboard → Charts tab → verify SEBI disclaimer present without switching to Insights.** | Low | action2_sebi | Policy 4 (regulatory) |
 
 ---
 
@@ -227,6 +233,62 @@ Nothing in progress. Next session picks from Backlog above.
 4. **Regression check before adding** — every new item must have a clear R-check definition before entering "In Progress".
 5. **No item enters "In Progress" without a WIP entry** — update GSI_WIP.md simultaneously.
 6. **Commit after every file** — do not batch multiple files into a single commit. If Claude hits a limit, only uncommitted files are at risk.
+
+7. **Model + agent + token + permission declaration (mandatory for every item)** — every sprint item, backlog entry, and action item must declare the following fields before implementation begins. These are set at planning time and locked in `GSI_SPRINT_MANIFEST.json`:
+
+   | Field | Values | Guidance |
+   |---|---|---|
+   | `model` | `haiku` \| `sonnet` \| `opus` | Haiku: grep/doc/pattern-match/trivial edits. Sonnet: code changes, judgment calls, agent tasks. Opus: architecture decisions, high-stakes compliance, novel design. |
+   | `agents` | count + mode | e.g. `1 × sequential`, `3 × worktree-parallel`, `2 × haiku-scoring` |
+   | `est_tokens` | range string | e.g. `"8k–12k"` for sequential Sonnet; `"2k–4k"` for Haiku doc edit |
+   | `permissions_required` | list | Categories: `file-read`, `file-write`, `bash-python3`, `bash-git`, `bash-gh`, `worktree-agent`, `playwright-browser`, `mcp-tool` |
+
+   **Pre-approval protocol:** At the start of every sprint, Claude posts a single permission manifest listing every `permissions_required` entry across all planned items. User approves once per sprint — not per tool call. If a mid-sprint item needs an unlisted permission, pause and request approval before proceeding. This eliminates per-call approval friction.
+
+   **Model selection rationale must be documented.** "Haiku is sufficient because this is a grep + single-line edit with no judgment required." Not just the model name.
+
+8. **Playwright test coverage (mandatory for every UI-touching item)** — every sprint item that modifies a page file, CSS, or user-visible output must include:
+
+   - A **Playwright test case definition** in the QA brief (written before implementation, not after). Format:
+     ```
+     PLAYWRIGHT-[ID]:
+       Navigate: [route or tab]
+       Action: [what to trigger]
+       Assert: [exact text / element / absence of element]
+       Edge cases: [empty data, None values, extreme inputs, mobile viewport]
+     ```
+   - At minimum: 1 happy-path test + 2 edge-case tests per changed UI section.
+   - **>95% hygiene target**: Claude runs the Playwright suite via the `ui-test` skill after implementation. All cases must pass before the item is marked Done. Failures are bugs, not known issues.
+   - Items that touch only non-UI files (regression.py, config, doc-only `.md`) are exempt from Playwright requirement — mark `playwright: N/A` with reason.
+
+---
+
+### v5.37 Item Specifications (Draft — session_021, 2026-04-08)
+*Pending sprint review before locking. Risky lane overflow: 5 P0 items → recommend split into v5.37a (SEBI compliance) + v5.37b (governance/proxy).*
+
+#### v5.37a — SEBI Compliance Sprint (proposed)
+
+| ID | Model | Agents | Est. tokens | Permissions | Playwright |
+|---|---|---|---|---|---|
+| OPEN-022 | sonnet — judgment needed for correct section placement | 1 × sequential | 10–14k | file-read, file-write, bash-python3, playwright-browser | PLAYWRIGHT-022a: Home → Week Summary → Signal Summary tab → assert "SEBI-registered investment advisor" above signal cards. Edge: market closed; zero resolved signals. PLAYWRIGHT-022b: Portfolio Allocator tab → assert SEBI text before allocation table. Edge: single-ticker group. |
+| OPEN-027 | sonnet — fragment is a live @st.fragment; placement relative to column loop matters | 1 × sequential | 8–12k | file-read, file-write, bash-python3, playwright-browser | PLAYWRIGHT-027: Home page → Global Signals section → assert SEBI disclaimer visible. Edge: no markets open; all signals NEUTRAL. |
+| OPEN-028 | sonnet — two sub-fixes: (a) SEBI caption (Haiku-capable), (b) verdict fetch from cache requires judgment | 1 × sequential (split: caption first, verdict second commit) | 12–18k | file-read, file-write, bash-python3, playwright-browser | PLAYWRIGHT-028a: GI page → Related Stocks to Watch → assert SEBI disclaimer. PLAYWRIGHT-028b: each watchlist badge shows BUY/WATCH/AVOID label. Edge: ticker cache cold; ticker data unavailable. |
+| OPEN-029 | haiku — single st.caption line after a known line number; no judgment | 1 × sequential | 4–6k | file-read, file-write, bash-python3, playwright-browser | PLAYWRIGHT-029: Dashboard → Charts tab (do NOT switch to Insights) → assert SEBI disclaimer visible in header area. Edge: AVOID verdict; STRONG BUY verdict. |
+
+#### v5.37b — Governance + Proxy Sprint (proposed)
+
+| ID | Model | Agents | Est. tokens | Permissions | Playwright |
+|---|---|---|---|---|---|
+| ALERT-01 | sonnet — schema design + multi-file | 1 × sequential (main) + 1 × haiku (skill scaffold) | 25–35k | file-read, file-write, bash-python3, bash-git | N/A — CLI/session tooling |
+| HOOK-01 *(after ALERT-01)* | haiku — targeted regex.py edit only | 1 × sequential | 3–5k | file-read, file-write, bash-python3 | N/A — regression infra |
+| PROXY-08 + OPEN-023 *(batched)* | haiku — doc edit + 1-line config fix; one regression at end | 1 × sequential | 6–9k total | file-read, file-write | N/A — CLI/proxy |
+| QUANT-01 | sonnet — Domains 1+2+5 via worktree; Domain 3 needs CEO input (pause point) | 3 × worktree-parallel | ~60–75k agent; ~5k main-ctx | file-read, worktree-agent, bash-python3 | N/A — audit generates report, not UI |
+| OPEN-024 | sonnet — layout context needed for KPI card placement | 1 × sequential | 10–14k | file-read, file-write, bash-python3, playwright-browser | PLAYWRIGHT-024: Week Summary → Forecast Accuracy → assert 4th KPI "Mean Price Accuracy" present. Edge: 0 resolved forecasts → "—"; mean_accuracy key absent → "—"; value exactly 0.0% → "0.0%". |
+| OPEN-025 + OPEN-026 *(batched)* | haiku — 2 string edits + 2 doc lines; one worktree | 1 × worktree-parallel | 5–8k total | file-read, file-write, bash-python3, playwright-browser | PLAYWRIGHT-025: Portfolio Allocator → Stability Score card → assert description contains ">= 15%". OPEN-026: N/A. |
+
+#### Sprint-level permission pre-approval (post v5.37 review, request before kickoff)
+`file-read · file-write · bash-python3 · bash-git · worktree-agent · playwright-browser`
+*(No bash-gh, mcp-tool, or opus required in either sub-sprint)*
 
 ---
 
