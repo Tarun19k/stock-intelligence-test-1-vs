@@ -2,7 +2,7 @@
 # Upload ONLY this file to Claude Project Files
 # Do NOT upload CLAUDE.md (5k tokens) or GSI_session.json (35k tokens) to Project Files
 # Regenerate: python3 generate_context.py  (auto-runs after regression.py passes)
-# Generated: 2026-04-08 | v5.36 | ALL 434 CHECKS PASS
+# Generated: 2026-04-10 | v5.36 | ALL 436 CHECKS PASS
 # Target: <1,600 tokens. Do not add verbose content here.
 
 ## Identity
@@ -11,7 +11,7 @@ Repo: https://github.com/Tarun19k/stock-intelligence-test-1-vs
 Session manifest (Gist): https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
 Stack: Python 3.14 · Streamlit 1.55 · yfinance 1.2 · pandas>=1.4.0
 Deploy: Streamlit Cloud (community) · no API keys · no database
-Current version: v5.36 | Regression: ALL 434 CHECKS PASS
+Current version: v5.36 | Regression: ALL 436 CHECKS PASS
 
 ## Architecture — one paragraph
 14-file modular app. market_data.py is the ONLY yfinance importer.
@@ -40,6 +40,8 @@ tickers.json is the single source of truth for all 559 tickers and 38 groups.
 13. Do NOT remove the SEBI disclaimer from `_tab_insights()`. — It is a P0 regulatory requirement. It must appear before the three insight columns.
 14. Do NOT call `_render_next_steps_ai()` from `render_global_intelligence()`. — Removed v5.31 — liability risk. Function definition kept for future redesign.
 15. QA brief protocol:
+16. Do NOT use `period="1mo"` for `get_batch_data()` calls that feed indicators.
+17. Data-as-of disclosure required on all aggregated sections.
 
 ## Critical patterns (from GSI_SKILLS.md anti-patterns)
 safe_float(None)=0.0 — for ROE/fundamentals: show N/A not 0.0% if val==0

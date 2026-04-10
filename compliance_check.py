@@ -8,7 +8,30 @@ Exit 0 on all checks pass. Exit 1 on any failure.
 """
 import os
 import re
+import subprocess
 import sys
+
+
+def _git_last_commit_date(path: str, repo_root: str) -> str:
+    """Return YYYY-MM-DD of the most recent commit touching path, or '' if unknown."""
+    try:
+        result = subprocess.run(
+            ['git', 'log', '-1', '--format=%ai', '--', path],
+            capture_output=True, text=True, cwd=repo_root, timeout=5,
+        )
+        return result.stdout.strip()[:10]  # YYYY-MM-DD
+    except Exception:
+        return ''
+
+
+def _check_deps_current(repo_root: str) -> bool:
+    """Pass if requirements.txt was NOT committed more recently than GSI_DEPENDENCIES.md.
+    If git is unavailable or either file has no commit history, pass by default."""
+    req_date = _git_last_commit_date('requirements.txt', repo_root)
+    dep_date = _git_last_commit_date('GSI_DEPENDENCIES.md', repo_root)
+    if not req_date or not dep_date:
+        return True   # no history → can't determine; don't block
+    return req_date <= dep_date
 
 
 def main() -> None:
@@ -33,6 +56,10 @@ def main() -> None:
         ('Next steps removed',   len(re.findall(r'(?<!def )_render_next_steps_ai\(\)', files['gi'])) == 0),
         ('RATES CONTEXT',        'RATES CONTEXT' in files['ind']),
         ('Rate limit gate',      '_is_rate_limited()' in files['md']),
+        # C9 — requirements.txt changes must be accompanied by GSI_DEPENDENCIES.md update.
+        # Compares last-commit date of both files. If requirements.txt was committed more
+        # recently than GSI_DEPENDENCIES.md, the constraint log is out of date.
+        ('Deps doc current when req changed', _check_deps_current(_repo_root)),
     ]
 
     fails = [n for n, ok in checks if not ok]

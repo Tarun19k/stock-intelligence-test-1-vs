@@ -50,11 +50,24 @@ Streamlit 1.55 notes:
 - `_refresh_fragment` REMOVED in v5.26 — do not re-add
 - `st.plotly_chart` uses `config={'responsive': True}` — `**kwargs` deprecated in 1.50
 
+### Critical Dependency Constraints (full detail: GSI_DEPENDENCIES.md)
+Check before ANY version change in requirements.txt. compliance_check.py C9 blocks push if requirements.txt is newer than this doc.
+
+| Package | Constraint | Why |
+|---|---|---|
+| `pandas` | `>=1.4.0` NOT `>=3.0.0` | streamlit 1.55 metadata declares `pandas<3`; pip/uv reject 3.x |
+| `streamlit` | Pin `==1.55.0` | Minor upgrades break sidebar CSS selectors — full re-test required |
+| `yfinance` | Pin `==1.2.0` | 1.2.0 changed MultiIndex structure; `_normalize_df()` guards depend on this |
+| `cvxpy` | Keep `==1.8.2` | Clarabel solver API changed in 1.8.x; portfolio optimiser must be retested |
+| yfinance/NSE | `Ticker.info['returnOnEquity']` returns `None` for most Indian stocks | Use `_calc_roe()` from financials + balance_sheet instead |
+| Python 3.14 | `warnings.filterwarnings("ignore", category=FutureWarning, module="yfinance")` required | pandas 3.x in 3.14 enables strict chained-assignment checks in yfinance internals |
+| WorldMonitor | Cannot embed via iframe — CSP `frame-ancestors: 'self'` blocks *.streamlit.app | Use link button + caption (ADR-022); cannot be fixed from GSI side |
+
 ---
 
 ## Current State (v5.36 — 2026-04-07)
 
-**Regression baseline: 434/434 PASS** *(stable; R27 sprint-manifest checks add additional checks during active sprints)*
+**Regression baseline: 436/436 PASS** *(stable; R27/R30/R31/R32 add additional checks during active sprints)*
 
 **v5.35 sprint: COMPLETE**
 
@@ -198,6 +211,25 @@ utils.py            safe_run(fn, context, default), sanitise(text, max_len)
 13. **Do NOT remove the SEBI disclaimer from `_tab_insights()`.** It is a P0 regulatory requirement. It must appear before the three insight columns.
 14. **Do NOT call `_render_next_steps_ai()` from `render_global_intelligence()`.** Removed v5.31 — liability risk. Function definition kept for future redesign.
 15. **QA brief protocol:** Always include before/after screenshots and explicit expected text. Never rely on numbered fix lists alone — tester must know exactly what they are looking at on screen. Learned from v5.31 Fix1/Fix2 numbering confusion.
+16. **Do NOT use `period="1mo"` for `get_batch_data()` calls that feed indicators.** 1mo returns ~22 rows; `compute_indicators()` guard at line 21 requires ≥30 rows — returns raw df silently, causing default RSI=50 across all tickers (DF-01 root cause). Minimum: `period="3mo"`.
+17. **Data-as-of disclosure required on all aggregated sections.** Portfolio Allocator, Top Movers, and macro cards must show a timestamp or data-period label. Never display derived/calculated output without temporal attribution.
+
+---
+
+## Code Anti-Patterns (distilled from GSI_SKILLS.md — always in context)
+
+Patterns that have caused production bugs or audit failures. Enforced by scoped rules, regression, and compliance checks.
+
+| Anti-pattern | Effect | Correct pattern |
+|---|---|---|
+| `st.expander(expanded=False)` for primary content | Page looks empty — users navigate away | `expanded=True` for all primary content |
+| `"Live Headlines"` label without 48h freshness check | Stale content displayed as current | Gate on `_age_h < 48` — see `_render_topic_card()` |
+| `pandas>=3.0.0` in requirements.txt | pip/uv raises `ResolutionImpossible` | Use `pandas>=1.4.0` — streamlit metadata declares `pandas<3` |
+| Checking `dashboard.py` for strings that live in `indicators.py` | Regression false positives / misses | Always check the file where the logic lives, not where output is consumed |
+| Equal visual weight for conflicting signals without arbitration label | User acts on wrong signal — financial harm | Override label mandatory: "Stage N override — Weinstein vetoes Elder" |
+| Same metric calculated inline in 2+ page files | Values diverge silently across pages | Extract to `utils.py` shared function; regression verifies all call sites |
+| `"Real-time"` / `"Live"` label on yfinance data | yfinance has 15–20 min delay — false claim, SEBI/FCA risk | Gate recency label on `market_open` bool + timestamp verify |
+| Sharing a live signal result on social media | SEBI finfluencer rules apply even for free tools | Screenshots of methodology/historical only — never live signal outputs |
 
 ---
 
@@ -271,6 +303,19 @@ Seven policies agreed during QA audit session. All future features must comply.
 
 Policies 4–7 are new additions from audit session 009. Policies 1–3 were pre-existing.
 
+## Known Failure Classes (distilled from GSI_LOOPHOLE_LOG.md)
+
+Hard-wired governance has caught these 6 classes repeatedly. Any new feature touching these areas must be checked manually.
+
+| Class | Trigger | Hard gate |
+|---|---|---|
+| **SEBI disclaimer missing** | New signal section, new page tab, or new fragment added without P4 compliance | compliance_check.py C1–C4; R25 in regression |
+| **Rate limit bypass** | New yfinance call that skips `_is_rate_limited()` | compliance_check.py C8 (`_is_rate_limited` in market_data.py) |
+| **Wrong-file string check** | compliance_check.py or regression checking string X in file Y where X was moved to file Z | Symptom: check always passes even after removal |
+| **Stale context drift** | CLAUDE.md, memory files, or open items table reflects a past state; new work conflicts silently | GSI_SESSION_SNAPSHOT.md deviation check at session start |
+| **Manifest/doc gap** | File committed during sprint but not in `file_change_log`; doc update silently skipped | R27 (manifest completeness); R28 (hook files exist) |
+| **Dependency undocumented** | requirements.txt updated without GSI_DEPENDENCIES.md entry; version conflict on next upgrade | compliance_check.py C9 (commit-date comparison); GSI_DEPENDENCIES.md |
+
 ---
 
 ## Living Documentation
@@ -298,6 +343,8 @@ Read before implementing any new feature. Update after every sprint.
 | `docs/social-media-guidelines.md` | SEBI Finfluencer rules for social media posts about the tool. Prohibited content, approved framing, platform-specific rules. RISK-L04 mitigation. |
 | `docs/index.html` | GitHub Pages landing page. Static one-pager with hero, features, market coverage, SEBI disclaimer. Screenshot slots ready for real images. |
 | `GSI_FILE_IMPACT.md` | Pre-change file impact map. Look up change type → every file that must be updated. Single source of truth for documentation accountability. |
+| `docs/ai-ops/token-model-rules.md` | Model selection rules (Haiku/Sonnet/Opus criteria), execution modes, read cost tiers, anti-patterns. Read before writing sprint token_budget block. |
+| `docs/ai-ops/claude-features-reference.md` | Full Claude API/Code/SDK feature reference: prompt caching, memory stores, context window, batch API, hooks, MCP. Read when designing AI-ops optimisations. |
 
 Store all in repo root alongside CLAUDE.md.
 
@@ -439,6 +486,7 @@ After the final implementation commit and before updating manifest status or GSI
    - `meta.current_app_version` (nested) → same new version
    - `meta.next_version` → version + 1 minor
    sync_docs.py reads `meta.current_app_version` exclusively; stale top-level fields cause false "expected vX.XX" errors.
+0a. Run `/log-learnings` skill — append a RECORD to `GSI_SESSION_LEARNINGS.md` covering: deviations found, decisions made, anti-patterns avoided, loopholes caught. R32 blocks COMPLETE status if no RECORD exists dated ≥ sprint `created` date.
 1. Run `python3 sync_docs.py` — auto-rebuilds CHANGELOG.md, README.md, AGENTS.md and checks all governance docs. Respond to any SEMI-auto prompts.
 2. Run `python3 regression.py` — confirm baseline still passes after sync.
 2a. Run Playwright suite via `ui-test` skill — all PLAYWRIGHT-ID cases defined in the sprint must pass. Failures block sprint close.

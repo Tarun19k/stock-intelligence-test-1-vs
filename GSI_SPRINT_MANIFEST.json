@@ -1,142 +1,451 @@
 {
   "_comment": "Sprint manifest — read by regression.py R27. Set status to IN_PROGRESS when implementation starts. Archive to docs/sprint_archive/ on close.",
-  "sprint_version": "v5.36",
-  "sprint_name": "Post-Launch Hardening",
-  "status": "COMPLETE",
-  "created": "2026-04-07",
-  "session": "session_019",
+  "sprint_version": "v5.37",
+  "sprint_name": "SEBI Compliance + Governance + Data Freshness",
+  "sub_sprints": ["v5.37a (SEBI compliance P0)", "v5.37b (Governance + Proxy + Data Freshness)"],
+  "status": "PLANNING",
+  "created": "2026-04-10",
+  "session": "session_022",
   "regression_baseline_entering": 434,
+  "regression_baseline_expected_exit": 435,
+  "_baseline_note": "OPEN-026 adds 1 R8 check for compute_stability_score → 435",
 
-  "_close_checklist": "Manual steps at sprint close (not machine-checked): (1) python3 sync_docs.py exits 0 — verifies CHANGELOG/README/AGENTS rebuilt; (2) python3 regression.py → 434 PASS after sync.",
+  "_close_checklist": "Manual steps at sprint close: (1) python3 sync_docs.py exits 0; (2) python3 regression.py → 435 PASS after sync; (3) Archive manifest to docs/sprint_archive/.",
 
   "checks": [
-    { "id": "compliance_baseline_current",  "tier": "A", "must_contain": ["ALL 434 CHECKS PASS"], "target_file": "GSI_COMPLIANCE_CHECKLIST.md" },
-    { "id": "pr_template_baseline_current", "tier": "A", "must_contain": ["ALL 434 CHECKS PASS"], "target_file": ".github/PULL_REQUEST_TEMPLATE.md" },
-    { "id": "decisions_has_sprint_adr",     "tier": "A", "must_contain": ["v5.36"],               "target_file": "GSI_DECISIONS.md" },
-    { "id": "qa_standards_has_brief",       "tier": "A", "must_contain": ["v5.36"],               "target_file": "GSI_QA_STANDARDS.md" },
+    { "id": "sync_docs_passes",             "tier": "A", "must_contain": ["see sync_docs.py exit 0"],  "target_file": "sync_docs.py output" },
+    { "id": "compliance_baseline_current",  "tier": "A", "must_contain": ["ALL 435 CHECKS PASS"],      "target_file": "GSI_COMPLIANCE_CHECKLIST.md" },
+    { "id": "pr_template_baseline_current", "tier": "A", "must_contain": ["ALL 435 CHECKS PASS"],      "target_file": ".github/PULL_REQUEST_TEMPLATE.md" },
+    { "id": "decisions_has_sprint_adr",     "tier": "A", "must_contain": ["v5.37"],                    "target_file": "GSI_DECISIONS.md" },
+    { "id": "qa_standards_has_brief",       "tier": "A", "must_contain": ["v5.37"],                    "target_file": "GSI_QA_STANDARDS.md" },
 
-    { "id": "proxy01_keywords_shared",      "tier": "B", "must_contain": ["classifier_keywords"],  "target_file": "litellm-proxy/approval_hook.py" },
-    { "id": "proxy07_tool_use_guard",       "tier": "B", "must_contain": ["tool-use guard"],       "target_file": "litellm-proxy/approval_hook.py" },
-    { "id": "proxy03_review_gate_exists",   "tier": "B", "must_contain": ["review_gate"],          "target_file": "litellm-proxy/review_gate.py" },
-    { "id": "proxy06_spend_flag",           "tier": "B", "must_contain": ["--spend"],              "target_file": "litellm-proxy/validate_models.py" },
-    { "id": "proxy05_staleness_check",      "tier": "B", "must_contain": ["STALE_DAYS"],           "target_file": "litellm-proxy/sprint_planner.py" }
+    { "id": "df01_period_fix",              "tier": "B", "must_contain": ["period=\"3mo\""],            "target_file": "pages/home.py" },
+    { "id": "open027_sebi_home",            "tier": "B", "must_contain": ["SEBI", "st.caption"],       "target_file": "pages/home.py" },
+    { "id": "open029_sebi_dashboard",       "tier": "B", "must_contain": ["SEBI", "st.caption"],       "target_file": "pages/dashboard.py" },
+    { "id": "open022_sebi_week_summary",    "tier": "B", "must_contain": ["SEBI"],                     "target_file": "pages/week_summary.py" },
+    { "id": "open028_sebi_global_intel",    "tier": "B", "must_contain": ["SEBI", "st.caption"],       "target_file": "pages/global_intelligence.py" },
+    { "id": "open028_verdict_in_watchlist", "tier": "B", "must_contain": ["verdict", "BUY"],           "target_file": "pages/global_intelligence.py" },
+    { "id": "open023_proxy_model_name",     "tier": "B", "must_contain": ["groq/qwen-qwq-32b"],        "target_file": "litellm-proxy/config.yaml" },
+    { "id": "open025_threshold_comment",    "tier": "B", "must_contain": [">= 15"],                    "target_file": "portfolio.py" },
+    { "id": "open026_regression_r8",        "tier": "B", "must_contain": ["compute_stability_score"],  "target_file": "regression.py" },
+    { "id": "df02_rss_et_markets",          "tier": "B", "must_contain": ["economictimes.indiatimes.com/markets"], "target_file": "market_data.py" },
+    { "id": "token_rules_doc_exists",       "tier": "B", "must_contain": ["Model Selection Rules"],    "target_file": "docs/ai-ops/token-model-rules.md" },
+    { "id": "claude_features_doc_exists",   "tier": "B", "must_contain": ["Prompt Caching"],           "target_file": "docs/ai-ops/claude-features-reference.md" },
+    { "id": "new_session_optimized",        "tier": "B", "must_contain": ["~47k tokens"],              "target_file": ".claude/commands/new-session.md" }
+  ],
+
+  "items": [
+    {
+      "id": "prereq-new-session-opt",
+      "sub_sprint": "prereq",
+      "title": "Optimize new-session command — eliminate 42k token GSI_session.json full read",
+      "status": "DONE",
+      "model": "sonnet",
+      "mode": "sequential",
+      "files": [".claude/commands/new-session.md"],
+      "pass_criterion": "new-session.md explicitly says NOT to read GSI_GOVERNANCE.md; GSI_session.json read is narrowed to meta + open_items offset only",
+      "savings_est": "~47k tokens per session start"
+    },
+    {
+      "id": "prereq-token-rules",
+      "sub_sprint": "prereq",
+      "title": "Document token optimization + model selection rules",
+      "status": "DONE",
+      "model": "sonnet",
+      "mode": "sequential",
+      "files": ["docs/ai-ops/token-model-rules.md"],
+      "pass_criterion": "File exists with model mapping table, read cost tiers, anti-patterns section"
+    },
+    {
+      "id": "prereq-claude-features",
+      "sub_sprint": "prereq",
+      "title": "Claude Code features knowledge repository",
+      "status": "IN_PROGRESS",
+      "model": "haiku",
+      "mode": "background_agent",
+      "files": ["docs/ai-ops/claude-features-reference.md"],
+      "pass_criterion": "File covers prompt caching, memory, agents, context mgmt, hooks, model selection"
+    },
+    {
+      "_section": "=== v5.37a — SEBI COMPLIANCE SPRINT (execute in this order) ==="
+    },
+    {
+      "id": "df01-open027",
+      "sub_sprint": "v5.37a",
+      "title": "DF-01: Fix period=1mo→3mo in home.py + OPEN-027: Add SEBI caption to _render_global_signals()",
+      "priority": "P0",
+      "model": "haiku",
+      "mode": "sequential",
+      "agents": "1 × sequential (Haiku)",
+      "files_touched": 1,
+      "files": ["pages/home.py"],
+      "risk": "low",
+      "est_tokens": "8k–10k",
+      "changes": [
+        "home.py:333 — change period=\"1mo\" to period=\"3mo\"",
+        "home.py line 13 comment — update '1mo' reference to '3mo'",
+        "home.py after line 343 (before cols = responsive_cols(5)) — add st.caption with SEBI disclaimer"
+      ],
+      "pass_criterion": "python3 regression.py → 434 PASS; page shows RSI values other than 50; SEBI caption visible above signal badges",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "id": "open-029",
+      "sub_sprint": "v5.37a",
+      "title": "OPEN-029: Add SEBI caption to dashboard _render_header_static() — covers Charts/Forecast/Compare tabs",
+      "priority": "P0",
+      "model": "haiku",
+      "mode": "sequential",
+      "agents": "1 × sequential (Haiku)",
+      "files_touched": 1,
+      "files": ["pages/dashboard.py"],
+      "risk": "low",
+      "est_tokens": "8k–10k",
+      "changes": [
+        "dashboard.py after line 178 (after header markdown block) — add st.caption with compact SEBI text"
+      ],
+      "pass_criterion": "python3 regression.py → 434 PASS; compact SEBI caption visible in dashboard header on Charts tab",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "id": "open-022",
+      "sub_sprint": "v5.37a",
+      "title": "OPEN-022: Add SEBI disclaimer to week_summary.py — Signal Summary tab + Portfolio Allocator table",
+      "priority": "P0",
+      "model": "sonnet",
+      "mode": "sequential",
+      "agents": "1 × sequential (Sonnet)",
+      "files_touched": 1,
+      "files": ["pages/week_summary.py"],
+      "risk": "medium",
+      "est_tokens": "15k–18k",
+      "changes": [
+        "week_summary.py lines 649–679 — add SEBI disclaimer before or after Signal Summary signal display",
+        "week_summary.py lines 956–968 — add SEBI disclaimer before/after Portfolio Allocator table"
+      ],
+      "pass_criterion": "python3 regression.py → 434 PASS; SEBI text visible in Signal Summary tab; SEBI text visible in Portfolio Allocator section",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "id": "open-028",
+      "sub_sprint": "v5.37a",
+      "title": "OPEN-028: GI watchlist — add SEBI caption + fetch+display BUY/WATCH/AVOID verdict per ticker",
+      "priority": "P0",
+      "model": "sonnet",
+      "mode": "sequential",
+      "agents": "1 × sequential (Sonnet)",
+      "files_touched": 1,
+      "files": ["pages/global_intelligence.py"],
+      "risk": "medium",
+      "est_tokens": "18k–22k",
+      "changes": [
+        "global_intelligence.py lines 60–90 (_render_watchlist_badges) — (a) add st.caption with SEBI text after section title; (b) for each ticker, fetch cached signal_score verdict and display BUY/WATCH/AVOID badge alongside price",
+        "Use ticker_cache if warm (Policy 5 — same data source as indicator panel)"
+      ],
+      "pass_criterion": "python3 regression.py → 434 PASS; SEBI caption visible; each watchlist ticker shows verdict badge",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "_section": "=== v5.37b — GOVERNANCE + PROXY + DATA FRESHNESS (sequential Sonnet first, then Haiku clusters) ==="
+    },
+    {
+      "id": "df-03",
+      "sub_sprint": "v5.37b",
+      "title": "DF-03: Add data-as-of timestamp to Portfolio Allocator section in week_summary.py",
+      "priority": "HIGH",
+      "model": "sonnet",
+      "mode": "sequential",
+      "agents": "1 × sequential (Sonnet)",
+      "files_touched": 1,
+      "files": ["pages/week_summary.py"],
+      "risk": "low",
+      "est_tokens": "13k–16k",
+      "changes": [
+        "week_summary.py Portfolio Allocator section — add small caption showing 'Data as of [date] · Prices from yfinance cache' below portfolio metric cards",
+        "Use existing cache timestamp from market_data if available, else show static date"
+      ],
+      "pass_criterion": "python3 regression.py → 434 PASS; Portfolio Allocator shows a data freshness label",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "id": "df-08",
+      "sub_sprint": "v5.37b",
+      "title": "DF-08: Top Movers — disambiguate cross-session data with explicit 'Today' / 'This session' label",
+      "priority": "HIGH",
+      "model": "sonnet",
+      "mode": "sequential",
+      "agents": "1 × sequential (Sonnet)",
+      "files_touched": 1,
+      "files": ["pages/home.py"],
+      "risk": "low",
+      "est_tokens": "13k–16k",
+      "changes": [
+        "home.py _render_top_movers section — add caption that clarifies the data period ('Intraday moves from current session · Resets at market open')",
+        "If movers data has a timestamp, display it; if from cache, label it as cached"
+      ],
+      "pass_criterion": "python3 regression.py → 434 PASS; Top Movers section shows a temporal scope label",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "id": "haiku-cluster-H1",
+      "sub_sprint": "v5.37b",
+      "title": "Haiku Cluster H1 (worktree): OPEN-023 proxy model name + OPEN-025 threshold alignment",
+      "priority": "P1/P2",
+      "model": "haiku",
+      "mode": "parallel_agent",
+      "agents": "2 × worktree-parallel (Haiku each)",
+      "files_touched": 4,
+      "risk": "low",
+      "est_tokens": "18k–22k agent (isolated)",
+      "sub_items": [
+        {
+          "id": "open-023",
+          "files": ["litellm-proxy/config.yaml", "litellm-proxy/sprint_planner.py"],
+          "changes": [
+            "config.yaml line 59: model: groq/openai/gpt-oss-20b → model: groq/qwen-qwq-32b",
+            "sprint_planner.py line 44: 'hf-code': 'groq/openai/gpt-oss-20b' → 'hf-code': 'groq/qwen-qwq-32b'"
+          ]
+        },
+        {
+          "id": "open-025",
+          "files": ["portfolio.py", "pages/week_summary.py"],
+          "changes": [
+            "portfolio.py line 347: comment '> 15%' → '>= 15%' (align to code which uses >= 15)",
+            "week_summary.py line 898: UI text '> 15%' → '>= 15%'"
+          ]
+        }
+      ],
+      "pass_criterion": "CTO reads both diffs; python3 regression.py → 434 PASS; proxy validate_models.py shows hf-code healthy with new model name",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "id": "haiku-cluster-H2",
+      "sub_sprint": "v5.37b",
+      "title": "Haiku Cluster H2 (worktree): DF-02 RSS replacement + DF-05 GI macro last-reviewed label",
+      "priority": "HIGH",
+      "model": "haiku",
+      "mode": "parallel_agent",
+      "agents": "2 × worktree-parallel (Haiku each)",
+      "files_touched": 2,
+      "risk": "low",
+      "est_tokens": "18k–22k agent (isolated)",
+      "sub_items": [
+        {
+          "id": "df-02",
+          "files": ["market_data.py"],
+          "rss_sources": [
+            "Economic Times Markets: https://economictimes.indiatimes.com/markets/rss.cms",
+            "Reuters Markets: https://feeds.reuters.com/reuters/businessNews"
+          ],
+          "changes": [
+            "market_data.py — replace Al Jazeera general RSS with ET Markets + Reuters Markets feeds in _ALLOWED_RSS_DOMAINS and the news feed config",
+            "Ensure both domains are added to _ALLOWED_RSS_DOMAINS whitelist"
+          ]
+        },
+        {
+          "id": "df-05",
+          "files": ["pages/global_intelligence.py"],
+          "changes": [
+            "global_intelligence.py macro cards section — add 'Last reviewed: [date]' caption below macro analysis cards",
+            "Use static date string from a constant; label as algorithmically generated"
+          ]
+        }
+      ],
+      "pass_criterion": "CTO reads both diffs; python3 regression.py → 434 PASS; no Al Jazeera domain in allowed RSS list",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    },
+    {
+      "id": "open-026",
+      "sub_sprint": "v5.37b",
+      "title": "OPEN-026: Update CLAUDE.md Key Entry Points + add compute_stability_score to regression R8",
+      "priority": "P3",
+      "model": "haiku",
+      "mode": "sequential",
+      "agents": "1 × sequential (Haiku)",
+      "files_touched": 2,
+      "files": ["CLAUDE.md", "regression.py"],
+      "risk": "low",
+      "est_tokens": "10k–12k",
+      "changes": [
+        "CLAUDE.md Key Entry Points section — add _render_forecast_accuracy_report (week_summary.py) and compute_stability_score (portfolio.py) to EP tables",
+        "regression.py R8 check — add compute_stability_score to the EP verification list (baseline → 435)"
+      ],
+      "pass_criterion": "python3 regression.py → 435 PASS; both functions appear in R8 EP list",
+      "permissions_required": ["file-read", "file-write", "bash-python3"]
+    }
+  ],
+
+  "token_budget": {
+    "items": [
+      { "id": "prereq-new-session-opt", "mode": "sequential", "model": "sonnet", "model_rationale": "Judgment required: decide what to cut vs keep in protocol", "agents": "1 × sequential", "files_touched": 1, "risk": "low", "est_tokens": "10k", "permissions_required": ["file-read", "file-write"], "playwright": "N/A — command file only" },
+      { "id": "prereq-token-rules", "mode": "sequential", "model": "sonnet", "model_rationale": "Judgment required: extract principles from session methodology", "agents": "1 × sequential", "files_touched": 1, "risk": "low", "est_tokens": "10k", "permissions_required": ["file-write"], "playwright": "N/A — doc file only" },
+      { "id": "prereq-claude-features", "mode": "parallel_agent", "model": "haiku", "model_rationale": "Research compilation — no codebase judgment needed, web+docs only", "agents": "1 × haiku background agent", "files_touched": 1, "risk": "low", "est_tokens": "15k–18k agent (isolated)", "permissions_required": ["file-write", "web-fetch"], "playwright": "N/A" },
+      { "id": "df01-open027", "mode": "sequential", "model": "haiku", "model_rationale": "Exact line locations known; ≤1 judgment call per edit; same file", "agents": "1 × sequential", "files_touched": 1, "risk": "low", "est_tokens": "8k–10k", "permissions_required": ["file-read", "file-write", "bash-python3"], "playwright": "PLAYWRIGHT-01: Navigate to Home page → assert global signals section shows SEBI caption text · Assert at least one RSI value ≠ 50 in signal badges · Edge case: fragment runs every 60s — verify caption persists on re-render" },
+      { "id": "open-029", "mode": "sequential", "model": "haiku", "model_rationale": "Single insertion at known location (after line 178); no surrounding logic interaction", "agents": "1 × sequential", "files_touched": 1, "risk": "low", "est_tokens": "8k–10k", "permissions_required": ["file-read", "file-write", "bash-python3"], "playwright": "PLAYWRIGHT-02: Navigate to any stock dashboard → assert SEBI caption text visible in header area on Charts tab · Switch to Forecast tab → assert caption still visible · Edge case: header renders for all 4 tabs — verify not just Insights tab" },
+      { "id": "open-022", "mode": "sequential", "model": "sonnet", "model_rationale": "Two separate sections requiring contextual judgment about placement; week_summary.py is complex multi-section file", "agents": "1 × sequential", "files_touched": 1, "risk": "medium", "est_tokens": "15k–18k", "permissions_required": ["file-read", "file-write", "bash-python3"], "playwright": "PLAYWRIGHT-03: Navigate to Week Summary → Signal Summary tab → assert SEBI caption present · Navigate to Portfolio Allocator tab → run optimisation → assert SEBI caption present in allocation table area" },
+      { "id": "open-028", "mode": "sequential", "model": "sonnet", "model_rationale": "Requires understanding verdict fetch pattern from ticker_cache and how to display per-ticker badges in the watchlist loop", "agents": "1 × sequential", "files_touched": 1, "risk": "medium", "est_tokens": "18k–22k", "permissions_required": ["file-read", "file-write", "bash-python3"], "playwright": "PLAYWRIGHT-04: Navigate to Global Intelligence → Related Stocks section → assert SEBI caption present · Assert at least one ticker shows BUY/WATCH/AVOID verdict badge · Edge case: cold cache — graceful fallback if verdict unavailable" },
+      { "id": "df-03", "mode": "sequential", "model": "sonnet", "model_rationale": "Requires understanding Portfolio Allocator layout to choose right insertion point for timestamp; involves conditional logic (cached timestamp or static)", "agents": "1 × sequential", "files_touched": 1, "risk": "low", "est_tokens": "13k–16k", "permissions_required": ["file-read", "file-write", "bash-python3"], "playwright": "PLAYWRIGHT-05: Navigate to Week Summary → Portfolio Allocator → run optimisation → assert data freshness label visible near metric cards" },
+      { "id": "df-08", "mode": "sequential", "model": "sonnet", "model_rationale": "Requires understanding Top Movers data flow to write accurate temporal scope label", "agents": "1 × sequential", "files_touched": 1, "risk": "low", "est_tokens": "13k–16k", "permissions_required": ["file-read", "file-write", "bash-python3"], "playwright": "PLAYWRIGHT-06: Navigate to Home page → Top Movers section → assert temporal scope caption visible" },
+      { "id": "haiku-cluster-H1", "mode": "parallel_agent", "model": "haiku", "model_rationale": "String substitution in known locations; comment alignment; no logic changes", "agents": "2 × worktree-parallel", "files_touched": 4, "risk": "low", "est_tokens": "18k–22k agent (isolated)", "permissions_required": ["file-read", "file-write"], "playwright": "N/A — proxy config + comment/string changes only" },
+      { "id": "haiku-cluster-H2", "mode": "parallel_agent", "model": "haiku", "model_rationale": "RSS constant replacement and static caption insertion — exact locations deterministic", "agents": "2 × worktree-parallel", "files_touched": 2, "risk": "low", "est_tokens": "18k–22k agent (isolated)", "permissions_required": ["file-read", "file-write"], "playwright": "N/A — RSS config change; DF-05 caption verified manually" },
+      { "id": "open-026", "mode": "sequential", "model": "haiku", "model_rationale": "Known EP table append + known R8 list append; template-format insertions only", "agents": "1 × sequential", "files_touched": 2, "risk": "low", "est_tokens": "10k–12k", "permissions_required": ["file-read", "file-write", "bash-python3"], "playwright": "N/A — doc + regression check addition" }
+    ],
+    "overhead": {
+      "session_start_context": "~5k (optimized from ~52k)",
+      "regression_runs": "12 × 3k = ~36k",
+      "sync_docs": "~2k",
+      "sprint_close_sequence": "~10k",
+      "context_compaction": "~12k"
+    },
+    "totals": {
+      "v5.37a_sequential_main": "~51k (8+8+15+20)",
+      "v5.37b_sequential_main": "~39k (13+13+10)",
+      "prereq_main": "~20k (already spent)",
+      "overhead_main": "~65k",
+      "main_context_est": "~175k",
+      "agent_est": "~55k–62k (H1 + H2 + claude-features agent)",
+      "grand_total_est": "~230–237k",
+      "weekly_limit_note": "QUANT-01 (~65k agent) deferred to v5.38 — weekly limit at <90% remaining"
+    },
+    "notes": "All items ≤22k. No split candidates. QUANT-01 parked to v5.38 per session_022 decision."
+  },
+
+  "token_optimisations": [
+    {
+      "decision": "Park QUANT-01 to v5.38",
+      "type": "defer",
+      "items_affected": ["QUANT-01"],
+      "saving_est": "~65k agent tokens",
+      "detail": "Weekly limit at <90% remaining. QUANT-01 needs 5-domain parallel audit (~65k agent). No v5.37 items depend on it. Locked in session_022."
+    },
+    {
+      "decision": "Merge v5.37c into v5.37b",
+      "type": "batch",
+      "items_affected": ["df-02", "df-03", "df-05", "df-08"],
+      "saving_est": "~20k tokens",
+      "detail": "Data freshness items (originally v5.37c) merged into v5.37b sprint. Avoids separate sprint-start overhead and regression baseline confirmation cycle."
+    },
+    {
+      "decision": "Haiku cluster H1 (OPEN-023 + OPEN-025)",
+      "type": "parallelise",
+      "items_affected": ["open-023", "open-025"],
+      "saving_est": "~18k main-context",
+      "detail": "String substitutions in separate files (litellm-proxy/config.yaml + sprint_planner.py vs portfolio.py + week_summary.py). Both are Haiku-qualified. Worktree isolation ensures no conflict."
+    },
+    {
+      "decision": "Haiku cluster H2 (DF-02 + DF-05)",
+      "type": "parallelise",
+      "items_affected": ["df-02", "df-05"],
+      "saving_est": "~15k main-context",
+      "detail": "RSS constant replacement (market_data.py) and static caption (global_intelligence.py) are independent. Both Haiku-qualified. Worktree isolation."
+    },
+    {
+      "decision": "Optimized new-session command",
+      "type": "scope_narrow",
+      "items_affected": ["prereq-new-session-opt"],
+      "saving_est": "~47k per session (47k × N sessions = compounding)",
+      "detail": "Eliminated full GSI_session.json read (42k), full GSI_GOVERNANCE.md read (3k), full snapshot history read (~5k rolling). Replaced with targeted offset reads and CLAUDE.md cross-references. Now costs ~5k vs prior ~52k."
+    },
+    {
+      "decision": "Haiku for df01-open027 combined",
+      "type": "batch",
+      "items_affected": ["df01-open027"],
+      "saving_est": "~5k (one Read instead of two)",
+      "detail": "DF-01 period fix and OPEN-027 SEBI caption are both in home.py. Single Read + two targeted Edits. Combined into one item rather than two separate agent dispatches."
+    }
   ],
 
   "file_change_log": [
     {
-      "file": "litellm-proxy/classifier_keywords.py",
+      "file": ".claude/commands/new-session.md",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "Command file optimization — not tracked in CLAUDE.md file structure"
+    },
+    {
+      "file": "docs/ai-ops/token-model-rules.md",
       "change_type": "new_file",
-      "committed": true,
-      "doc_updates_required": false,
-      "no_doc_update_reason": "proxy tooling — not in CLAUDE.md file structure"
+      "committed": false,
+      "doc_updates_required": true,
+      "doc_update_notes": "Add to CLAUDE.md Living Documentation table as 'Token & model optimization rules'"
     },
     {
-      "file": "litellm-proxy/approval_hook.py",
-      "change_type": "modified",
-      "committed": true,
-      "doc_updates_required": false,
-      "no_doc_update_reason": "proxy tooling — no regression or governance doc impact"
-    },
-    {
-      "file": "litellm-proxy/sprint_planner.py",
-      "change_type": "modified",
-      "committed": true,
-      "doc_updates_required": false,
-      "no_doc_update_reason": "proxy tooling — feature additions to existing script"
-    },
-    {
-      "file": "litellm-proxy/validate_models.py",
-      "change_type": "modified",
-      "committed": true,
-      "doc_updates_required": false,
-      "no_doc_update_reason": "proxy tooling — --spend flag addition only"
-    },
-    {
-      "file": "litellm-proxy/review_gate.py",
+      "file": "docs/ai-ops/claude-features-reference.md",
       "change_type": "new_file",
-      "committed": true,
+      "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "proxy tooling — not in CLAUDE.md file structure"
+      "no_doc_update_reason": "Internal AI-ops reference — not part of app governance docs"
     },
     {
-      "file": "GSI_SPRINT.md",
+      "file": "pages/home.py",
       "change_type": "modified",
       "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "IS a governance doc — updated directly"
+      "no_doc_update_reason": "Bug fix (DF-01 period) + compliance caption (OPEN-027). No new entry points. No API change."
     },
     {
-      "file": "GSI_SPRINT_MANIFEST.json",
-      "change_type": "new_sprint",
-      "committed": false,
-      "doc_updates_required": false,
-      "no_doc_update_reason": "IS the manifest — self-referential"
-    },
-    {
-      "file": "GSI_WIP.md",
+      "file": "pages/dashboard.py",
       "change_type": "modified",
       "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "IS a governance doc — updated directly"
+      "no_doc_update_reason": "Compliance caption addition only (OPEN-029). No new entry points."
     },
     {
       "file": "pages/week_summary.py",
       "change_type": "modified",
       "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "no new entry points — stability UI + EQA-41 chart added inside existing functions"
+      "no_doc_update_reason": "Compliance captions (OPEN-022) + freshness label (DF-03). No new entry points."
     },
     {
-      "file": "indicators.py",
+      "file": "pages/global_intelligence.py",
       "change_type": "modified",
       "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "no new public entry points — _calc_roe is internal helper"
+      "no_doc_update_reason": "Compliance caption + verdict badges (OPEN-028) + freshness label (DF-05). No new entry points."
     },
     {
-      "file": "CLAUDE.md",
+      "file": "litellm-proxy/config.yaml",
       "change_type": "modified",
       "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "fixing incorrect proxy session startup guide"
+      "no_doc_update_reason": "Model name string fix only — not in CLAUDE.md file structure"
     },
     {
       "file": "litellm-proxy/sprint_planner.py",
       "change_type": "modified",
       "committed": false,
       "doc_updates_required": false,
-      "no_doc_update_reason": "proxy tooling — fixing YELLOW warning text"
-    }
-  ],
-
-  "token_budget": {
-    "items": [
-      { "id": "PROXY-01-07",  "mode": "sequential", "files_touched": 5, "risk": "low",    "est_tokens": "20k–30k" },
-      { "id": "D-02-bench",   "mode": "sequential", "files_touched": 1, "risk": "medium", "est_tokens": "8k–12k" },
-      { "id": "OPEN-006",     "mode": "sequential", "files_touched": 1, "risk": "medium", "est_tokens": "8k–12k" },
-      { "id": "EQA-41",       "mode": "sequential", "files_touched": 1, "risk": "medium", "est_tokens": "8k–12k" }
-    ],
-    "overhead": {
-      "session_start_context": "~15k",
-      "regression_runs": "4 × 3k = ~12k",
-      "sync_docs": "~2k",
-      "sprint_close_sequence": "~10k"
+      "no_doc_update_reason": "String constant update — not in CLAUDE.md file structure"
     },
-    "totals": {
-      "main_context_est": "~85k–100k",
-      "agent_est": "0 (no parallel agents planned)",
-      "grand_total_est": "~85k–100k"
-    },
-    "notes": "D-02/OPEN-006/EQA-41 are proxy-tier — routed via hf-reasoning after /new-session completes"
-  },
-
-  "token_optimisations": [
     {
-      "decision": "D-02/OPEN-006/EQA-41 → subscription (proxy deferred)",
-      "type": "defer",
-      "items_affected": ["D-02-bench", "OPEN-006", "EQA-41"],
-      "saving_est": "0 (proxy savings forfeited this sprint)",
-      "detail": "Proxy env-var lifecycle issue discovered: env vars set after claude launch are not inherited by the running process. Two-launch sequence required but adds friction. Decision: run remaining items under subscription for v5.36; proxy execution flow fix parked as PROXY-08 in backlog."
+      "file": "portfolio.py",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "Comment alignment only (OPEN-025). No logic change."
+    },
+    {
+      "file": "market_data.py",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "RSS feed URL replacement (DF-02). _ALLOWED_RSS_DOMAINS update only."
+    },
+    {
+      "file": "CLAUDE.md",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "IS the doc — adding missing EP entries (OPEN-026)"
+    },
+    {
+      "file": "regression.py",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": true,
+      "doc_update_notes": "Update CLAUDE.md regression baseline from 434 → 435 after R8 check added"
     }
   ]
 }

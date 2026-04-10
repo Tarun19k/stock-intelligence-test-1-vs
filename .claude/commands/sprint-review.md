@@ -1,36 +1,62 @@
 ---
-description: Review the current sprint's completed work and plan the next sprint from open items. Reads GSI_session.json and produces a prioritised sprint plan.
+description: Review the current sprint's completed work and plan the next sprint from open items.
 ---
 
-Read `GSI_session.json` fully. Then:
+## Step 1 — Load context (targeted reads only)
 
-**1. Sprint retrospective**
+Read **only the `meta` block and `open_items` array** from `GSI_session.json`. Do NOT read the full file (~42k tokens).
+- Use `offset` to target the `open_items` section (starts around line 1086)
+- Extract: `current_version`, `meta.last_session`, and all items in `open_items[]`
+
+The canonical open items list is in `CLAUDE.md` — use it as the source of truth. GSI_session.json is used only to confirm `current_version` and `meta.last_session`.
+
+Read `CLAUDE.md` Open Items section for the authoritative backlog (skip if already in context).
+
+## Step 2 — Sprint retrospective
+
 List all items completed in the most recent session:
-- Version shipped
+- Version shipped + regression baseline (before → after)
 - Fixes with their audit reference IDs
-- Regression baseline before and after
-- QA verification status
+- QA verification status (brief passed / PLAYWRIGHT-ID passed / pending)
 
-**2. Open items by priority**
-List all open items from `open_items` array, grouped:
-- HIGH priority (fix in next sprint)
-- MEDIUM priority (next 2 sprints)
-- LOW priority (backlog)
+## Step 3 — Open items by priority
 
-For each HIGH item include: ID, title, target version, estimated effort (Low/Medium/High based on scope).
+List all open items from CLAUDE.md, grouped:
+- **P0 / HIGH** (fix in next sprint)
+- **MEDIUM** (next 2 sprints)
+- **LOW** (backlog)
 
-**3. Proposed next sprint scope**
+For each P0/HIGH item include: ID, title, target version, estimated effort (Low/Medium/High based on scope).
+
+Flag anti-patterns to avoid in sprint selection:
+- More than 4 items in the risky lane (P0 regulatory + unknown API behavior)
+- Any item with unresolved external dependency (e.g. waiting for CEO action)
+- Batching code files that touch different modules (regression isolation risk)
+
+## Step 4 — Proposed next sprint scope
+
 Select the 5–7 most impactful HIGH items that:
-- Can be batched logically (e.g., all data consistency fixes together)
+- Can be batched logically (e.g., all SEBI compliance fixes together)
 - Don't have unresolved dependencies
 - Have clear pass criteria
 
-For each proposed item state:
-- What file(s) change
-- What function(s) change
-- Pass criterion for QA
+Present as a table with columns:
 
-**4. Governance check**
-For each proposed item, identify which of the 7 policies in `GSI_GOVERNANCE.md` it relates to. Flag any item that would require a new DO NOT UNDO rule.
+| ID | Title | Files | Functions | Model | Mode | Est tokens | Pass criterion |
+|---|---|---|---|---|---|---|---|
+
+**Model column rules** (from docs/ai-ops/token-model-rules.md):
+- `haiku` — single known file, ≤1 judgment call, no cross-file reasoning
+- `sonnet` — multi-section edits, cross-file coherence, moderate judgment
+- `opus` — novel algorithm, security audit, first-time subsystem design
+
+**Mode column rules:**
+- `sequential` — items with shared state or ordering dependencies
+- `parallel_agent` — fully independent items (different files, no shared state)
+- `worktree` — parallel + isolated git copy needed
+
+## Step 5 — Governance check
+
+For each proposed item, identify which of the 7 policies in GSI_GOVERNANCE.md it relates to. Flag any item that would require a new DO NOT UNDO rule.
 
 Present the sprint plan as a table. Ask for confirmation before starting any work.

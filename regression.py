@@ -844,12 +844,103 @@ def run(FM):
         "hooks" in open(".claude/settings.json").read()
         if os.path.exists(".claude/settings.json") else False,
         ".claude/settings.json missing or does not contain 'hooks' key")
+    chk("R28", "rules_sprint_manifest_exists",
+        os.path.exists(".claude/rules/sprint-manifest.md"),
+        ".claude/rules/sprint-manifest.md missing — sprint manifest scoped rules not installed")
+    chk("R28", "rules_dependencies_exists",
+        os.path.exists(".claude/rules/dependencies.md"),
+        ".claude/rules/dependencies.md missing — requirements.txt scoped rules not installed")
 
     # R29 · Analytics integration checks ──────────────────────────────────────
     _app = FM.get("app.py", "")
     chk("R29", "analytics_import_in_app",
         "streamlit_analytics" in _app,
         "streamlit_analytics not imported in app.py — S-03 analytics integration missing")
+
+
+    # R30 · Sprint Manifest item model/mode completeness ────────────────────────
+    # When manifest status == "IN_PROGRESS", every non-DONE, non-section item must
+    # declare a valid model (haiku|sonnet|opus) and mode (sequential|parallel_agent|worktree).
+    # Enforces token-model-rules.md at the manifest-writing stage — no model assignment
+    # can be skipped by forgetting to read the rules doc.
+    if os.path.exists("GSI_SPRINT_MANIFEST.json"):
+        try:
+            import json as _j30
+            _m30 = _j30.load(open("GSI_SPRINT_MANIFEST.json"))
+        except Exception:
+            _m30 = {}
+        if _m30.get("status") == "IN_PROGRESS":
+            _valid_models = {"haiku", "sonnet", "opus"}
+            _valid_modes  = {"sequential", "parallel_agent", "worktree"}
+            for _it30 in _m30.get("items", []):
+                if "_section" in _it30 or _it30.get("status") == "DONE":
+                    continue
+                _iid30 = _it30.get("id", "?")
+                _mdl30 = str(_it30.get("model", "")).lower().strip()
+                _mod30 = str(_it30.get("mode",  "")).lower().strip()
+                chk("R30", f"model_valid:{_iid30}",
+                    _mdl30 in _valid_models,
+                    f"item '{_iid30}' model='{_mdl30}' — must be haiku|sonnet|opus (see docs/ai-ops/token-model-rules.md)")
+                chk("R30", f"mode_valid:{_iid30}",
+                    _mod30 in _valid_modes,
+                    f"item '{_iid30}' mode='{_mod30}' — must be sequential|parallel_agent|worktree")
+
+    # R31 · Sprint Manifest Playwright coverage ──────────────────────────────────
+    # IN_PROGRESS: every item touching .py files (non-DONE) must have a playwright
+    # field defined — either "PLAYWRIGHT-NN: ..." or "N/A — <reason>". Empty = blocked.
+    # COMPLETE: every PLAYWRIGHT-NN ID declared in any item's playwright field must
+    # appear in GSI_QA_STANDARDS.md, proving it was documented at sprint close.
+    if os.path.exists("GSI_SPRINT_MANIFEST.json"):
+        try:
+            import json as _j31, re as _re31
+            _m31 = _j31.load(open("GSI_SPRINT_MANIFEST.json"))
+        except Exception:
+            _m31 = {}
+        _s31 = _m31.get("status", "")
+        if _s31 == "IN_PROGRESS":
+            for _it31 in _m31.get("items", []):
+                if "_section" in _it31 or _it31.get("status") == "DONE":
+                    continue
+                _files31 = _it31.get("files", [])
+                if not any(str(f).endswith(".py") for f in _files31):
+                    continue
+                _iid31 = _it31.get("id", "?")
+                _play31 = str(_it31.get("playwright", "")).strip()
+                chk("R31", f"playwright_field:{_iid31}",
+                    bool(_play31),
+                    f"item '{_iid31}' touches .py files but has no playwright field — define PLAYWRIGHT-NN test or add N/A reason")
+        elif _s31 == "COMPLETE":
+            _qa31 = open("GSI_QA_STANDARDS.md").read() if os.path.exists("GSI_QA_STANDARDS.md") else ""
+            _pids31 = set()
+            for _it31 in _m31.get("items", []):
+                _pids31.update(_re31.findall(r'(PLAYWRIGHT-\d+)', str(_it31.get("playwright", ""))))
+            for _pid31 in sorted(_pids31):
+                chk("R31", f"playwright_in_qa:{_pid31}",
+                    _pid31 in _qa31,
+                    f"{_pid31} declared in manifest but not found in GSI_QA_STANDARDS.md — document test brief at sprint close")
+
+    # R32 · Sprint close log-learnings enforcement ────────────────────────────────
+    # When manifest status == "COMPLETE", GSI_SESSION_LEARNINGS.md must contain at
+    # least one RECORD dated on or after the manifest's created date.
+    # Enforces /log-learnings as a non-optional step before marking any sprint COMPLETE.
+    if os.path.exists("GSI_SPRINT_MANIFEST.json"):
+        try:
+            import json as _j32, re as _re32
+            _m32 = _j32.load(open("GSI_SPRINT_MANIFEST.json"))
+        except Exception:
+            _m32 = {}
+        if _m32.get("status") == "COMPLETE":
+            _created32 = _m32.get("created", "2000-01-01")
+            if not os.path.exists("GSI_SESSION_LEARNINGS.md"):
+                chk("R32", "learnings_file_exists", False,
+                    "GSI_SESSION_LEARNINGS.md not found — /log-learnings was never run for this sprint")
+            else:
+                _learn32  = open("GSI_SESSION_LEARNINGS.md").read()
+                _dates32  = _re32.findall(r'## RECORD-\d+ \| (\d{4}-\d{2}-\d{2}) \|', _learn32)
+                _has_post32 = any(d >= _created32 for d in _dates32)
+                chk("R32", "learnings_post_sprint",
+                    _has_post32,
+                    f"No RECORD in GSI_SESSION_LEARNINGS.md dated >= {_created32} — run /log-learnings before marking sprint COMPLETE")
 
 
 def verify_zip(zip_path: str):

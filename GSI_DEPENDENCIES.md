@@ -4,7 +4,7 @@
 # Before changing any dependency version, check this file first.
 # ════════════════════════════════════════════════════════════════════════
 
-## Current Pinned Environment (v5.32)
+## Current Pinned Environment (v5.36)
 
 ```
 streamlit==1.55.0
@@ -16,6 +16,7 @@ plotly==5.24.1
 feedparser==6.0.11
 pytz==2024.2
 requests==2.32.3
+streamlit-analytics2   # unpinned — see CONSTRAINT-010
 ```
 
 System deps (`packages.txt`):
@@ -134,6 +135,17 @@ section[data-testid="stMain"] button[data-testid="baseButton-headerNoPadding"]
 **Root cause:** WorldMonitor sets `frame-ancestors: 'self'` in their CSP headers, blocking all external embeds
 **Fix:** Replaced iframe with an external link button + caption. G-01 finding. WONT_FIX resolution in GSI_AUDIT_TRAIL.md.
 **Note:** Cannot be resolved from GSI side — requires WorldMonitor to add `*.streamlit.app` to their CSP allowlist.
+
+---
+
+### CONSTRAINT-010 | 2026-04-10 | ACTIVE
+**Package:** streamlit-analytics2
+**Constraint:** No version pin — latest compatible version with streamlit==1.55.0
+**Added:** v5.35 S-03 (usage analytics integration in app.py)
+**Purpose:** Anonymous page-view and interaction tracking. Wraps `app.py` with `streamlit_analytics2.track()` context manager.
+**Note:** streamlit-analytics2 is a community fork of streamlit-analytics, maintained for Streamlit 1.x compatibility. No known conflicts with current stack.
+**Risk:** If Streamlit upgrades to 2.x, re-test this package — it may require a pinned version or replacement.
+**Verified:** v5.35.
 
 ---
 
