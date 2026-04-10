@@ -29,7 +29,10 @@ Confirm output matches the baseline in CLAUDE.md. If it does not match, stop and
 
 Read `GSI_SNAPSHOT_QUESTIONS.md` — note the current QSet version and ACTIVE questions.
 
-Read **only the last SNAPSHOT block** from `GSI_SESSION_SNAPSHOT.md` (read last 50 lines, not the full file). Note its QSet version and answers.
+Find and read the **most recent SNAPSHOT block** from `GSI_SESSION_SNAPSHOT.md`:
+1. Run `grep -n "^## SNAPSHOT-[0-9]" GSI_SESSION_SNAPSHOT.md | sort -t'-' -k3 -n | tail -1` to get the highest-numbered snapshot's line number.
+2. Use `Read` with `offset=<that line>` and `limit=35` — enough to cover one full block (blocks are ~25–28 lines).
+Do NOT read last-N-lines — the file is append-only but older snapshots may be out of order.
 
 For each active question, read source files using targeted offset/limit reads (not full reads). Compare extracted answers to the previous snapshot:
 - Differs in substance → **DEVIATION** — log in `GSI_SESSION_LEARNINGS.md` before any code; report to user

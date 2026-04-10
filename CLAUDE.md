@@ -1,7 +1,7 @@
 # CLAUDE.md — Global Stock Intelligence Dashboard
 # Read this FULLY before touching any file in this repo.
 # Last updated: 2026-03-27 (Session 007 — v5.26 hotfix batch)
-# Dynamic session state: GSI_Session.json (see Gist URL at bottom)
+# Dynamic session state: GSI_Session.json (repo root)
 
 ---
 
@@ -134,7 +134,7 @@ GSI_GOVERNANCE.md            7 policies — mandatory rules for all development.
 GSI_QA_STANDARDS.md          Test brief template, issue classification, data reliability.
 GSI_SKILLS.md                Development patterns, anti-patterns, lessons learned.
 GSI_COMPLIANCE_CHECKLIST.md  Pre-deploy gate. Run alongside regression.py.
-GSI_session.json             Session manifest. Dynamic state. Push to Gist after sessions.
+GSI_session.json             Session manifest. Dynamic state. Committed to repo after sessions.
 ```
 
 ---
@@ -558,22 +558,7 @@ R27 fails if any committed file is missing from the log. No silent omissions.
 
 ## Session Manifest (Dynamic State)
 
-**GSI_Session.json Gist:** https://gist.github.com/Tarun19k/7c894c02dad4e76fe7c404bf963baeab
-
-To resume with Claude:
-> "I am working on the Global Stock Intelligence Dashboard.
->  Here is CLAUDE.md and GSI_Session.json — read both fully before we proceed."
-
-**Minimum upload bundle for every session:**
-- `GSI_WIP.md` — READ THIS FIRST. Contains session status and checkpoint if interrupted.
-- `CLAUDE.md` — architecture reference and DO NOT UNDO rules
-- `GSI_session.json` — session manifest with open items and baseline
-
-**Also upload when starting a sprint or new feature:**
-- `GSI_GOVERNANCE.md` — 7 policies Claude reads before writing any code
-- `GSI_SKILLS.md` — development patterns and anti-patterns
-- `GSI_SPRINT.md` — current sprint board and backlog
-- `GSI_DECISIONS.md` — ADR log to prevent re-litigating resolved decisions
+**GSI_session.json** lives in repo root. Committed to git after every session — no Gist sync required.
 
 Note: `.claude/settings.json` (permission rules) and `.claude/rules/` (path-scoped rules)
 only activate automatically in **Claude Code**. In Claude.ai, the Scoped Rules section
