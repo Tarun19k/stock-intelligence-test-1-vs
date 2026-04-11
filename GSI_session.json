@@ -25,7 +25,7 @@
     "claude_md": "CLAUDE.md in repo root \u2014 stable cold-start reference. Contains: file structure, run commands, do-not-undo rules, architecture decisions, environment, API behavior, scoring model, regression table. Update CLAUDE.md when architecture changes; update this manifest every session.",
     "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol.",
     "last_updated": "2026-04-05",
-    "last_session": "session_015",
+    "last_session": "session_023",
     "current_app_version": "v5.36",
     "documentation": {
       "GSI_GOVERNANCE.md": "v1.0 \u2014 7 governance policies established from audit sessions",
