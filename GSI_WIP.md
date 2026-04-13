@@ -118,6 +118,118 @@ start v5.37b sprint: open GSI_SPRINT_MANIFEST.json, set status IN_PROGRESS,
 dispatch 4 worktree agents (Track A/B/C/D per plan above).
 DO NOT start v5.37a code items until v5.37b doc wiring is complete.
 
+---
+
+## session_025 ADDENDUM — New Files + Tooling Strategy (end of session_024 ext)
+
+### Two New Files in reports/ — MUST READ AT SESSION START
+
+Both files placed by user in `reports/` folder. Read in session_025 before any implementation.
+
+**File 1: reports/overview.md**
+What it is: Anthropic's official Claude Managed Agents beta documentation.
+Key facts:
+  - Managed Agents = pre-built agent harness (Anthropic infra, not your own loop)
+  - Four concepts: Agent (model+prompt+tools+skills) | Environment (container) | Session (running instance) | Events (SSE stream)
+  - Supports: Bash, file ops, web search, MCP servers — same tools Claude Code has
+  - Beta header required: managed-agents-2026-04-01
+  - Research preview features: outcomes, multiagent, memory (need access request)
+  - Rate limits: 60 create/min, 600 read/min
+  
+Relevance to GSI:
+  - This is the API-level equivalent of what we do with worktree agents + Agent tool
+  - Key opportunity: the "memory" research preview feature = persistent cross-session state
+    (solves what OPEN-003 Supabase was going to solve for forecast_history)
+  - The "outcomes" feature = defining success criteria for agent runs = our sprint manifest gate
+  - The "multiagent" feature = what we're doing with parallel worktree agents, but managed
+  
+Action for session_025: Read full overview.md + add an ADR to GSI_DECISIONS.md evaluating
+whether Managed Agents API replaces or complements our current worktree agent pattern.
+This is a strategic architecture decision — use Opus judgment, document before building.
+
+**File 2: reports/llm-wiki-claude-code-guide.html**
+What it is: A how-to guide for building a personal knowledge wiki powered by Claude Code.
+Structure (from heading scan):
+  - CLAUDE.md as agent brain (tells Claude how to manage the wiki)
+  - index.md + log.md as persistent state files
+  - scripts/ingest.sh — drop any source file, Claude ingests it into structured wiki entries
+  - scripts/lint.sh — wiki health check (coverage, staleness, broken links)
+  - 3 modes: Ingest source | Ask a question | Lint the wiki
+  - Patterns: Reading Queue, Daily Note, Pre-meeting Brief, Teach Me, Git backup
+
+Relevance to GSI:
+  - This IS the local alternative to NotebookLM — same Q&A + synthesis, fully private,
+    git-backed, runs inside Claude Code (no external upload)
+  - We already have the GSI knowledge base (25+ governance docs, audit trail, decisions,
+    session learnings) — the LLM wiki pattern turns this into a queryable system
+  - Key delta vs. current state: we have the files but no CLAUDE.md "wiki brain" instructing
+    Claude how to manage, ingest, and query them as a unified knowledge base
+  - The "lint" pattern maps to our regression.py — it's a health check but for knowledge,
+    not code. Catches stale entries, orphaned topics, missing coverage.
+
+Assessment: HIGH VALUE. Adopt this pattern. Implementation plan:
+  1. Create docs/wiki/ subdirectory (separate from docs/ to avoid confusion with app docs)
+  2. Create docs/wiki/WIKI_BRAIN.md — the agent instruction file (modeled on html guide)
+  3. Create docs/wiki/index.md — topic registry (maps to GSI knowledge areas)
+  4. Create docs/wiki/log.md — ingestion log
+  5. Ingest order (priority): GSI_AUDIT_TRAIL.md → GSI_DECISIONS.md → GSI_SESSION_LEARNINGS.md
+     → signal-accuracy-audit-v5.36.md → GSI_SKILLS.md
+  6. Wire into new-session.md: after snapshot check, optionally query wiki for context
+  7. Wire into sprint-review.md: after sprint close, ingest session learnings into wiki
+
+### Tooling Strategy — Full Picture (session_024 conclusion)
+
+THREE complementary tools, zero redundancy:
+
+1. LLM Wiki (Claude Code, local) — PRIMARY knowledge system
+   - Replaces NotebookLM for this project (same Q&A, private, git-backed, free)
+   - Lives in docs/wiki/, managed by WIKI_BRAIN.md
+   - When to use: "What did we learn about X?" "What decisions touch this file?"
+   - Skill needed: create .claude/commands/wiki-query.md and wiki-ingest.md
+
+2. Obsidian (local, free tier) — VISUALIZATION layer only
+   - Point vault at repo root — instant graph of all governance docs + their links
+   - Dataview plugin: query sprint items, decisions, audit findings by frontmatter
+   - When to use: sprint planning (visual), decision archaeology, onboarding navigation
+   - No new files needed — Obsidian reads existing repo markdown
+
+3. Claude Code — BUILD layer (unchanged)
+   - All code editing, regression, git, agent dispatch
+   - The other two tools inform it; they do not replace it
+
+NotebookLM: SKIP for this project. LLM wiki is strictly better (private, no sync friction,
+same Q&A capability, already in your workflow). Use NotebookLM only if onboarding external
+team members who don't have Claude Code access.
+
+### Action Items for session_025 (ADDENDUM — priority after 5.37b)
+
+New sprint items to add to GSI_SPRINT.md before starting session_025:
+
+1. ADR-026: Claude Managed Agents evaluation — worktree vs. managed pattern
+   (Opus judgment required, doc-only, add to 5.37b Track B alongside orchestration fixes)
+
+2. LLM-WIKI-01: Create docs/wiki/ structure (WIKI_BRAIN.md, index.md, log.md)
+   (Haiku sufficient, doc-only, add to 5.37b Track C alongside social skill wiring)
+
+3. LLM-WIKI-02: Initial ingest — GSI_AUDIT_TRAIL.md + GSI_DECISIONS.md + GSI_SESSION_LEARNINGS.md
+   (Sonnet, sequential after LLM-WIKI-01)
+
+4. LLM-WIKI-03: Create wiki-query.md and wiki-ingest.md skills in .claude/commands/
+   (Haiku, doc-only, batch with Track A token wiring)
+
+5. OBSIDIAN-01: Document Obsidian vault setup in docs/tooling-setup.md
+   (Haiku, doc-only — instructions for how to point Obsidian vault at repo + install Dataview)
+   Wire into: new-session.md "Tools available" section
+
+### Files NOT to read at session_025 start (read_avoidance)
+
+These are large and already processed:
+  - GSI_session.json (42k tokens — use meta block + open_items only via offset)
+  - GSI_AUDIT_TRAIL.md (use Grep for specific findings, not full read)
+  - GSI_SESSION_LEARNINGS.md (use tail -50 to get recent records only)
+  - reports/llm-wiki-claude-code-guide.html (read this checkpoint instead — full analysis above)
+  - reports/overview.md (read this checkpoint instead — full analysis above)
+
 ## session_024 — Quant Audit + Vercel Migration Research
 
 ### CHECKPOINT — 2026-04-13 session_024
