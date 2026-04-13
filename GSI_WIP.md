@@ -20,13 +20,91 @@
 
 ```
 Status:        IDLE
-Session ID:    session_019
+Session ID:    session_024 (COMPLETE)
 Version:       v5.36
-Last updated:  2026-04-07
-Sprint:        v5.36 — Post-Launch Hardening (COMPLETE)
-Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE — archived to docs/sprint_archive/)
-Next session:  session_020
+Last updated:  2026-04-13
+Sprint:        PRE-SPRINT — Quant Audit COMPLETE (D3 CEO pending)
+Manifest:      GSI_SPRINT_MANIFEST.json (PLANNING — v5.37, not yet IN_PROGRESS)
+Next session:  session_025
 ```
+
+## session_024 — Quant Audit + Vercel Migration Research
+
+### CHECKPOINT — 2026-04-13 session_024
+
+```
+Status:               ACTIVE (Phase 0 — skills creation in progress)
+Regression baseline:  436/436 PASS (confirmed session start)
+Compliance:           9/9 PASS (confirmed session start)
+Sprint state:         v5.37 PLANNING — not yet IN_PROGRESS; audit must complete first
+
+Currently working on: Phase 0 — creating/fixing 9 skill files
+Last completed:       docs/quant-audit-execution-brief-2026-04-13.md written
+                      docs/audit-orchestration/status.json created
+                      docs/migration/ directory created
+
+Completed (committed: NO — audit is pre-sprint, no commits until Phase 2):
+  None yet — Phase 0 skill files being written
+
+Phase 0 — Skills (all pending):
+  - [ ] Fix .claude/commands/quant-reviewer.md (Gap 1: D4 wrong file)
+  - [ ] Fix .claude/commands/signal-accuracy-audit.md (Gap 2+3: thresholds + RSI)
+  - [ ] Create .claude/commands/quant-data-fetcher.md
+  - [ ] Create .claude/commands/technical-indicators-math.md
+  - [ ] Create .claude/commands/portfolio-risk-math.md
+  - [ ] Create .claude/commands/forecasting-calibration-math.md
+  - [ ] Create .claude/commands/fundamental-analysis-math.md
+
+Phase 1 — Parallel agents (pending Phase 0):
+  - [ ] D3: Main context — yfinance live fetch for INFY.NS, HDFCBANK.NS, RELIANCE.NS
+  - [ ] D1+D2+D4+D5: Worktree Sonnet agent → docs/audit-orchestration/domain-findings-auto.md
+  - [ ] Vercel migration: Worktree Sonnet agent → docs/migration/ (3 artifacts)
+
+Phase 2 — Consolidation (pending Phase 1):
+  - [ ] Write docs/signal-accuracy-audit-v5.36-2026-04-13.md
+  - [ ] Raise sprint items in GSI_SPRINT.md
+  - [ ] /log-learnings
+  - [ ] Update quant_audit_pending.json
+
+Key decisions made this session (add to GSI_DECISIONS.md at close):
+  - Quant audit runs BEFORE v5.37 sprint execution (pre-sprint gate)
+  - Vercel migration: Python stays Python (Fluid Compute), Next.js frontend
+  - DurableAgent pattern for yfinance/portfolio/forecast long-running ops
+  - v5.37 not blocked unless audit finds P0 defect
+  - RSI/ATR Cutler's smoothing: expected P1 finding (not P0 — converges >100 bars)
+  - OPEN-025 is pre-tracked — do NOT re-raise from audit
+
+Pre-supplied audit findings (already known from code inspection):
+  - RSI: rolling(14).mean() = Cutler's, not Wilder's → P1
+  - ATR: rolling(14).mean() = SMA, not Wilder's → P1
+  - Bollinger: ddof=1 vs TradingView ddof=0 → P2
+  - OPEN-025: >=15 vs >15 boundary → already tracked, skip
+
+Full execution context: docs/quant-audit-execution-brief-2026-04-13.md
+Orchestration status: docs/audit-orchestration/status.json
+
+Resume instruction: Read docs/quant-audit-execution-brief-2026-04-13.md,
+  check docs/audit-orchestration/status.json for phase completion,
+  continue from first unchecked Phase 0 skill file above.
+```
+
+### Phase 0 Task List
+
+- [ ] Fix .claude/commands/quant-reviewer.md
+- [ ] Fix .claude/commands/signal-accuracy-audit.md
+- [ ] Create .claude/commands/quant-data-fetcher.md
+- [ ] Create .claude/commands/technical-indicators-math.md
+- [ ] Create .claude/commands/portfolio-risk-math.md
+- [ ] Create .claude/commands/forecasting-calibration-math.md
+- [ ] Create .claude/commands/fundamental-analysis-math.md
+- [ ] Dispatch D1+D2+D4+D5 worktree agent
+- [ ] Dispatch Vercel migration worktree agent
+- [ ] D3 main-context live fetch
+- [ ] Write final audit report
+- [ ] Raise sprint items
+- [ ] /log-learnings + flag update
+
+---
 
 ## session_019 — v5.36 Active Tasks
 

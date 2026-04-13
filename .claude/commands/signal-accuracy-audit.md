@@ -32,12 +32,13 @@ This audit checks *mathematical and empirical correctness*, not structure or ren
 | EMA(20) | Exponential: α=2/(20+1); seed = SMA(20) first bar | pandas `ewm(span=20, adjust=False)` |
 | EMA(50) | Same method, span=50 | Same |
 | EMA(200) | Same method, span=200 | Same |
-| RSI(14) | Wilder's smoothing (RMA): avg_gain = (prev_avg_gain×13 + gain)/14 | NOT pandas EWM; must use `com=13` |
-| MACD | EMA(12) − EMA(26); signal = EMA(9) of MACD; hist = MACD − signal | Standard parameters |
-| Bollinger Upper/Lower | SMA(20) ± 2 × rolling std(20) | Rolling window, ddof=0 |
-| ATR(14) | True Range = max(H−L, \|H−Cprev\|, \|L−Cprev\|); Wilder's 14-period smoothing | Same RMA formula as RSI |
+| RSI(14) | Reference: Wilder's RMA: avg_gain = (prev_avg×13 + gain)/14, `com=13`. **GSI uses `rolling(14).mean()` (Cutler's RSI / SMA-based) — this is a known deviation.** Classify as P1 if found: Cutler's converges with Wilder's for lookbacks >100 bars; diverges 3–8 pts on short windows. Do NOT classify as P0. | See `technical-indicators-math` for full taxonomy |
+| MACD | EMA(12) − EMA(26); signal = EMA(9) of MACD; hist = MACD − signal | Standard parameters — pandas `ewm(span=N, adjust=False)` |
+| Bollinger Upper/Lower | SMA(20) ± 2 × rolling std(20) | **ddof note:** GSI uses `c.rolling(20).std()` = pandas default `ddof=1`. TradingView uses `ddof=0`. ~2.6% divergence at n=20 — classify as P2 if found. |
+| ATR(14) | True Range = max(H−L, \|H−Cprev\|, \|L−Cprev\|); Wilder's 14-period smoothing. **GSI uses `tr.rolling(14).mean()` (SMA) — same Cutler's deviation as RSI.** | Classify as P1 if SMA found. Same convergence argument applies. |
 
 **Pass criterion:** All values within ±0.1% of reference calculation on a 100-bar window.
+**Classification guidance:** P0 = formula wrong and diverges materially at any window. P1 = known smoothing deviation, converges long-term. P2 = minor convention difference (ddof, rounding).
 
 ---
 
@@ -127,9 +128,10 @@ This audit checks *mathematical and empirical correctness*, not structure or ren
 - Run `compute_efficient_frontier()` on Nifty 50 group. Verify: (a) returns a Pareto-optimal curve (monotonically increasing return as risk increases), (b) minimum-variance portfolio is leftmost point.
 
 ### Stability score (OPEN-006)
-- Perturbation test: 10× perturb returns ±1σ, re-run optimisation, record σ of portfolio weights across runs.
-- **Thresholds (from implementation):** σ < 5% → STABLE; 5–15% → MODERATE; >15% → UNSTABLE.
-- Verify thresholds in `portfolio.py`. Document them here for regression anchoring.
+- Perturbation test: 10× perturb returns ±5% random noise, re-run optimisation, record σ of portfolio weights across runs.
+- **Thresholds (verified 2026-04-13 from `portfolio.py:370-375`):** max_std < 8% → STABLE; 8% ≤ max_std < 15% → MODERATE; max_std ≥ 15% → UNSTABLE.
+- **OPEN-025 (pre-tracked P1):** Docstring says `> 15%` UNSTABLE but code fires at `>= 15%`. Off-by-one at boundary. Already in CLAUDE.md open items. Reference it as pre-tracked — do NOT raise as new finding.
+- Verify thresholds match the above values (not the old 5%/15% values — those are stale).
 
 ---
 

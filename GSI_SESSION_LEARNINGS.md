@@ -186,3 +186,39 @@
 **Source:** Compliance check infrastructure review; token burn analysis across review agents; compliance rule categorization by automation-readiness.
 **Impact:** MEDIUM — efficiency opportunity; compliance scans could run faster as a lightweight standalone task rather than embedded in full code review.
 **Fix applied:** Documented only — pattern available for future lightweight compliance audit requests; not yet integrated into automated workflow.
+
+## RECORD-019 | 2026-04-13 | session_024 | v5.36 | STALE
+**Finding:** `quant-reviewer.md` Step 1 directed agents to read `forecast.py` for `compute_forecast()` and `_holt_winters_damped()`. Both functions live in `indicators.py` (lines 404 and 488). `forecast.py` handles storage and UI rendering only. Any agent dispatched with the old instruction would open the wrong file, find no forecast math, and produce a false PASS or halt with confusion.
+**Source:** Pre-flight gap analysis before agent dispatch in session_024; confirmed by reading indicators.py line 404.
+**Impact:** HIGH — would have caused Track B agent to produce incorrect Domain 4 findings.
+**Fix applied:** Updated `.claude/commands/quant-reviewer.md` Step 1: replaced "Read `forecast.py`" with "Read `indicators.py` — `compute_forecast()` (line 404), `_holt_winters_damped()` (line 488). NOTE: both live in indicators.py, NOT forecast.py."
+
+## RECORD-020 | 2026-04-13 | session_024 | v5.36 | STALE
+**Finding:** `signal-accuracy-audit.md` Domain 5 listed stability thresholds as `σ < 5% → STABLE; 5–15% → MODERATE; >15% → UNSTABLE`. Actual code (`portfolio.py:370-375`): `< 8% → STABLE; 8–15% → MODERATE; ≥15% → UNSTABLE`. A 3pp difference at the STABLE/MODERATE boundary and a `>` vs `≥` difference at the UNSTABLE boundary. Any agent would have flagged the code as defective for using 8% vs the "expected" 5%.
+**Source:** Reading portfolio.py lines 370-375 directly; comparing to skill reference document.
+**Impact:** HIGH — would have caused Track B agent to raise a false P1 defect for a correctly-implemented threshold.
+**Fix applied:** Updated `.claude/commands/signal-accuracy-audit.md` Domain 5 stability thresholds section with verified code values.
+
+## RECORD-021 | 2026-04-13 | session_024 | v5.36 | LEARNING
+**Finding:** `_calc_roe()` in `indicators.py` may return incorrect results for NSE tickers where `netIncomeToCommon` is reported in USD (Infosys USD-reporting company) while `bookValue × sharesOutstanding` is in INR. Infosys computed ROE via primary formula: 0.37%. Via `returnOnEquity` field: 32.68%. The primary path is taken whenever all three raw fields are non-None — the fallback to `returnOnEquity` is never reached. This means signal_score() receives a misleadingly low ROE for USD-reporting NSE stocks.
+**Source:** D3 live yfinance fetch during quant audit session_024; Python 3.9.6 / yfinance 1.2.0.
+**Impact:** HIGH — affects INFY.NS signal scoring; ROE contribution to momentum score is near-zero instead of ~32.68%.
+**Fix applied:** Documented as QA-D3-01 (P1) in sprint board and audit report. Fix pending CEO Screener.in cross-check confirmation. Proposed fix: when `returnOnEquity` is available AND calculated value diverges >10pp, prefer `returnOnEquity` field.
+
+## RECORD-022 | 2026-04-13 | session_024 | v5.36 | LEARNING
+**Finding:** Elder Triple Screen in `compute_elder_screens()` only implements 2 of 3 Elder screens. Screen 1 (weekly tide): correct. Screen 2 (daily momentum): correct (RSI threshold 40 vs classic 30 — acceptable practitioner variation). Screen 3 (entry trigger — stochastic-based intraday entry confirmation): NOT implemented. The UI labels the output "Elder Triple Screen" which is architecturally inaccurate.
+**Source:** Track B worktree agent reading indicators.py lines 309-393 during D2 audit.
+**Impact:** MEDIUM — label is misleading to informed users; the signal logic itself is functional as a 2-screen filter.
+**Fix applied:** Documented as QA-D2-03 (P2) in sprint board. Fix options: (A) relabel as "Elder Two-Screen Filter" in UI; (B) implement Screen 3.
+
+## RECORD-023 | 2026-04-13 | session_024 | v5.36 | LEARNING
+**Finding:** `compute_unified_verdict()` return dict is missing a `veto_applied: bool` key. Policy 6 requires that veto be visibly disclosed in UI, and the signal-accuracy-audit procedure references checking this key explicitly. The veto logic fires correctly (Stage 4 → AVOID in all Elder combinations) but the boolean for programmatic UI disclosure gating is absent from the return dict. The `conflicts` list partially serves this purpose but is not an explicit boolean.
+**Source:** Track B worktree agent reading indicators.py compute_unified_verdict() during D2 audit.
+**Impact:** MEDIUM — Policy 6 compliance gap; veto disclosure UI may not function correctly.
+**Fix applied:** Documented as QA-D2-04 (P2) in sprint board. One-line fix: add `"veto_applied": (stage_label == "Stage 4")` to the return dict.
+
+## RECORD-024 | 2026-04-13 | session_024 | v5.36 | LEARNING
+**Finding:** The worktree agent permission model prevents agents from writing new files (Write tool) when no file exists at the path — agents can only use Edit (which requires an existing file). Context: both Track B and Track C agents in session_024 produced complete, correct findings but could not persist them to new output files without Write permission. Future agent prompts must explicitly note: "You will need Write permission to create new files. If denied, present findings in output text." Or alternatively, main context creates stub files before dispatch.
+**Source:** Track B completing D1-D5 audit but failing to write `docs/audit-orchestration/domain-findings-auto.md`; Track C completing Vercel research but failing to write migration artifacts.
+**Impact:** LOW — findings were preserved in agent output text and written by main context. No data loss.
+**Fix applied:** Process improvement: create stub files (empty or with headers) before dispatching worktree agents that need to write new files. This allows agents to use Edit instead of Write.

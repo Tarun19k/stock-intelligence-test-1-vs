@@ -2,7 +2,7 @@
 # Upload ONLY this file to Claude Project Files
 # Do NOT upload CLAUDE.md (5k tokens) or GSI_session.json (35k tokens) to Project Files
 # Regenerate: python3 generate_context.py  (auto-runs after regression.py passes)
-# Generated: 2026-04-11 | v5.36 | ALL 436 CHECKS PASS
+# Generated: 2026-04-13 | v5.36 | ALL 436 CHECKS PASS
 # Target: <1,600 tokens. Do not add verbose content here.
 
 ## Identity

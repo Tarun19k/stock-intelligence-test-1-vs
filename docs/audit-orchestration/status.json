@@ -1,0 +1,94 @@
+{
+  "audit_session": "session_024",
+  "date": "2026-04-13",
+  "version": "v5.36",
+  "overall_status": "IN_PROGRESS",
+  "triggered_by": "Pre-launch mandatory audit (last_full_audit: null)",
+  "phases": {
+    "phase_0_skills": {
+      "status": "COMPLETE",
+      "completed": [
+        "execution_brief_written", "gsi_wip_checkpoint", "fix_quant_reviewer",
+        "fix_signal_accuracy_audit", "create_quant_data_fetcher",
+        "create_technical_indicators_math", "create_portfolio_risk_math",
+        "create_forecasting_calibration_math", "create_fundamental_analysis_math"
+      ],
+      "pending": []
+    },
+    "phase_1_d3_main_context": {
+      "status": "COMPLETE — CEO VALIDATION PENDING",
+      "description": "Live yfinance fetch for INFY.NS, HDFCBANK.NS, RELIANCE.NS via _calc_roe()",
+      "findings": {
+        "INFY.NS":      { "roe_calculated": "0.37%", "roe_field": "32.68%", "anomaly": "D3-01 P1 — likely USD/INR currency mismatch" },
+        "HDFCBANK.NS":  { "roe_calculated": "13.18%", "roe_field": "14.02%", "delta": "0.84pp", "within_tolerance": true },
+        "RELIANCE.NS":  { "roe_calculated": "9.49%", "roe_field": "None", "delta": "CEO check required" }
+      },
+      "ceo_validation_required": true,
+      "screener_urls": {
+        "INFY.NS": "screener.in/company/INFY",
+        "HDFCBANK.NS": "screener.in/company/HDFCBANK",
+        "RELIANCE.NS": "screener.in/company/RELIANCE"
+      }
+    },
+    "phase_1_auto_agent": {
+      "status": "COMPLETE",
+      "findings_file": "docs/audit-orchestration/domain-findings-auto.md",
+      "tokens_used": 51602,
+      "description": "Worktree Sonnet agent — D1 + D2 + D4-static + D5",
+      "agent_model": "sonnet",
+      "findings_file": "docs/audit-orchestration/domain-findings-auto.md",
+      "domains_assigned": ["D1", "D2", "D4-static", "D5"],
+      "pre_supplied_findings": {
+        "RSI_smoothing": "Cutler's (rolling SMA) not Wilder's RMA — classify P1",
+        "ATR_smoothing": "rolling SMA not Wilder's — classify P1",
+        "OPEN_025": "Pre-tracked boundary issue — reference only, do NOT re-raise",
+        "Bollinger_ddof": "ddof=1 vs ddof=0 — classify P2"
+      },
+      "pre_supplied_thresholds": {
+        "stability_STABLE": "< 8%",
+        "stability_MODERATE": "8% to < 15%",
+        "stability_UNSTABLE": ">= 15%"
+      }
+    },
+    "phase_1_vercel_agent": {
+      "status": "COMPLETE",
+      "description": "Worktree Sonnet agent — Vercel migration research and artifacts",
+      "agent_model": "sonnet",
+      "artifacts": [
+        "docs/migration/vercel-migration-plan.md",
+        "docs/migration/component-mapping.md",
+        "docs/migration/migration-risks.md"
+      ],
+      "key_decisions": [
+        "Python backend stays Python (Fluid Compute)",
+        "Frontend: Next.js App Router",
+        "DurableAgent for yfinance/portfolio/forecast long-running ops",
+        "createHook() for CEO approval gates",
+        "Namespaced streams for observability",
+        "Supabase resolves OPEN-003 session_state persistence"
+      ]
+    },
+    "phase_2_consolidation": {
+      "status": "COMPLETE",
+      "report_file": "docs/signal-accuracy-audit-v5.36-2026-04-13.md",
+      "d4_disposition": "DEFERRED — 0 forecasts in session_state; static params α=0.3 β=0.1 φ=0.88 documented"
+    },
+    "phase_3_sprint_gate": {
+      "status": "PENDING",
+      "decision": null,
+      "rule": "P0 finding blocks v5.37; P1/P2 → backlog, v5.37 proceeds as planned"
+    }
+  },
+  "ceo_validation": {
+    "required": true,
+    "d3_tickers": ["INFY.NS", "HDFCBANK.NS", "RELIANCE.NS"],
+    "tolerance": "±3 percentage points (TTM vs fiscal year lag)",
+    "screener_url": "https://www.screener.in",
+    "values_computed": false,
+    "validated": false
+  },
+  "sprint_items_raised": ["QA-D3-01","QA-D1-01","QA-D1-02","QA-D2-04","QA-D2-03","QA-D1-03","QA-D5-01","QA-D5-02"],
+  "overall_status": "COMPLETE — D3 CEO PENDING",
+  "last_updated": "2026-04-13T00:00:00Z",
+  "resume_instruction": "Read docs/quant-audit-execution-brief-2026-04-13.md for full context"
+}

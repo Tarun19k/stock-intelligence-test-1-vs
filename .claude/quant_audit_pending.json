@@ -1,8 +1,11 @@
 {
-  "pending": false,
-  "pending_domains": [],
-  "last_triggered_by": null,
-  "last_triggered_at": null,
-  "last_full_audit": null,
-  "_note": "Written by post_quant_flag.sh hook. Read by new-session.md and quant-reviewer.md. last_full_audit set by quant-reviewer Step 6 after a completed audit."
+  "pending": true,
+  "pending_domains": [
+    "D3"
+  ],
+  "last_triggered_by": "quant-reviewer session_024 (manual pre-sprint audit)",
+  "last_triggered_at": "2026-04-13",
+  "last_full_audit": "2026-04-13",
+  "_note": "D3 CEO validation pending (INFY.NS ROE anomaly + Screener.in cross-check). Domains D1/D2/D4-static/D5 complete. D4-calibration deferred (OPEN-003).",
+  "ceo_validation_required": true
 }

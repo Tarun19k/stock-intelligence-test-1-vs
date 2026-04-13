@@ -55,10 +55,15 @@ Read `.claude/quant_audit_pending.json`.
 ## Step 1 — Load context
 
 Read these files. Do not answer from memory.
-1. `indicators.py` — function list: `compute_indicators()`, `_calc_roe()`, `signal_score()`, `compute_weinstein_stage()`, `compute_elder_screens()`, `compute_unified_verdict()`
-2. `forecast.py` — `compute_forecast()`, `_holt_winters_damped()` parameters
-3. `portfolio.py` — `optimise_mean_cvar()`, stability score σ thresholds
-4. `CLAUDE.md` — Governance Policy 6 (signal arbitration hierarchy); DO NOT UNDO Rule 12 (veto disclosure)
+1. `indicators.py` — function list: `compute_indicators()` (line 11), `_calc_roe()` (line 90),
+   `signal_score()` (line 114), `compute_weinstein_stage()` (line 219),
+   `compute_elder_screens()` (line 309), `compute_forecast()` (line 404),
+   `_holt_winters_damped()` (line 488), `compute_unified_verdict()` (line 520).
+   **NOTE: `compute_forecast()` and `_holt_winters_damped()` live in `indicators.py`,
+   NOT `forecast.py`. `forecast.py` handles storage and display only.**
+2. `portfolio.py` — `optimise_mean_cvar()`, `compute_stability_score()` σ thresholds.
+   **Actual thresholds (verified 2026-04-13): STABLE < 8%, MODERATE 8–15%, UNSTABLE ≥ 15%.**
+3. `CLAUDE.md` — Governance Policy 6 (signal arbitration hierarchy); DO NOT UNDO Rule 12 (veto disclosure)
 
 ---
 
