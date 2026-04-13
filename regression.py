@@ -138,7 +138,7 @@ def run(FM):
                         "get_weekly_accuracy_report","get_pending_forecast_summary"],
             "portfolio.py": ["check_data_quality","compute_log_returns","winsorize_returns",
                         "bootstrap_scenarios","optimise_mean_cvar","compute_efficient_frontier",
-                        "detect_stress_regime","check_regime_conflicts"],
+                        "detect_stress_regime","check_regime_conflicts","compute_stability_score"],
         "indicators.py": ["compute_indicators","signal_score","compute_weinstein_stage",
                           "compute_elder_screens","compute_forecast","compute_unified_verdict"],
         "data_manager.py": ["get_datamanager"],

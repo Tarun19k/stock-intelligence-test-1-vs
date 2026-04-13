@@ -9,6 +9,7 @@ import streamlit.components.v1 as stc
 from config import GLOBAL_TOPICS, NEXT_STEPS_AI
 from utils import sanitise, safe_run, responsive_cols, log_error, safe_float, safe_url
 from market_data import get_news, get_price_data
+from indicators import compute_indicators, signal_score
 
 
 def _render_impact_chain(chain: list):
@@ -59,6 +60,7 @@ def _render_watchlist_badges(tickers: list, cur_sym: str, cb: int,
         return
     st.markdown('<p class="section-title">📌 Related Stocks to Watch</p>',
                 unsafe_allow_html=True)
+    st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
     cols = responsive_cols(min(len(visible), 6))
     for col, sym in zip(cols, visible):
         df = safe_run(
@@ -68,6 +70,26 @@ def _render_watchlist_badges(tickers: list, cur_sym: str, cb: int,
                                          cache_buster=0),
             context=f"gi:watchlist:{sym}", default=None,
         )
+        # Fetch 3mo data for indicator computation (≥30 rows required).
+        # cache_buster=0: reuse cached data, no extra yfinance fetch if warm.
+        df_ind = safe_run(
+            lambda s=sym: get_price_data(s, period="3mo", interval="1d",
+                                         cache_buster=0),
+            context=f"gi:watchlist:ind:{sym}", default=None,
+        )
+        # Verdict color map for BUY/WATCH/AVOID badges (Policy 5 — consistent with dashboard).
+        _vcols = {"STRONG BUY": "#00c853", "BUY": "#4f8ef7",
+                  "WATCH": "#ff9800", "CAUTION": "#ff1744", "AVOID": "#ff1744"}
+        verdict = "—"
+        verdict_color = "#6b7280"
+        if df_ind is not None and not df_ind.empty and len(df_ind) >= 30:
+            inds = safe_run(lambda d=df_ind: compute_indicators(d),
+                            context=f"gi:watchlist:ind:{sym}", default=None)
+            if inds is not None:
+                sig = safe_run(lambda i=inds: signal_score(i, {}),
+                               context=f"gi:watchlist:sig:{sym}", default={}) or {}
+                verdict = sig.get("signal", "—")
+                verdict_color = sig.get("sigcolor") or _vcols.get(verdict, "#6b7280")
         if df is not None and not df.empty and len(df) >= 2:
             _cl = df["Close"].iloc[:,0] if isinstance(df["Close"], pd.DataFrame) else df["Close"]
             _cl = _cl.dropna()
@@ -85,6 +107,10 @@ def _render_watchlist_badges(tickers: list, cur_sym: str, cb: int,
                 f'{lp:,.0f}</div>'
                 f'<div style="font-size:0.74rem;color:{color}">'
                 f'{arr} {abs(chg):.1f}%</div>'
+                f'<div style="margin-top:4px"><span style="background:{verdict_color}22;'
+                f'border:1px solid {verdict_color}44;border-radius:6px;'
+                f'padding:2px 6px;font-size:0.65rem;color:{verdict_color}">'
+                f'{verdict}</span></div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
@@ -235,5 +261,9 @@ def render_global_intelligence(cur_sym: str = "$", cb: int = 0,
     for topic_name, topic in GLOBAL_TOPICS.items():
         _render_topic_card(topic_name, topic, cur_sym, cb,
                            selected_market=selected_market)
+    st.caption(
+        "Geopolitical & macro analysis · Algorithmically curated from static research "
+        "· Last reviewed: Apr 2026"
+    )
 
     st.divider()

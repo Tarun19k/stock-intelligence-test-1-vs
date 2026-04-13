@@ -176,6 +176,7 @@ def _render_header_static(ticker, name, country, cur_sym, info,
         f'</div></div></div>',
         unsafe_allow_html=True,
     )
+    st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
 
 
 # ─────────────────────────────────────────────────────────────────

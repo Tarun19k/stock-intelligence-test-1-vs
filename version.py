@@ -180,7 +180,21 @@ VERSION_LOG = [
                "OPEN-006: portfolio stability score UI in week_summary.py (10× ±5% perturbation test; KPI card + per-stock weight sensitivity). "
                "EQA-41: forecast accuracy calibration Plotly bar chart with dotted reference baselines. "
                "PROXY-08 parked: env-var lifecycle fix (vars locked at process launch; two-launch sequence documented). "
-               "Regression baseline: 434/434 PASS (unchanged from v5.35.1 governance patch).")}
+               "Regression baseline: 434/434 PASS (unchanged from v5.35.1 governance patch).")},
+    {"version": "v5.37", "date": "2026-04-14",
+     "notes": ("SEBI compliance + governance sprint (session_025/026). "
+               "OPEN-027/df01: pages/home.py — period 1mo→3mo (3 call sites) + SEBI caption in _render_global_signals(). "
+               "OPEN-029: pages/dashboard.py — SEBI caption added after _render_header_static() verdict badge. "
+               "OPEN-022: pages/week_summary.py — SEBI captions in Signal Summary tab + Portfolio Allocator table. "
+               "OPEN-028: pages/global_intelligence.py — SEBI caption + BUY/WATCH/AVOID verdict badges in _render_watchlist_badges(). "
+               "df-03: week_summary.py Portfolio Allocator — data-as-of timestamp (6-month price history · Data as of [latest close date]). "
+               "df-08: home.py Top Movers — temporal scope caption (previous close → latest close). "
+               "OPEN-023: litellm-proxy/config.yaml + sprint_planner.py — hf-code model name fixed to groq/qwen-qwq-32b. "
+               "OPEN-025: portfolio.py + week_summary.py — UNSTABLE threshold aligned to >= 15 in code, comment, and UI. "
+               "df-02: market_data.py — DEFAULT_NEWS_FEEDS constant with ET Markets + Reuters feeds (Al Jazeera general replaced). "
+               "df-05: global_intelligence.py — macro analysis last-reviewed caption added. "
+               "OPEN-026: CLAUDE.md EP tables + regression.py R8 — compute_stability_score + _render_forecast_accuracy_report added. "
+               "Regression baseline: 436/436 PASS (stable base; sprint R27 checks inactive post-close).")}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

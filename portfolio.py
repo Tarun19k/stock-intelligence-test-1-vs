@@ -344,7 +344,7 @@ def compute_stability_score(scenarios: np.ndarray,
     Perturbation test: re-run optimiser n times with ±5% random noise on returns.
     MEDIUM/validation Layer 2: small input changes should not flip allocations.
     Returns: {score: 'STABLE'|'MODERATE'|'UNSTABLE', weight_std: dict}
-    Threshold: flag UNSTABLE if any stock weight std dev > 15%.
+    Threshold: flag UNSTABLE if any stock weight std dev >= 15%.
     """
     if not CVXPY_AVAILABLE or scenarios.size == 0:
         return {"score": "UNKNOWN", "weight_std": {}}

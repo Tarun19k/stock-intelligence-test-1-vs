@@ -677,6 +677,7 @@ def render_group_overview(country: str, group_name: str,
               unsafe_allow_html=True,
           )
           ci += 1
+      st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
 
 
 
@@ -895,7 +896,7 @@ def _run_and_display_allocation(returns_raw, names, excluded, df_dict, stock_row
             f'<div style="font-size:0.76rem;color:#6b7a90;padding:14px 0 4px">'
             f'ℹ️ {stab_note.capitalize()}. '
             f'Perturbation test: 10 re-runs with ±5% scenario noise. '
-            f'Weights with σ &gt; 15% are flagged UNSTABLE.</div>',
+            f'Weights with σ &gt;= 15% are flagged UNSTABLE.</div>',
             unsafe_allow_html=True,
         )
 
@@ -933,6 +934,13 @@ def _run_and_display_allocation(returns_raw, names, excluded, df_dict, stock_row
     # ── Allocation table ──────────────────────────────────────────
     st.markdown('<p class="section-title">📊 Optimal Allocation</p>',
                 unsafe_allow_html=True)
+    st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
+    try:
+        as_of = max(df.index.max() for df in df_dict.values())
+        as_of_str = as_of.strftime("%d %b %Y") if hasattr(as_of, "strftime") else str(as_of)[:10]
+    except Exception:
+        as_of_str = "unknown"
+    st.caption(f"Based on 6-month daily price history · Data as of {as_of_str}")
 
     sig_colors = {
         "STRONG BUY": "#00c853", "BUY": "#4f8ef7",

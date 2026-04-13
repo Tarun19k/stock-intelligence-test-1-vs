@@ -53,10 +53,10 @@ model_list:
       budget_duration: 1d
 
   # === TIER 7: Open-source fallback — code (Groq) ===
-  # openai/gpt-oss-20b on Groq: 1,000 tokens/sec, strong at code tasks, free tier.
+  # qwen-qwq-32b on Groq: strong at code tasks, free tier.
   - model_name: hf-code
     litellm_params:
-      model: groq/openai/gpt-oss-20b
+      model: groq/qwen-qwq-32b
       api_key: os.environ/GROQ_API_KEY
       max_budget: 0.0
       budget_duration: 1d

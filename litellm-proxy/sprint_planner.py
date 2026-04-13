@@ -41,7 +41,7 @@ def _load_model_display_names(config_path: Path) -> dict[str, str]:
     model_name alias → provider model string, e.g.:
         {
             "hf-reasoning": "groq/llama-3.3-70b-versatile",
-            "hf-code":      "groq/openai/gpt-oss-20b",
+            "hf-code":      "groq/qwen-qwq-32b",
             "hf-fast":      "groq/llama-3.1-8b-instant",
             ...
         }
@@ -148,7 +148,7 @@ TIERS = {
         "order": 2,
     },
     "hf-code": {
-        "label": "HF-CODE  (Groq GPT-OSS-20B — free)",
+        "label": "HF-CODE  (Groq Qwen-QwQ-32B — free)",
         "model": _LIVE_MODELS.get("hf-code", "hf-code"),
         "color": "\033[92m",   # green
         "when": "Low-effort refactors, config extraction, UI polish, "

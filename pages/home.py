@@ -10,7 +10,7 @@
 #     _render_market_status_row()      → no fetch
 #     _render_global_overview_prices() → 100% cache hit from ticker bar
 #   Tier 2 (deferred @st.fragment, fires after Tier 1 renders):
-#     _render_global_signals()         → get_batch_data(10 tickers, 1mo)
+#     _render_global_signals()         → get_batch_data(10 tickers, 3mo)
 #     _render_top_movers()             → get_top_movers(20 tickers)
 #     _render_news_feed()              → RSS only, no YF
 #
@@ -311,8 +311,8 @@ def _render_global_overview_prices(batch_5d: dict):
 def _render_global_signals():
     """
     BUY/WATCH/AVOID + RSI for each global instrument.
-    Fetches 1mo data (separate cache from 5d ticker bar batch).
-    Cold-start guard: checks _ticker_cache warmth before firing 1mo batch.
+    Fetches 3mo data (separate cache from 5d ticker bar batch).
+    Cold-start guard: checks _ticker_cache warmth before firing 3mo batch.
     If 5d data not yet available, shows placeholder and returns — prevents
     concurrent burst with ticker bar that triggers YF rate limits.
     Signals appear on the next Streamlit re-render once cache is warm.
@@ -330,7 +330,7 @@ def _render_global_signals():
         return
 
     batch_1mo = safe_run(
-        lambda: get_batch_data(_TICKER_SYMS, period="1mo", cache_buster=0),
+        lambda: get_batch_data(_TICKER_SYMS, period="3mo", cache_buster=0),
         context="global_signals:batch", default={},
     ) or {}
 
@@ -341,6 +341,7 @@ def _render_global_signals():
     st.markdown('<p class="section-title">🧭 Global Trend Signals</p>',
                 unsafe_allow_html=True)
     st.caption("Index signals based on RSI + momentum · Not equivalent to full stock analysis")
+    st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
 
     cols = responsive_cols(5)
     col_idx = 0
@@ -436,6 +437,7 @@ def _render_top_movers(cb: int):
             f'</div>',
             unsafe_allow_html=True,
         )
+    st.caption("1-day % change (previous close → latest close) · Refreshes every 60 s")
 
 
 # ══════════════════════════════════════════════════════════════════

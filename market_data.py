@@ -37,6 +37,15 @@ _ALLOWED_RSS_DOMAINS = {
     "theinternetpatrol.com",
 }
 
+# Default market news feeds — imported by page files that don't define their own.
+# ET Markets replaces the Al Jazeera general feed for India-market relevance (DF-02).
+DEFAULT_NEWS_FEEDS = (
+    "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+    "https://feeds.reuters.com/reuters/businessNews",
+    "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+)
+
 def _is_allowed_rss(url: str) -> bool:
     if not safe_url(url):
         return False
