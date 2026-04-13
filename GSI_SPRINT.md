@@ -300,6 +300,28 @@ Nothing in progress. Next session picks from Backlog above.
 
 ---
 
+## v5.38 Backlog — Governance Gap Sprint (from session_026 audit, 2026-04-14)
+
+Source: RECORD-029 + Explore agent audit (9 confirmed gaps + 2 possible).
+All items are Haiku-suitable except GAP-01 (Sonnet — flow design judgment required).
+
+| Gap ID | Severity | Description | Fix type | Model |
+|---|---|---|---|---|
+| GAP-01 | P1 | new-session ACTIVE early-exit skips snapshot deviation check entirely | skill-edit | Sonnet |
+| GAP-02 | P1 | sprint-close Step 2a (Playwright) has no hard gate — silent skip allowed | skill-edit | Haiku |
+| GAP-03 | P2 | R31 accepts `"playwright": "N/A"` with empty reason string | regression-check | Haiku |
+| GAP-04 | P2 | Snapshot Q-trigger review not in Phase 3 close checklist | doc-only | Haiku |
+| GAP-05 | P1 | compliance_check.py missing week_summary.py — SEBI disclaimers unguarded | compliance-check | Haiku |
+| GAP-06 | P1 | No core regression check for DO NOT UNDO rule 12 (raw Momentum score ban) | regression-check | Haiku |
+| GAP-07 | P1 | RECORD-028 fix (_ticker_cache_period) not encoded as regression check | regression-check | Haiku |
+| GAP-08 | P2 | token_budget block "mandatory" per CLAUDE.md but no R27 gate enforces it | regression-check | Haiku |
+| GAP-09 | P1 | R27 does not validate that all 5 Permanent Tier A check IDs are present | regression-check | Haiku |
+| POSSIBLE-02 | P2 | No cross-check: GSI_WIP.md Status IDLE when manifest COMPLETE | regression-check | Haiku |
+
+**Playwright deferred from v5.37:** PLAYWRIGHT-01 through PLAYWRIGHT-06 (require running Streamlit instance + ui-test skill). Run before v5.38 sprint kickoff.
+
+---
+
 ### Sprint Velocity
 
 | Sprint | Version | Items | Sessions | Est. Tokens | Optimisations | Outcome |
