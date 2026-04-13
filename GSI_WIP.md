@@ -221,6 +221,68 @@ New sprint items to add to GSI_SPRINT.md before starting session_025:
    (Haiku, doc-only — instructions for how to point Obsidian vault at repo + install Dataview)
    Wire into: new-session.md "Tools available" section
 
+### Karpathy Gist — LLM Wiki (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+
+This is the primary source for the LLM wiki pattern. Key insights that change our implementation plan:
+
+**Core insight:** This is ANTI-RAG. Not "search then answer" — but a persistent, LLM-maintained wiki
+that COMPOUNDS knowledge. Each ingest makes the whole more valuable through cross-references and
+contradiction flagging. The wiki pre-digests everything so queries are instant and contextual.
+
+**Karpathy's exact framing:** "The tedious part of maintaining a knowledge base is not the reading...
+it's the bookkeeping." LLMs solve the maintenance burden that kills human-managed wikis.
+
+**Three-layer architecture:**
+  Layer 1 — Raw sources (immutable: audit reports, session learnings, sprint boards)
+  Layer 2 — The wiki (LLM-generated markdown: entity pages, concept pages, summaries, comparisons)
+  Layer 3 — The schema (WIKI_BRAIN.md / CLAUDE.md: defines structure, conventions, workflows)
+
+**Three operations:**
+  Ingest: source → extract takeaways → write summary page → update index → update entity/concept pages → log entry
+  Query: question → search wiki → synthesize answer with citations → optionally file answer as new wiki page
+  Lint: periodic health checks (contradictions, stale claims, orphan pages, missing cross-references)
+
+**Key realisation for GSI:** We ALREADY HAVE most of this infrastructure:
+  - Layer 3 (schema): CLAUDE.md Living Documentation table IS the schema
+  - Layer 2 (logs): GSI_AUDIT_TRAIL.md + GSI_SESSION_LEARNINGS.md ARE append-only logs (log.md equivalent)
+  - Layer 2 (index): CLAUDE.md Living Documentation table IS the index.md equivalent
+  What we're MISSING: the ingestion workflow (we write to logs but don't synthesise entity/concept pages)
+  and the lint operation (we have regression.py for code but nothing for knowledge health)
+
+**Revised implementation plan (replaces LLM-WIKI items in addendum above):**
+  LLM-WIKI-01: Create docs/wiki/ with WIKI_BRAIN.md schema, index.md, log.md
+    → WIKI_BRAIN.md tells Claude: how to ingest, what entity pages to maintain, lint criteria
+    → Entity pages to create: /wiki/indicators.md, /wiki/signals.md, /wiki/portfolio.md,
+      /wiki/regulatory.md, /wiki/architecture.md, /wiki/sprint-history.md
+    → CLAUDE.md Living Documentation table becomes the authoritative index pointer
+    Model: Haiku (doc-only structure creation)
+
+  LLM-WIKI-02: Initial ingest batch — priority order:
+    1. GSI_AUDIT_TRAIL.md → creates /wiki/audit-findings.md with entity links
+    2. GSI_DECISIONS.md → creates /wiki/decisions.md with cross-refs to affected files
+    3. GSI_SESSION_LEARNINGS.md → creates /wiki/learnings.md with deviation/correction index
+    4. signal-accuracy-audit-v5.36.md → updates /wiki/indicators.md + /wiki/signals.md
+    Model: Sonnet (judgment needed for synthesis and cross-referencing)
+
+  LLM-WIKI-03: Create two skills:
+    .claude/commands/wiki-ingest.md — protocol for ingesting any new source
+    .claude/commands/wiki-query.md — protocol for querying wiki with citation
+    .claude/commands/wiki-lint.md — health check (contradictions, orphans, stale pages)
+    Wire wiki-ingest into: log-learnings.md (after writing RECORD, ingest into wiki)
+    Wire wiki-lint into: sprint-review.md (run as part of sprint close health check)
+    Model: Haiku (doc-only skill creation)
+
+  OBSIDIAN-01: Point Obsidian vault at repo root. Install Dataview plugin.
+    The wiki pages in docs/wiki/ become Obsidian notes. Graph view shows all cross-links.
+    Karpathy explicitly recommends Obsidian for browsing — confirms our tooling stack.
+    No new files: Obsidian reads existing repo markdown. Document setup in docs/tooling-setup.md.
+
+**What this means for our overall tooling stack (FINAL):**
+  LLM Wiki (docs/wiki/) = knowledge layer — compounding, cross-linked, LLM-maintained
+  Obsidian (vault = repo root) = visualization layer — graph, Dataview queries, browsing
+  Claude Code = build layer — code, regression, git, agent dispatch, wiki maintenance
+  NotebookLM = SKIP entirely (LLM wiki is strictly superior for our use case)
+
 ### Files NOT to read at session_025 start (read_avoidance)
 
 These are large and already processed:
