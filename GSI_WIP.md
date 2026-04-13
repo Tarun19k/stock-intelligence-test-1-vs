@@ -20,13 +20,103 @@
 
 ```
 Status:        IDLE
-Session ID:    session_024 (COMPLETE)
+Session ID:    session_025 (NOT YET STARTED)
 Version:       v5.36
 Last updated:  2026-04-13
-Sprint:        PRE-SPRINT — Quant Audit COMPLETE (D3 CEO pending)
+Sprint:        v5.37 PLANNING COMPLETE — execution begins session_025
 Manifest:      GSI_SPRINT_MANIFEST.json (PLANNING — v5.37, not yet IN_PROGRESS)
 Next session:  session_025
 ```
+
+## session_025 — Pre-Sprint Handoff (written end of session_024 extension)
+
+### CHECKPOINT — 2026-04-13 (pre-session_025 handoff)
+
+```
+Status:               IDLE — clean start for session_025
+Regression baseline:  436/436 PASS (confirmed 2026-04-13, commit fdd5c31)
+Compliance:           n/a (no code changed since last compliance run)
+Sprint state:         v5.37 PLANNING COMPLETE (3-sprint structure locked)
+Last commit:          fdd5c31 — wire math skills to audit commands; confirm D3-01; RECORD-025
+```
+
+### Sprint Structure Decided (session_024 extended strategic review)
+
+Three sub-sprints locked in order:
+
+**v5.37a — Code Sprint (SEBI P0 + Quant P1)**
+Priority: HIGHEST — blocks any public announcement
+Items:
+  - OPEN-029: SEBI caption in dashboard.py _render_header_static() after line 178
+  - OPEN-027: SEBI caption in home.py _render_global_signals() after line 343
+  - OPEN-022a: SEBI caption in week_summary.py Signal Summary tab (lines 649–679)
+  - OPEN-022b: SEBI caption in week_summary.py Portfolio Allocator table (lines 956–968)
+  - OPEN-028: SEBI caption + cached verdict per ticker in global_intelligence.py:60–90
+  - QA-D3-01: indicators.py _calc_roe() — prefer returnOnEquity when available AND calc diverges >10pp
+  - QA-D1-01: indicators.py RSI — switch rolling(14).mean() → ewm(com=13, adjust=False) with SMA seed
+  - QA-D1-02: indicators.py ATR — same Wilder's RMA switch, batch with QA-D1-01
+Model plan: Sonnet sequential, est ~50–55k tokens, Playwright for all UI items
+
+**v5.37b — Governance + Wiring Sprint (Doc + Config — parallel agents)**
+Priority: HIGH — closes token governance and social skill wiring gaps
+Items (4 worktree tracks):
+  Track A: Token budget Execution Contract header → new-feature.md, quant-reviewer.md,
+            signal-accuracy-audit.md, qa-brief.md, sprint-review.md
+  Track B: Process orchestration → skill-creator.md (wiring quality gate),
+            new-session.md (unplanned dispatch guard), sprint-review.md (token retrospective)
+  Track C: Social/brand skill wiring → launch-checklist.md (accessibility + canvas-design),
+            gsi-brand.md (→ canvas-design), campaign.md + marketing.md (→ newsletter)
+  Track D: Quick code fixes → OPEN-023 (litellm model name), OPEN-001/005 (git rm config_OLD.py),
+            QA-D2-04 (veto_applied flag), OPEN-025 (UNSTABLE boundary text align), HOOK-01, PROXY-08
+Model plan: Track A/B/C → Haiku worktrees (doc-only, ~8–12k each); Track D → Sonnet (touches .py)
+
+**v5.37c — GTM + Brand Execution**
+Priority: MEDIUM — launch readiness, not blocking code correctness
+Items: visual assets via /canvas-design, content calendar via /content-calendar,
+       newsletter via /newsletter, Zerodha Streak competitive analysis,
+       LinkedIn channel addition, psychographics layer for 3 personas,
+       accessibility audit via /accessibility
+
+### Key Decisions Made (session_024 extension)
+
+1. EXECUTION ORDER: 5.37b BEFORE 5.37a. Reasoning: app is not publicly announced yet;
+   no live user exposure to SEBI gaps. Wiring token governance first means 5.37a sprint
+   runs cleaner and cheaper. Exception: if CEO announces public beta, flip order immediately.
+
+2. TOKEN GOVERNANCE: All process skill files need an "Execution Contract" header block
+   (model, model_rationale, mode, agents, est_tokens, permissions_required, read_avoidance,
+   sprint_gate). None of the 7 audited skills currently declare this. Rule: Haiku-first default;
+   justify Sonnet in writing; Opus only for architecture decisions.
+
+3. SKILL WIRING QUALITY GATE: skill-creator.md must require that every new skill be wired
+   into at least one process file before close, OR explicitly documented as "invoked manually only."
+   Root cause: accessibility.md and newsletter skill were both orphaned at creation time.
+
+4. GTM GAPS: Zerodha Streak is the primary competitor for Ritu persona — not in competitive
+   analysis. Newsletter channel orphaned from launch plan. LinkedIn missing for India fintech.
+   /campaign orchestrator is otherwise complete.
+
+5. NOTEBOOKLM/OBSIDIAN: Research agent dispatched (Haiku, background). Results will be
+   in session notification. Read before deciding on tooling.
+
+### Files Modified This Session (session_024 extension)
+
+All committed in fdd5c31:
+  - .claude/commands/quant-reviewer.md (math skill wiring)
+  - .claude/commands/signal-accuracy-audit.md (math skill wiring + D4 file fix)
+  - .claude/quant_audit_pending.json (cleared)
+  - CLAUDE.md (Living Documentation + 3 new rows)
+  - GSI_SESSION_LEARNINGS.md (RECORD-025)
+  - GSI_SPRINT.md (QA-D3-01 CONFIRMED)
+  - docs/audit-orchestration/status.json (D3 CEO validation)
+  - docs/signal-accuracy-audit-v5.36-2026-04-13.md (D3 table updated)
+
+### Resume Instruction for session_025
+
+Read this file → run /new-session → confirm regression 436/436 →
+start v5.37b sprint: open GSI_SPRINT_MANIFEST.json, set status IN_PROGRESS,
+dispatch 4 worktree agents (Track A/B/C/D per plan above).
+DO NOT start v5.37a code items until v5.37b doc wiring is complete.
 
 ## session_024 — Quant Audit + Vercel Migration Research
 
