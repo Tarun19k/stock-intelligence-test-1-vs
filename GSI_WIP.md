@@ -208,18 +208,18 @@ New sprint items to add to GSI_SPRINT.md before starting session_025:
 1. ADR-026: Claude Managed Agents evaluation — worktree vs. managed pattern
    (Opus judgment required, doc-only, add to 5.37b Track B alongside orchestration fixes)
 
-2. LLM-WIKI-01: Create docs/wiki/ structure (WIKI_BRAIN.md, index.md, log.md)
-   (Haiku sufficient, doc-only, add to 5.37b Track C alongside social skill wiring)
+⚠️  LLM-WIKI-01/02/03 below are SUPERSEDED by the Karpathy section further down.
+    Use those revised definitions. Items 2–4 kept for reference only — do NOT execute as written.
 
-3. LLM-WIKI-02: Initial ingest — GSI_AUDIT_TRAIL.md + GSI_DECISIONS.md + GSI_SESSION_LEARNINGS.md
-   (Sonnet, sequential after LLM-WIKI-01)
-
-4. LLM-WIKI-03: Create wiki-query.md and wiki-ingest.md skills in .claude/commands/
-   (Haiku, doc-only, batch with Track A token wiring)
+2. [SUPERSEDED] LLM-WIKI-01: Create docs/wiki/ structure — see Karpathy section for full entity page list
+3. [SUPERSEDED] LLM-WIKI-02: Initial ingest — see Karpathy section for revised priority order
+4. [SUPERSEDED] LLM-WIKI-03: 3 skills needed (wiki-ingest + wiki-query + wiki-lint) — old plan only listed 2
 
 5. OBSIDIAN-01: Document Obsidian vault setup in docs/tooling-setup.md
    (Haiku, doc-only — instructions for how to point Obsidian vault at repo + install Dataview)
    Wire into: new-session.md "Tools available" section
+
+   → For LLM-WIKI-01/02/03 authoritative plan: read "Karpathy Gist" section below.
 
 ### Karpathy Gist — LLM Wiki (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 
