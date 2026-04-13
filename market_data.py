@@ -159,6 +159,7 @@ def _yf_download(ticker: str, **kwargs) -> pd.DataFrame:
 # next fetch is blocked. TTL-controlled at call site via st.cache_data.
 _ticker_cache: dict = {}
 _ticker_cache_time: dict = {}
+_ticker_cache_period: dict = {}   # sym → period string used when data was fetched
 _TICKER_CACHE_TTL = 300  # seconds — match get_price_data TTL
 
 # ── Observability instrumentation (v5.34) ────────────────────────────────────
@@ -253,6 +254,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
         s for s in tickers
         if s in _ticker_cache
         and (now - _ticker_cache_time.get(s, 0)) < _TICKER_CACHE_TTL
+        and _ticker_cache_period.get(s) == period   # don't serve 5d data for a 3mo request
     ]
     to_fetch = [s for s in tickers if s not in fresh]
     for s in fresh:
@@ -292,6 +294,7 @@ def _yf_batch_download(tickers: list, period: str = "5d",
             for sym, df in chunk_result.items():
                 _ticker_cache[sym] = df
                 _ticker_cache_time[sym] = time.monotonic()
+                _ticker_cache_period[sym] = period
 
         except Exception as exc:
             if type(exc).__name__ == "YFRateLimitError":
