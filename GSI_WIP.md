@@ -979,3 +979,64 @@ Next session: run /new-session → confirm CHECKPOINT above → resume with v5.3
 First item: df-03 (week_summary.py, sonnet, data-as-of timestamp in Portfolio Allocator).
 All v5.37a files are edited and working — do NOT re-implement them.
 Commit strategy: all files commit together after sprint close when 500/500 regression passes.
+
+---
+
+## CHECKPOINT — 2026-04-14 | session_026 | v5.37.1 — SPRINT COMPLETE
+
+```
+Status:               IDLE — sprint v5.37 COMPLETE including v5.37.1 hotfix
+Regression:           444/444 PASS (last confirmed during v5.37.1 close, manifest IN_PROGRESS)
+                      Expected current baseline with manifest COMPLETE: 437/437
+                      (436 stable base + 1 R8 check added by open-026 for compute_stability_score)
+Compliance:           ALL 436 CHECKS PASS (confirmed during sprint close)
+Last git commit:      17a5167 (v5.37.1 all files committed and pushed to main)
+bash-git approval:    N/A — all work committed and pushed
+```
+
+### Sprint v5.37 — ALL ITEMS COMPLETE (9/9 + v5.37.1 hotfix)
+
+**v5.37a items (4/4):**
+- [x] df01-open027 — pages/home.py — period 1mo→3mo (3 places) + SEBI caption after _render_global_signals()
+- [x] open-029    — pages/dashboard.py — SEBI caption after _render_header_static() (line 178)
+- [x] open-022    — pages/week_summary.py — SEBI captions in Signal Summary + Portfolio Allocator
+- [x] open-028    — pages/global_intelligence.py — SEBI caption + BUY/WATCH/AVOID verdict badges
+
+**v5.37b items (5/5):**
+- [x] df-03       — pages/week_summary.py — data-as-of timestamp in Portfolio Allocator
+- [x] df-08       — pages/home.py — Top Movers temporal scope label (1-day % change caption)
+- [x] haiku-H1    — litellm-proxy/config.yaml + sprint_planner.py (OPEN-023: groq/qwen-qwq-32b)
+                    + portfolio.py (OPEN-025: >= 15 comment/docstring align)
+                    + pages/week_summary.py (OPEN-025: UNSTABLE threshold UI text)
+- [x] haiku-H2    — market_data.py (DF-02: DEFAULT_NEWS_FEEDS constant)
+                    + pages/global_intelligence.py (DF-05: macro last-reviewed label)
+- [x] open-026    — CLAUDE.md EP table + regression.py R8 (compute_stability_score added → 437/437)
+
+**v5.37.1 hotfix (post-sprint):**
+- [x] market_data.py — _ticker_cache_period dict added; period match guard in fresh-serve check
+                       Root cause: period-agnostic cache served 5d DataFrames for 3mo requests
+                       when tickers were "fresh" — caused Global Signals "Computing..." stuck state
+- [x] Full hotfix documentation: ADR-026, RECORD-028, Loophole Class 3, QA brief, velocity row
+
+### Open items from this session
+
+- [ ] **Playwright PLAYWRIGHT-01 through PLAYWRIGHT-06** — NEVER RUN. Require running Streamlit
+      instance + ui-test skill. Carry forward to next session pre-sprint check.
+- [ ] **quant_audit_pending.json** — pending=true for D3/D5 (false positive from post-edit hook
+      on market_data.py RSS constant edit). Not a real quant audit trigger. Note at next session start.
+- [ ] **v5.38 planning** — not started. Next sprint scope TBD.
+
+### Key decisions from session_026
+
+- Period-aware `_ticker_cache` fix: `_ticker_cache_period` parallel dict, period match in
+  fresh-serve check. ADR-026 records rejected alternatives. (Loophole Class 3 added)
+- Playwright deferral pattern: when no running app instance, explicitly list deferred tests
+  in CHECKPOINT — do NOT silently skip or declare sprint COMPLETE without noting them
+- post-edit hook on market_data.py overwrites quant_audit_pending.json entirely — commit
+  hook output as-is; do not fight the hook output
+
+### Resume instruction
+
+Next session: run /new-session → run `python3 regression.py` to confirm 437/437 baseline.
+If quant_audit_pending.json shows pending=true for D3/D5, acknowledge as false positive and proceed.
+First work: plan v5.38 sprint or run deferred Playwright tests (PLAYWRIGHT-01 through PLAYWRIGHT-06).
