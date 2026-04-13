@@ -194,7 +194,17 @@ VERSION_LOG = [
                "df-02: market_data.py — DEFAULT_NEWS_FEEDS constant with ET Markets + Reuters feeds (Al Jazeera general replaced). "
                "df-05: global_intelligence.py — macro analysis last-reviewed caption added. "
                "OPEN-026: CLAUDE.md EP tables + regression.py R8 — compute_stability_score + _render_forecast_accuracy_report added. "
-               "Regression baseline: 436/436 PASS (stable base; sprint R27 checks inactive post-close).")}
+               "Regression baseline: 436/436 PASS (stable base; sprint R27 checks inactive post-close).")},
+    {"version": "v5.37.1", "date": "2026-04-14",
+     "notes": ("Hotfix (session_026 QA). "
+               "market_data.py: _ticker_cache is now period-aware. "
+               "Root cause: _yf_batch_download served 5d DataFrames (from ticker-bar warmup) for "
+               "3mo requests — tickers were 'fresh' in module cache regardless of period. "
+               "len(df) < 10 check in _render_global_signals() → 'Computing...' stuck for "
+               "whichever tickers were warm when the 70% threshold fired. "
+               "Fix: added _ticker_cache_period dict (sym→period); fresh-serve check now "
+               "requires period match. Stale 429-fallback path unaffected. "
+               "Regression baseline: 444/444 PASS (unchanged).")}
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

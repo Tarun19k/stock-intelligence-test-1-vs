@@ -1441,3 +1441,36 @@ These items affect the litellm proxy CLI tools in `litellm-proxy/`. No Streamlit
 
 **Good-to-have:**
 - [ ] Fix 10 pass/fail: Last-reviewed caption visible at bottom of GI topic section
+
+---
+
+# QA Brief — v5.37.1 Hotfix: Global Signals "Computing..." Fix
+
+**Sprint:** v5.37.1 | **Date:** 2026-04-14 | **Session:** session_026 (post-sprint QA)
+
+## Summary
+
+Single file change in `market_data.py`. No new UI elements — this fix unblocks existing UI.
+
+| Fix | File | Expected visible change |
+|---|---|---|
+| Period-aware `_ticker_cache` | market_data.py | All 10 global signal cards now resolve (no permanent "Computing..." state) |
+
+## Before / After
+
+**Before:** On cold start, top 5–7 signal cards (NIFTY 50, SENSEX, BANK NIFTY, S&P 500, NASDAQ) show "Computing..." permanently. Bottom 3–4 (HANG SENG, GOLD, CRUDE WTI, USD/INR) resolve correctly.
+
+**After:** All 10 cards resolve once the 3mo price data is fetched (~15–20 seconds after ticker bar warmup). No card should stay in "Computing..." beyond the first refresh cycle.
+
+## Verification steps
+
+1. Restart the app (clears module-level cache)
+2. Navigate to Home page
+3. Wait for ticker bar to populate (warmup phase)
+4. Observe Global Trend Signals section — all 10 cards should transition from "Computing..." to a signal within one 60s fragment cycle
+5. No card should show "Computing..." after the second fragment render
+
+## What I need back from QA
+
+- [ ] All 10 global signal cards show BUY/WATCH/AVOID (or ↑ RISING / ↓ FALLING for FX/commodities) within 90 seconds of page load
+- [ ] No regression in Top Movers or News Feed sections (same page, different fragment)

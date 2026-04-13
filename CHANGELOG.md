@@ -240,3 +240,6 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 
 ## v5.37 — 2026-04-14
 
+
+## v5.37.1 — 2026-04-14
+

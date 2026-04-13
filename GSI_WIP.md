@@ -21,7 +21,7 @@
 ```
 Status:        IDLE
 Session ID:    session_026
-Version:       v5.37
+Version:       v5.37.1
 Last updated:  2026-04-14
 Sprint:        v5.37 COMPLETE
 Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE)

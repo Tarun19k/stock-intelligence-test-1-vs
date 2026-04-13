@@ -65,7 +65,7 @@ Check before ANY version change in requirements.txt. compliance_check.py C9 bloc
 
 ---
 
-## Current State (v5.37 — 2026-04-14)
+## Current State (v5.37.1 — 2026-04-14)
 
 **Regression baseline: 436/436 PASS** *(stable; R27/R30/R31/R32 add additional checks during active sprints)*
 
@@ -147,6 +147,7 @@ GSI_session.json             Session manifest. Dynamic state. Committed to repo 
 | `_global_throttle()` | Token bucket: max=5, rate=0.4s. threading.Lock serialises all threads. |
 | `_yf_batch_download()` | CHUNK=3, inter-chunk=5s, rate-limit backoff=10s, cold-start delay=2s |
 | `_ticker_cache` | Module-level dict. Survives @st.cache_data evictions. Stale fallback. |
+| `_ticker_cache_period` | Parallel dict: sym → period string last fetched. Prevents 5d data serving 3mo requests (v5.37.1). |
 | `is_ticker_cache_warm()` | 70% majority threshold. Gates fragments on cold start. |
 
 ### Planned (OPEN-007) — DataManager: SQLite + Priority Queue

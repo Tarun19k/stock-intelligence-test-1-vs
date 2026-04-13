@@ -425,6 +425,30 @@ Additionally: `pre_commit.sh` file-type gate implemented — doc-only commits sk
 
 ---
 
+## ADR-026 | 2026-04-14 | v5.37.1 | ACTIVE
+**Title:** Period-aware `_ticker_cache` — require period match in fresh-serve path
+
+**Context:** `_ticker_cache` is a module-level dict keyed by ticker symbol only. It stores
+OHLCV data from the most recent yfinance fetch, regardless of which `period` was requested.
+When `_render_global_signals()` called `get_batch_data(period="3mo")`, `_yf_batch_download`
+served 5d DataFrames (~5 rows) as "fresh" for tickers that were warm from the ticker-bar
+batch. The `len(df) < 10` guard in the consumer then permanently showed "Computing..." for
+those tickers. Discovered in QA screenshot after v5.37 sprint close.
+
+**Decision:** Add `_ticker_cache_period: dict = {}` (sym → period string) alongside
+`_ticker_cache`. Cache write in `_yf_batch_download` stores the period. Fresh-serve check
+now requires `_ticker_cache_period.get(s) == period`. The 429 stale-fallback path is
+unchanged — it still serves any cached data as a last resort regardless of period.
+
+**Alternatives rejected:**
+- **Key cache by `(sym, period)` tuple**: Would require refactoring all `_ticker_cache[sym]` reads across the file. Larger blast radius for a targeted fix.
+- **Lower `len(df) < 10` threshold in consumer**: Would allow nearly-empty DataFrames through to `compute_indicators()`, which requires ≥30 rows (its own guard returns raw df silently, causing RSI=50 default — DF-01 root cause pattern).
+- **Separate cache dict per period**: Unnecessary memory use; the period-match on fresh-serve achieves the same isolation.
+
+**Consequences:** Any new code that writes to `_ticker_cache` must also write `_ticker_cache_period[sym] = period`. This is a low-burden convention — the write site is a single loop in `_yf_batch_download`.
+
+---
+
 ## Template for new ADRs
 
 ```
