@@ -73,7 +73,15 @@ This audit checks *mathematical and empirical correctness*, not structure or ren
 
 ## Domain 3 — Fundamental Data Accuracy
 
-**File:** `indicators.py:_calc_roe()`, `signal_score()`
+**File:** `indicators.py:_calc_roe()` (line 90), `signal_score()`
+**Reference skills:**
+- `.claude/commands/fundamental-analysis-math.md` — ROE formula variants, NSE/BSE field coverage, acceptable tolerances per metric
+- `.claude/commands/quant-data-fetcher.md` — safe yfinance calling protocol for audit context (rate-safe delays, no Streamlit import)
+
+**Known production defect (D3-01, confirmed 2026-04-13):** `_calc_roe()` returns incorrect values for
+USD-reporting NSE stocks (e.g., INFY.NS). When `netIncomeToCommon` is in USD and `bookValue × sharesOutstanding`
+is in INR, the formula yields a ~100× underestimate. The `returnOnEquity` field gives the correct answer in these
+cases. Fix tracked as QA-D3-01 in GSI_SPRINT.md.
 
 ### ROE self-calculation (D-02)
 1. Pick RELIANCE.NS. Fetch `info` via `market_data.get_ticker_info()`.
@@ -95,7 +103,9 @@ This audit checks *mathematical and empirical correctness*, not structure or ren
 
 ## Domain 4 — Forecast Calibration
 
-**File:** `forecast.py`, `indicators.py:compute_forecast()`
+**File:** `indicators.py` — `compute_forecast()` (line 404) and `_holt_winters_damped()` (line 488).
+**NOTE: Both live in `indicators.py`, NOT `forecast.py`. `forecast.py` handles storage/display only.**
+**Reference skill:** `.claude/commands/forecasting-calibration-math.md` — HW parameter interpretation, P(gain) bootstrap, calibration buckets, Brier score
 
 ### P(gain) probability check
 1. Retrieve stored forecasts from `st.session_state["forecast_history"]` (or run `resolve_forecasts()` on historical data).
@@ -116,6 +126,7 @@ This audit checks *mathematical and empirical correctness*, not structure or ren
 ## Domain 5 — Portfolio Math
 
 **File:** `portfolio.py`
+**Reference skill:** `.claude/commands/portfolio-risk-math.md` — CVaR/VaR theory, Rockafellar-Uryasev LP, bootstrap exponential weighting, stability thresholds
 
 ### Log returns
 - Verify: `log_returns = np.log(prices / prices.shift(1))` — standard formula. Check that NaN first row is dropped before optimisation.

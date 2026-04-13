@@ -16,14 +16,15 @@
       "pending": []
     },
     "phase_1_d3_main_context": {
-      "status": "COMPLETE — CEO VALIDATION PENDING",
+      "status": "COMPLETE — CEO VALIDATED 2026-04-13",
       "description": "Live yfinance fetch for INFY.NS, HDFCBANK.NS, RELIANCE.NS via _calc_roe()",
       "findings": {
-        "INFY.NS":      { "roe_calculated": "0.37%", "roe_field": "32.68%", "anomaly": "D3-01 P1 — likely USD/INR currency mismatch" },
-        "HDFCBANK.NS":  { "roe_calculated": "13.18%", "roe_field": "14.02%", "delta": "0.84pp", "within_tolerance": true },
-        "RELIANCE.NS":  { "roe_calculated": "9.49%", "roe_field": "None", "delta": "CEO check required" }
+        "INFY.NS":      { "roe_calculated": "0.37%", "roe_field": "32.68%", "screener_actual": "30.3%", "field_delta": "2.38pp", "field_pass": true, "calc_delta": "29.93pp", "status": "D3-01 CONFIRMED — calc wrong, field correct" },
+        "HDFCBANK.NS":  { "roe_calculated": "13.18%", "roe_field": "14.02%", "screener_actual": "14.4%", "field_delta": "0.38pp", "calc_delta": "1.22pp", "status": "PASS" },
+        "RELIANCE.NS":  { "roe_calculated": "9.49%", "roe_field": "None", "screener_actual": "8.40%", "calc_delta": "1.09pp", "status": "PASS" }
       },
-      "ceo_validation_required": true,
+      "ceo_validated_at": "2026-04-13",
+      "ceo_validation_required": false,
       "screener_urls": {
         "INFY.NS": "screener.in/company/INFY",
         "HDFCBANK.NS": "screener.in/company/HDFCBANK",

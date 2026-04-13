@@ -71,20 +71,30 @@ Read these files. Do not answer from memory.
 
 Domains 1, 2, and 5 are fully automatable — no ground truth data required outside the codebase.
 
+**Math reference skills to include in agent context** (paste relevant sections into the agent prompt):
+- Domain 1: `.claude/commands/technical-indicators-math.md` — smoothing taxonomy, canonical formulas, divergence tolerances
+- Domain 5: `.claude/commands/portfolio-risk-math.md` — CVaR formula, Rockafellar-Uryasev LP, stability thresholds
+
 Dispatch as a worktree agent with this prompt template:
 
 > "You are running a quantitative accuracy audit on the GSI Dashboard.
 > Read `indicators.py` and `portfolio.py` in full.
 > Run Domain 1 (Indicator Math), Domain 2 (Signal Logic), and Domain 5 (Portfolio Math)
 > from the `signal-accuracy-audit` procedure.
-> For Domain 1: cross-check each indicator formula against the reference in the skill.
+> For Domain 1: cross-check each indicator formula against the reference in `.claude/commands/technical-indicators-math.md`.
+>   Key pre-known deviations: RSI uses Cutler's SMA (classify P1, not P0); ATR uses SMA (P1); Bollinger ddof=1 vs ddof=0 (P2).
 > For Domain 2: verify the Weinstein/Elder arbitration matrix against CLAUDE.md Policy 6.
-> For Domain 5: verify CVaR formula, log returns, and stability σ thresholds.
-> Write your findings to `docs/quant-audit-auto-{date}.md`.
+>   Check `veto_applied` boolean key in `compute_unified_verdict()` return dict — required for UI disclosure.
+>   Check whether Elder Screen 3 (entry trigger) is implemented or only Screen 1+2.
+> For Domain 5: verify CVaR formula and stability σ thresholds against `.claude/commands/portfolio-risk-math.md`.
+>   Pre-verified thresholds: STABLE <8%, MODERATE 8-15%, UNSTABLE ≥15%.
+>   OPEN-025 (boundary ≥15 vs >15) is pre-tracked — reference it, do NOT re-raise.
+> Write your findings to `docs/audit-orchestration/domain-findings-auto.md`.
+> Note: Write permission is required for this new file. If denied, present full findings in output text.
 > Do NOT attempt git add, git commit, or any git command.
 > Report: PASS / FAIL / PASS WITH NOTES for each domain, with specific line numbers."
 
-After agent completes: read `docs/quant-audit-auto-{date}.md`. Do not commit until reviewed.
+After agent completes: read `docs/audit-orchestration/domain-findings-auto.md`. Do not commit until reviewed.
 
 ---
 
@@ -94,9 +104,18 @@ After agent completes: read `docs/quant-audit-auto-{date}.md`. Do not commit unt
 
 This domain cannot be automated — it requires cross-referencing yfinance output against official NSE/BSE filings or a trusted third-party (Screener.in, Moneycontrol, NSE website).
 
+**Reference skills for this domain:**
+- `.claude/commands/quant-data-fetcher.md` — safe yfinance calling protocol (audit_fetch_info, audit_calc_roe, 2s rate gap, no market_data.py import)
+- `.claude/commands/fundamental-analysis-math.md` — ROE formula variants, NSE/BSE field coverage, acceptable tolerances
+
+**Known risk (D3-01, confirmed 2026-04-13):** `_calc_roe()` can return wrong results for USD-reporting NSE stocks
+(e.g., INFY.NS: 0.37% calculated vs 30.3% actual). Root cause: `netIncomeToCommon` in USD,
+`bookValue × sharesOutstanding` in INR. When `returnOnEquity` field is available, it gives correct results.
+If `_calc_roe()` returns a value far below the `returnOnEquity` field (>10pp gap), flag as currency mismatch.
+
 **Quant Reviewer action:**
-1. Fetch `_calc_roe(info)` output for 3 large-cap tickers (RELIANCE.NS, INFY.NS, HDFCBANK.NS)
-2. Document the values returned
+1. Use `quant-data-fetcher` protocol: fetch `_calc_roe(info)` for 3 tickers (RELIANCE.NS, INFY.NS, HDFCBANK.NS)
+2. Also record the raw `returnOnEquity` field value alongside the calculated result
 3. Flag to CEO: "Please cross-check these ROE values against the most recent annual report"
 
 **CEO action required:**

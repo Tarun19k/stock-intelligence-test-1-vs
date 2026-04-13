@@ -222,3 +222,9 @@
 **Source:** Track B completing D1-D5 audit but failing to write `docs/audit-orchestration/domain-findings-auto.md`; Track C completing Vercel research but failing to write migration artifacts.
 **Impact:** LOW — findings were preserved in agent output text and written by main context. No data loss.
 **Fix applied:** Process improvement: create stub files (empty or with headers) before dispatching worktree agents that need to write new files. This allows agents to use Edit instead of Write.
+
+## RECORD-025 | 2026-04-13 | session_024 | v5.36 | LEARNING
+**Finding:** CEO D3 validation confirmed D3-01 as a real production defect. Screener.in ROE actuals: INFY.NS=30.3%, HDFCBANK.NS=14.4%, RELIANCE.NS=8.40%. The `returnOnEquity` field (32.68% for INFY.NS) passes ±3pp tolerance against Screener (delta 2.38pp). The calculated value from `_calc_roe()` (0.37%) fails by 29.93pp — a USD/INR currency mismatch. HDFCBANK.NS and RELIANCE.NS both pass (1.22pp and 1.09pp respectively). This is the first-ever CEO-validated quant finding in this project.
+**Source:** CEO cross-check against screener.in (2026-04-13) for INFY, HDFCBANK, RELIANCE; compared against live yfinance fetch from Python 3.9.6/yfinance 1.2.0 audit run.
+**Impact:** HIGH — INFY.NS signal_score() receives 0.37% ROE, effectively treating one of India's highest-ROE large-caps as a near-zero-return company. Affects BUY/WATCH signals for INFY.NS in all market contexts.
+**Fix applied:** QA-D3-01 raised as P1 sprint item. Confirmed status logged in `docs/audit-orchestration/status.json`, `docs/signal-accuracy-audit-v5.36-2026-04-13.md`, and `GSI_SPRINT.md`. `quant_audit_pending.json` cleared (pending=false). Fix strategy: in `_calc_roe()`, when `returnOnEquity` field is non-None AND the calculated value diverges >10pp from it, return the field value instead. This avoids the USD/INR mismatch for all USD-reporting NSE stocks.

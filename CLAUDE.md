@@ -345,6 +345,9 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_FILE_IMPACT.md` | Pre-change file impact map. Look up change type → every file that must be updated. Single source of truth for documentation accountability. |
 | `docs/ai-ops/token-model-rules.md` | Model selection rules (Haiku/Sonnet/Opus criteria), execution modes, read cost tiers, anti-patterns. Read before writing sprint token_budget block. |
 | `docs/ai-ops/claude-features-reference.md` | Full Claude API/Code/SDK feature reference: prompt caching, memory stores, context window, batch API, hooks, MCP. Read when designing AI-ops optimisations. |
+| `docs/audit-orchestration/` | Quant audit observability: `status.json` (phase tracker), `domain-findings-auto.md` (D1/D2/D4/D5 findings). Updated by quant-reviewer each audit run. |
+| `docs/signal-accuracy-audit-v{version}-{date}.md` | Versioned quant accuracy audit reports. Latest: v5.36 (2026-04-13). Append new reports per version — do not overwrite. |
+| `docs/migration/` | Vercel migration architecture artifacts: `vercel-migration-plan.md`, `component-mapping.md`, `migration-risks.md`. Research produced session_024. |
 
 Store all in repo root alongside CLAUDE.md.
 

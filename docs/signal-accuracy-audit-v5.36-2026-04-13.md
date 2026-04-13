@@ -64,15 +64,16 @@ the Boolean flag used for disclosure gating.)
 ---
 
 ## Domain 3 — Fundamental Data
-**Status: PENDING CEO VALIDATION**
+**Status: D3-01 CONFIRMED (INFY) | PASS (HDFCBANK, RELIANCE)**
+**CEO validation:** 2026-04-13 | Source: Screener.in
 
-### Live yfinance Fetch Results (2026-04-13, Python 3.9.6 / yfinance 1.2.0)
+### ROE Validation Table — CEO Cross-Check Complete
 
-| Ticker | Company | ROE (calculated) | ROE (returnOnEquity field) | Delta | Within ±3pp? |
-|---|---|---|---|---|---|
-| INFY.NS | Infosys Limited | **0.37%** | 32.68% | **32.3pp** | ❌ ANOMALY — see D3-01 |
-| HDFCBANK.NS | HDFC Bank Limited | **13.18%** | 14.02% | 0.84pp | ✓ Pending CEO check |
-| RELIANCE.NS | Reliance Industries Limited | **9.49%** | None | N/A | Pending CEO check |
+| Ticker | Company | ROE (calculated) | ROE (field) | Screener.in actual | Field delta | Field pass? | Calc delta | Calc pass? |
+|---|---|---|---|---|---|---|---|---|
+| INFY.NS | Infosys Ltd | **0.37%** | 32.68% | **30.3%** | 2.38pp | ✅ ±3pp | **29.93pp** | ❌ D3-01 CONFIRMED |
+| HDFCBANK.NS | HDFC Bank Ltd | **13.18%** | 14.02% | **14.4%** | 0.38pp | ✅ ±3pp | 1.22pp | ✅ PASS |
+| RELIANCE.NS | Reliance Industries | **9.49%** | None | **8.40%** | N/A | N/A | 1.09pp | ✅ PASS |
 
 ### P/E and P/B Spot Check (as of 2026-04-13)
 
