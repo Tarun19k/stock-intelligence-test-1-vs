@@ -1,10 +1,10 @@
 {
-  "pending": false,
-  "pending_domains": [],
-  "last_triggered_by": "quant-reviewer session_024 (manual pre-sprint audit)",
-  "last_triggered_at": "2026-04-13",
-  "last_full_audit": "2026-04-13",
-  "_note": "Full audit complete (session_024). D3 CEO validated 2026-04-13. D3-01 confirmed (INFY.NS). D4 calibration deferred (OPEN-003). Re-run after 90 days of forecasts.",
-  "ceo_validation_required": false,
-  "ceo_validated_at": "2026-04-13"
+  "pending": true,
+  "pending_domains": [
+    "D3",
+    "D5"
+  ],
+  "last_triggered_by": "market_data.py",
+  "last_triggered_at": "2026-04-14",
+  "last_full_audit": "2026-04-13"
 }
