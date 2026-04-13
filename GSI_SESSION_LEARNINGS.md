@@ -228,3 +228,15 @@
 **Source:** CEO cross-check against screener.in (2026-04-13) for INFY, HDFCBANK, RELIANCE; compared against live yfinance fetch from Python 3.9.6/yfinance 1.2.0 audit run.
 **Impact:** HIGH — INFY.NS signal_score() receives 0.37% ROE, effectively treating one of India's highest-ROE large-caps as a near-zero-return company. Affects BUY/WATCH signals for INFY.NS in all market contexts.
 **Fix applied:** QA-D3-01 raised as P1 sprint item. Confirmed status logged in `docs/audit-orchestration/status.json`, `docs/signal-accuracy-audit-v5.36-2026-04-13.md`, and `GSI_SPRINT.md`. `quant_audit_pending.json` cleared (pending=false). Fix strategy: in `_calc_roe()`, when `returnOnEquity` field is non-None AND the calculated value diverges >10pp from it, return the field value instead. This avoids the USD/INR mismatch for all USD-reporting NSE stocks.
+
+## RECORD-026 | 2026-04-14 | session_026 | v5.37 | STALE
+**Finding:** The session_025 CHECKPOINT recorded regression as 492/500 (8 failures). Actual state at session_026 start was 480/488 — same 8 failure set but 12 fewer total checks. The check count discrepancy (500 vs 488) likely reflects that session_025 was written mid-sprint when some v5.37b R27.B checks had not yet been added to the manifest. The failure identities matched exactly so no work was at risk, but the total count in the CHECKPOINT was misleading.
+**Source:** `python3 regression.py` output at session_026 start vs CHECKPOINT block in GSI_WIP.md.
+**Impact:** LOW — 8 failures matched; no incorrect resumption. Only the pass/total numbers differed.
+**Fix applied:** None required. Future checkpoints should note "N failures" as the reliable field rather than "N pass / M total" since totals can shift as manifest checks are added mid-sprint.
+
+## RECORD-027 | 2026-04-14 | session_026 | v5.37 | LEARNING
+**Finding:** `get_top_movers()` computes its change percentage as `(last_close - prev_close) / prev_close * 100` using `period="5d", interval="1d"` data. This is a previous-close to latest-close delta — NOT an intraday change. The section title "Top Movers Today" was technically accurate only if yfinance's latest daily close IS today's close, but the change shown is always close-to-close (not open-to-current). The temporal label added for df-08 reads "previous close → latest close" which is the precise description. Using "intraday" would have been wrong.
+**Source:** Reading `market_data.py:526–533` (`get_top_movers` implementation) when composing the df-08 caption.
+**Impact:** LOW — label wording was correct. Documents why "intraday" was avoided.
+**Fix applied:** Caption added: "1-day % change (previous close → latest close) · Refreshes every 60 s".

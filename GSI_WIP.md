@@ -19,13 +19,13 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
-Session ID:    session_025
-Version:       v5.36 → v5.37
-Last updated:  2026-04-13
-Sprint:        v5.37 IN_PROGRESS — executing session_025
-Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
-Next session:  session_026
+Status:        IDLE
+Session ID:    session_026
+Version:       v5.37
+Last updated:  2026-04-14
+Sprint:        v5.37 COMPLETE
+Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE)
+Next session:  session_027
 ```
 
 ## session_025 — Pre-Sprint Handoff (written end of session_024 extension)

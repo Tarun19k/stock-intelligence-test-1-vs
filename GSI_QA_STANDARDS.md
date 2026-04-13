@@ -1351,3 +1351,93 @@ These items affect the litellm proxy CLI tools in `litellm-proxy/`. No Streamlit
 **Good-to-have:**
 - [ ] PROXY-06 `--spend` flag visible in `--help` output
 - [ ] `review_gate.py --help` exits 0
+
+---
+
+# QA Brief — v5.37 SEBI Compliance + Governance Sprint
+
+**Sprint:** v5.37 | **Date:** 2026-04-14 | **Session:** session_025/026
+
+## Summary of changes
+
+9 code items + 2 governance items across 8 files:
+
+| # | Fix | File | Expected visible change |
+|---|---|---|---|
+| 1 | df01/OPEN-027 | pages/home.py | `_render_global_signals()` now shows SEBI disclaimer caption below signal cards; `period="3mo"` in 3 batch calls (no visible diff — prevents DF-01 silent empty signals) |
+| 2 | OPEN-029 | pages/dashboard.py | Compact SEBI caption appears below ticker header on all 4 tabs (Charts/Forecast/Compare/Insights) |
+| 3 | OPEN-022 | pages/week_summary.py | SEBI caption in Signal Summary tab above BUY/WATCH/AVOID count cards; SEBI caption in Portfolio Allocator below "📊 Optimal Allocation" title |
+| 4 | OPEN-028 | pages/global_intelligence.py | SEBI caption after "Related Stocks to Watch" title; each watchlist stock now shows BUY/WATCH/AVOID verdict badge below name |
+| 5 | df-03 | pages/week_summary.py | Caption below Portfolio Allocator allocation table: "Based on 6-month daily price history · Data as of DD Mon YYYY" |
+| 6 | df-08 | pages/home.py | Caption below Top Movers cards: "1-day % change (previous close → latest close) · Refreshes every 60 s" |
+| 7 | OPEN-023 | litellm-proxy/config.yaml | hf-code model name `groq/openai/gpt-oss-20b` → `groq/qwen-qwq-32b` (runtime fix, no UI change) |
+| 8 | OPEN-025 | portfolio.py + week_summary.py | UI text now reads "σ >= 15%" for UNSTABLE threshold (was "> 15%") |
+| 9 | df-02 | market_data.py | `DEFAULT_NEWS_FEEDS` constant added (ET Markets + Reuters + BBC Business + ToI); no UI change |
+| 10 | df-05 | pages/global_intelligence.py | Caption after all topic cards: "Geopolitical & macro analysis · Algorithmically curated from static research · Last reviewed: Apr 2026" |
+| 11 | OPEN-026 | CLAUDE.md + regression.py | EP table + R8 additions (no UI change) |
+
+## Before / After screenshots required
+
+**Fix 1 — SEBI in Global Signals (home.py):**
+- Before: Signal cards (BUY/WATCH/AVOID counts for each market group) with short "For informational purposes only" caption only
+- After: Full SEBI disclaimer text visible below signal cards on Home page
+
+**Fix 2 — SEBI in Dashboard header (dashboard.py):**
+- Before: Ticker name / verdict badge / price tile with NO disclaimer on Charts, Forecast, Compare tabs
+- After: Compact SEBI caption line directly below header verdict badge on all tabs
+
+**Fix 3 — SEBI in Portfolio Allocator (week_summary.py):**
+- Before: "📊 Optimal Allocation" title → immediately allocation rows
+- After: "📊 Optimal Allocation" → SEBI caption → data-as-of caption → allocation rows
+
+**Fix 4 — Verdict badges in GI watchlist (global_intelligence.py):**
+- Before: Related stock tiles show price + 1-day change only
+- After: Each stock tile shows an additional BUY/WATCH/AVOID badge (coloured pill)
+
+**Fix 5 — Data-as-of in Portfolio Allocator:**
+- Expected text: "Based on 6-month daily price history · Data as of 14 Apr 2026" (or current date)
+
+**Fix 6 — Top Movers caption:**
+- Expected text below the 6 mover cards: "1-day % change (previous close → latest close) · Refreshes every 60 s"
+
+**Fix 10 — GI macro last-reviewed:**
+- Expected text after all topic accordion cards: "Geopolitical & macro analysis · Algorithmically curated from static research · Last reviewed: Apr 2026"
+
+## Cross-page spot check — v5.37
+
+| Reading | Location | Expected |
+|---|---|---|
+| SEBI disclaimer | Dashboard (Charts tab) | Visible below verdict badge |
+| SEBI disclaimer | Portfolio Allocator | Visible below "Optimal Allocation" title |
+| SEBI disclaimer | Signal Summary tab | Visible above BUY/WATCH/AVOID count cards |
+| Verdict badge | GI → any topic watchlist | BUY/WATCH/AVOID pill next to each stock |
+| Data-as-of | Portfolio Allocator | "Data as of DD Mon YYYY" caption present |
+| Top Movers label | Home page | "previous close → latest close" caption present |
+| UNSTABLE threshold | Portfolio Allocator expander | "σ >= 15%" (not "> 15%") |
+
+## Playwright Test Cases
+
+**PLAYWRIGHT-01:** Navigate to Home page → assert global signals section shows SEBI caption text · Assert at least one RSI value ≠ 50 in signal badges · Edge case: fragment runs every 60s — verify caption persists on re-render
+
+**PLAYWRIGHT-02:** Navigate to any stock dashboard → assert SEBI caption text visible in header area on Charts tab · Switch to Forecast tab → assert caption still visible · Edge case: header renders for all 4 tabs — verify not just Insights tab
+
+**PLAYWRIGHT-03:** Navigate to Week Summary → Signal Summary tab → assert SEBI caption present · Navigate to Portfolio Allocator tab → run optimisation → assert SEBI caption present in allocation table area
+
+**PLAYWRIGHT-04:** Navigate to Global Intelligence → Related Stocks section → assert SEBI caption present · Assert at least one ticker shows BUY/WATCH/AVOID verdict badge · Edge case: cold cache — graceful fallback if verdict unavailable
+
+**PLAYWRIGHT-05:** Navigate to Week Summary → Portfolio Allocator → run optimisation → assert data freshness label visible near metric cards
+
+**PLAYWRIGHT-06:** Navigate to Home page → Top Movers section → assert temporal scope caption visible
+
+## What I need back from QA
+
+**Must-have:**
+- [ ] Fix 1 pass/fail: SEBI caption visible on Home page below global signals section
+- [ ] Fix 2 pass/fail: SEBI caption visible on Dashboard header (Charts tab, before Insights)
+- [ ] Fix 3 pass/fail: SEBI caption visible in Portfolio Allocator below "Optimal Allocation" title
+- [ ] Fix 4 pass/fail: At least one verdict badge visible in a GI topic watchlist
+- [ ] Fix 5 pass/fail: Data-as-of caption shows a real date (not "unknown")
+- [ ] Fix 6 pass/fail: Top Movers caption visible below mover cards
+
+**Good-to-have:**
+- [ ] Fix 10 pass/fail: Last-reviewed caption visible at bottom of GI topic section

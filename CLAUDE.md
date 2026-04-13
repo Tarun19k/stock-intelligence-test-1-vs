@@ -65,7 +65,7 @@ Check before ANY version change in requirements.txt. compliance_check.py C9 bloc
 
 ---
 
-## Current State (v5.36 — 2026-04-07)
+## Current State (v5.37 — 2026-04-14)
 
 **Regression baseline: 436/436 PASS** *(stable; R27/R30/R31/R32 add additional checks during active sprints)*
 
@@ -168,6 +168,7 @@ pages/home.py       render_ticker_bar(cb), render_homepage(cb, market_open)
 pages/dashboard.py  render_dashboard(ticker, name, country, cur_sym, info, df, cb, ...)
                     _make_live_price_fragment(...)    # @st.fragment(run_every=5s market only)
 pages/week_summary.py render_week_summary, render_market_overview, render_group_overview
+                    _render_forecast_accuracy_report()
 pages/global_intelligence.py render_global_intelligence(cur_sym, cb, market_open)
 pages/observability.py render_observability() — DEV_TOKEN gated, MPA direct URL only
 market_data.py      get_ticker_bar_data_fresh(tickers) [TTL=10s]
@@ -187,7 +188,7 @@ indicators.py       compute_indicators(df), signal_score(df, info)
 forecast.py         store_forecast, resolve_forecasts, render_forecast_accuracy
 portfolio.py        check_data_quality, compute_log_returns, winsorize_returns
                     bootstrap_scenarios, optimise_mean_cvar, compute_efficient_frontier
-                    detect_stress_regime, check_regime_conflicts
+                    detect_stress_regime, check_regime_conflicts, compute_stability_score
 utils.py            safe_run(fn, context, default), sanitise(text, max_len)
                     sanitise_bold(text, max_len), init_session_state()
 ```

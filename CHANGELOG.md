@@ -237,3 +237,6 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 
 ## v5.36 — 2026-04-07
 
+
+## v5.37 — 2026-04-14
+
