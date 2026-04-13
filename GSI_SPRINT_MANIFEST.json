@@ -3,7 +3,7 @@
   "sprint_version": "v5.37",
   "sprint_name": "SEBI Compliance + Governance + Data Freshness",
   "sub_sprints": ["v5.37a (SEBI compliance P0)", "v5.37b (Governance + Proxy + Data Freshness)"],
-  "status": "PLANNING",
+  "status": "IN_PROGRESS",
   "created": "2026-04-10",
   "session": "session_022",
   "regression_baseline_entering": 434,
@@ -60,7 +60,7 @@
       "id": "prereq-claude-features",
       "sub_sprint": "prereq",
       "title": "Claude Code features knowledge repository",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "model": "haiku",
       "mode": "background_agent",
       "files": ["docs/ai-ops/claude-features-reference.md"],
@@ -73,6 +73,7 @@
       "id": "df01-open027",
       "sub_sprint": "v5.37a",
       "title": "DF-01: Fix period=1mo→3mo in home.py + OPEN-027: Add SEBI caption to _render_global_signals()",
+      "status": "DONE",
       "priority": "P0",
       "model": "haiku",
       "mode": "sequential",
@@ -87,12 +88,14 @@
         "home.py after line 343 (before cols = responsive_cols(5)) — add st.caption with SEBI disclaimer"
       ],
       "pass_criterion": "python3 regression.py → 434 PASS; page shows RSI values other than 50; SEBI caption visible above signal badges",
-      "permissions_required": ["file-read", "file-write", "bash-python3"]
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "PLAYWRIGHT-01: Navigate to Home page → assert global signals section shows SEBI caption text · Assert at least one RSI value ≠ 50 in signal badges · Edge case: fragment runs every 60s — verify caption persists on re-render"
     },
     {
       "id": "open-029",
       "sub_sprint": "v5.37a",
       "title": "OPEN-029: Add SEBI caption to dashboard _render_header_static() — covers Charts/Forecast/Compare tabs",
+      "status": "DONE",
       "priority": "P0",
       "model": "haiku",
       "mode": "sequential",
@@ -105,12 +108,14 @@
         "dashboard.py after line 178 (after header markdown block) — add st.caption with compact SEBI text"
       ],
       "pass_criterion": "python3 regression.py → 434 PASS; compact SEBI caption visible in dashboard header on Charts tab",
-      "permissions_required": ["file-read", "file-write", "bash-python3"]
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "PLAYWRIGHT-02: Navigate to any stock dashboard → assert SEBI caption text visible in header area on Charts tab · Switch to Forecast tab → assert caption still visible · Edge case: header renders for all 4 tabs — verify not just Insights tab"
     },
     {
       "id": "open-022",
       "sub_sprint": "v5.37a",
       "title": "OPEN-022: Add SEBI disclaimer to week_summary.py — Signal Summary tab + Portfolio Allocator table",
+      "status": "DONE",
       "priority": "P0",
       "model": "sonnet",
       "mode": "sequential",
@@ -124,12 +129,14 @@
         "week_summary.py lines 956–968 — add SEBI disclaimer before/after Portfolio Allocator table"
       ],
       "pass_criterion": "python3 regression.py → 434 PASS; SEBI text visible in Signal Summary tab; SEBI text visible in Portfolio Allocator section",
-      "permissions_required": ["file-read", "file-write", "bash-python3"]
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "PLAYWRIGHT-03: Navigate to Week Summary → Signal Summary tab → assert SEBI caption present · Navigate to Portfolio Allocator tab → run optimisation → assert SEBI caption present in allocation table area"
     },
     {
       "id": "open-028",
       "sub_sprint": "v5.37a",
       "title": "OPEN-028: GI watchlist — add SEBI caption + fetch+display BUY/WATCH/AVOID verdict per ticker",
+      "status": "DONE",
       "priority": "P0",
       "model": "sonnet",
       "mode": "sequential",
@@ -143,7 +150,8 @@
         "Use ticker_cache if warm (Policy 5 — same data source as indicator panel)"
       ],
       "pass_criterion": "python3 regression.py → 434 PASS; SEBI caption visible; each watchlist ticker shows verdict badge",
-      "permissions_required": ["file-read", "file-write", "bash-python3"]
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "PLAYWRIGHT-04: Navigate to Global Intelligence → Related Stocks section → assert SEBI caption present · Assert at least one ticker shows BUY/WATCH/AVOID verdict badge · Edge case: cold cache — graceful fallback if verdict unavailable"
     },
     {
       "_section": "=== v5.37b — GOVERNANCE + PROXY + DATA FRESHNESS (sequential Sonnet first, then Haiku clusters) ==="
@@ -165,7 +173,8 @@
         "Use existing cache timestamp from market_data if available, else show static date"
       ],
       "pass_criterion": "python3 regression.py → 434 PASS; Portfolio Allocator shows a data freshness label",
-      "permissions_required": ["file-read", "file-write", "bash-python3"]
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "PLAYWRIGHT-05: Navigate to Week Summary → Portfolio Allocator → run optimisation → assert data freshness label visible near metric cards"
     },
     {
       "id": "df-08",
@@ -184,7 +193,8 @@
         "If movers data has a timestamp, display it; if from cache, label it as cached"
       ],
       "pass_criterion": "python3 regression.py → 434 PASS; Top Movers section shows a temporal scope label",
-      "permissions_required": ["file-read", "file-write", "bash-python3"]
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "PLAYWRIGHT-06: Navigate to Home page → Top Movers section → assert temporal scope caption visible"
     },
     {
       "id": "haiku-cluster-H1",
@@ -271,7 +281,8 @@
         "regression.py R8 check — add compute_stability_score to the EP verification list (baseline → 435)"
       ],
       "pass_criterion": "python3 regression.py → 435 PASS; both functions appear in R8 EP list",
-      "permissions_required": ["file-read", "file-write", "bash-python3"]
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "N/A — doc + regression check addition only"
     }
   ],
 
@@ -446,6 +457,35 @@
       "committed": false,
       "doc_updates_required": true,
       "doc_update_notes": "Update CLAUDE.md regression baseline from 434 → 435 after R8 check added"
+    },
+    {
+      "file": ".claude/commands/sprint-monitor.md",
+      "change_type": "new_file",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "Command file — not tracked in CLAUDE.md file structure; session_025 pre-sprint tooling"
+    },
+    {
+      "file": "docs/ai-ops/observability-dashboard-plan.md",
+      "change_type": "new_file",
+      "committed": false,
+      "doc_updates_required": true,
+      "doc_update_notes": "Add to CLAUDE.md Living Documentation table as 'Observability dashboard design + cost model'"
+    },
+    {
+      "file": "GSI_SPRINT_MANIFEST.json",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "prereq-claude-features status DONE + new file_change_log entries + baseline note. IS the manifest."
+    },
+    {
+      "file": "GSI_SESSION_SNAPSHOT.md",
+      "change_type": "modified",
+      "committed": false,
+      "doc_updates_required": false,
+      "no_doc_update_reason": "SNAPSHOT-010 appended — append-only doc, no other doc update required"
     }
-  ]
+  ],
+  "_baseline_correction": "manifest regression_baseline_entering: 434 is stale (written session_022). Actual confirmed baseline entering v5.37 sprint execution: 436/436. Expected exit: 437 (436 + 1 for open-026 R8 addition)."
 }

@@ -587,7 +587,7 @@ claude
 claude
 ```
 
-Inside Claude Code: `/new-session` to load context · `/compliance-check` before push · `/qa-brief` for QA briefs.
+Inside Claude Code: `/new-session` to load context · `/compliance-check` before push · `/qa-brief` for QA briefs · `/sprint-monitor init` at sprint start · `/sprint-monitor status` to track progress.
 
 Proxy runs via launchd (auto-starts on login, no second terminal needed).
 Active tiers: `hf-reasoning` (Groq 70B) · `hf-code` (Groq 20B) · `hf-fast` (Groq 8B).
@@ -598,4 +598,5 @@ Paid tiers (Anthropic API, OpenAI, Gemini, Perplexity) need billing activation �
 - Ask Claude to "generate a qa-brief" → reads `.claude/commands/qa-brief.md`
 - Ask Claude to "run compliance-check" → reads `.claude/commands/compliance-check.md`
 - Ask Claude to "run sprint-review" → reads `.claude/commands/sprint-review.md`
+- Ask Claude to "run sprint-monitor" → reads `.claude/commands/sprint-monitor.md`
 Upload the relevant command file alongside CLAUDE.md when you need it.

@@ -296,3 +296,26 @@ python3 regression.py (all 427 checks must pass) AND python3 -c "..." compliance
 **Q09. Current sprint and status:** v5.37 — PLANNING. Prereq governance wiring complete and committed. GSI_WIP.md is IDLE. Sprint execution not yet started — ready to open v5.37 this session. Unchanged from SNAPSHOT-008.
 
 **Q10. Pre-push gate:** Two commands required: (1) python3 regression.py — 436 checks pass; (2) python3 compliance_check.py — 9/9 gates confirmed this session. Unchanged from SNAPSHOT-008.
+
+## SNAPSHOT-010 | 2026-04-13 | session_025 | v5.36 | QSet-v1
+*Compared to SNAPSHOT-009 (QSet-v1). Deviations: none. Updated: none. New questions: none.*
+
+**Q01. Regression baseline:** 436/436 PASS. Confirmed by running python3 regression.py this session. Unchanged from SNAPSHOT-009.
+
+**Q02. R27 enforcement and activation:** R27 enforces GSI_SPRINT_MANIFEST.json. Current manifest is PLANNING (v5.37), so all dynamic checks (R27 content, R30, R31, R32) are inactive. R28 (hook/rules existence) always-on. Unchanged from SNAPSHOT-009.
+
+**Q03. yfinance import restriction:** Only market_data.py may import yfinance. All other modules banned. R3 regression check enforces this. Unchanged from SNAPSHOT-009.
+
+**Q04. DataManager bypass mode:** DataManager M1 skeleton in data_manager.py. BYPASS MODE active until M4 ships (OPEN-007, HIGH priority). Pages call market_data.py directly. R24 enforces bypass. Unchanged from SNAPSHOT-009.
+
+**Q05. Signal arbitration hierarchy:** Weinstein Stage > Elder Triple Screen > raw signal score. Stage 4 vetoes BUY from Elder. Stage 1/3 forces WATCH. Veto must be visibly disclosed in UI (Policy 6). Enforced in indicators.py compute_unified_verdict(). Unchanged from SNAPSHOT-009.
+
+**Q06. M3 routing guard (grp_explicitly_selected):** Session_state flag set only on explicit user group click. Gates 49-ticker batch download to prevent rate limit spirals. Resets on market switch. R22 enforces it. Unchanged from SNAPSHOT-009.
+
+**Q07. DO NOT UNDO rule 12:** Raw Momentum score (X/100) must NOT appear in dashboard header _render_header_static(). Option B is final: verdict badge + plain-English reason only. Score IS permitted in KPI panel and _tab_insights. ADR-008 is final record. Unchanged from SNAPSHOT-009.
+
+**Q08. Five Permanent Tier A manifest checks:** Every sprint manifest must contain all 5: (1) sync_docs_passes; (2) compliance_baseline_current; (3) pr_template_baseline_current; (4) decisions_has_sprint_adr; (5) qa_standards_has_brief. Unchanged from SNAPSHOT-009.
+
+**Q09. Current sprint and status:** v5.37 — PLANNING. Prereq governance wiring complete and committed. GSI_WIP.md is IDLE (session_025 NOT YET STARTED). Ready to execute v5.37 sprint this session. Unchanged from SNAPSHOT-009.
+
+**Q10. Pre-push gate:** Two commands required: (1) python3 regression.py — 436 checks pass; (2) python3 compliance_check.py — 9/9 gates. Unchanged from SNAPSHOT-009.

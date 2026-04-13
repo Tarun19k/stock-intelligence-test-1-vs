@@ -19,13 +19,13 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_025 (NOT YET STARTED)
-Version:       v5.36
+Status:        ACTIVE
+Session ID:    session_025
+Version:       v5.36 → v5.37
 Last updated:  2026-04-13
-Sprint:        v5.37 PLANNING COMPLETE — execution begins session_025
-Manifest:      GSI_SPRINT_MANIFEST.json (PLANNING — v5.37, not yet IN_PROGRESS)
-Next session:  session_025
+Sprint:        v5.37 IN_PROGRESS — executing session_025
+Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Next session:  session_026
 ```
 
 ## session_025 — Pre-Sprint Handoff (written end of session_024 extension)
@@ -920,3 +920,62 @@ Claude updates Status to IDLE, clears active tasks, moves them to Completed.
   (b) the interrupted session's outputs are discarded and the WIP is reset.
 - Never edit a CHECKPOINT block — add a new one below the old one.
 - The most recent CHECKPOINT always wins.
+
+---
+
+## CHECKPOINT — 2026-04-13 | session_025 | v5.36 → v5.37 (phase boundary)
+
+```
+Status:               ACTIVE (phase boundary — v5.37a COMPLETE, v5.37b NOT STARTED)
+Regression:           492/500 (8 failures = 4 R27.A sprint-close + 4 R27.B v5.37b pending)
+Compliance:           NOT YET RUN (run at sprint close only)
+Last git commit:      fdd5c31 (unchanged — no commits made this session yet)
+bash-git approval:    PRE-APPROVED for all commits by user (session_025)
+Commit strategy:      All .py files commit together after sprint close (pre_commit.sh blocks
+                      mid-sprint due to R27.A checks requiring sync_docs + QA brief first)
+```
+
+### v5.37a — COMPLETE (4/4 items done, files edited but NOT YET COMMITTED)
+
+- [x] df01-open027 — pages/home.py — period 1mo→3mo (3 places) + SEBI caption after line 343
+- [x] open-029    — pages/dashboard.py — SEBI caption after _render_header_static() line 178
+- [x] open-022    — pages/week_summary.py — SEBI caption in Signal Summary tab + Portfolio Allocator
+- [x] open-028    — pages/global_intelligence.py — SEBI caption + BUY/WATCH/AVOID verdict badges
+                    (new import: compute_indicators, signal_score from indicators)
+                    (new: _vcols dict, df_ind fetch, verdict badge in HTML)
+
+### v5.37b — NOT STARTED (5 items pending)
+
+- [ ] df-03       — pages/week_summary.py — data-as-of timestamp in Portfolio Allocator
+- [ ] df-08       — pages/home.py — Top Movers temporal scope label
+- [ ] haiku-cluster-H1 — litellm-proxy/config.yaml + sprint_planner.py + portfolio.py + week_summary.py
+                          (OPEN-023: groq/qwen-qwq-32b; OPEN-025: >= 15 comment align)
+- [ ] haiku-cluster-H2 — market_data.py + pages/global_intelligence.py
+                          (DF-02: RSS ET Markets + Reuters; DF-05: macro last-reviewed label)
+- [ ] open-026    — CLAUDE.md EP table + regression.py R8 (adds compute_stability_score → 437/437)
+
+### Additional files changed this session (not yet committed)
+
+- GSI_SPRINT_MANIFEST.json — status IN_PROGRESS; playwright fields added to all items;
+                              prereq-claude-features → DONE; v5.37a items → DONE;
+                              _baseline_correction note added; new file_change_log entries
+- GSI_SESSION_SNAPSHOT.md — SNAPSHOT-010 appended (2026-04-13, session_025, no deviations)
+- CLAUDE.md               — sprint-monitor wired in Claude Code line + Claude.ai reference block
+- .claude/commands/sprint-monitor.md — NEW FILE (sprint execution monitor skill)
+- docs/ai-ops/observability-dashboard-plan.md — NEW FILE (local north star obs dashboard plan v1.1)
+
+### Pre-sprint decisions recorded this session
+
+- bash-git pre-approved for all commits (session_025)
+- Local observability tool confirmed (not Streamlit Cloud) — ANTHROPIC_API_KEY via shell env
+- Vercel migration target: v5.39/v6.0, earliest ~3–4 sessions from now, 10-week execution
+- sprint-monitor skill onboarded; observability-dashboard-plan v1.1 documented
+- prereq-claude-features confirmed DONE (docs/ai-ops/claude-features-reference.md exists, 16KB)
+- Manifest R27.A baseline discrepancy noted: manifest says 434, actual 436, expected exit 437
+
+### Resume instruction
+
+Next session: run /new-session → confirm CHECKPOINT above → resume with v5.37b.
+First item: df-03 (week_summary.py, sonnet, data-as-of timestamp in Portfolio Allocator).
+All v5.37a files are edited and working — do NOT re-implement them.
+Commit strategy: all files commit together after sprint close when 500/500 regression passes.
