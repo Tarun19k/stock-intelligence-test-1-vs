@@ -252,3 +252,27 @@
 **Source:** QA screenshot `reports/GlobalSignals-static text issue with delay load.png` + reading `market_data.py:251–264` (fresh-serve logic) + `market_data.py:159–162` (cache declarations).
 **Impact:** MEDIUM — all 10 global index signals were stuck in partial "Computing..." state on every cold start. The section appeared to be loading but never completed for majority of tickers. Affects the Home page's primary market-overview function.
 **Fix applied:** v5.37.1 hotfix. Added `_ticker_cache_period: dict = {}` alongside `_ticker_cache`. Cache write in `_yf_batch_download` now stores `_ticker_cache_period[sym] = period`. Fresh-serve check now requires `_ticker_cache_period.get(s) == period`. The 429-fallback stale path (`for sym in tickers: if sym not in result`) is unaffected — it still serves any cached data as a last resort.
+
+## RECORD-030 | 2026-04-14 | session_027 | v5.38 | LEARNING
+**Finding:** R33 (no raw Momentum score in header) required regex scoping to the `_render_header_static()` function body — not a whole-file search. `pages/dashboard.py` line 949 contains `/100` inside `_tab_insights()` (the score decomposition display), which is a legitimate use. A naive `"/100" in file_content` check would always pass, masking any future violation of DO NOT UNDO rule 12. The fix uses `re.search(r'def _render_header_static\b.*?(?=\ndef |\Z)', src, re.DOTALL)` to extract only the function body before testing. This is a direct instance of the "wrong-file string check" loophole class — the same failure class applies when a string exists legitimately elsewhere in the same file.
+**Source:** regression.py R33 implementation, session_027. Caught during design before writing the check.
+**Impact:** MEDIUM — without scoping, R33 would have been a permanently-passing dead check. Any future violation of rule 12 would ship undetected.
+**Fix applied:** R33 scoped to `_render_header_static()` function body via regex. Committed 85a26d0.
+
+## RECORD-031 | 2026-04-14 | session_027 | v5.38 | LEARNING
+**Finding:** `analyze_token_burns.py` had a unit mismatch on first write: per-item `actual_tokens` is stored as raw token counts (e.g., 18000) but `est_tokens` is parsed as k-float (e.g., 18.0). The accuracy ratio `actual / est` produced ~1000x inflated values (872.7 instead of ~0.87). Similarly, `_parse_ktoken` failed on en-dash (–) separators from the manifest (which uses "16k–20k" not "16k-20k") and on leading "~" in total strings. All three bugs were caught by running the script immediately after writing it and inspecting the output. Lesson: always run the script against real data before committing — schema bugs are invisible until the data produces implausible values.
+**Source:** `docs/ai-ops/analyze_token_burns.py` first run output, session_027.
+**Impact:** LOW — caught and fixed before commit. No data was lost or corrupted.
+**Fix applied:** (1) ratio uses `(actual / 1000.0) / est`; (2) `_parse_ktoken` normalises en-dash → hyphen and strips leading ~; (3) per-mode efficiency also divides by 1000. Committed cf9e0b6.
+
+## RECORD-032 | 2026-04-14 | session_027 | v5.38 | STALE
+**Finding:** Memory file `project_sprint_v537_review_pending.md` was stale at session resumption — it showed v5.37 PLANNING state from session_026 (3 days prior), while the actual state was v5.38 IN_PROGRESS. Memory file `project_overview.md` showed baseline 444/444 (stable 436/436) from the pre-R33/R34 state, while actual was 439 always-on. These stale memory files would have misled cold-start context reconstruction in any future session where memory was the primary reference.
+**Source:** Reading memory files at session_027 resumption. Stale state detected by comparing to GSI_WIP.md + GSI_SPRINT_MANIFEST.json.
+**Impact:** MEDIUM — stale sprint state could cause a future session to "resume" from a completed sprint rather than the active v5.38 sprint.
+**Fix applied:** Replaced `project_sprint_v537_review_pending.md` with `project_sprint_v538_state.md`. Updated `project_overview.md` baseline and version. Added `project_token_burn_policy.md` (Policy 8). Updated `reference_docs.md`. All memory files updated at session_027 resumption, before sprint items began.
+
+## RECORD-033 | 2026-04-14 | session_027 | v5.38 | LEARNING
+**Finding:** Token burn overhead accounting does not capture context compaction cost. In session_027, a context compaction event occurred mid-sprint (after v5.38a), adding an estimated ~12k tokens of context regeneration overhead not reflected in the `token_burn_actuals.overhead` block. The schema has `regression_runs_actual`, `sync_docs_actual`, and `sprint_close_actual` but no `context_compaction_actual` field. For sprints that span multiple context windows, the captured overhead will undercount by 10–15k per compaction event.
+**Source:** Session_027 flow — context compaction between v5.38a and v5.38b sub-sprints.
+**Impact:** LOW — first sprint with actuals, so the baseline is known to be incomplete. Future schema version (2.0) should add `context_compaction_actual` field.
+**Fix applied:** Documented in token-burn-log.jsonl `learnings` field. Schema gap noted here. No schema change this session — would require a minor schema_version bump to avoid breaking existing parsers.
