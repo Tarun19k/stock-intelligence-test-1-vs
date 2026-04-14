@@ -25,6 +25,8 @@ GSI_SPRINT_MANIFEST.json as the source of truth.
 | `/sprint-monitor complete <item-id>` | After CTO confirms regression passes for an item |
 | `/sprint-monitor cluster <H1\|H2>` | Before dispatching a parallel worktree cluster |
 | `/sprint-monitor blocker <item-id> <reason>` | When an item is stuck — log and surface to user |
+| `/sprint-monitor playwright-done` | After all sprint PLAYWRIGHT-IDs confirmed passing — unblocks Step 3 |
+| `/sprint-monitor playwright-defer <reason> <ids>` | When Playwright cannot run at close — logs deferral, unblocks Step 3 |
 
 ---
 
@@ -153,10 +155,64 @@ When all tasks show `completed`:
    Step 0a: /log-learnings  (R32 requires RECORD in GSI_SESSION_LEARNINGS.md)
    Step 1:  python3 sync_docs.py
    Step 2:  python3 regression.py → confirm [N] PASS
-   Step 2a: /ui-test → run PLAYWRIGHT-01 through PLAYWRIGHT-06
+   Step 2a: [GATE] Playwright — awaiting /sprint-monitor playwright-done or playwright-defer
+            DO NOT proceed to Step 3 until one of these commands is received.
    Step 3:  Update GSI_SPRINT_MANIFEST.json status → COMPLETE, archive to docs/sprint_archive/
    Step 4:  Set GSI_WIP.md Status → IDLE
 ```
+
+**Step 2a is a hard gate.** After Step 2 passes, print:
+
+```
+⏸  PLAYWRIGHT GATE — sprint cannot close without explicit acknowledgement.
+
+   PLAYWRIGHT IDs in this sprint: [list from manifest playwright fields]
+
+   Option A — tests ran and passed:
+     /sprint-monitor playwright-done
+
+   Option B — cannot run now (no Streamlit instance, etc.):
+     /sprint-monitor playwright-defer <reason> <PLAYWRIGHT-NN,PLAYWRIGHT-MM,...>
+
+   Step 3 is blocked until one of the above commands is received.
+```
+
+---
+
+## Step 2a handling — playwright-done
+
+When CTO issues `/sprint-monitor playwright-done`:
+
+1. Confirm all PLAYWRIGHT-IDs listed in manifest items (where `playwright` field does not start with "N/A") have been covered.
+2. Print:
+
+```
+✓ PLAYWRIGHT GATE CLEARED — all [N] tests confirmed passing
+  Proceeding to Step 3.
+```
+
+3. Continue with Step 3 (manifest → COMPLETE, archive).
+
+---
+
+## Step 2a handling — playwright-defer <reason> <ids>
+
+When CTO issues `/sprint-monitor playwright-defer <reason> <ids>`:
+
+1. Record the deferral:
+   - Append to CHECKPOINT block in GSI_WIP.md under "Deferred Playwright tests": `[ids] — [reason]`
+   - Note in GSI_QA_STANDARDS.md sprint QA brief: "PLAYWRIGHT DEFERRED: [ids] — [reason]. Carry to next session."
+2. Print:
+
+```
+⚠  PLAYWRIGHT DEFERRED — [ids]
+   Reason: [reason]
+   Logged in: GSI_WIP.md CHECKPOINT + GSI_QA_STANDARDS.md
+   Proceeding to Step 3 with deferral on record.
+   At next session start, /new-session will surface these before declaring sprint fully closed.
+```
+
+3. Continue with Step 3 (manifest → COMPLETE, archive).
 
 ---
 

@@ -494,7 +494,8 @@ After the final implementation commit and before updating manifest status or GSI
 0a. Run `/log-learnings` skill — append a RECORD to `GSI_SESSION_LEARNINGS.md` covering: deviations found, decisions made, anti-patterns avoided, loopholes caught. R32 blocks COMPLETE status if no RECORD exists dated ≥ sprint `created` date.
 1. Run `python3 sync_docs.py` — auto-rebuilds CHANGELOG.md, README.md, AGENTS.md and checks all governance docs. Respond to any SEMI-auto prompts.
 2. Run `python3 regression.py` — confirm baseline still passes after sync.
-2a. Run Playwright suite via `ui-test` skill — all PLAYWRIGHT-ID cases defined in the sprint must pass. Failures block sprint close.
+2a. Run Playwright suite via `/sprint-monitor playwright-done` or `/sprint-monitor playwright-defer <reason> <ids>` — **this is a hard gate**. Step 3 does not begin until one of these commands is issued. All PLAYWRIGHT-ID cases defined in the sprint must be either confirmed passing or explicitly deferred with a logged reason.
+2b. Q-trigger review — scan sprint items for changes to system invariants that would alter a snapshot Q&A answer: new entry points (Q04), new regression baseline (Q01), new governance policy (Q07), new compliance checks (Q06). If any answer changed, note it in the new SNAPSHOT block header at next session start. No file write needed at close — just confirm the list mentally and include in `/log-learnings` RECORD.
 3. Update `GSI_SPRINT_MANIFEST.json` status → COMPLETE and archive to `docs/sprint_archive/`.
 4. Set `GSI_WIP.md` Status → IDLE.
 

@@ -1,50 +1,168 @@
 {
-  "_comment": "Sprint manifest — read by regression.py R27. Set status to IN_PROGRESS when implementation starts. Archive to docs/sprint_archive/ on close.",
+  "_comment": "Sprint manifest \u2014 read by regression.py R27. Set status to IN_PROGRESS when implementation starts. Archive to docs/sprint_archive/ on close.",
   "sprint_version": "v5.38",
   "sprint_name": "Governance Gap Closure",
-  "sub_sprints": ["v5.38a (regression + compliance hardening)", "v5.38b (skill/protocol fixes)", "v5.38c (observability Phase 1 — urgent)"],
+  "sub_sprints": [
+    "v5.38a (regression + compliance hardening)",
+    "v5.38b (skill/protocol fixes)",
+    "v5.38c (observability Phase 1 \u2014 urgent)"
+  ],
   "status": "IN_PROGRESS",
   "created": "2026-04-14",
   "closed": null,
   "session": "session_027",
   "regression_baseline_entering": 437,
   "regression_baseline_expected_exit": 440,
-  "_baseline_note": "437 confirmed entering (436 stable + 1 open-026 R8 addition). gov-regression-batch adds: R33 always-on (+1), R34 always-on (+1) → 439 always-on base. R35 fires at COMPLETE only (+2 checks when JSONL present). R27.struct (+3 IN_PROGRESS checks: token_budget, tier_a_ids, last_item). R27.complete (+1 at COMPLETE: wip_idle). R31.na_reason (+4 IN_PROGRESS). R30 always fires during IN_PROGRESS (18 checks for 9 items). Expected exit baseline at COMPLETE: ~446 (439 always-on + R27.complete + R31.complete + R32 + R35 — confirmed at sprint close).",
-
-  "_close_checklist": "Manual steps at sprint close: (1) python3 sync_docs.py exits 0; (2) python3 regression.py → confirm PASS (exact count ~446, confirmed at close); (3) Archive manifest to docs/sprint_archive/.",
-
+  "_baseline_note": "437 confirmed entering (436 stable + 1 open-026 R8 addition). gov-regression-batch adds: R33 always-on (+1), R34 always-on (+1) \u2192 439 always-on base. R35 fires at COMPLETE only (+2 checks when JSONL present). R27.struct (+3 IN_PROGRESS checks: token_budget, tier_a_ids, last_item). R27.complete (+1 at COMPLETE: wip_idle). R31.na_reason (+4 IN_PROGRESS). R30 always fires during IN_PROGRESS (18 checks for 9 items). Expected exit baseline at COMPLETE: ~446 (439 always-on + R27.complete + R31.complete + R32 + R35 \u2014 confirmed at sprint close).",
+  "_close_checklist": "Manual steps at sprint close: (1) python3 sync_docs.py exits 0; (2) python3 regression.py \u2192 confirm PASS (exact count ~446, confirmed at close); (3) Archive manifest to docs/sprint_archive/.",
   "checks": [
-    { "id": "sync_docs_passes",              "tier": "A", "must_contain": ["see sync_docs.py exit 0"],    "target_file": "sync_docs.py output" },
-    { "id": "compliance_baseline_current",   "tier": "A", "must_contain": ["ALL 439 CHECKS PASS"],        "target_file": "GSI_COMPLIANCE_CHECKLIST.md" },
-    { "id": "pr_template_baseline_current",  "tier": "A", "must_contain": ["ALL 439 CHECKS PASS"],        "target_file": ".github/PULL_REQUEST_TEMPLATE.md" },
-    { "id": "decisions_has_sprint_adr",      "tier": "A", "must_contain": ["v5.38"],                      "target_file": "GSI_DECISIONS.md" },
-    { "id": "qa_standards_has_brief",        "tier": "A", "must_contain": ["v5.38"],                      "target_file": "GSI_QA_STANDARDS.md" },
-
-    { "id": "gap06_rule12_r33",              "tier": "B", "must_contain": ["R33"],                        "target_file": "regression.py" },
-    { "id": "gap07_cache_period_r34",        "tier": "B", "must_contain": ["R34", "_ticker_cache_period"], "target_file": "regression.py" },
-    { "id": "gap05_week_summary_compliance", "tier": "B", "must_contain": ["week_summary", "SEBI"],        "target_file": "compliance_check.py" },
-    { "id": "gap01_resume_snapshot",         "tier": "B", "must_contain": ["RESUME", "minimal"],           "target_file": ".claude/commands/new-session.md" },
-    { "id": "gap02_playwright_hard_gate",    "tier": "B", "must_contain": ["playwright-done", "playwright-defer"], "target_file": ".claude/commands/sprint-monitor.md" },
-    { "id": "token_burn_log_entry",          "tier": "B", "must_contain": ["v5.38", "schema_version", "actual_tokens_methodology"], "target_file": "docs/ai-ops/token-burn-log.jsonl" },
-    { "id": "token_burn_policy_in_claude",   "tier": "B", "must_contain": ["Token Burn Log", "Policy 8"],        "target_file": "CLAUDE.md" },
-    { "id": "token_burn_analyze_script",     "tier": "B", "must_contain": ["token-burn-log.jsonl"],              "target_file": "docs/ai-ops/analyze_token_burns.py" },
-    { "id": "token_burn_schema_version",     "tier": "B", "must_contain": ["schema_version", "self_estimate"],   "target_file": "docs/ai-ops/token-burn-log.jsonl" }
+    {
+      "id": "sync_docs_passes",
+      "tier": "A",
+      "must_contain": [
+        "see sync_docs.py exit 0"
+      ],
+      "target_file": "sync_docs.py output"
+    },
+    {
+      "id": "compliance_baseline_current",
+      "tier": "A",
+      "must_contain": [
+        "ALL 439 CHECKS PASS"
+      ],
+      "target_file": "GSI_COMPLIANCE_CHECKLIST.md"
+    },
+    {
+      "id": "pr_template_baseline_current",
+      "tier": "A",
+      "must_contain": [
+        "ALL 439 CHECKS PASS"
+      ],
+      "target_file": ".github/PULL_REQUEST_TEMPLATE.md"
+    },
+    {
+      "id": "decisions_has_sprint_adr",
+      "tier": "A",
+      "must_contain": [
+        "v5.38"
+      ],
+      "target_file": "GSI_DECISIONS.md"
+    },
+    {
+      "id": "qa_standards_has_brief",
+      "tier": "A",
+      "must_contain": [
+        "v5.38"
+      ],
+      "target_file": "GSI_QA_STANDARDS.md"
+    },
+    {
+      "id": "gap06_rule12_r33",
+      "tier": "B",
+      "must_contain": [
+        "R33"
+      ],
+      "target_file": "regression.py"
+    },
+    {
+      "id": "gap07_cache_period_r34",
+      "tier": "B",
+      "must_contain": [
+        "R34",
+        "_ticker_cache_period"
+      ],
+      "target_file": "regression.py"
+    },
+    {
+      "id": "gap05_week_summary_compliance",
+      "tier": "B",
+      "must_contain": [
+        "week_summary",
+        "SEBI"
+      ],
+      "target_file": "compliance_check.py"
+    },
+    {
+      "id": "gap01_resume_snapshot",
+      "tier": "B",
+      "must_contain": [
+        "RESUME",
+        "minimal"
+      ],
+      "target_file": ".claude/commands/new-session.md"
+    },
+    {
+      "id": "gap02_playwright_hard_gate",
+      "tier": "B",
+      "must_contain": [
+        "playwright-done",
+        "playwright-defer"
+      ],
+      "target_file": ".claude/commands/sprint-monitor.md"
+    },
+    {
+      "id": "token_burn_log_entry",
+      "tier": "B",
+      "must_contain": [
+        "v5.38",
+        "schema_version",
+        "actual_tokens_methodology"
+      ],
+      "target_file": "docs/ai-ops/token-burn-log.jsonl"
+    },
+    {
+      "id": "token_burn_policy_in_claude",
+      "tier": "B",
+      "must_contain": [
+        "Token Burn Log",
+        "Policy 8"
+      ],
+      "target_file": "CLAUDE.md"
+    },
+    {
+      "id": "token_burn_analyze_script",
+      "tier": "B",
+      "must_contain": [
+        "token-burn-log.jsonl"
+      ],
+      "target_file": "docs/ai-ops/analyze_token_burns.py"
+    },
+    {
+      "id": "token_burn_schema_version",
+      "tier": "B",
+      "must_contain": [
+        "schema_version",
+        "self_estimate"
+      ],
+      "target_file": "docs/ai-ops/token-burn-log.jsonl"
+    }
   ],
-
   "items": [
     {
       "id": "gov-regression-batch",
-      "title": "regression.py — R33/R34/R35 new checks + extend R27/R31; enforce token-burn-log close gate and last-item rule",
+      "title": "regression.py \u2014 R33/R34/R35 new checks + extend R27/R31; enforce token-burn-log close gate and last-item rule",
       "sub_sprint": "v5.38a",
       "model": "haiku",
-      "model_rationale": "All additions are targeted string/structure checks and loop extensions on existing patterns — no architectural judgment needed. haiku handles mechanical assertion writing.",
+      "model_rationale": "All additions are targeted string/structure checks and loop extensions on existing patterns \u2014 no architectural judgment needed. haiku handles mechanical assertion writing.",
       "mode": "sequential",
-      "files": ["regression.py"],
-      "pass_criterion": "python3 regression.py → 440/440 PASS. R33 fires if raw Momentum score string present in dashboard header. R34 fires if _ticker_cache_period missing from market_data.py. R35 fires at COMPLETE if token-burn-log item is not DONE or JSONL entry has null actual_tokens. R27 rejects manifest missing token_budget or Tier A IDs; rejects token-burn-log not as last item; rejects new sprint IN_PROGRESS when previous JSONL entry has no date_closed.",
+      "files": [
+        "regression.py"
+      ],
+      "pass_criterion": "python3 regression.py \u2192 440/440 PASS. R33 fires if raw Momentum score string present in dashboard header. R34 fires if _ticker_cache_period missing from market_data.py. R35 fires at COMPLETE if token-burn-log item is not DONE or JSONL entry has null actual_tokens. R27 rejects manifest missing token_budget or Tier A IDs; rejects token-burn-log not as last item; rejects new sprint IN_PROGRESS when previous JSONL entry has no date_closed.",
       "status": "pending",
-      "gaps_addressed": ["GAP-03", "GAP-06", "GAP-07", "GAP-08", "GAP-09", "POSSIBLE-02", "GAP-B", "GAP-E", "GAP-G"],
-      "est_tokens": "16k–20k",
-      "playwright": "N/A — regression.py only, no UI changes",
+      "gaps_addressed": [
+        "GAP-03",
+        "GAP-06",
+        "GAP-07",
+        "GAP-08",
+        "GAP-09",
+        "POSSIBLE-02",
+        "GAP-B",
+        "GAP-E",
+        "GAP-G"
+      ],
+      "est_tokens": "16k\u201320k",
+      "playwright": "N/A \u2014 regression.py only, no UI changes",
       "changes": [
         "Add R33 (always-on): assert no 'Momentum: X/100' pattern in dashboard.py _render_header_static section",
         "Add R34 (always-on): assert '_ticker_cache_period' exists as module-level dict in market_data.py",
@@ -52,24 +170,28 @@
         "Extend R27 IN_PROGRESS: validate 'token_budget' key present in manifest",
         "Extend R27 IN_PROGRESS: validate all 5 Tier A check IDs present in checks[] array",
         "Extend R27 IN_PROGRESS: validate 'token-burn-log' item exists AND is the last element in items[] array (GAP-E)",
-        "Extend R27 IN_PROGRESS: validate docs/ai-ops/token-burn-log.jsonl — if file exists and last entry has date_closed==null, block new sprint from going IN_PROGRESS (GAP-G cross-sprint gate)",
+        "Extend R27 IN_PROGRESS: validate docs/ai-ops/token-burn-log.jsonl \u2014 if file exists and last entry has date_closed==null, block new sprint from going IN_PROGRESS (GAP-G cross-sprint gate)",
         "Extend R27 COMPLETE: validate GSI_WIP.md contains 'Status:' + 'IDLE'",
-        "Extend R31: require non-empty reason string after 'N/A —' when playwright field starts with 'N/A'"
+        "Extend R31: require non-empty reason string after 'N/A \u2014' when playwright field starts with 'N/A'"
       ]
     },
     {
       "id": "gov-compliance",
-      "title": "compliance_check.py — add week_summary.py to SEBI compliance scope (GAP-05)",
+      "title": "compliance_check.py \u2014 add week_summary.py to SEBI compliance scope (GAP-05)",
       "sub_sprint": "v5.38a",
       "model": "haiku",
-      "model_rationale": "Single dict entry addition and clone of existing check pattern — no judgment needed",
+      "model_rationale": "Single dict entry addition and clone of existing check pattern \u2014 no judgment needed",
       "mode": "sequential",
-      "files": ["compliance_check.py"],
-      "pass_criterion": "python3 compliance_check.py → ALL PASS. New check validates SEBI disclaimer present in pages/week_summary.py. GAP-05 closed.",
+      "files": [
+        "compliance_check.py"
+      ],
+      "pass_criterion": "python3 compliance_check.py \u2192 ALL PASS. New check validates SEBI disclaimer present in pages/week_summary.py. GAP-05 closed.",
       "status": "pending",
-      "gaps_addressed": ["GAP-05"],
-      "est_tokens": "6k–8k",
-      "playwright": "N/A — compliance script only, no UI changes",
+      "gaps_addressed": [
+        "GAP-05"
+      ],
+      "est_tokens": "6k\u20138k",
+      "playwright": "N/A \u2014 compliance script only, no UI changes",
       "changes": [
         "Add 'ws': 'pages/week_summary.py' to files dict",
         "Add check: assert 'SEBI' in open(files['ws']).read() with same error message pattern as C1",
@@ -78,17 +200,23 @@
     },
     {
       "id": "gov-skills-haiku",
-      "title": "sprint-monitor.md + CLAUDE.md — Playwright hard gate + Phase 3 trigger review step (GAP-02, GAP-04)",
+      "title": "sprint-monitor.md + CLAUDE.md \u2014 Playwright hard gate + Phase 3 trigger review step (GAP-02, GAP-04)",
       "sub_sprint": "v5.38b",
       "model": "haiku",
-      "model_rationale": "Text edits to skill/doc files — protocol wording, no logic or architecture",
+      "model_rationale": "Text edits to skill/doc files \u2014 protocol wording, no logic or architecture",
       "mode": "sequential",
-      "files": [".claude/commands/sprint-monitor.md", "CLAUDE.md"],
+      "files": [
+        ".claude/commands/sprint-monitor.md",
+        "CLAUDE.md"
+      ],
       "pass_criterion": "sprint-monitor.md Step 2a requires explicit user command (playwright-done or playwright-defer) before sprint proceeds to Step 3. CLAUDE.md Phase 3 close protocol includes snapshot Q-trigger review step.",
-      "status": "pending",
-      "gaps_addressed": ["GAP-02", "GAP-04"],
-      "est_tokens": "8k–10k",
-      "playwright": "N/A — skill/doc files only",
+      "status": "DONE",
+      "gaps_addressed": [
+        "GAP-02",
+        "GAP-04"
+      ],
+      "est_tokens": "8k\u201310k",
+      "playwright": "N/A \u2014 skill/doc files only",
       "changes": [
         "sprint-monitor.md: rewrite Step 2a as a blocking gate requiring '/sprint-monitor playwright-done' or '/sprint-monitor playwright-defer <reason> <PLAYWRIGHT-NN,...>'",
         "sprint-monitor.md: add two new commands to Commands table: playwright-done | playwright-defer",
@@ -98,90 +226,111 @@
     },
     {
       "id": "gov-new-session",
-      "title": "new-session.md — ACTIVE resume path writes minimal snapshot before resuming (GAP-01)",
+      "title": "new-session.md \u2014 ACTIVE resume path writes minimal snapshot before resuming (GAP-01)",
       "sub_sprint": "v5.38b",
       "model": "sonnet",
       "model_rationale": "Resume-path snapshot requires judgment: what constitutes a safe minimal snapshot, how to handle partial deviation checks, and how to signal to the next-session reader that this was a resume-snapshot vs full snapshot",
       "mode": "sequential",
-      "files": [".claude/commands/new-session.md"],
-      "pass_criterion": "ACTIVE resume path no longer early-exits past snapshot. Writes SNAPSHOT-NNN tagged RESUME with: regression baseline + sprint status + 'Full deviation check deferred — resumed from CHECKPOINT'. Proceeds to CHECKPOINT resume after.",
+      "files": [
+        ".claude/commands/new-session.md"
+      ],
+      "pass_criterion": "ACTIVE resume path no longer early-exits past snapshot. Writes SNAPSHOT-NNN tagged RESUME with: regression baseline + sprint status + 'Full deviation check deferred \u2014 resumed from CHECKPOINT'. Proceeds to CHECKPOINT resume after.",
       "status": "pending",
-      "gaps_addressed": ["GAP-01"],
-      "est_tokens": "10k–14k",
-      "playwright": "N/A — skill file only",
+      "gaps_addressed": [
+        "GAP-01"
+      ],
+      "est_tokens": "10k\u201314k",
+      "playwright": "N/A \u2014 skill file only",
       "changes": [
-        "Step 1 ACTIVE branch: replace 'Skip the rest of this command' with 'Run minimal resume protocol (Steps 2–4 abbreviated)'",
-        "Add 'Step 1b — minimal resume protocol' section: run regression → write RESUME-tagged snapshot → then resume from CHECKPOINT",
-        "SNAPSHOT RESUME format: header flags it as RESUME type; Q01 only (baseline); all other Q marked 'deferred — resume session'; no deviation comparison attempted",
+        "Step 1 ACTIVE branch: replace 'Skip the rest of this command' with 'Run minimal resume protocol (Steps 2\u20134 abbreviated)'",
+        "Add 'Step 1b \u2014 minimal resume protocol' section: run regression \u2192 write RESUME-tagged snapshot \u2192 then resume from CHECKPOINT",
+        "SNAPSHOT RESUME format: header flags it as RESUME type; Q01 only (baseline); all other Q marked 'deferred \u2014 resume session'; no deviation comparison attempted",
         "After writing snapshot: proceed to CHECKPOINT block resume as normal"
       ]
     },
     {
       "id": "gov-token-policy",
-      "title": "Token burn log: full policy wiring — CLAUDE.md Policy 8, enriched schema, sprint-open skeleton, aggregation script",
+      "title": "Token burn log: full policy wiring \u2014 CLAUDE.md Policy 8, enriched schema, sprint-open skeleton, aggregation script",
       "sub_sprint": "v5.38b",
       "model": "sonnet",
       "model_rationale": "Schema design (quality fields, methodology enum, session granularity), policy wording, aggregation script structure, and cross-sprint dataset conventions all require judgment. haiku would produce a mechanical schema; sonnet reasons about what data actually supports the optimization goal.",
       "mode": "sequential",
-      "files": ["CLAUDE.md", ".claude/commands/sprint-monitor.md", "docs/ai-ops/token-burn-log.jsonl", "docs/ai-ops/analyze_token_burns.py"],
+      "files": [
+        "CLAUDE.md",
+        ".claude/commands/sprint-monitor.md",
+        "docs/ai-ops/token-burn-log.jsonl",
+        "docs/ai-ops/analyze_token_burns.py"
+      ],
       "pass_criterion": "CLAUDE.md has Policy 8 with full enriched schema (schema_version, actual_tokens_methodology, quality block, session_id, regression_runs_actual). sprint-monitor init creates token-burn-log task last AND writes JSONL skeleton on sprint open (IN_PROGRESS transition). docs/ai-ops/token-burn-log.jsonl exists with v5.38 skeleton (all nullable fields null, static fields filled). docs/ai-ops/analyze_token_burns.py exists, reads token-burn-log.jsonl, outputs markdown summary table of est vs actual by model/mode.",
       "status": "pending",
-      "gaps_addressed": ["GAP-A", "GAP-C", "GAP-D", "GAP-F", "GAP-H", "GAP-I", "GAP-J"],
-      "est_tokens": "22k–28k",
-      "playwright": "N/A — governance doc, skill file, dataset file, and Python analysis script only",
+      "gaps_addressed": [
+        "GAP-A",
+        "GAP-C",
+        "GAP-D",
+        "GAP-F",
+        "GAP-H",
+        "GAP-I",
+        "GAP-J"
+      ],
+      "est_tokens": "22k\u201328k",
+      "playwright": "N/A \u2014 governance doc, skill file, dataset file, and Python analysis script only",
       "changes": [
-        "CLAUDE.md: Add 'Policy 8 — Token Burn Log' to Governance Policy Framework table with core rule: every sprint records est vs actual per item + quality signal at close",
+        "CLAUDE.md: Add 'Policy 8 \u2014 Token Burn Log' to Governance Policy Framework table with core rule: every sprint records est vs actual per item + quality signal at close",
         "CLAUDE.md: Add full enriched token_burn_actuals schema template to Rule 2 (alongside token_budget template): schema_version, actual_tokens_methodology enum, sessions[], per-item quality block, regression_runs_actual, session_id",
         "CLAUDE.md: Add 'token-burn-log' as mandatory recurring last item in Rule 2 sprint rules with enforcement note (R35 + R27 last-item check)",
         "CLAUDE.md: Add token-burn-log.jsonl and analyze_token_burns.py to Living Documentation table",
-        "sprint-monitor.md: Step 1 (init) — always create token-burn-log Task as final task AND write JSONL skeleton entry immediately (static fields filled: sprint_version, sprint_name, date_opened, sessions[session_id], regression_baseline_entering, schema_version:1, methodology:'self_estimate')",
-        "sprint-monitor.md: PLANNING→IN_PROGRESS transition — add Step 0: write token-burn-log.jsonl skeleton before any implementation item",
-        "sprint-monitor.md: Sprint close Step 0b — fill all nullable actual_tokens, quality.rework_rounds, quality.regression_passed_first_try, wasted_tokens_est, overhead actuals, delta_vs_est, date_closed, then run analyze_token_burns.py to confirm parseable",
+        "sprint-monitor.md: Step 1 (init) \u2014 always create token-burn-log Task as final task AND write JSONL skeleton entry immediately (static fields filled: sprint_version, sprint_name, date_opened, sessions[session_id], regression_baseline_entering, schema_version:1, methodology:'self_estimate')",
+        "sprint-monitor.md: PLANNING\u2192IN_PROGRESS transition \u2014 add Step 0: write token-burn-log.jsonl skeleton before any implementation item",
+        "sprint-monitor.md: Sprint close Step 0b \u2014 fill all nullable actual_tokens, quality.rework_rounds, quality.regression_passed_first_try, wasted_tokens_est, overhead actuals, delta_vs_est, date_closed, then run analyze_token_burns.py to confirm parseable",
         "docs/ai-ops/token-burn-log.jsonl: Create with schema comment header (schema_version:1, methodology options, field definitions) and v5.38 skeleton entry",
-        "docs/ai-ops/analyze_token_burns.py: Create script — reads token-burn-log.jsonl, outputs: (1) per-sprint est-vs-actual table, (2) per-model average accuracy ratio, (3) per-mode efficiency, (4) overhead-as-%-of-total trend, (5) waste rate by task type"
+        "docs/ai-ops/analyze_token_burns.py: Create script \u2014 reads token-burn-log.jsonl, outputs: (1) per-sprint est-vs-actual table, (2) per-model average accuracy ratio, (3) per-mode efficiency, (4) overhead-as-%-of-total trend, (5) waste rate by task type"
       ]
     },
     {
       "id": "obs-P1a",
-      "title": "observability.py — feed parsers: sprint manifest, risk register, compliance, snapshots, learnings",
+      "title": "observability.py \u2014 feed parsers: sprint manifest, risk register, compliance, snapshots, learnings",
       "sub_sprint": "v5.38c",
       "model": "haiku",
-      "model_rationale": "Parsing is mechanical: regex section splitters + JSON loads on known file structures. No layout judgment needed — all outputs are Python dicts passed to tab renderers.",
+      "model_rationale": "Parsing is mechanical: regex section splitters + JSON loads on known file structures. No layout judgment needed \u2014 all outputs are Python dicts passed to tab renderers.",
       "mode": "sequential",
-      "files": ["pages/observability.py"],
-      "pass_criterion": "pages/observability.py has _parse_sprint_manifest(), _parse_risk_register(), _parse_compliance_output(), _parse_snapshot_history(), _parse_session_learnings() — all decorated @st.cache_data(ttl=300). Each returns a structured dict/list. R26 observability_no_yfinance still passes.",
+      "files": [
+        "pages/observability.py"
+      ],
+      "pass_criterion": "pages/observability.py has _parse_sprint_manifest(), _parse_risk_register(), _parse_compliance_output(), _parse_snapshot_history(), _parse_session_learnings() \u2014 all decorated @st.cache_data(ttl=300). Each returns a structured dict/list. R26 observability_no_yfinance still passes.",
       "status": "pending",
       "gaps_addressed": [],
-      "est_tokens": "12k–15k",
-      "playwright": "N/A — parser functions are backend Python, no direct UI interaction; correctness verified by tab renders in obs-P1b and obs-P1c",
+      "est_tokens": "12k\u201315k",
+      "playwright": "N/A \u2014 parser functions are backend Python, no direct UI interaction; correctness verified by tab renders in obs-P1b and obs-P1c",
       "changes": [
-        "Add _parse_sprint_manifest() → reads GSI_SPRINT_MANIFEST.json, returns {items, status, baseline, token_budget}",
-        "Add _parse_risk_register() → regex-splits GSI_RISK_REGISTER.md, returns [{id, severity, category, status, description}]",
-        "Add _parse_compliance_output() → runs compliance_check.py via subprocess, parses stdout, returns {gates: [{id, status}], summary}",
-        "Add _parse_snapshot_history() → parses ## SNAPSHOT-NNN blocks from GSI_SESSION_SNAPSHOT.md, returns [{session, version, deviations, q01_baseline}]",
-        "Add _parse_session_learnings() → parses ## RECORD-NNN blocks from GSI_SESSION_LEARNINGS.md, returns [{session, date, findings}]",
-        "All parsers @st.cache_data(ttl=300) — zero cost on tab switch, refreshes every 5 min",
-        "Add graceful fallback: if file not found or parse fails, return empty structure with error_msg field — tabs must not crash on parse failure"
+        "Add _parse_sprint_manifest() \u2192 reads GSI_SPRINT_MANIFEST.json, returns {items, status, baseline, token_budget}",
+        "Add _parse_risk_register() \u2192 regex-splits GSI_RISK_REGISTER.md, returns [{id, severity, category, status, description}]",
+        "Add _parse_compliance_output() \u2192 runs compliance_check.py via subprocess, parses stdout, returns {gates: [{id, status}], summary}",
+        "Add _parse_snapshot_history() \u2192 parses ## SNAPSHOT-NNN blocks from GSI_SESSION_SNAPSHOT.md, returns [{session, version, deviations, q01_baseline}]",
+        "Add _parse_session_learnings() \u2192 parses ## RECORD-NNN blocks from GSI_SESSION_LEARNINGS.md, returns [{session, date, findings}]",
+        "All parsers @st.cache_data(ttl=300) \u2014 zero cost on tab switch, refreshes every 5 min",
+        "Add graceful fallback: if file not found or parse fails, return empty structure with error_msg field \u2014 tabs must not crash on parse failure"
       ]
     },
     {
       "id": "obs-P1b",
-      "title": "observability.py — Sprint Monitor tab: manifest table, token burn, next item card, git status",
+      "title": "observability.py \u2014 Sprint Monitor tab: manifest table, token burn, next item card, git status",
       "sub_sprint": "v5.38c",
       "model": "sonnet",
       "model_rationale": "Tab layout requires judgment: column widths, status colour coding, token burn bar chart design, card component for next item. haiku produces functional but poorly structured Streamlit layouts.",
       "mode": "sequential",
-      "files": ["pages/observability.py"],
-      "pass_criterion": "Sprint Monitor tab renders: (1) manifest item table with columns id|sub_sprint|model|mode|status|est_tokens|files — colour-coded status; (2) token budget burn chart (est vs actual where known); (3) next item card showing id, pass_criterion, model, permissions_required; (4) pending git commits list from git status. All sections collapse-safe (empty state message if data absent).",
+      "files": [
+        "pages/observability.py"
+      ],
+      "pass_criterion": "Sprint Monitor tab renders: (1) manifest item table with columns id|sub_sprint|model|mode|status|est_tokens|files \u2014 colour-coded status; (2) token budget burn chart (est vs actual where known); (3) next item card showing id, pass_criterion, model, permissions_required; (4) pending git commits list from git status. All sections collapse-safe (empty state message if data absent).",
       "status": "pending",
       "gaps_addressed": [],
-      "est_tokens": "18k–22k",
-      "playwright": "PLAYWRIGHT-07: Navigate to observability page → enter DEV_TOKEN → Sprint Monitor tab visible and clickable → manifest table renders with at least 1 row → columns id/model/mode/status all present → next item card shows a pass_criterion string. Edge cases: PLANNING status shows 'Sprint not started yet' card; all items DONE shows completion banner.",
+      "est_tokens": "18k\u201322k",
+      "playwright": "PLAYWRIGHT-07: Navigate to observability page \u2192 enter DEV_TOKEN \u2192 Sprint Monitor tab visible and clickable \u2192 manifest table renders with at least 1 row \u2192 columns id/model/mode/status all present \u2192 next item card shows a pass_criterion string. Edge cases: PLANNING status shows 'Sprint not started yet' card; all items DONE shows completion banner.",
       "changes": [
-        "Add 'Sprint Monitor' to tab list in render_observability() — after existing Program tab",
+        "Add 'Sprint Monitor' to tab list in render_observability() \u2014 after existing Program tab",
         "Add _render_sprint_monitor_tab(manifest_data) function",
         "Manifest item table: st.dataframe with colour map (DONE=green, in_progress=yellow, pending=grey, blocked=red)",
-        "Token budget burn: st.bar_chart or plotly grouped bar — est vs actual per item (actual=null shown as hatched/greyed)",
+        "Token budget burn: st.bar_chart or plotly grouped bar \u2014 est vs actual per item (actual=null shown as hatched/greyed)",
         "Next item card: st.info() block with item id, model badge, pass_criterion, permissions_required list",
         "Pending commits: subprocess git status --short, display as st.code block with count badge",
         "Collapse-safe: all sections wrapped in try/except with st.warning fallback"
@@ -189,41 +338,45 @@
     },
     {
       "id": "obs-P1c",
-      "title": "observability.py — Risk & Compliance tab: risk heatmap, compliance gates, SEBI exposure map",
+      "title": "observability.py \u2014 Risk & Compliance tab: risk heatmap, compliance gates, SEBI exposure map",
       "sub_sprint": "v5.38c",
       "model": "sonnet",
-      "model_rationale": "Risk matrix heatmap, severity×category grid, and SEBI exposure map require layout judgment and colour design. haiku would produce a flat table; sonnet reasons about information hierarchy.",
+      "model_rationale": "Risk matrix heatmap, severity\u00d7category grid, and SEBI exposure map require layout judgment and colour design. haiku would produce a flat table; sonnet reasons about information hierarchy.",
       "mode": "sequential",
-      "files": ["pages/observability.py"],
-      "pass_criterion": "Risk & Compliance tab renders: (1) risk severity×category heatmap — colour coded Open/Mitigated/Accepted; (2) compliance gate table — 9 rows, PASS/FAIL badges, last run timestamp; (3) SEBI exposure map — per-page disclaimer status (present/missing). All sections collapse-safe.",
+      "files": [
+        "pages/observability.py"
+      ],
+      "pass_criterion": "Risk & Compliance tab renders: (1) risk severity\u00d7category heatmap \u2014 colour coded Open/Mitigated/Accepted; (2) compliance gate table \u2014 9 rows, PASS/FAIL badges, last run timestamp; (3) SEBI exposure map \u2014 per-page disclaimer status (present/missing). All sections collapse-safe.",
       "status": "pending",
       "gaps_addressed": [],
-      "est_tokens": "18k–22k",
-      "playwright": "PLAYWRIGHT-08: Sprint Monitor tab passes first → click Risk & Compliance tab → risk heatmap renders with rows and columns → compliance gate table shows 9+ rows → SEBI exposure map section present with at least one page listed. Edge cases: all risks Mitigated shows 'No open risks' banner; all gates PASS shows green summary header.",
+      "est_tokens": "18k\u201322k",
+      "playwright": "PLAYWRIGHT-08: Sprint Monitor tab passes first \u2192 click Risk & Compliance tab \u2192 risk heatmap renders with rows and columns \u2192 compliance gate table shows 9+ rows \u2192 SEBI exposure map section present with at least one page listed. Edge cases: all risks Mitigated shows 'No open risks' banner; all gates PASS shows green summary header.",
       "changes": [
         "Add 'Risk & Compliance' to tab list in render_observability()",
         "Add _render_risk_compliance_tab(risk_data, compliance_data) function",
-        "Risk heatmap: plotly heatmap z=count, x=category, y=severity — colour scale: Open=red, Mitigated=green, Accepted=amber",
+        "Risk heatmap: plotly heatmap z=count, x=category, y=severity \u2014 colour scale: Open=red, Mitigated=green, Accepted=amber",
         "Risk drill-down: st.expander per severity level with filtered risk table",
-        "Compliance gate table: st.dataframe — gate_id | status (PASS/FAIL) | description | last_run",
-        "SEBI exposure map: hardcoded page list from CLAUDE.md scoped rules — show disclaimer present/missing per page using parsed observability checks",
+        "Compliance gate table: st.dataframe \u2014 gate_id | status (PASS/FAIL) | description | last_run",
+        "SEBI exposure map: hardcoded page list from CLAUDE.md scoped rules \u2014 show disclaimer present/missing per page using parsed observability checks",
         "Loophole frequency: st.bar_chart of failure class trigger counts parsed from GSI_LOOPHOLE_LOG.md"
       ]
     },
     {
       "id": "token-burn-log",
-      "title": "Fill v5.38 token burn actuals — append to dataset (sprint-close item)",
+      "title": "Fill v5.38 token burn actuals \u2014 append to dataset (sprint-close item)",
       "sub_sprint": "v5.38b",
-      "_note": "Recurring item — present in every sprint as the final task. Filled at sprint close after all other items complete.",
+      "_note": "Recurring item \u2014 present in every sprint as the final task. Filled at sprint close after all other items complete.",
       "model": "haiku",
-      "model_rationale": "Data entry: fill actual token counts observed during sprint into the dataset file — no logic or judgment",
+      "model_rationale": "Data entry: fill actual token counts observed during sprint into the dataset file \u2014 no logic or judgment",
       "mode": "sequential",
-      "files": ["docs/ai-ops/token-burn-log.jsonl"],
+      "files": [
+        "docs/ai-ops/token-burn-log.jsonl"
+      ],
       "pass_criterion": "docs/ai-ops/token-burn-log.jsonl has a complete v5.38 entry: all item actual_tokens filled (no nulls), overhead actuals filled, delta_vs_est computed, learnings note written.",
       "status": "pending",
       "gaps_addressed": [],
-      "est_tokens": "4k–6k",
-      "playwright": "N/A — dataset file append only",
+      "est_tokens": "4k\u20136k",
+      "playwright": "N/A \u2014 dataset file append only",
       "changes": [
         "Fill actual_tokens for all 6 sprint items (gov-regression-batch, gov-compliance, gov-skills-haiku, gov-new-session, gov-token-policy, token-burn-log)",
         "Fill quality block per item: regression_passed_first_try, rework_rounds, wasted_tokens_est, outcome",
@@ -238,168 +391,214 @@
       ]
     }
   ],
-
   "file_change_log": [
     {
       "file": "regression.py",
       "change_type": "regression_check_addition",
-      "doc_updates_required": ["CLAUDE.md regression section baseline count update"],
+      "doc_updates_required": [
+        "CLAUDE.md regression section baseline count update"
+      ],
       "committed": false
     },
     {
       "file": "compliance_check.py",
       "change_type": "compliance_scope_extension",
-      "doc_updates_required": ["GSI_COMPLIANCE_CHECKLIST.md new check entry"],
+      "doc_updates_required": [
+        "GSI_COMPLIANCE_CHECKLIST.md new check entry"
+      ],
       "committed": false
     },
     {
       "file": ".claude/commands/sprint-monitor.md",
       "change_type": "skill_protocol_update",
-      "doc_updates_required": ["CLAUDE.md sprint close protocol playwright gate reference"],
+      "doc_updates_required": [
+        "CLAUDE.md sprint close protocol playwright gate reference"
+      ],
       "committed": false
     },
     {
       "file": "CLAUDE.md",
       "change_type": "governance_doc_update",
-      "no_doc_update_reason": "IS the governance doc — self-updating",
+      "no_doc_update_reason": "IS the governance doc \u2014 self-updating",
       "committed": false
     },
     {
       "file": ".claude/commands/new-session.md",
       "change_type": "skill_protocol_update",
-      "doc_updates_required": ["CLAUDE.md Session Manifest new-session skill behaviour note"],
+      "doc_updates_required": [
+        "CLAUDE.md Session Manifest new-session skill behaviour note"
+      ],
       "committed": false
     },
     {
       "file": "docs/ai-ops/token-burn-log.jsonl",
       "change_type": "new_dataset_file",
-      "doc_updates_required": ["CLAUDE.md Living Documentation table — add token-burn-log.jsonl entry"],
+      "doc_updates_required": [
+        "CLAUDE.md Living Documentation table \u2014 add token-burn-log.jsonl entry"
+      ],
       "committed": false
     },
     {
       "file": "docs/ai-ops/analyze_token_burns.py",
       "change_type": "new_utility_script",
-      "doc_updates_required": ["CLAUDE.md Living Documentation table — add analyze_token_burns.py entry"],
+      "doc_updates_required": [
+        "CLAUDE.md Living Documentation table \u2014 add analyze_token_burns.py entry"
+      ],
       "committed": false
     },
     {
       "file": "pages/observability.py",
       "change_type": "feature_addition",
-      "doc_updates_required": ["CLAUDE.md file structure (new parser functions + Sprint Monitor + Risk tabs)", "GSI_QA_STANDARDS.md PLAYWRIGHT-07 + PLAYWRIGHT-08 briefs", "ADR-023 in GSI_DECISIONS.md"],
+      "doc_updates_required": [
+        "CLAUDE.md file structure (new parser functions + Sprint Monitor + Risk tabs)",
+        "GSI_QA_STANDARDS.md PLAYWRIGHT-07 + PLAYWRIGHT-08 briefs",
+        "ADR-023 in GSI_DECISIONS.md"
+      ],
       "committed": false
     }
   ],
-
   "token_budget": {
     "items": [
       {
         "id": "gov-regression-batch",
         "mode": "sequential",
         "model": "haiku",
-        "model_rationale": "R33/R34/R35 are targeted string/structure checks; R27/R31 extensions are loop additions on existing patterns — all mechanical, no architectural judgment",
-        "agents": "1 × sequential",
+        "model_rationale": "R33/R34/R35 are targeted string/structure checks; R27/R31 extensions are loop additions on existing patterns \u2014 all mechanical, no architectural judgment",
+        "agents": "1 \u00d7 sequential",
         "files_touched": 1,
         "risk": "medium",
-        "est_tokens": "16k–20k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — regression.py only"
+        "est_tokens": "16k\u201320k",
+        "permissions_required": [
+          "file-read",
+          "file-write",
+          "bash-python3"
+        ],
+        "playwright": "N/A \u2014 regression.py only"
       },
       {
         "id": "gov-compliance",
         "mode": "sequential",
         "model": "haiku",
         "model_rationale": "Single dict entry + clone of existing check pattern",
-        "agents": "1 × sequential",
+        "agents": "1 \u00d7 sequential",
         "files_touched": 1,
         "risk": "low",
-        "est_tokens": "6k–8k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — compliance script only"
+        "est_tokens": "6k\u20138k",
+        "permissions_required": [
+          "file-read",
+          "file-write",
+          "bash-python3"
+        ],
+        "playwright": "N/A \u2014 compliance script only"
       },
       {
         "id": "gov-skills-haiku",
         "mode": "sequential",
         "model": "haiku",
-        "model_rationale": "Protocol wording edits — no logic",
-        "agents": "1 × sequential",
+        "model_rationale": "Protocol wording edits \u2014 no logic",
+        "agents": "1 \u00d7 sequential",
         "files_touched": 2,
         "risk": "low",
-        "est_tokens": "8k–10k",
-        "permissions_required": ["file-read", "file-write"],
-        "playwright": "N/A — skill/doc files only"
+        "est_tokens": "8k\u201310k",
+        "permissions_required": [
+          "file-read",
+          "file-write"
+        ],
+        "playwright": "N/A \u2014 skill/doc files only"
       },
       {
         "id": "gov-new-session",
         "mode": "sequential",
         "model": "sonnet",
         "model_rationale": "Resume snapshot flow requires judgment on what 'minimal' means safely",
-        "agents": "1 × sequential",
+        "agents": "1 \u00d7 sequential",
         "files_touched": 1,
         "risk": "medium",
-        "est_tokens": "10k–14k",
-        "permissions_required": ["file-read", "file-write"],
-        "playwright": "N/A — skill file only"
+        "est_tokens": "10k\u201314k",
+        "permissions_required": [
+          "file-read",
+          "file-write"
+        ],
+        "playwright": "N/A \u2014 skill file only"
       },
       {
         "id": "gov-token-policy",
         "mode": "sequential",
         "model": "sonnet",
         "model_rationale": "Schema design (quality fields, methodology enum, session granularity), policy wording, and aggregation script architecture all require judgment. haiku would produce mechanical output; sonnet reasons about what data actually serves the optimization purpose.",
-        "agents": "1 × sequential",
+        "agents": "1 \u00d7 sequential",
         "files_touched": 4,
         "risk": "low",
-        "est_tokens": "22k–28k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — governance doc, skill file, dataset file, analysis script only"
+        "est_tokens": "22k\u201328k",
+        "permissions_required": [
+          "file-read",
+          "file-write",
+          "bash-python3"
+        ],
+        "playwright": "N/A \u2014 governance doc, skill file, dataset file, analysis script only"
       },
       {
         "id": "token-burn-log",
         "mode": "sequential",
         "model": "haiku",
-        "model_rationale": "Data entry — fill observed actuals into dataset",
-        "agents": "1 × sequential",
+        "model_rationale": "Data entry \u2014 fill observed actuals into dataset",
+        "agents": "1 \u00d7 sequential",
         "files_touched": 1,
         "risk": "low",
-        "est_tokens": "4k–6k",
-        "permissions_required": ["file-read", "file-write"],
-        "playwright": "N/A — dataset file append only"
+        "est_tokens": "4k\u20136k",
+        "permissions_required": [
+          "file-read",
+          "file-write"
+        ],
+        "playwright": "N/A \u2014 dataset file append only"
       }
     ],
     "overhead": {
       "session_start_context": "~15k",
-      "regression_runs": "4 × 3k = 12k",
+      "regression_runs": "4 \u00d7 3k = 12k",
       "sync_docs": "~2k",
       "sprint_close_sequence": "~10k"
     },
     "totals": {
-      "main_context_est": "~68k–90k (items) + ~39k (overhead) = ~107k–129k",
-      "agent_est": "N/A — no parallel agents",
-      "grand_total_est": "~110k–130k"
+      "main_context_est": "~68k\u201390k (items) + ~39k (overhead) = ~107k\u2013129k",
+      "agent_est": "N/A \u2014 no parallel agents",
+      "grand_total_est": "~110k\u2013130k"
     },
-    "notes": "All 6 items sequential. No parallel agents needed — files don't heavily overlap. CLAUDE.md touched in gov-skills-haiku and gov-token-policy but different sections — no conflict. token-burn-log must run last (after all other items complete). gov-token-policy est increased to 22k–28k due to enriched schema + analyze script."
+    "notes": "All 6 items sequential. No parallel agents needed \u2014 files don't heavily overlap. CLAUDE.md touched in gov-skills-haiku and gov-token-policy but different sections \u2014 no conflict. token-burn-log must run last (after all other items complete). gov-token-policy est increased to 22k\u201328k due to enriched schema + analyze script."
   },
-
   "token_optimisations": [
     {
       "decision": "Batch all regression.py gap additions into one item",
       "type": "batch",
-      "items_affected": ["GAP-03", "GAP-06", "GAP-07", "GAP-08", "GAP-09", "POSSIBLE-02"],
+      "items_affected": [
+        "GAP-03",
+        "GAP-06",
+        "GAP-07",
+        "GAP-08",
+        "GAP-09",
+        "POSSIBLE-02"
+      ],
       "saving_est": "~25k tokens",
       "detail": "6 gaps all touch regression.py. One Read + one Edit + one regression run covers all. 6 separate items would each re-read the ~900-line file."
     },
     {
       "decision": "Batch Playwright gate + trigger review into one skill item",
       "type": "batch",
-      "items_affected": ["GAP-02", "GAP-04"],
+      "items_affected": [
+        "GAP-02",
+        "GAP-04"
+      ],
       "saving_est": "~5k tokens",
       "detail": "Both are doc-only text edits to skill/CLAUDE.md. One context load covers both."
     },
     {
-      "decision": "token-burn-log is haiku not sonnet — pure data entry at sprint close",
+      "decision": "token-burn-log is haiku not sonnet \u2014 pure data entry at sprint close",
       "type": "scope_narrow",
-      "items_affected": ["token-burn-log"],
+      "items_affected": [
+        "token-burn-log"
+      ],
       "saving_est": "~4k tokens",
-      "detail": "No judgment needed for filling in actuals — haiku handles structured data entry. Sonnet would be overkill."
+      "detail": "No judgment needed for filling in actuals \u2014 haiku handles structured data entry. Sonnet would be overkill."
     }
   ]
 }
