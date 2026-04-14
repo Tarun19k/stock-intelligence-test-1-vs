@@ -5,8 +5,40 @@ description: Start a new GSI Dashboard development session — confirms regressi
 ## Step 1 — Mutex check (do this first, before anything else)
 
 Read `GSI_WIP.md`.
-- If `Status: ACTIVE` — read the CHECKPOINT block and resume from it exactly. Skip the rest of this command.
-- If `Status: IDLE` — proceed.
+- If `Status: ACTIVE` — read the CHECKPOINT block, then run the **minimal resume protocol (Step 1b)** before resuming. Do NOT skip directly to implementation.
+- If `Status: IDLE` — proceed to Step 2.
+
+## Step 1b — Minimal resume protocol (ACTIVE sessions only)
+
+Run after reading the CHECKPOINT block. Abbreviated Steps 2–4 to anchor the snapshot without full deviation analysis.
+
+**1b-i. Regression baseline (abbreviated Step 3):**
+```bash
+python3 regression.py
+```
+Note the N/N result. If it does not match the baseline in the CHECKPOINT block, stop and report the discrepancy before resuming.
+
+**1b-ii. Write RESUME-tagged snapshot (abbreviated Step 4):**
+
+Append to `GSI_SESSION_SNAPSHOT.md`:
+```
+## SNAPSHOT-[NNN] | [date] | [session_NNN] | [vX.XX] | [QSet-vN] | RESUME
+*Type: RESUME — full deviation check deferred. Resumed from CHECKPOINT (session_NNN-interrupted).
+No comparison attempted. Full snapshot will be written at next IDLE session start.*
+
+**Q01. Regression baseline:** [N/N PASS — from regression.py output above]
+**Q09. Sprint status:** [from CHECKPOINT block — sprint version + items remaining]
+Q02–Q08, Q10: deferred — resume session; full deviation check at next IDLE session start.
+```
+
+Rules:
+- Do NOT attempt deviation comparisons — no source file reads for Q02–Q08, Q10.
+- Do NOT log any DEVIATIONs (comparison was not attempted, not that there are none).
+- The RESUME tag signals to the next full session that this snapshot has no deviation data.
+
+**1b-iii. Proceed to implementation:**
+
+Resume from the CHECKPOINT block exactly — start at the "Currently working on" line. Skip Steps 2–6 entirely.
 
 ## Step 2 — Load context
 

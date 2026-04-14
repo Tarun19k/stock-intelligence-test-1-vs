@@ -235,7 +235,7 @@
         ".claude/commands/new-session.md"
       ],
       "pass_criterion": "ACTIVE resume path no longer early-exits past snapshot. Writes SNAPSHOT-NNN tagged RESUME with: regression baseline + sprint status + 'Full deviation check deferred \u2014 resumed from CHECKPOINT'. Proceeds to CHECKPOINT resume after.",
-      "status": "pending",
+      "status": "DONE",
       "gaps_addressed": [
         "GAP-01"
       ],
