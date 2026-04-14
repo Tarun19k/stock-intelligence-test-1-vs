@@ -322,7 +322,7 @@
         "pages/observability.py"
       ],
       "pass_criterion": "Sprint Monitor tab renders: (1) manifest item table with columns id|sub_sprint|model|mode|status|est_tokens|files \u2014 colour-coded status; (2) token budget burn chart (est vs actual where known); (3) next item card showing id, pass_criterion, model, permissions_required; (4) pending git commits list from git status. All sections collapse-safe (empty state message if data absent).",
-      "status": "pending",
+      "status": "DONE",
       "gaps_addressed": [],
       "est_tokens": "18k\u201322k",
       "playwright": "PLAYWRIGHT-07: Navigate to observability page \u2192 enter DEV_TOKEN \u2192 Sprint Monitor tab visible and clickable \u2192 manifest table renders with at least 1 row \u2192 columns id/model/mode/status all present \u2192 next item card shows a pass_criterion string. Edge cases: PLANNING status shows 'Sprint not started yet' card; all items DONE shows completion banner.",

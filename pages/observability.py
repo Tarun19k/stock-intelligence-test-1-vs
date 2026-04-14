@@ -488,6 +488,189 @@ def _tab_program() -> None:
         st.caption(entry["notes"][:200])
 
 
+# ── Tab: Sprint Monitor ────────────────────────────────────────────────────────
+
+_STATUS_COLOUR = {
+    "DONE":        "#2e7d32",
+    "IN_PROGRESS": "#f57c00",
+    "pending":     "#546e7a",
+    "blocked":     "#c62828",
+}
+
+_MODEL_BADGE = {
+    "haiku":  "🟢 haiku",
+    "sonnet": "🔵 sonnet",
+    "opus":   "🟣 opus",
+}
+
+
+def _status_label(status: str) -> str:
+    colour = _STATUS_COLOUR.get(status, "#546e7a")
+    label  = status.upper() if status else "?"
+    return f'<span style="color:{colour};font-weight:600">{label}</span>'
+
+
+def _render_sprint_monitor_tab() -> None:
+    """Sprint Monitor tab — manifest item table, token burn, next item card, git status."""
+    try:
+        manifest = _parse_sprint_manifest()
+    except Exception as e:
+        st.warning(f"Could not load sprint manifest: {e}")
+        return
+
+    if manifest.get("error_msg"):
+        st.info(f"No active sprint manifest. ({manifest['error_msg']})")
+        return
+
+    sprint  = manifest["sprint_version"]
+    status  = manifest["status"]
+    items   = manifest["items"]
+    done_n  = manifest["done_count"]
+    total_n = manifest["total_count"]
+
+    # ── Header KPIs ──
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("Sprint",   sprint)
+    k2.metric("Status",   status)
+    k3.metric("Progress", f"{done_n}/{total_n}")
+    k4.metric("Baseline", str(manifest["baseline"]))
+
+    st.divider()
+
+    # ── Manifest item table ──
+    st.markdown("**Sprint items**")
+    if not items:
+        st.caption("No items in manifest.")
+    else:
+        import pandas as pd
+        rows = []
+        for it in items:
+            files_str = ", ".join(it.get("files", []))
+            rows.append({
+                "ID":         it.get("id", "?"),
+                "Sub":        it.get("sub_sprint", "?"),
+                "Model":      _MODEL_BADGE.get(it.get("model", ""), it.get("model", "?")),
+                "Mode":       it.get("mode", "?"),
+                "Status":     it.get("status", "?"),
+                "Est tokens": it.get("est_tokens", "?"),
+                "Files":      files_str[:60] + ("…" if len(files_str) > 60 else ""),
+            })
+        df = pd.DataFrame(rows)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    # ── Token budget burn chart ──
+    st.markdown("**Token budget: est vs actual**")
+    try:
+        tb_items = manifest.get("token_budget", {}).get("items", [])
+        if not tb_items:
+            st.caption("No token_budget.items in manifest.")
+        else:
+            import pandas as pd
+            import plotly.graph_objects as go
+
+            ids     = [it["id"] for it in tb_items]
+            est_mid = []
+            for it in tb_items:
+                s = str(it.get("est_tokens", "0")).lower().replace("k", "")
+                parts = s.split("–") if "–" in s else s.split("-")
+                try:
+                    nums = [float(p.strip()) for p in parts if p.strip()]
+                    est_mid.append(sum(nums) / len(nums) if nums else 0)
+                except ValueError:
+                    est_mid.append(0)
+
+            # Try to read actuals from token-burn-log.jsonl
+            actuals_map = {}
+            try:
+                with open("docs/ai-ops/token-burn-log.jsonl") as lf:
+                    for line in lf:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        entry = json.loads(line)
+                        if entry.get("sprint") == sprint:
+                            for log_it in entry.get("items", []):
+                                a = log_it.get("actual_tokens")
+                                if a is not None:
+                                    actuals_map[log_it["id"]] = a / 1000.0
+            except Exception:
+                pass
+
+            actuals = [actuals_map.get(i) for i in ids]
+
+            fig = go.Figure()
+            fig.add_bar(
+                x=ids, y=est_mid,
+                name="est (midpoint k)", marker_color="#4a4a6a",
+            )
+            if any(a is not None for a in actuals):
+                fig.add_bar(
+                    x=ids,
+                    y=[a if a is not None else 0 for a in actuals],
+                    name="actual k",
+                    marker_color="#4C9BE8",
+                    opacity=[1.0 if a is not None else 0.3 for a in actuals],
+                )
+            fig.update_layout(
+                barmode="group",
+                height=240,
+                margin={"t": 16, "b": 60, "l": 32, "r": 8},
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font={"color": "#e0e0e0", "size": 11},
+                legend={"orientation": "h", "y": 1.12},
+                xaxis_tickangle=-30,
+            )
+            st.plotly_chart(fig, use_container_width=True, config={"responsive": True})
+    except Exception as e:
+        st.warning(f"Token budget chart unavailable: {e}")
+
+    st.divider()
+
+    # ── Next item card ──
+    st.markdown("**Next item**")
+    try:
+        pending = [it for it in items if it.get("status") not in ("DONE",)]
+        if not pending:
+            st.success(f"All {total_n} items DONE — sprint ready to close.")
+        elif status == "PLANNING":
+            st.info("Sprint not started yet — no items in progress.")
+        else:
+            nxt = pending[0]
+            model_str = _MODEL_BADGE.get(nxt.get("model", ""), nxt.get("model", "?"))
+            st.info(
+                f"**{nxt.get('id', '?')}** · {model_str} · `{nxt.get('mode', '?')}`\n\n"
+                f"**Pass criterion:** {nxt.get('pass_criterion', '?')}\n\n"
+                f"**Files:** {', '.join(nxt.get('files', []))}\n\n"
+                f"**Est tokens:** {nxt.get('est_tokens', '?')}"
+            )
+            perms = nxt.get("permissions_required", [])
+            if perms:
+                st.caption("Permissions: " + " · ".join(perms))
+    except Exception as e:
+        st.warning(f"Next item card unavailable: {e}")
+
+    st.divider()
+
+    # ── Pending git commits ──
+    st.markdown("**Uncommitted changes** (git status)")
+    try:
+        result = subprocess.run(
+            ["git", "status", "--short"],
+            capture_output=True, text=True, timeout=5,
+        )
+        lines = [ln for ln in result.stdout.splitlines() if ln.strip()]
+        if lines:
+            st.metric("Uncommitted files", len(lines))
+            st.code("\n".join(lines), language=None)
+        else:
+            st.caption("Working tree clean.")
+    except Exception as e:
+        st.warning(f"git status unavailable: {e}")
+
+
 # ── Public entry point ─────────────────────────────────────────────────────────
 
 def render_observability() -> None:
@@ -503,13 +686,16 @@ def render_observability() -> None:
         _render_gate()
         return
 
-    tab_health, tab_program = st.tabs(["App Health", "Program"])
+    tab_health, tab_program, tab_sprint = st.tabs(["App Health", "Program", "Sprint Monitor"])
 
     with tab_health:
         _tab_app_health()
 
     with tab_program:
         _tab_program()
+
+    with tab_sprint:
+        _render_sprint_monitor_tab()
 
 
 # Streamlit MPA: execute when this file is served directly via /observability
