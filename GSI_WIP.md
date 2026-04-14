@@ -20,26 +20,27 @@
 
 ```
 Status:        IDLE
-Session ID:    session_027
+Session ID:    session_028
 Version:       v5.38
 Last updated:  2026-04-14
-Sprint:        v5.38 COMPLETE (Governance Gap Closure + Obs Phase 1)
+Sprint:        v5.38 FULLY CLOSED (Playwright-07 + Playwright-08 passed session_028)
 Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE — archived)
-Next session:  session_028
+Next session:  session_029
 Regression:    446/446 PASS (439 always-on base)
 Compliance:    10/10 PASS
 Branch:        main @ c40b1b7
-
-RESUME INSTRUCTION: Run deferred Playwright tests PLAYWRIGHT-07 + PLAYWRIGHT-08
-before starting any new sprint. Use /ui-test skill. Streamlit must be running.
 ```
 
-## Deferred Playwright tests (carry to session_028 pre-sprint check)
+## Deferred Playwright tests — RESOLVED session_028
 
-- PLAYWRIGHT-07 (obs-P1b Sprint Monitor tab) — deferred: no running Streamlit instance at sprint close
-- PLAYWRIGHT-08 (obs-P1c Risk & Compliance tab) — deferred: no running Streamlit instance at sprint close
-
-Run before declaring v5.38 fully closed. Use `/ui-test` skill with Playwright MCP.
+- PLAYWRIGHT-07 (obs-P1b Sprint Monitor tab) — ✅ PASS 2026-04-14 session_028
+  - Sprint Monitor tab visible/clickable; table renders 4+ rows; columns ID/Model/Mode/Status present;
+    Next item card shows pass_criterion string.
+  - Bug noted: token budget chart opacity error (Plotly list-type opacity on bar trace) — not test-blocking.
+- PLAYWRIGHT-08 (obs-P1c Risk & Compliance tab) — ✅ PASS 2026-04-14 session_028
+  - Risk register section present; edge case path: all risks mitigated → "No open risks — all mitigated." banner shown.
+  - Compliance gate table renders with 10/10 summary (≥9 rows criterion met).
+  - SEBI disclaimer exposure map section present; "SEBI disclaimer confirmed in all monitored pages." alert shown.
 
 ## v5.38 Sprint — Task List
 

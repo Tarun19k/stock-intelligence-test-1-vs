@@ -365,3 +365,26 @@ python3 regression.py (all 427 checks must pass) AND python3 -c "..." compliance
 **Q09. Current sprint and status:** v5.37 COMPLETE (v5.37.1 hotfix committed 2026-04-14). Next sprint: v5.38 (not yet planned). Pending pre-sprint work: (a) Playwright PLAYWRIGHT-01 through PLAYWRIGHT-06 never run — deferred, require live Streamlit instance; (b) quant_audit_pending.json pending=true for D3/D5 (last_full_audit 2026-04-13 — within 90 days); previous snapshot assessed as false positive from market_data.py RSS edit. GSI_WIP.md Status: IDLE. UPDATED from SNAPSHOT-011 (quant audit still pending, flag persists into session_027).
 
 **Q10. Pre-push gate:** Two commands required: (1) python3 regression.py (437 checks confirmed); (2) python3 compliance_check.py — 9/9 gates. Unchanged from SNAPSHOT-011.
+
+## SNAPSHOT-013 | 2026-04-14 | session_028 | v5.38 | QSet-v1
+*Compared to SNAPSHOT-012 (QSet-v1). Deviations: Q01 (regression 437→446), Q09 (sprint v5.38 now COMPLETE), Q10 (compliance 9→10 gates). Updated: Q01, Q09, Q10. New questions: none.*
+
+**Q01. Regression baseline:** 446/446 PASS (actual run this session). CLAUDE.md "Current State" still shows 436/436 — doc lag from sprint v5.38 adding 10 additional checks (R27, R30, R31, R32, and v5.38 sprint checks). GSI_WIP.md shows Regression: 446/446 PASS (439 always-on base). DEVIATION from SNAPSHOT-012 (was 437).
+
+**Q02. R27 enforcement scope:** R27 enforces GSI_SPRINT_MANIFEST.json completeness. Dynamic checks (R27 content-level, R30, R31, R32) activate when manifest status == "IN_PROGRESS". R28 (hook/rules file existence) always-on. Current manifest: v5.38 status COMPLETE. Unchanged from SNAPSHOT-012.
+
+**Q03. yfinance import restriction:** Only market_data.py may import yfinance. All other modules banned. R3 regression check enforces this. Unchanged from SNAPSHOT-012.
+
+**Q04. DataManager bypass mode:** DataManager M1 skeleton in data_manager.py. BYPASS MODE active until M4 ships (OPEN-007, HIGH priority). Pages call market_data.py directly. R24 enforces bypass. Unchanged from SNAPSHOT-012.
+
+**Q05. Signal arbitration hierarchy:** Weinstein Stage > Elder Triple Screen > raw signal score. Stage 4 vetoes BUY from Elder (hard veto → AVOID). Stage 1/3 forces WATCH. Veto must be visibly disclosed in UI (Policy 6). Enforced in indicators.py compute_unified_verdict(). Unchanged from SNAPSHOT-012.
+
+**Q06. M3 routing guard (grp_explicitly_selected):** Session_state flag set only on explicit user group click. Gates 49-ticker batch download to prevent rate limit spirals. Resets on market switch. R22 enforces it. Unchanged from SNAPSHOT-012.
+
+**Q07. DO NOT UNDO rule 12:** Raw Momentum score (X/100) must NOT appear in dashboard header _render_header_static(). Option B is final: verdict badge + plain-English reason only. Score IS permitted in KPI panel. ADR-008 is final record. Unchanged from SNAPSHOT-012.
+
+**Q08. Five Permanent Tier A manifest checks:** Every sprint manifest must contain all 5: (1) sync_docs_passes; (2) compliance_baseline_current; (3) pr_template_baseline_current; (4) decisions_has_sprint_adr; (5) qa_standards_has_brief. Unchanged from SNAPSHOT-012.
+
+**Q09. Current sprint and pending pre-sprint work:** v5.38 COMPLETE (session_027, 2026-04-14). Next sprint: v5.39 (not yet planned). GSI_WIP.md Status: IDLE. Pending pre-sprint work: PLAYWRIGHT-07 (obs-P1b Sprint Monitor tab) and PLAYWRIGHT-08 (obs-P1c Risk & Compliance tab) deferred — no live Streamlit instance at sprint close. Also: Playwright-01 through -06 still never run. Note: GSI_session.json meta.last_session shows session_026 — likely not updated at session_027 close (minor doc gap). UPDATED from SNAPSHOT-012.
+
+**Q10. Pre-push gate:** Two commands: (1) python3 regression.py (446 checks confirmed this session); (2) python3 compliance_check.py — 10/10 gates confirmed this session. UPDATED from SNAPSHOT-012 (was 9/9).
