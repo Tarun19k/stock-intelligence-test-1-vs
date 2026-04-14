@@ -204,7 +204,19 @@ VERSION_LOG = [
                "whichever tickers were warm when the 70% threshold fired. "
                "Fix: added _ticker_cache_period dict (sym→period); fresh-serve check now "
                "requires period match. Stale 429-fallback path unaffected. "
-               "Regression baseline: 444/444 PASS (unchanged).")}
+               "Regression baseline: 444/444 PASS (unchanged).")},
+    {"version": "v5.38", "date": "2026-04-14",
+     "notes": ("Governance & observability sprint (session_027). "
+               "Regression: R33 (no raw Momentum score in _render_header_static, scoped to function body), "
+               "R34 (_ticker_cache_period module-level dict), R35 (token-burn-log COMPLETE gate). "
+               "R27 extended: Pass 3 structural quality gates + COMPLETE phase WIP-IDLE check. "
+               "R31 extended: N/A reason required. compliance_check.py: C10 SEBI disclaimer in week_summary.py (10 checks). "
+               "Policy 8 Token Burn Log: est-vs-actual token dataset; token-burn-log.jsonl + analyze_token_burns.py. "
+               "sprint-monitor.md: Playwright hard gate (playwright-done/playwright-defer), Step 0 sprint-open. "
+               "new-session.md: ACTIVE resume writes minimal RESUME-tagged snapshot. "
+               "observability.py Phase 1: 5 feed parsers + Sprint Monitor + Risk & Compliance tabs. "
+               "Regression baseline: 439/439 PASS (always-on; R33+R34 added).")}
 ]
 
+    # v5.38 appended below
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

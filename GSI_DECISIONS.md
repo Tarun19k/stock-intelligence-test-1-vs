@@ -465,3 +465,34 @@ unchanged — it still serves any cached data as a last resort regardless of per
 
 **Consequences:** [What this means for the codebase, documentation, or process]
 ```
+
+## ADR-027 | 2026-04-14 | v5.38 | ACTIVE
+**Title:** Token burn log as recurring mandatory last sprint item (Policy 8)
+
+**Context:** Token usage across sprints was invisible — no data existed to calibrate estimates, identify which task types were over-specified, or measure overhead trends. Without actuals, the `token_budget` block remained a planning artifact with no feedback loop.
+
+**Decision:** Establish Policy 8: every sprint records estimated vs actual token cost per item + quality signal in `docs/ai-ops/token-burn-log.jsonl`. The `token-burn-log` manifest item is always the final non-section item (enforced by R27.struct `token_burn_log_is_last`). R35 blocks sprint COMPLETE if the JSONL entry has null `actual_tokens` fields. `actual_tokens_methodology: "self_estimate"` as default — known limitation, upgrade path via API usage headers. Schema v1 includes quality block (rework_rounds, outcome), overhead fields, and per-sprint totals.
+
+**Alternatives rejected:**
+- **External token counter tool**: Adds dependency, requires API key, breaks in offline sessions. Self-estimate with documented methodology is sufficient for trend analysis.
+- **Optional field (non-blocking)**: The entire value of the dataset is completeness. An optional field is filled once and ignored thereafter — same as no field.
+- **Per-message logging**: Claude Code doesn't expose per-message counts in the UI. Infeasible at current tooling level.
+
+**Consequences:** Every sprint close requires ~4k tokens to fill the JSONL and run the analyze script. Cross-sprint ratios (haiku 0.87, sonnet 0.85 in v5.38) will calibrate over 3–5 sprints. Context compaction overhead is not captured (RECORD-033 — schema gap for v2.0).
+
+---
+
+## ADR-028 | 2026-04-14 | v5.38 | ACTIVE
+**Title:** Playwright gate as explicit command pair (playwright-done / playwright-defer)
+
+**Context:** The sprint close Playwright step was advisory — nothing prevented proceeding to Step 3 (manifest COMPLETE) without running or explicitly deferring tests. This created a silent bypass path that had been exercised in both v5.37 and v5.37.1 sprint closes.
+
+**Decision:** Replace the advisory instruction with a blocking gate in `sprint-monitor.md`. Step 2a now emits a gate prompt and waits for one of two explicit CTO commands: `/sprint-monitor playwright-done` (tests ran and passed) or `/sprint-monitor playwright-defer <reason> <ids>` (intentional deferral, logged to GSI_WIP.md + GSI_QA_STANDARDS.md). Step 3 does not proceed without one of these commands. This mirrors the parallel-cluster pattern (Step 4) which already requires explicit acknowledgement.
+
+**Alternatives rejected:**
+- **Auto-skip if no Streamlit instance**: Would silently bypass the gate in the most common case (CI-only session). Defeats the purpose.
+- **Fail sprint close**: Too aggressive — Playwright requires a running Streamlit instance which may not be available in every session. Explicit deferral with logging is the right trade-off.
+
+**Consequences:** Every sprint close now requires a deliberate Playwright decision. Deferred tests accumulate in GSI_WIP.md and surface at next session start via `/new-session`. PLAYWRIGHT-07 and PLAYWRIGHT-08 (obs-P1b, obs-P1c) are the first tests registered under this gate.
+
+---

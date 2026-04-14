@@ -65,7 +65,7 @@ Check before ANY version change in requirements.txt. compliance_check.py C9 bloc
 
 ---
 
-## Current State (v5.37.1 — 2026-04-14)
+## Current State (v5.38 — 2026-04-14)
 
 **Regression baseline: 436/436 PASS** *(stable; R27/R30/R31/R32 add additional checks during active sprints)*
 

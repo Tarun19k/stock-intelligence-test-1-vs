@@ -1474,3 +1474,55 @@ Single file change in `market_data.py`. No new UI elements — this fix unblocks
 
 - [ ] All 10 global signal cards show BUY/WATCH/AVOID (or ↑ RISING / ↓ FALLING for FX/commodities) within 90 seconds of page load
 - [ ] No regression in Top Movers or News Feed sections (same page, different fragment)
+
+# QA Brief — v5.38 Governance & Observability Sprint
+
+**Sprint:** v5.38 | **Date:** 2026-04-14 | **Session:** session_027
+
+## Summary
+
+Governance-only sprint. No new user-facing signals or market data logic. Three areas of change:
+1. **Regression/compliance hardening** (R33, R34, R35, R27 Pass 3, C10)
+2. **Protocol documentation** (sprint-monitor.md, new-session.md, CLAUDE.md Policy 8)
+3. **Observability Phase 1** (pages/observability.py — Sprint Monitor + Risk & Compliance tabs)
+
+| Fix | File | Expected visible change |
+|---|---|---|
+| R33/R34 always-on checks | regression.py | Baseline now 439 (was 437) |
+| C10 — week_summary SEBI | compliance_check.py | 10/10 gates (was 9/10) |
+| Playwright hard gate | sprint-monitor.md | Close sequence now prompts for playwright-done or playwright-defer |
+| ACTIVE resume snapshot | new-session.md | Interrupted sessions write minimal snapshot before resuming |
+| Sprint Monitor tab | pages/observability.py | New tab in observability page — manifest table, token burn chart, next item card, git status |
+| Risk & Compliance tab | pages/observability.py | New tab — risk heatmap, compliance gates, SEBI exposure map |
+
+## Verification steps (founder/observability page only)
+
+1. Navigate to `/observability` (direct URL)
+2. Enter DEV_TOKEN PIN → page unlocks
+3. **Sprint Monitor tab:**
+   - Manifest item table renders with ≥1 row
+   - Columns: ID, Sub, Model, Mode, Status, Est tokens, Files — all present
+   - Next item card: shows pass_criterion text (or "All items DONE" if sprint closed)
+   - Pending commits section: shows git status output
+4. **Risk & Compliance tab:**
+   - Risk heatmap renders (may show "No open risks" if all mitigated)
+   - Compliance gate table: 10 rows, PASS/FAIL column present
+   - SEBI exposure map: ≥4 rows (dashboard, global_intelligence, week_summary, home)
+5. **App Health + Program tabs:** no regression (should look identical to v5.37.1)
+
+## What I need back from QA
+
+- [ ] Sprint Monitor tab: manifest table renders, next item card visible (PLAYWRIGHT-07)
+- [ ] Risk & Compliance tab: heatmap + compliance table + SEBI map all present (PLAYWRIGHT-08)
+- [ ] No crash on any tab (all sections have try/except fallbacks — should show st.warning on error, not exception)
+- [ ] App Health tab still shows rate-limit + cache metrics correctly
+- [ ] Regression suite: confirm 439 always-on checks pass outside of active sprint
+
+## v5.38 Playwright Deferral Note
+
+**PLAYWRIGHT-07 and PLAYWRIGHT-08 deferred at sprint close (2026-04-14).**
+Reason: No running Streamlit instance available at close time. Observability page requires active session.
+
+Carry to session_028 pre-sprint check. Run via `/ui-test` skill with Playwright MCP.
+- PLAYWRIGHT-07: Sprint Monitor tab — manifest table ≥1 row, id/model/mode/status columns, next item card with pass_criterion
+- PLAYWRIGHT-08: Risk & Compliance tab — risk heatmap renders, compliance table 9+ rows, SEBI exposure map present

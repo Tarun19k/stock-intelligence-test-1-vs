@@ -19,14 +19,21 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
+Status:        IDLE
 Session ID:    session_027
-Version:       v5.37.1 → v5.38 (in progress)
+Version:       v5.38
 Last updated:  2026-04-14
-Sprint:        v5.38 IN_PROGRESS (Governance Gap Closure + Obs Phase 1)
-Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Sprint:        v5.38 COMPLETE (Governance Gap Closure + Obs Phase 1)
+Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE — archived)
 Next session:  session_028
 ```
+
+## Deferred Playwright tests (carry to session_028 pre-sprint check)
+
+- PLAYWRIGHT-07 (obs-P1b Sprint Monitor tab) — deferred: no running Streamlit instance at sprint close
+- PLAYWRIGHT-08 (obs-P1c Risk & Compliance tab) — deferred: no running Streamlit instance at sprint close
+
+Run before declaring v5.38 fully closed. Use `/ui-test` skill with Playwright MCP.
 
 ## v5.38 Sprint — Task List
 
