@@ -347,7 +347,7 @@
         "pages/observability.py"
       ],
       "pass_criterion": "Risk & Compliance tab renders: (1) risk severity\u00d7category heatmap \u2014 colour coded Open/Mitigated/Accepted; (2) compliance gate table \u2014 9 rows, PASS/FAIL badges, last run timestamp; (3) SEBI exposure map \u2014 per-page disclaimer status (present/missing). All sections collapse-safe.",
-      "status": "pending",
+      "status": "DONE",
       "gaps_addressed": [],
       "est_tokens": "18k\u201322k",
       "playwright": "PLAYWRIGHT-08: Sprint Monitor tab passes first \u2192 click Risk & Compliance tab \u2192 risk heatmap renders with rows and columns \u2192 compliance gate table shows 9+ rows \u2192 SEBI exposure map section present with at least one page listed. Edge cases: all risks Mitigated shows 'No open risks' banner; all gates PASS shows green summary header.",

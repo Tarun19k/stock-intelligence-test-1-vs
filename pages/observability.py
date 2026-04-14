@@ -671,6 +671,219 @@ def _render_sprint_monitor_tab() -> None:
         st.warning(f"git status unavailable: {e}")
 
 
+# ── Tab: Risk & Compliance ────────────────────────────────────────────────────
+
+# SEBI disclaimer pages from CLAUDE.md scoped rules + compliance_check checks
+_SEBI_PAGES = [
+    ("pages/dashboard.py",             "SEBI-registered investment advisor"),
+    ("pages/global_intelligence.py",   "SEBI-registered investment advisor"),
+    ("pages/week_summary.py",          "SEBI-registered investment advisor"),
+    ("pages/home.py",                  "SEBI-registered investment advisor"),
+]
+
+_SEVERITY_ORDER = ["HIGH", "CRITICAL", "MED", "MEDIUM", "LOW"]
+_SEVERITY_COLOUR = {
+    "CRITICAL": "#b71c1c",
+    "HIGH":     "#c62828",
+    "MED":      "#f57c00",
+    "MEDIUM":   "#f57c00",
+    "LOW":      "#388e3c",
+}
+
+
+@st.cache_data(ttl=300)
+def _parse_loophole_log() -> list:
+    """Parse GSI_LOOPHOLE_LOG.md — returns list of {class_name, trigger, gate, count}."""
+    try:
+        with open("GSI_LOOPHOLE_LOG.md", encoding="utf-8") as f:
+            text = f.read()
+        # Table rows: | **Class name** | trigger | gate |
+        pattern = re.compile(r"\|\s*\*\*([^\*]+)\*\*\s*\|\s*([^\|]+?)\s*\|\s*([^\|]+?)\s*\|")
+        rows = []
+        for m in pattern.finditer(text):
+            rows.append({
+                "class_name": m.group(1).strip(),
+                "trigger":    m.group(2).strip()[:80],
+                "gate":       m.group(3).strip()[:80],
+            })
+        return rows
+    except FileNotFoundError:
+        return []
+    except Exception:
+        return []
+
+
+def _render_risk_compliance_tab() -> None:
+    """Risk & Compliance tab — risk heatmap, compliance gates, SEBI exposure map."""
+
+    # ── 1. Risk heatmap ──
+    st.markdown("**Risk register — severity × category**")
+    try:
+        risks = _parse_risk_register()
+        if risks and "error_msg" in risks[0]:
+            st.warning(risks[0]["error_msg"])
+        elif not risks:
+            st.caption("No risk data found.")
+        else:
+            open_risks  = [r for r in risks if "open" in r.get("status", "").lower()]
+            mit_risks   = [r for r in risks if "mitigated" in r.get("status", "").lower()]
+            st.metric("Open risks", len(open_risks), delta=f"{len(mit_risks)} mitigated", delta_color="off")
+
+            if open_risks:
+                import pandas as pd, plotly.graph_objects as go
+
+                categories = sorted({r.get("category", "Other") for r in open_risks})
+                severities = [s for s in _SEVERITY_ORDER if any(
+                    r.get("severity", "").upper() == s.upper() for r in open_risks
+                )]
+
+                # Build count matrix
+                z = []
+                for sev in severities:
+                    row = []
+                    for cat in categories:
+                        count = sum(
+                            1 for r in open_risks
+                            if r.get("severity", "").upper() == sev.upper()
+                            and r.get("category", "Other") == cat
+                        )
+                        row.append(count)
+                    z.append(row)
+
+                fig = go.Figure(go.Heatmap(
+                    z=z, x=categories, y=severities,
+                    colorscale=[[0, "#1a1a2e"], [0.5, "#c62828"], [1, "#ff1744"]],
+                    showscale=False,
+                    text=[[str(v) if v > 0 else "" for v in row] for row in z],
+                    texttemplate="%{text}",
+                ))
+                fig.update_layout(
+                    height=180,
+                    margin={"t": 8, "b": 40, "l": 60, "r": 8},
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    font={"color": "#e0e0e0", "size": 11},
+                )
+                st.plotly_chart(fig, use_container_width=True, config={"responsive": True})
+
+                # Drill-down expanders by severity
+                for sev in severities:
+                    sev_risks = [r for r in open_risks if r.get("severity", "").upper() == sev.upper()]
+                    colour    = _SEVERITY_COLOUR.get(sev.upper(), "#546e7a")
+                    with st.expander(f"{sev} ({len(sev_risks)} open)", expanded=(sev in ("HIGH", "CRITICAL"))):
+                        for r in sev_risks:
+                            st.markdown(
+                                f"**{r['id']}** · `{r.get('category','?')}` · {r.get('description','')}"
+                            )
+            else:
+                st.success("No open risks — all mitigated.")
+    except Exception as e:
+        st.warning(f"Risk heatmap unavailable: {e}")
+
+    st.divider()
+
+    # ── 2. Compliance gate table ──
+    st.markdown("**Compliance gates** (live check)")
+    try:
+        comp = _parse_compliance_output()
+        if comp.get("error_msg"):
+            st.warning(f"compliance_check.py error: {comp['error_msg']}")
+        else:
+            summary = comp.get("summary", "?")
+            rc      = comp.get("return_code", -1)
+            if rc == 0:
+                st.success(summary)
+            else:
+                st.error(summary)
+
+            # Build display from stdout — re-run to get named results
+            try:
+                result2 = subprocess.run(
+                    ["python3", "compliance_check.py"],
+                    capture_output=True, text=True, timeout=15,
+                )
+                lines = result2.stdout.strip().splitlines()
+                fail_names = set()
+                for line in lines[1:]:
+                    if line.strip().startswith("FAIL:"):
+                        fail_names.add(line.strip()[5:].strip())
+
+                # Known gate list from compliance_check.py
+                gate_defs = [
+                    ("SEBI disclaimer",            "SEBI text in dashboard.py"),
+                    ("Algo disclosure",             "algorithmically generated in dashboard.py"),
+                    ("No raw score",                "Momentum: {score}/100 absent from dashboard.py"),
+                    ("No red flags fallback",       "No major red flags fallback absent"),
+                    ("ROE null guard",              "roe_str guard in dashboard.py"),
+                    ("Next steps removed",          "_render_next_steps_ai() not called in global_intelligence.py"),
+                    ("RATES CONTEXT",               "RATES CONTEXT in indicators.py"),
+                    ("Rate limit gate",             "_is_rate_limited() in market_data.py"),
+                    ("Deps doc current when req changed", "requirements.txt ≤ GSI_DEPENDENCIES.md by commit date"),
+                    ("SEBI disclaimer (week_summary)",    "SEBI text in week_summary.py"),
+                ]
+                import pandas as pd
+                gate_rows = [
+                    {
+                        "Gate":        name,
+                        "Status":      "FAIL" if name in fail_names else "PASS",
+                        "Description": desc,
+                    }
+                    for name, desc in gate_defs
+                ]
+                df_gates = pd.DataFrame(gate_rows)
+                st.dataframe(df_gates, use_container_width=True, hide_index=True)
+            except Exception:
+                st.caption("Gate detail table unavailable — showing summary only.")
+    except Exception as e:
+        st.warning(f"Compliance check unavailable: {e}")
+
+    st.divider()
+
+    # ── 3. SEBI exposure map ──
+    st.markdown("**SEBI disclaimer exposure map**")
+    try:
+        sebi_rows = []
+        for path, search_str in _SEBI_PAGES:
+            try:
+                with open(path, encoding="utf-8") as f:
+                    content = f.read()
+                present = search_str in content
+            except FileNotFoundError:
+                present = None  # file absent
+            sebi_rows.append({
+                "Page":     path,
+                "Status":   "PRESENT" if present else ("FILE MISSING" if present is None else "ABSENT"),
+            })
+        import pandas as pd
+        df_sebi = pd.DataFrame(sebi_rows)
+        st.dataframe(df_sebi, use_container_width=True, hide_index=True)
+        absent = [r for r in sebi_rows if r["Status"] != "PRESENT"]
+        if absent:
+            st.error(f"{len(absent)} page(s) missing SEBI disclaimer: {', '.join(r['Page'] for r in absent)}")
+        else:
+            st.success("SEBI disclaimer confirmed in all monitored pages.")
+    except Exception as e:
+        st.warning(f"SEBI exposure map unavailable: {e}")
+
+    st.divider()
+
+    # ── 4. Loophole frequency ──
+    st.markdown("**Governance loophole classes** (GSI_LOOPHOLE_LOG.md)")
+    try:
+        loopholes = _parse_loophole_log()
+        if loopholes:
+            for lp in loopholes:
+                st.markdown(
+                    f"**{lp['class_name']}**  \n"
+                    f"Trigger: {lp['trigger']}  \n"
+                    f"Gate: `{lp['gate']}`"
+                )
+        else:
+            st.caption("No loophole log data found.")
+    except Exception as e:
+        st.warning(f"Loophole log unavailable: {e}")
+
+
 # ── Public entry point ─────────────────────────────────────────────────────────
 
 def render_observability() -> None:
@@ -686,7 +899,9 @@ def render_observability() -> None:
         _render_gate()
         return
 
-    tab_health, tab_program, tab_sprint = st.tabs(["App Health", "Program", "Sprint Monitor"])
+    tab_health, tab_program, tab_sprint, tab_risk = st.tabs(
+        ["App Health", "Program", "Sprint Monitor", "Risk & Compliance"]
+    )
 
     with tab_health:
         _tab_app_health()
@@ -696,6 +911,9 @@ def render_observability() -> None:
 
     with tab_sprint:
         _render_sprint_monitor_tab()
+
+    with tab_risk:
+        _render_risk_compliance_tab()
 
 
 # Streamlit MPA: execute when this file is served directly via /observability
