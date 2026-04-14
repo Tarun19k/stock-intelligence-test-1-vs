@@ -30,16 +30,51 @@ Next session:  session_028
 
 ## v5.38 Sprint — Task List
 
-- [ ] gov-regression-batch  (haiku  · v5.38a · regression.py)           ← CURRENT
-- [ ] gov-compliance        (haiku  · v5.38a · compliance_check.py)
+- [x] gov-regression-batch  (haiku  · v5.38a · regression.py)           ✓ committed 85a26d0
+- [x] gov-compliance        (haiku  · v5.38a · compliance_check.py)     ✓ committed e7835d5
 --- CHECKPOINT after v5.38a completes ---
-- [ ] gov-skills-haiku      (haiku  · v5.38b · sprint-monitor.md + CLAUDE.md)
+- [ ] gov-skills-haiku      (haiku  · v5.38b · sprint-monitor.md + CLAUDE.md)   ← CURRENT
 - [ ] gov-new-session       (sonnet · v5.38b · new-session.md)
 - [ ] gov-token-policy      (sonnet · v5.38b · CLAUDE.md + sprint-monitor.md + dataset)
 - [ ] obs-P1a               (haiku  · v5.38c · pages/observability.py — parsers)
 - [ ] obs-P1b               (sonnet · v5.38c · pages/observability.py — Sprint Monitor tab)
 - [ ] obs-P1c               (sonnet · v5.38c · pages/observability.py — Risk & Compliance tab)
 - [ ] token-burn-log        (haiku  · v5.38b · docs/ai-ops/token-burn-log.jsonl) ← LAST
+
+## CHECKPOINT — 2026-04-14 | session_027 | v5.38 mid-sprint (after v5.38a)
+
+```
+Status:               ACTIVE (v5.38b about to begin)
+Regression baseline:  483 PASS / 14 FAIL expected (IN_PROGRESS R27 content checks)
+Always-on base:       439/439 (437 + R33 + R34)
+Compliance:           10/10 PASS (compliance_check.py)
+Sprint state:         v5.38 IN_PROGRESS — v5.38a DONE, v5.38b starting
+```
+
+Completed (committed, safe):
+  - gov-regression-batch  ✓  85a26d0  (regression.py — R33/R34/R35, R27/R31 extensions)
+  - gov-compliance        ✓  e7835d5  (compliance_check.py — C10 week_summary SEBI)
+
+Not yet started (v5.38b):
+  - gov-skills-haiku      (haiku  · sprint-monitor.md + CLAUDE.md)
+  - gov-new-session       (sonnet · new-session.md)
+  - gov-token-policy      (sonnet · CLAUDE.md + sprint-monitor.md + dataset + analyze script)
+
+Not yet started (v5.38c — URGENT):
+  - obs-P1a               (haiku  · pages/observability.py — feed parsers)
+  - obs-P1b               (sonnet · pages/observability.py — Sprint Monitor tab)
+  - obs-P1c               (sonnet · pages/observability.py — Risk & Compliance tab)
+
+Sprint-close (last):
+  - token-burn-log        (haiku  · docs/ai-ops/token-burn-log.jsonl)
+
+Decisions made this session:
+  - Token burn log policy added as Policy 8; 10 gaps identified and addressed in manifest
+  - Obs Phase 1 added to v5.38 as v5.38c (9-item cap reached exactly)
+  - Checkpoint placed after v5.38a (2 items) per user request
+  - R35 is COMPLETE-phase only (not always-on) — _baseline_note updated in manifest
+
+Resume instruction: Begin gov-skills-haiku — edit .claude/commands/sprint-monitor.md (Playwright hard gate) and CLAUDE.md (Phase 3 trigger review step). haiku model, sequential.
 
 ## session_025 — Pre-Sprint Handoff (written end of session_024 extension)
 
