@@ -1024,7 +1024,7 @@ bash-git approval:    N/A — all work committed and pushed
       instance + ui-test skill. Carry forward to next session pre-sprint check.
 - [ ] **quant_audit_pending.json** — pending=true for D3/D5 (false positive from post-edit hook
       on market_data.py RSS constant edit). Not a real quant audit trigger. Note at next session start.
-- [ ] **v5.38 planning** — not started. Next sprint scope TBD.
+- [ ] **v5.38 planning** — DONE. Manifest written, 4 items + 1 pre-sprint cleanup task defined.
 
 ### Key decisions from session_026
 
@@ -1039,4 +1039,8 @@ bash-git approval:    N/A — all work committed and pushed
 
 Next session: run /new-session → run `python3 regression.py` to confirm 437/437 baseline.
 If quant_audit_pending.json shows pending=true for D3/D5, acknowledge as false positive and proceed.
-First work: plan v5.38 sprint or run deferred Playwright tests (PLAYWRIGHT-01 through PLAYWRIGHT-06).
+Then: `/sprint-monitor init` → set manifest IN_PROGRESS → type "go" to start with task #1 (pre-sprint cleanup).
+
+v5.38 sprint is fully planned. Manifest at GSI_SPRINT_MANIFEST.json (status: PLANNING, 4 items + pre-sprint).
+Permissions pre-approved: file-read · file-write · bash-python3 · bash-git (no worktree/playwright/mcp needed).
+Silo audit findings (SILO-001/002/003) to be added to backlog after sprint closes — not blocking v5.38.
