@@ -803,6 +803,46 @@ def run(FM):
                     _ok = _must in _content
                     chk(f"R27.{_tier}", f"{_cid}:{_label}", _ok,
                         f"not found in {_cfile}: '{_must[:80]}'" if not _ok else "")
+            # Pass 3 — structural quality gates (IN_PROGRESS only)
+            _tb27 = _manifest.get("token_budget")
+            chk("R27.struct", "token_budget_present",
+                isinstance(_tb27, dict) and bool(_tb27),
+                "manifest missing 'token_budget' block — fill before starting IN_PROGRESS sprint (Rule 2)")
+            _tier_a_required = {
+                "sync_docs_passes", "compliance_baseline_current",
+                "pr_template_baseline_current", "decisions_has_sprint_adr", "qa_standards_has_brief"
+            }
+            _tier_a_found = {c.get("id") for c in _manifest.get("checks", [])
+                             if c.get("tier") == "A"}
+            _missing_a = _tier_a_required - _tier_a_found
+            chk("R27.struct", "tier_a_checks_complete",
+                len(_missing_a) == 0,
+                f"manifest missing Tier A check IDs: {sorted(_missing_a)} — all 5 permanent Tier A checks required")
+            _items27 = [it for it in _manifest.get("items", [])
+                        if "_section" not in it]
+            _last_id27 = _items27[-1].get("id") if _items27 else None
+            chk("R27.struct", "token_burn_log_is_last",
+                _last_id27 == "token-burn-log",
+                f"last item in manifest is '{_last_id27}' — 'token-burn-log' must always be the final item (Policy 8)")
+            _jsonl27 = "docs/ai-ops/token-burn-log.jsonl"
+            if os.path.exists(_jsonl27):
+                try:
+                    import json as _jcs27
+                    _entries27 = [_jcs27.loads(ln) for ln in open(_jsonl27) if ln.strip()]
+                    _cur_sv27  = _manifest.get("sprint_version", "")
+                    _prev27    = [e for e in _entries27 if e.get("sprint") != _cur_sv27]
+                    _open27    = [e for e in _prev27 if e.get("date_closed") is None]
+                    chk("R27.struct", "cross_sprint_log_closed",
+                        len(_open27) == 0,
+                        f"token-burn-log.jsonl has {len(_open27)} unclosed sprint entry/entries — complete previous token-burn-log before starting new sprint (Policy 8)")
+                except Exception as _ce27:
+                    chk("R27.struct", "cross_sprint_jsonl_parseable", False,
+                        f"token-burn-log.jsonl parse error (cross-sprint gate): {_ce27}")
+        elif _manifest.get("status") == "COMPLETE":
+            _wip27 = open("GSI_WIP.md").read() if os.path.exists("GSI_WIP.md") else ""
+            chk("R27.complete", "wip_idle_at_sprint_close",
+                "Status:" in _wip27 and "IDLE" in _wip27,
+                "GSI_WIP.md must show 'Status: IDLE' when manifest is COMPLETE — sprint close Rule 4")
 
 
     # R26 · Observability instrumentation contracts ────────────────────────────
@@ -909,6 +949,12 @@ def run(FM):
                 chk("R31", f"playwright_field:{_iid31}",
                     bool(_play31),
                     f"item '{_iid31}' touches .py files but has no playwright field — define PLAYWRIGHT-NN test or add N/A reason")
+                if _play31.upper().startswith("N/A"):
+                    _na_parts31 = _play31.split(" — ", 1)
+                    _has_reason31 = len(_na_parts31) > 1 and len(_na_parts31[1].strip()) > 0
+                    chk("R31", f"playwright_na_reason:{_iid31}",
+                        _has_reason31,
+                        f"item '{_iid31}' playwright='N/A' requires a reason after ' — ' e.g. 'N/A — regression.py only, no UI changes'")
         elif _s31 == "COMPLETE":
             _qa31 = open("GSI_QA_STANDARDS.md").read() if os.path.exists("GSI_QA_STANDARDS.md") else ""
             _pids31 = set()
@@ -941,6 +987,72 @@ def run(FM):
                 chk("R32", "learnings_post_sprint",
                     _has_post32,
                     f"No RECORD in GSI_SESSION_LEARNINGS.md dated >= {_created32} — run /log-learnings before marking sprint COMPLETE")
+
+
+    # R33 · DO NOT UNDO rule 12 — no raw Momentum score in _render_header_static ──
+    # Verifies that _render_header_static() does not display raw X/100 score.
+    # Scoped to the function body only — /100 is permitted in _tab_insights() (KPI panel).
+    import re as _re33
+    _dash33 = FM.get("pages/dashboard.py", "")
+    _match33 = _re33.search(r'def _render_header_static\b.*?(?=\ndef |\Z)', _dash33, _re33.DOTALL)
+    _hdr33 = _match33.group(0) if _match33 else ""
+    chk("R33", "no_raw_score_in_header_static",
+        "/100" not in _hdr33,
+        "pages/dashboard.py _render_header_static() must not render raw Momentum score (X/100) — DO NOT UNDO rule 12 / ADR-008")
+
+
+    # R34 · _ticker_cache_period module-level dict exists in market_data.py ────────
+    # Verifies the period-aware cache introduced in v5.37.1 has not been removed.
+    # Prevents stale 5d data being served for 3mo requests after cache warms.
+    import re as _re34
+    _md34 = FM.get("market_data.py", "")
+    chk("R34", "ticker_cache_period_module_dict",
+        bool(_re34.search(r'^_ticker_cache_period\s*:', _md34, _re34.MULTILINE)),
+        "market_data.py missing _ticker_cache_period module-level dict — period-aware cache fix (v5.37.1)")
+
+
+    # R35 · Token burn log close gate ────────────────────────────────────────────
+    # When manifest status == COMPLETE:
+    #   (a) token-burn-log item must be status DONE
+    #   (b) docs/ai-ops/token-burn-log.jsonl must have a matching sprint entry
+    #       with no null actual_tokens fields — no skeleton entries allowed at close.
+    # Enforces Policy 8: sprint cost must be recorded before declaring sprint COMPLETE.
+    if os.path.exists("GSI_SPRINT_MANIFEST.json"):
+        try:
+            import json as _j35
+            _m35 = _j35.load(open("GSI_SPRINT_MANIFEST.json"))
+        except Exception:
+            _m35 = {}
+        if _m35.get("status") == "COMPLETE":
+            _sv35  = _m35.get("sprint_version", "")
+            _tbl35 = next((it for it in _m35.get("items", [])
+                           if it.get("id") == "token-burn-log"), None)
+            chk("R35", "token_burn_log_item_done",
+                _tbl35 is not None and _tbl35.get("status") == "DONE",
+                "token-burn-log manifest item must be status=DONE before sprint COMPLETE — Policy 8")
+            _jsonl35 = "docs/ai-ops/token-burn-log.jsonl"
+            if os.path.exists(_jsonl35):
+                try:
+                    import json as _jl35
+                    _entries35 = [_jl35.loads(ln) for ln in open(_jsonl35) if ln.strip()]
+                    _entry35   = next((e for e in _entries35
+                                       if e.get("sprint") == _sv35), None)
+                    if _entry35:
+                        _null_items35 = [it.get("id", "?")
+                                         for it in _entry35.get("items", [])
+                                         if it.get("actual_tokens") is None]
+                        chk("R35", "token_burn_actuals_complete",
+                            len(_null_items35) == 0,
+                            f"token-burn-log.jsonl has null actual_tokens for: {_null_items35} — fill all fields before COMPLETE")
+                    else:
+                        chk("R35", "token_burn_sprint_entry_exists", False,
+                            f"token-burn-log.jsonl has no entry for sprint {_sv35} — run token-burn-log item first")
+                except Exception as _e35:
+                    chk("R35", "token_burn_jsonl_parseable", False,
+                        f"token-burn-log.jsonl parse error: {_e35}")
+            else:
+                chk("R35", "token_burn_jsonl_file_exists", False,
+                    "docs/ai-ops/token-burn-log.jsonl not found — run gov-token-policy to create it")
 
 
 def verify_zip(zip_path: str):

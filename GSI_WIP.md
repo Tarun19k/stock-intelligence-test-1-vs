@@ -19,14 +19,27 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_026
-Version:       v5.37.1
+Status:        ACTIVE
+Session ID:    session_027
+Version:       v5.37.1 → v5.38 (in progress)
 Last updated:  2026-04-14
-Sprint:        v5.37 COMPLETE
-Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE)
-Next session:  session_027
+Sprint:        v5.38 IN_PROGRESS (Governance Gap Closure + Obs Phase 1)
+Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS)
+Next session:  session_028
 ```
+
+## v5.38 Sprint — Task List
+
+- [ ] gov-regression-batch  (haiku  · v5.38a · regression.py)           ← CURRENT
+- [ ] gov-compliance        (haiku  · v5.38a · compliance_check.py)
+--- CHECKPOINT after v5.38a completes ---
+- [ ] gov-skills-haiku      (haiku  · v5.38b · sprint-monitor.md + CLAUDE.md)
+- [ ] gov-new-session       (sonnet · v5.38b · new-session.md)
+- [ ] gov-token-policy      (sonnet · v5.38b · CLAUDE.md + sprint-monitor.md + dataset)
+- [ ] obs-P1a               (haiku  · v5.38c · pages/observability.py — parsers)
+- [ ] obs-P1b               (sonnet · v5.38c · pages/observability.py — Sprint Monitor tab)
+- [ ] obs-P1c               (sonnet · v5.38c · pages/observability.py — Risk & Compliance tab)
+- [ ] token-burn-log        (haiku  · v5.38b · docs/ai-ops/token-burn-log.jsonl) ← LAST
 
 ## session_025 — Pre-Sprint Handoff (written end of session_024 extension)
 
