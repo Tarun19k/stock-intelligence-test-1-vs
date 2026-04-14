@@ -30,15 +30,31 @@ GSI_SPRINT_MANIFEST.json as the source of truth.
 
 ---
 
+## Step 0 — Sprint open (PLANNING → IN_PROGRESS transition)
+
+Run once when the sprint status is about to move from PLANNING to IN_PROGRESS (before any implementation item starts). This is separate from init — it fires on the first `/sprint-monitor init` call if the manifest is still PLANNING.
+
+1. Set manifest `status` → `"IN_PROGRESS"` in `GSI_SPRINT_MANIFEST.json`.
+2. **Write JSONL skeleton entry** to `docs/ai-ops/token-burn-log.jsonl` — create the file if it does not exist:
+   ```json
+   {"sprint":"[sprint_version]","schema_version":"1","date_opened":"[today]","date_closed":null,"actual_tokens_methodology":"self_estimate","sessions":["[session_id]"],"items":[... one per manifest item, actual_tokens:null, quality fields null ...],"overhead":{"regression_runs_actual":null,"sync_docs_actual":null,"sprint_close_actual":null},"totals":{"est_tokens_sum":"[from manifest]","actual_tokens_sum":null,"delta_vs_est":null,"variance_pct":null},"learnings":""}
+   ```
+   Populate static fields: sprint_version, date_opened, session_id, est_tokens per item (from manifest), model, mode. All nullable fields set to null.
+3. Notify: `⚡ Sprint [sprint_version] opened. JSONL skeleton written to docs/ai-ops/token-burn-log.jsonl.`
+
+---
+
 ## Step 1 — init (run once at sprint start, before first implementation item)
 
-1. Read `GSI_SPRINT_MANIFEST.json` — extract all items where `status` ≠ `"DONE"` and entry has no `_section` key.
-2. For each pending item, call **TaskCreate**:
+1. If manifest `status` is `"PLANNING"` — run **Step 0** first (sprint open + JSONL skeleton).
+2. Read `GSI_SPRINT_MANIFEST.json` — extract all items where `status` ≠ `"DONE"` and entry has no `_section` key.
+3. For each pending item, call **TaskCreate**:
    - `title`: `[item.id] — [item.title]`
    - `description`: `sub_sprint: [item.sub_sprint] | model: [item.model] | mode: [item.mode] | files: [item.files joined] | criterion: [item.pass_criterion]`
    - `status`: `pending`
-3. Confirm task count matches pending manifest items. Report any mismatch.
-4. Print sprint table:
+   - **Always create `token-burn-log` task last** — after all other tasks are registered.
+4. Confirm task count matches pending manifest items. Report any mismatch.
+5. Print sprint table:
 
 ```
 Sprint: v5.37 | Status: IN_PROGRESS | Baseline: 436/436
@@ -153,6 +169,15 @@ When all tasks show `completed`:
 ```
 🏁 All [N] sprint items complete. Sprint close sequence:
    Step 0a: /log-learnings  (R32 requires RECORD in GSI_SESSION_LEARNINGS.md)
+   Step 0b: Fill token-burn-log.jsonl actuals (Policy 8 / R35):
+            - Fill actual_tokens per item (self-estimate from session context)
+            - Fill quality fields: regression_passed_first_try, rework_rounds, outcome
+            - Fill overhead: regression_runs_actual, sync_docs_actual, sprint_close_actual
+            - Fill totals: actual_tokens_sum, delta_vs_est, variance_pct
+            - Write learnings: one-sentence optimisation insight
+            - Set date_closed: today
+            - Run: python3 docs/ai-ops/analyze_token_burns.py → confirm parseable
+            - Mark token-burn-log manifest item status → "DONE"
    Step 1:  python3 sync_docs.py
    Step 2:  python3 regression.py → confirm [N] PASS
    Step 2a: [GATE] Playwright — awaiting /sprint-monitor playwright-done or playwright-defer

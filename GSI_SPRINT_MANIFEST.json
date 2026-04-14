@@ -262,7 +262,7 @@
         "docs/ai-ops/analyze_token_burns.py"
       ],
       "pass_criterion": "CLAUDE.md has Policy 8 with full enriched schema (schema_version, actual_tokens_methodology, quality block, session_id, regression_runs_actual). sprint-monitor init creates token-burn-log task last AND writes JSONL skeleton on sprint open (IN_PROGRESS transition). docs/ai-ops/token-burn-log.jsonl exists with v5.38 skeleton (all nullable fields null, static fields filled). docs/ai-ops/analyze_token_burns.py exists, reads token-burn-log.jsonl, outputs markdown summary table of est vs actual by model/mode.",
-      "status": "pending",
+      "status": "DONE",
       "gaps_addressed": [
         "GAP-A",
         "GAP-C",

@@ -289,9 +289,9 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 | OPEN-028 | **P0** | **FS-01 + FS-06: `_render_watchlist_badges()` (global_intelligence.py lines 60–90) shows named stocks with price/change but no BUY/WATCH/AVOID verdict (FS-06) and no SEBI disclaimer (FS-01). Section title "Related Stocks to Watch" implies action. Fix: (a) add SEBI caption after section title; (b) fetch and display cached verdict per ticker.** |
 | OPEN-029 | **P0** | **SEBI disclaimer absent from `_render_header_static()` (dashboard.py lines 159–163). The verdict badge is tab-independent — visible on Charts, Forecast, Compare tabs with zero regulatory coverage. The Insights tab disclaimer (line 1059) does NOT cover this. Fix: add compact st.caption after header markdown block (after line 178).** |
 
-## Governance Policy Framework (v5.31)
+## Governance Policy Framework (v5.38)
 
-Seven policies agreed during QA audit session. All future features must comply.
+Eight policies. Policies 1–3 pre-existing. 4–7 added audit session 009. Policy 8 added session_027.
 
 | # | Policy | Core Rule |
 |---|---|---|
@@ -302,8 +302,7 @@ Seven policies agreed during QA audit session. All future features must comply.
 | **5** | **Data Coherence** | **Same metric = same calculation function across all pages; AI narrative must consume same data as indicator panel** |
 | **6** | **Signal Arbitration** | **Documented hierarchy: Weinstein > Elder in conflict; veto must be visibly disclosed in UI** |
 | **7** | **Data Freshness Labeling** | **Recency claims ("Live", "Real-Time") gated on timestamp verification; stale data shows source date** |
-
-Policies 4–7 are new additions from audit session 009. Policies 1–3 were pre-existing.
+| **8** | **Token Burn Log** | **Every sprint records estimated vs actual token cost per item + quality signal in `docs/ai-ops/token-burn-log.jsonl`. `token-burn-log` is always the last manifest item. R35 blocks COMPLETE if JSONL entry is absent or has null actual_tokens.** |
 
 ## Known Failure Classes (distilled from GSI_LOOPHOLE_LOG.md)
 
@@ -347,6 +346,8 @@ Read before implementing any new feature. Update after every sprint.
 | `GSI_FILE_IMPACT.md` | Pre-change file impact map. Look up change type → every file that must be updated. Single source of truth for documentation accountability. |
 | `docs/ai-ops/token-model-rules.md` | Model selection rules (Haiku/Sonnet/Opus criteria), execution modes, read cost tiers, anti-patterns. Read before writing sprint token_budget block. |
 | `docs/ai-ops/claude-features-reference.md` | Full Claude API/Code/SDK feature reference: prompt caching, memory stores, context window, batch API, hooks, MCP. Read when designing AI-ops optimisations. |
+| `docs/ai-ops/token-burn-log.jsonl` | Token burn dataset — one JSONL entry per sprint. est vs actual tokens + quality signals per item. Policy 8. R35 enforces completeness at COMPLETE. |
+| `docs/ai-ops/analyze_token_burns.py` | Token burn aggregation script — reads JSONL, outputs per-sprint est-vs-actual table + per-model accuracy + per-mode efficiency + overhead trend. Run after each sprint close. |
 | `docs/audit-orchestration/` | Quant audit observability: `status.json` (phase tracker), `domain-findings-auto.md` (D1/D2/D4/D5 findings). Updated by quant-reviewer each audit run. |
 | `docs/signal-accuracy-audit-v{version}-{date}.md` | Versioned quant accuracy audit reports. Latest: v5.36 (2026-04-13). Append new reports per version — do not overwrite. |
 | `docs/migration/` | Vercel migration architecture artifacts: `vercel-migration-plan.md`, `component-mapping.md`, `migration-risks.md`. Research produced session_024. |
@@ -473,6 +474,52 @@ Optimisation types and quality floors:
 If a mid-sprint tool call requires a permission not listed in the sprint manifest, Claude pauses and requests explicit approval before proceeding.
 
 Fill this block BEFORE implementation. After sprint close, update `saving_est` with actuals where known. This log feeds the velocity table — track cumulative savings across sprints.
+
+**Token burn actuals template (Policy 8) — fill at sprint close, BEFORE marking COMPLETE:**
+```json
+"token_burn_actuals": {
+  "schema_version": "1",
+  "actual_tokens_methodology": "self_estimate",
+  "sessions": ["session_NNN"],
+  "date_opened": "YYYY-MM-DD",
+  "date_closed": "YYYY-MM-DD",
+  "items": [
+    {
+      "id": "item-id",
+      "model": "haiku|sonnet|opus",
+      "mode": "sequential|parallel_agent|worktree",
+      "est_tokens": "8k-12k",
+      "actual_tokens": null,
+      "quality": {
+        "regression_passed_first_try": null,
+        "rework_rounds": 0,
+        "wasted_tokens_est": 0,
+        "outcome": "clean|minor_rework|major_rework"
+      }
+    }
+  ],
+  "overhead": {
+    "regression_runs_actual": null,
+    "sync_docs_actual": null,
+    "sprint_close_actual": null
+  },
+  "totals": {
+    "est_tokens_sum": "Xk",
+    "actual_tokens_sum": null,
+    "delta_vs_est": null,
+    "variance_pct": null
+  },
+  "learnings": ""
+}
+```
+`actual_tokens_methodology` options: `"self_estimate"` (default — Claude estimates from context), `"api_usage_header"` (from Anthropic API response headers), `"token_counter_tool"` (external tool).
+Fill `actual_tokens` per item at close. Null fields fail R35 `token_burn_actuals_complete` check. After filling, run `python3 docs/ai-ops/analyze_token_burns.py` to confirm parseable.
+
+**token-burn-log — mandatory last sprint item (Policy 8 / R27.struct / R35):**
+Every sprint manifest must include a `token-burn-log` item as the **final non-section item**. It must:
+- Have `"status": "pending"` at sprint start (R27.struct `token_burn_log_is_last` enforces ordering)
+- Be marked `"DONE"` only after actuals are filled and JSONL entry is written (R35 `token_burn_log_item_done`)
+- R27.struct `cross_sprint_log_closed` blocks a new sprint if any previous sprint's JSONL entry has `date_closed: null`
 
 **Permanent Tier A checks — add to EVERY sprint manifest, no exceptions:**
 ```json
