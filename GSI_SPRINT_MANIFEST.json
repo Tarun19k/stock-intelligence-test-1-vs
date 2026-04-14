@@ -297,7 +297,7 @@
         "pages/observability.py"
       ],
       "pass_criterion": "pages/observability.py has _parse_sprint_manifest(), _parse_risk_register(), _parse_compliance_output(), _parse_snapshot_history(), _parse_session_learnings() \u2014 all decorated @st.cache_data(ttl=300). Each returns a structured dict/list. R26 observability_no_yfinance still passes.",
-      "status": "pending",
+      "status": "DONE",
       "gaps_addressed": [],
       "est_tokens": "12k\u201315k",
       "playwright": "N/A \u2014 parser functions are backend Python, no direct UI interaction; correctness verified by tab renders in obs-P1b and obs-P1c",

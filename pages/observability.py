@@ -11,6 +11,7 @@
 import re
 import json
 import os
+import subprocess
 import pytz
 from datetime import datetime
 
@@ -162,6 +163,186 @@ def _read_file_safe(path: str) -> str:
     except Exception:
         return ""
 
+
+# ── Feed parsers (cached, used by Sprint Monitor + Risk & Compliance tabs) ────
+
+@st.cache_data(ttl=300)
+def _parse_sprint_manifest() -> dict:
+    """Parse GSI_SPRINT_MANIFEST.json. Returns structured dict with graceful fallback."""
+    try:
+        with open("GSI_SPRINT_MANIFEST.json", encoding="utf-8") as f:
+            raw = json.load(f)
+        items = [it for it in raw.get("items", []) if "_section" not in it]
+        done  = [it for it in items if it.get("status") == "DONE"]
+        tb    = raw.get("token_budget", {})
+        return {
+            "sprint_version": raw.get("sprint_version", "?"),
+            "status":         raw.get("status", "?"),
+            "baseline":       raw.get("regression_baseline_entering", "?"),
+            "items":          items,
+            "done_count":     len(done),
+            "total_count":    len(items),
+            "token_budget":   tb,
+            "file_change_log": raw.get("file_change_log", []),
+            "checks":         raw.get("checks", []),
+            "error_msg":      None,
+        }
+    except FileNotFoundError:
+        return {"error_msg": "GSI_SPRINT_MANIFEST.json not found", "items": [], "checks": []}
+    except Exception as e:
+        return {"error_msg": str(e), "items": [], "checks": []}
+
+
+@st.cache_data(ttl=300)
+def _parse_risk_register() -> list:
+    """Parse GSI_RISK_REGISTER.md. Returns list of {id, severity, category, status, description}."""
+    try:
+        with open("GSI_RISK_REGISTER.md", encoding="utf-8") as f:
+            text = f.read()
+        rows = []
+        # Match markdown table rows: | RISK-T01 | HIGH | Technical | Open | description... |
+        pattern = re.compile(
+            r"\|\s*(RISK-[A-Z0-9\-]+)\s*\|\s*([^\|]+?)\s*\|\s*([^\|]+?)\s*\|\s*([^\|]+?)\s*\|\s*([^\|]+?)\s*\|"
+        )
+        for m in pattern.finditer(text):
+            rows.append({
+                "id":          m.group(1).strip(),
+                "severity":    m.group(2).strip(),
+                "category":    m.group(3).strip(),
+                "status":      m.group(4).strip(),
+                "description": m.group(5).strip()[:120],
+            })
+        return rows
+    except FileNotFoundError:
+        return [{"error_msg": "GSI_RISK_REGISTER.md not found"}]
+    except Exception as e:
+        return [{"error_msg": str(e)}]
+
+
+@st.cache_data(ttl=300)
+def _parse_compliance_output() -> dict:
+    """Run compliance_check.py via subprocess. Returns {gates, summary, error_msg}."""
+    try:
+        result = subprocess.run(
+            ["python3", "compliance_check.py"],
+            capture_output=True, text=True, timeout=15,
+        )
+        stdout = result.stdout.strip()
+        lines  = stdout.splitlines()
+        # First line: "N/M compliance checks passed"
+        summary = lines[0] if lines else "no output"
+        gates = []
+        for line in lines[1:]:
+            line = line.strip()
+            if line.startswith("FAIL:"):
+                gates.append({"id": line[5:].strip(), "status": "FAIL"})
+        # Passed gates not listed in output — derive from summary
+        m = re.search(r"(\d+)/(\d+)", summary)
+        if m:
+            passed_n = int(m.group(1))
+            total_n  = int(m.group(2))
+            failed_ids = {g["id"] for g in gates}
+            # We only know failed gate names; passed gates are unnamed in stdout
+            for i in range(passed_n):
+                gates.insert(i, {"id": f"check_{i+1}", "status": "PASS"})
+        return {"gates": gates, "summary": summary, "return_code": result.returncode, "error_msg": None}
+    except subprocess.TimeoutExpired:
+        return {"gates": [], "summary": "timeout", "return_code": -1, "error_msg": "compliance_check.py timed out (15s)"}
+    except Exception as e:
+        return {"gates": [], "summary": "error", "return_code": -1, "error_msg": str(e)}
+
+
+@st.cache_data(ttl=300)
+def _parse_snapshot_history() -> list:
+    """Parse SNAPSHOT-NNN blocks from GSI_SESSION_SNAPSHOT.md.
+    Returns list of {snapshot_id, session, date, version, qset, deviations, q01_baseline, is_resume}
+    ordered newest-first."""
+    try:
+        with open("GSI_SESSION_SNAPSHOT.md", encoding="utf-8") as f:
+            text = f.read()
+        blocks = re.split(r"(?=^## SNAPSHOT-\d+)", text, flags=re.MULTILINE)
+        results = []
+        for block in blocks:
+            m = re.match(
+                r"## (SNAPSHOT-(\d+))\s*\|\s*([^\|]+?)\s*\|\s*([^\|]+?)\s*\|\s*([^\|]+?)\s*\|\s*([^\|]+?)(\s*\|\s*RESUME)?\s*$",
+                block.strip().splitlines()[0] if block.strip() else "",
+            )
+            if not m:
+                continue
+            snap_id   = m.group(1)
+            snap_num  = int(m.group(2))
+            date      = m.group(3).strip()
+            session   = m.group(4).strip()
+            version   = m.group(5).strip()
+            qset      = m.group(6).strip()
+            is_resume = bool(m.group(7))
+
+            # Extract deviations from italic summary line
+            dev_m = re.search(r"Deviations:\s*([^\.\*]+)", block)
+            deviations = dev_m.group(1).strip() if dev_m else "?"
+
+            # Extract Q01 baseline
+            q01_m = re.search(r"\*\*Q01[^\*]*\*\*[:\s]+([^\n]+)", block)
+            q01   = q01_m.group(1).strip() if q01_m else "?"
+
+            results.append({
+                "snapshot_id": snap_id,
+                "snap_num":    snap_num,
+                "date":        date,
+                "session":     session,
+                "version":     version,
+                "qset":        qset,
+                "is_resume":   is_resume,
+                "deviations":  deviations,
+                "q01_baseline": q01,
+            })
+        results.sort(key=lambda x: x["snap_num"], reverse=True)
+        return results
+    except FileNotFoundError:
+        return [{"error_msg": "GSI_SESSION_SNAPSHOT.md not found"}]
+    except Exception as e:
+        return [{"error_msg": str(e)}]
+
+
+@st.cache_data(ttl=300)
+def _parse_session_learnings() -> list:
+    """Parse RECORD-NNN blocks from GSI_SESSION_LEARNINGS.md.
+    Returns list of {record_id, session, date, findings} ordered newest-first."""
+    try:
+        with open("GSI_SESSION_LEARNINGS.md", encoding="utf-8") as f:
+            text = f.read()
+        blocks = re.split(r"(?=^## RECORD-\d+)", text, flags=re.MULTILINE)
+        results = []
+        for block in blocks:
+            m = re.match(
+                r"## (RECORD-(\d+))\s*\|\s*([^\|]+?)\s*\|\s*([^\n]+)",
+                block.strip().splitlines()[0] if block.strip() else "",
+            )
+            if not m:
+                continue
+            rec_id  = m.group(1)
+            rec_num = int(m.group(2))
+            session = m.group(3).strip()
+            date    = m.group(4).strip()
+            # Collect body up to 400 chars
+            body_lines = block.strip().splitlines()[1:]
+            findings   = " ".join(ln.strip() for ln in body_lines if ln.strip())[:400]
+            results.append({
+                "record_id": rec_id,
+                "rec_num":   rec_num,
+                "session":   session,
+                "date":      date,
+                "findings":  findings,
+            })
+        results.sort(key=lambda x: x["rec_num"], reverse=True)
+        return results
+    except FileNotFoundError:
+        return [{"error_msg": "GSI_SESSION_LEARNINGS.md not found"}]
+    except Exception as e:
+        return [{"error_msg": str(e)}]
+
+
+# ── Existing parsers (used by existing _tab_program) ──────────────────────────
 
 def _parse_audit_counts(text: str) -> dict:
     """Count audit finding statuses from GSI_AUDIT_TRAIL.md."""
