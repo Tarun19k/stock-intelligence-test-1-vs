@@ -24,10 +24,13 @@ JSONL_PATH = os.path.join(os.path.dirname(__file__), "token-burn-log.jsonl")
 
 
 def _parse_ktoken(s: Optional[str]) -> Optional[float]:
-    """Convert '8k-12k' → midpoint 10.0, '22k' → 22.0, or None."""
+    """Convert '8k-12k' or '8k–12k' → midpoint 10.0, '22k' → 22.0, or None.
+    Strips leading ~ and handles both hyphen (-) and en-dash (–) separators."""
     if s is None:
         return None
-    s = str(s).strip().lower().replace("k", "")
+    s = str(s).strip().lower().lstrip("~").replace("k", "")
+    # Normalise en-dash → hyphen
+    s = s.replace("\u2013", "-").replace("\u2014", "-")
     parts = s.split("-")
     try:
         nums = [float(p.strip()) for p in parts if p.strip()]
@@ -92,7 +95,7 @@ def _model_accuracy(entries):
             est = _parse_ktoken(it.get("est_tokens"))
             actual = it.get("actual_tokens")
             if est and actual and actual > 0:
-                ratio = actual / est
+                ratio = (actual / 1000.0) / est  # both in k now
                 model_data[model].append(ratio)
 
     print("## Per-model accuracy ratio (actual / est midpoint)")
@@ -116,14 +119,14 @@ def _mode_efficiency(entries):
             mode = it.get("mode", "?")
             actual = it.get("actual_tokens")
             if actual:
-                mode_data[mode].append(actual)
+                mode_data[mode].append(actual / 1000.0)  # convert raw → k
 
     print("## Per-mode average tokens per item")
-    print(f"{'Mode':<20} {'N':<5} {'Avg tokens'}")
-    print("-" * 38)
+    print(f"{'Mode':<20} {'N':<5} {'Avg tokens(k)'}")
+    print("-" * 42)
     for mode, vals in sorted(mode_data.items()):
         avg = sum(vals) / len(vals)
-        print(f"{mode:<20} {len(vals):<5} {avg:.0f}k")
+        print(f"{mode:<20} {len(vals):<5} {avg:.1f}k")
     if not mode_data:
         print("  (no actuals yet)")
     print()

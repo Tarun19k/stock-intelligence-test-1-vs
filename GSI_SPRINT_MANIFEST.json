@@ -373,7 +373,7 @@
         "docs/ai-ops/token-burn-log.jsonl"
       ],
       "pass_criterion": "docs/ai-ops/token-burn-log.jsonl has a complete v5.38 entry: all item actual_tokens filled (no nulls), overhead actuals filled, delta_vs_est computed, learnings note written.",
-      "status": "pending",
+      "status": "DONE",
       "gaps_addressed": [],
       "est_tokens": "4k\u20136k",
       "playwright": "N/A \u2014 dataset file append only",
