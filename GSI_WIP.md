@@ -26,6 +26,12 @@ Last updated:  2026-04-14
 Sprint:        v5.38 COMPLETE (Governance Gap Closure + Obs Phase 1)
 Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE — archived)
 Next session:  session_028
+Regression:    446/446 PASS (439 always-on base)
+Compliance:    10/10 PASS
+Branch:        main @ c40b1b7
+
+RESUME INSTRUCTION: Run deferred Playwright tests PLAYWRIGHT-07 + PLAYWRIGHT-08
+before starting any new sprint. Use /ui-test skill. Streamlit must be running.
 ```
 
 ## Deferred Playwright tests (carry to session_028 pre-sprint check)
