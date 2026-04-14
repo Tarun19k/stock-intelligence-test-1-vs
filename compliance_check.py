@@ -45,6 +45,7 @@ def main() -> None:
         'gi': open('pages/global_intelligence.py').read(),
         'md': open('market_data.py').read(),
         'ind': open('indicators.py').read(),
+        'ws': open('pages/week_summary.py').read(),
     }
 
     checks = [
@@ -60,6 +61,10 @@ def main() -> None:
         # Compares last-commit date of both files. If requirements.txt was committed more
         # recently than GSI_DEPENDENCIES.md, the constraint log is out of date.
         ('Deps doc current when req changed', _check_deps_current(_repo_root)),
+        # C10 — week_summary.py must carry SEBI disclaimer (GAP-05 / Policy 4).
+        # File-level check: disclaimer must appear somewhere in week_summary.py.
+        # Section-level placement (OPEN-022) is a separate P0 fix tracked in open items.
+        ('SEBI disclaimer (week_summary)', 'SEBI-registered investment advisor' in files['ws']),
     ]
 
     fails = [n for n, ok in checks if not ok]
