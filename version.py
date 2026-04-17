@@ -215,8 +215,20 @@ VERSION_LOG = [
                "sprint-monitor.md: Playwright hard gate (playwright-done/playwright-defer), Step 0 sprint-open. "
                "new-session.md: ACTIVE resume writes minimal RESUME-tagged snapshot. "
                "observability.py Phase 1: 5 feed parsers + Sprint Monitor + Risk & Compliance tabs. "
-               "Regression baseline: 439/439 PASS (always-on; R33+R34 added).")}
+               "Regression baseline: 439/439 PASS (always-on; R33+R34 added).")},
+    {"version": "v5.39", "date": "2026-04-17",
+     "notes": ("Data Layer Hardening sprint (session_028). "
+               "DataManager M1 critical bug fixes: lock-ordering deadlock in get_health(), "
+               "empty _breakers emergency fallback, bypass_mode @property, fetched_wall_time on DataResult. "
+               "market_data.py: get_ticker_info _info_cache stale fallback — fundamentals survive 429 cooldown. "
+               "observability.py: Plotly bar opacity fix (marker=dict) — Sprint Monitor chart error resolved. "
+               "DataManager M2: CacheManager (bounded LRU L2, 200 entries, TTL per DataType) + "
+               "DataContract (wire-level shape validator, 5 DataTypes) wired into DataManager. "
+               "R24.M2: 6 new regression checks for CacheManager + DataContract. "
+               "DataManager M3 (worker thread) explicitly deferred — Vercel Workflow DevKit territory. "
+               "Closed OPEN-027/028/029 (resolved v5.37, stale in docs). "
+               "Regression baseline: 452/452 PASS (446 + 6 R24.M2 checks).")}
 ]
 
-    # v5.38 appended below
+    # v5.39 appended above
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

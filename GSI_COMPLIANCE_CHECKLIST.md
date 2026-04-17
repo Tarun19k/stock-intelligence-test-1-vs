@@ -117,4 +117,4 @@ else:
 "
 ```
 
-**Regression baseline:** ALL 436 CHECKS PASS (updated 2026-04-14 — v5.37; compute_stability_score added to R8 EP list +1; sprint R27 checks inactive post-close)
+**Regression baseline:** ALL 452 CHECKS PASS (updated 2026-04-17 — v5.39; R24.M2 CacheManager+DataContract +6 checks; sprint R27 checks inactive post-close)

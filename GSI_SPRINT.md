@@ -339,6 +339,7 @@ All items are Haiku-suitable except GAP-01 (Sonnet — flow design judgment requ
 
 | Sprint | Version | Items | Sessions | Est. Tokens | Optimisations | Outcome |
 |---|---|---|---|---|---|---|
+| Data layer hardening | v5.39 | 7 | 1 | ~344k (actual — subagent-driven; ~5x estimate due to per-subagent context overhead) | Subagent-driven development: isolated context per task, two-stage review; inflates tokens vs sequential | M1 bugs fixed; _info_cache stale fallback; Plotly opacity fix; CacheManager L2 + DataContract M2; R24.M2 +6 checks; 452/452 |
 | Governance gap closure + obs Phase 1 | v5.38 | 9 | 1 (compaction) | ~115k (actual) | All sequential; no agents; context compaction mid-sprint added ~12k uncaptured overhead | R33/R34/R35 + R27 Pass3; Policy 8 token burn log; Playwright hard gate; obs 4-tab; 439/439 |
 | Global signals hotfix | v5.37.1 | 1 | 0.1 | ~3k (actual) | Single read+edit, no agents | Period-aware _ticker_cache; ADR-026; loophole class 3 updated; 444/444 |
 | SEBI compliance + governance | v5.37 | 9 code + 2 gov | 2 | ~85k (actual) | df-03/df-08/H1/H2 batched sequential; no agents needed — all targeted single-file edits | 9 P0/P1/P2 items, sprint-monitor onboarded, compute_stability_score R8, 436/436 |

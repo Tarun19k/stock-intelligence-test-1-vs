@@ -276,3 +276,24 @@
 **Source:** Session_027 flow — context compaction between v5.38a and v5.38b sub-sprints.
 **Impact:** LOW — first sprint with actuals, so the baseline is known to be incomplete. Future schema version (2.0) should add `context_compaction_actual` field.
 **Fix applied:** Documented in token-burn-log.jsonl `learnings` field. Schema gap noted here. No schema change this session — would require a minor schema_version bump to avoid breaking existing parsers.
+
+## RECORD-034 | 2026-04-17 | session_028 | v5.39 | LEARNING
+**Topic:** Subagent-driven development token inflation + environment mismatch
+
+**Observations:**
+1. **Subagent token overhead is 3–5x sequential estimates.** Each subagent carries ~40–60k context overhead (fresh load of CLAUDE.md, market-data rules, financial-safety rules, system prompts). A Haiku task estimated at 8k–10k ran 57k actual. Future subagent-driven sprint estimates must multiply sequential estimates by 3–5x, not 1x.
+
+2. **pytest environment mismatch:** The system `python3` (3.14) lacks `streamlit`. Tests in `tests/test_data_manager_m2.py` import `data_manager` which imports `streamlit` — cannot run under `python3 -m pytest` in this environment. Use the Python interpreter that runs the app (check `head -1 /Users/home/Library/Python/3.9/bin/streamlit` to find it). Noted for future test sessions.
+
+3. **Lock-ordering correctness requires reading outside the lock.** `CacheManager.get()` must copy the stored result to a local variable inside the lock, then exit the lock before constructing the stale `DataResult`. Object allocation under lock is a latency hazard in hot paths.
+
+4. **R27.A `sync_docs_passes` check is a meta-check** (target_file "sync_docs.py output" doesn't exist on disk). It passes only when manifest status → COMPLETE (R27 deactivates). Not a real file check — it's a sprint-ordering gate disguised as a must_contain check.
+
+5. **OPEN-027/028/029 were stale for 2 sprints** — resolved in v5.37 but never removed from CLAUDE.md. Added a snapshot deviation check to catch this class of drift earlier. The fix was a doc-only T4 item.
+
+6. **Playwright MCP browser backend can close mid-session** without recovery. When this happens, defer the Playwright test with an explicit reason logged in GSI_QA_STANDARDS.md and GSI_WIP.md. Do not block sprint close — static spec review is sufficient evidence for code-level correctness. PLAYWRIGHT-09 deferred to session_029.
+
+**Anti-patterns avoided:**
+- Did not build M3 worker thread (Vercel Workflow DevKit replaces it — building now = throwaway infrastructure)
+- Did not add SQLite L3 cache (Streamlit Cloud ephemeral filesystem — near-zero production value)
+- Did not add row-count checks to DataContract (Policy 5 violation — compute_indicators owns this)

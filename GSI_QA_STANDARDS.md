@@ -1526,3 +1526,42 @@ Reason: No running Streamlit instance available at close time. Observability pag
 Carry to session_028 pre-sprint check. Run via `/ui-test` skill with Playwright MCP.
 - PLAYWRIGHT-07: Sprint Monitor tab — manifest table ≥1 row, id/model/mode/status columns, next item card with pass_criterion
 - PLAYWRIGHT-08: Risk & Compliance tab — risk heatmap renders, compliance table 9+ rows, SEBI exposure map present
+
+# QA Brief — v5.39 Data Layer Hardening
+
+**Sprint:** v5.39 | **Date:** 2026-04-17 | **Session:** session_028
+
+## Summary
+
+Infrastructure sprint — no new user-facing signals or UI changes (except one bug fix). Four areas:
+1. **DataManager M1 critical bug fixes** (data_manager.py — lock ordering, empty breakers, API cleanup)
+2. **market_data.py stale fallback** (get_ticker_info _info_cache — fundamentals survive 429 cooldown)
+3. **Plotly opacity fix** (pages/observability.py Sprint Monitor chart — red error banner gone)
+4. **DataManager M2** (CacheManager bounded LRU + DataContract wire validator — bypass mode, no page routing yet)
+
+| Fix | File | Expected visible change |
+|---|---|---|
+| get_health() lock ordering | data_manager.py | No user-visible change; prevents future M3 deadlock |
+| _breakers emergency fallback | data_manager.py | No user-visible change; prevents KeyError on get_breaker() |
+| bypass_mode @property | data_manager.py | No user-visible change |
+| fetched_wall_time on DataResult | data_manager.py | Enables Policy 7 display in M4+ (no page uses it yet) |
+| get_ticker_info _info_cache | market_data.py | P/E, P/B, ROE, sector survive 429 cooldowns (stale not blank) |
+| Plotly bar opacity | pages/observability.py | Sprint Monitor token budget chart renders without red error banner |
+| CacheManager + DataContract | data_manager.py | Internal only; bypass=True, no page sees it |
+
+## Verification steps
+
+1. **Plotly fix (PLAYWRIGHT-09):** Navigate to `/observability`, enter DEV_TOKEN `gsi-dev-2026`, click Sprint Monitor tab — no red error banner containing "Invalid value" or "opacity". Bar chart or "No token_budget.items" caption visible.
+2. **Regression:** `python3 regression.py` → 452/452 PASS (always-on baseline)
+3. **Compliance:** `python3 compliance_check.py` → 10/10 PASS
+
+## What I need back from QA
+
+- [ ] PLAYWRIGHT-09: Sprint Monitor tab renders without Plotly opacity error banner
+- [ ] Regression: 452/452 always-on checks pass outside active sprint
+
+## v5.39 Playwright Deferral Note
+
+**PLAYWRIGHT-09 deferred at sprint close (2026-04-17).**
+Reason: Playwright MCP browser backend closed mid-session. Code fix verified by static spec review.
+Carry to next session. Navigate to `/observability`, DEV_TOKEN `gsi-dev-2026`, Sprint Monitor tab — assert no red opacity error banner.

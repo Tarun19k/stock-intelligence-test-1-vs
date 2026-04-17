@@ -496,3 +496,19 @@ unchanged — it still serves any cached data as a last resort regardless of per
 **Consequences:** Every sprint close now requires a deliberate Playwright decision. Deferred tests accumulate in GSI_WIP.md and surface at next session start via `/new-session`. PLAYWRIGHT-07 and PLAYWRIGHT-08 (obs-P1b, obs-P1c) are the first tests registered under this gate.
 
 ---
+
+## ADR-029 | 2026-04-17 | v5.39 | ACTIVE
+**Title:** DataManager M2 — CacheManager L2 (no SQLite L3, no M3 worker thread)
+
+**Context:** OPEN-007 called for DataManager M2 with CacheManager + DataContract. The original M2 spec included SQLite L3 persistent cache and a Python worker thread (M3). Two architectural constraints changed the scope: (1) Streamlit Community Cloud filesystem is ephemeral on redeploy — SQLite L3 provides near-zero production value; (2) The Vercel migration plan (docs/migration/) explicitly replaces M3 with Vercel Workflow DevKit — building a Python threading construct now wastes a sprint.
+
+**Decision:** M2 delivers: bounded LRU in-process L2 cache (200-entry OrderedDict, per-DataType TTLs), wire-level DataContract validator (shape checks only, not row-count sufficiency per Policy 5), and critical M1 bug fixes (lock ordering, emergency fallback). SQLite L3 dropped. M3 worker thread deferred indefinitely (Vercel Workflow DevKit territory). Bypass mode stays True — no pages route through DataManager until M4.
+
+**Alternatives rejected:**
+- **SQLite L3**: Ephemeral filesystem on Streamlit Cloud; zero production value before Vercel migration.
+- **M3 Python threading**: Replaced by Vercel Workflow DevKit at migration; building it now creates throwaway infrastructure.
+- **DataContract row-count checks**: Policy 5 violation — compute_indicators() (indicators.py:21) already owns row sufficiency. Duplicating it in DataContract creates two sources of truth.
+
+**Consequences:** CacheManager L2 and _info_cache in market_data.py are Streamlit-specific scaffolding — documented as such and not carried to Vercel. DataResult, DataContract, CircuitBreaker are pure Python and port unchanged to Vercel Python API routes. M3 explicitly deferred with migration rationale in CLAUDE.md OPEN-007-M3.
+
+---

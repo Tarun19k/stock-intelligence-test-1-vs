@@ -172,7 +172,7 @@
     {
       "id": "token-burn-log",
       "title": "Token burn log JSONL entry (Policy 8 / R35)",
-      "status": "DONE",
+      "status": "pending",
       "model": "haiku",
       "model_rationale": "Single JSONL line append; no code changes.",
       "mode": "sequential",
