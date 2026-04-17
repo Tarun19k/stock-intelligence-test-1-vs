@@ -84,14 +84,18 @@ class DataResult:
     Every DataManager response is a DataResult.
     data is None if and only if status == UNAVAILABLE.
     Always check .ok before accessing .data.
+
+    fetched_at:        time.monotonic() — for internal TTL age calculations.
+    fetched_wall_time: time.time()      — for user-facing "data as of HH:MM" display (Policy 7).
     """
-    status:     ResultStatus
-    data:       Any           # pd.DataFrame | dict | float | None
-    source:     SourceTag | None
-    fetched_at: float         # time.monotonic() at point of fetch
-    ticker:     str
-    data_type:  DataType
-    error_msg:  str | None = None
+    status:           ResultStatus
+    data:             Any           # pd.DataFrame | dict | float | None
+    source:           SourceTag | None
+    fetched_at:       float         # time.monotonic() at point of fetch
+    ticker:           str
+    data_type:        DataType
+    error_msg:        str | None = None
+    fetched_wall_time: float = field(default_factory=time.time)
 
     @property
     def ok(self) -> bool:
@@ -130,12 +134,15 @@ class HealthSnapshot:
     """
     Point-in-time health state.  Consumed by sidebar observability panel (M6).
     Returned by DataManager.get_health() — always safe to call.
+
+    sources:           SourceTag.name str → CircuitState.name str  (JSON-serialisable)
+    queue_by_priority: Priority.name str → int count               (JSON-serialisable)
     """
-    sources:           dict   # SourceTag → CircuitState
+    sources:           dict   # str → str  (SourceTag.name → CircuitState.name)
     cache_hits:        int
     cache_misses:      int
     queue_depth:       int
-    queue_by_priority: dict   # Priority → int count
+    queue_by_priority: dict   # str → int  (Priority.name → count)
     last_fetch_at:     float | None
     bypass_active:     bool
 
@@ -319,6 +326,7 @@ class DataManager:
 
     # ── Lifecycle ──────────────────────────────────────────────────────────────
 
+    @property
     def bypass_mode(self) -> bool:
         """
         True while DataManager is in bypass (M1–M2).
@@ -346,14 +354,20 @@ class DataManager:
         """
         Always safe to call — never raises.
         Returns a snapshot of current health state for the sidebar panel (M6).
+        Lock ordering: read breaker states (each holds its own lock) BEFORE
+        acquiring self._lock to prevent AB-BA deadlock with M3 worker thread.
         """
+        # Snapshot breaker states outside self._lock — each b.state acquires b._lock.
+        # Acquiring self._lock while holding a CircuitBreaker._lock would invert
+        # the lock hierarchy and deadlock against a worker thread doing the reverse.
+        sources = {tag.name: b.state.name for tag, b in self._breakers.items()}
         with self._lock:
             return HealthSnapshot(
-                sources={tag: b.state for tag, b in self._breakers.items()},
+                sources=sources,
                 cache_hits=self._cache_hits,
                 cache_misses=self._cache_misses,
                 queue_depth=0,           # M3: replaced with real queue depth
-                queue_by_priority={p: 0 for p in Priority},
+                queue_by_priority={p.name: 0 for p in Priority},
                 last_fetch_at=self._last_fetch_at,
                 bypass_active=self._bypass,
             )
@@ -453,5 +467,23 @@ def get_datamanager() -> DataManager:
         dm._cache_misses  = 0
         dm._last_fetch_at = None
         dm._lock          = threading.Lock()
-        dm._breakers      = {}
+        dm._cache_manager = None  # M2: populated below; None signals no cache available
+        dm._breakers      = {
+            SourceTag.YAHOO: CircuitBreaker(
+                SourceTag.YAHOO, failure_threshold=3,
+                recovery_window_s=60.0, probe_timeout_s=10.0,
+            ),
+            SourceTag.NSEPYTHON: CircuitBreaker(
+                SourceTag.NSEPYTHON, failure_threshold=3,
+                recovery_window_s=120.0, probe_timeout_s=15.0,
+            ),
+            SourceTag.FRED: CircuitBreaker(
+                SourceTag.FRED, failure_threshold=3,
+                recovery_window_s=300.0, probe_timeout_s=10.0,
+            ),
+            SourceTag.STALE_CACHE: CircuitBreaker(
+                SourceTag.STALE_CACHE, failure_threshold=999,
+                recovery_window_s=1.0, probe_timeout_s=0.1,
+            ),
+        }
         return dm
