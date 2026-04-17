@@ -67,7 +67,7 @@ Check before ANY version change in requirements.txt. compliance_check.py C9 bloc
 
 ## Current State (v5.38 — 2026-04-14)
 
-**Regression baseline: 446/446 PASS** *(stable base; sprint-specific checks (R27/R30/R31/R32) activate when manifest status == IN_PROGRESS)*
+**Regression baseline: 452/452 PASS** *(stable base; sprint-specific checks (R27/R30/R31/R32) activate when manifest status == IN_PROGRESS)*
 
 **v5.35 sprint: COMPLETE**
 
@@ -113,7 +113,7 @@ utils.py                safe_run(), sanitise(), init_session_state().
 styles.py               All CSS in CSS constant. inject_css() called once from app.py.
 indicators.py           compute_indicators(df), signal_score(df, info), unified verdict.
 market_data.py          All yfinance + RSS. Token bucket + _ticker_cache + warmth guard.
-data_manager.py         DataManager M1 skeleton + CircuitBreaker. Bypass mode until M4.
+data_manager.py         DataManager M2: CircuitBreaker + CacheManager (L2 LRU, 200 entries) + DataContract validator. Bypass mode until M4.
 forecast.py             Forecast lifecycle. session_state as primary store.
 portfolio.py            Mean-CVaR engine. No Streamlit calls.
 pages/week_summary.py   Weekly summary + group/market overview.
@@ -255,7 +255,7 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 | OPEN-004 | LOW | Extract SCORING_WEIGHTS to config |
 | OPEN-005 | HIGH | git rm config_OLD.py from repo root |
 | OPEN-006 | MED | Portfolio Allocator stability score UI + backtest |
-| **OPEN-007** | **HIGH** | **DataManager M2: CacheManager + DataContract validator (M1 complete)** |
+| OPEN-007-M3 | LOW | DataManager M3: priority queue + worker thread — **DEFERRED** (Vercel Workflow DevKit replaces this; see docs/migration/vercel-migration-plan.md) |
 | RISK-001 | MED | XSS: sanitise() all {ticker}/{name} in unsafe_allow_html f-strings |
 | RISK-003 | LOW | safe_ticker_key() in _yf_download() before yf.download() |
 

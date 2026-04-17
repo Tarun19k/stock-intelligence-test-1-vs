@@ -80,6 +80,19 @@ Nothing in progress. Next session picks from Backlog above.
 
 ---
 
+### Done — v5.39 (2026-04-17, session_028)
+
+| ID | Description | Verified |
+|---|---|---|
+| T1 | DataManager M1 critical bugs fixed: lock ordering, empty _breakers fallback, bypass_mode @property, fetched_wall_time, HealthSnapshot str keys | Commit 89c5e1e ✓ |
+| T2 | get_ticker_info stale fallback via _info_cache — fundamentals survive 429 cooldown | Commit a2dc50b ✓ |
+| T3 | Plotly bar opacity fix — Sprint Monitor token budget chart renders without error | Commit f8d7031 ✓ |
+| T4 | Close OPEN-027/028/029 (resolved v5.37), update regression baseline 436→446, fix meta.last_session | Commit ef122a0 ✓ |
+| T5 | DataManager M2 — CacheManager (bounded LRU 200 entries) + DataContract (wire-level) + R24.M2 regression checks + unit tests | Commit 3f717cb ✓ |
+| T6 | Docs updated: CLAUDE.md baseline 452/452, file structure updated, OPEN-007 M2 closed / M3 deferred, GSI_SPRINT.md Done section | This commit ✓ |
+
+---
+
 ### Done — v5.36 (2026-04-07)
 
 | ID | Description | Verified |
