@@ -25,7 +25,7 @@
     "claude_md": "CLAUDE.md in repo root \u2014 stable cold-start reference. Contains: file structure, run commands, do-not-undo rules, architecture decisions, environment, API behavior, scoring model, regression table. Update CLAUDE.md when architecture changes; update this manifest every session.",
     "manifest_note": "v2.0: stable reference sections moved to CLAUDE.md. This manifest is now session-state only: activities, file versions, Gist URLs, open items, file registry, session protocol.",
     "last_updated": "2026-04-14",
-    "last_session": "session_026",
+    "last_session": "session_028",
     "current_app_version": "v5.38",
     "documentation": {
       "GSI_GOVERNANCE.md": "v1.0 \u2014 7 governance policies established from audit sessions",
@@ -1569,9 +1569,9 @@
   "regression": {
     "file": "regression.py",
     "run_command": "python regression.py",
-    "expected_output": "ALL 436 CHECKS PASS",
+    "expected_output": "ALL 446 CHECKS PASS",
     "last_run": "2026-04-06 \u2014 v5.35 COMPLETE (R29 analytics check added)",
-    "last_result": "436 / 436 PASS",
+    "last_result": "446 / 446 PASS",
     "next_run": "Required at start of every session before any new work",
     "check_list": "\u2192 see CLAUDE.md regression table",
     "known_gap": "R13.KI-008 checks stSidebarNav anywhere in file \u2014 should check inside CSS constant only. Fix next session.",

@@ -67,7 +67,7 @@ Check before ANY version change in requirements.txt. compliance_check.py C9 bloc
 
 ## Current State (v5.38 — 2026-04-14)
 
-**Regression baseline: 436/436 PASS** *(stable; R27/R30/R31/R32 add additional checks during active sprints)*
+**Regression baseline: 446/446 PASS** *(stable base; sprint-specific checks (R27/R30/R31/R32) activate when manifest status == IN_PROGRESS)*
 
 **v5.35 sprint: COMPLETE**
 
@@ -285,9 +285,6 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 | OPEN-024 | P2 | mean_acc extracted in _render_forecast_accuracy_report (week_summary.py:1104) but never rendered. Docstring promises Mean Price Accuracy KPI. |
 | OPEN-025 | P2 | UNSTABLE threshold boundary: code fires at `>= 15` but comment + UI text say `> 15`. Align all three. |
 | OPEN-026 | P3 | CLAUDE.md Key Entry Points not updated: `_render_forecast_accuracy_report` + `compute_stability_score` missing from EP tables; compute_stability_score also missing from regression R8. |
-| OPEN-027 | **P0** | **SEBI disclaimer absent in `_render_global_signals()` (home.py lines 371–393). BUY/WATCH/AVOID index signals render every 60s with only a short caption — no SEBI regulatory text. Fix: st.caption after line 343.** |
-| OPEN-028 | **P0** | **FS-01 + FS-06: `_render_watchlist_badges()` (global_intelligence.py lines 60–90) shows named stocks with price/change but no BUY/WATCH/AVOID verdict (FS-06) and no SEBI disclaimer (FS-01). Section title "Related Stocks to Watch" implies action. Fix: (a) add SEBI caption after section title; (b) fetch and display cached verdict per ticker.** |
-| OPEN-029 | **P0** | **SEBI disclaimer absent from `_render_header_static()` (dashboard.py lines 159–163). The verdict badge is tab-independent — visible on Charts, Forecast, Compare tabs with zero regulatory coverage. The Insights tab disclaimer (line 1059) does NOT cover this. Fix: add compact st.caption after header markdown block (after line 178).** |
 
 ## Governance Policy Framework (v5.38)
 
