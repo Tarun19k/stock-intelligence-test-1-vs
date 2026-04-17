@@ -21,14 +21,14 @@
 ```
 Status:        IDLE
 Session ID:    session_028
-Version:       v5.38
-Last updated:  2026-04-14
-Sprint:        v5.38 FULLY CLOSED (Playwright-07 + Playwright-08 passed session_028)
-Manifest:      GSI_SPRINT_MANIFEST.json (COMPLETE — archived)
+Version:       v5.39
+Last updated:  2026-04-17
+Sprint:        v5.39 COMPLETE (T1–T7 all done, sprint close pending)
+Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS — close sequence pending)
 Next session:  session_029
-Regression:    446/446 PASS (439 always-on base)
+Regression:    452/452 PASS (always-on baseline)
 Compliance:    10/10 PASS
-Branch:        main @ c40b1b7
+Branch:        main
 ```
 
 ## Deferred Playwright tests — RESOLVED session_028
