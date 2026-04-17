@@ -26,6 +26,7 @@ from __future__ import annotations
 import logging
 import threading
 import time
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any
@@ -131,6 +132,202 @@ def unavailable(ticker: str, data_type: DataType, reason: str) -> DataResult:
         data_type=data_type,
         error_msg=reason,
     )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Cache layer — M2
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class CacheManager:
+    """
+    Bounded LRU in-memory cache (L2).
+
+    Deployment note: Streamlit-specific.  Single-process, in-memory.
+    Replaced by Vercel KV at migration (docs/migration/vercel-migration-plan.md).
+
+    Key:        (ticker, DataType)
+    Cap:        MAX_ENTRIES = 200  (across all data types combined)
+    Eviction:   LRU — least-recently-used entry evicted when cap is reached
+    TTL:        per DataType, mirrors market_data.py TTLs.
+                get() returns ResultStatus.STALE (not None) for expired entries
+                so callers can decide to serve stale rather than fetch fresh.
+    Thread-safe: all public methods hold _lock.
+
+    Usage (M4+, once bypass is False):
+        cm = CacheManager()
+        result = cm.get("AAPL", DataType.OHLCV)
+        if result is None:
+            result = <fetch from source>
+            cm.put(result)
+        elif result.is_stale:
+            <serve stale, trigger background refresh>
+    """
+
+    MAX_ENTRIES: int = 200
+
+    # TTL per DataType (seconds) — mirrors market_data.py TTL constants
+    _TTL: dict = {
+        DataType.LIVE:     5,
+        DataType.OHLCV:    300,
+        DataType.INTRADAY: 60,
+        DataType.INFO:     600,
+        DataType.BATCH:    300,
+    }
+
+    def __init__(self) -> None:
+        # OrderedDict preserves insertion order and supports move_to_end() for O(1) LRU
+        self._cache: OrderedDict = OrderedDict()  # (ticker, DataType) → DataResult
+        self._lock  = threading.Lock()
+
+    # ── Public interface ──────────────────────────────────────────────────────
+
+    def get(self, ticker: str, data_type: DataType) -> "DataResult | None":
+        """
+        Returns DataResult if the entry exists (FRESH or STALE), None if not found.
+        Moves the accessed entry to MRU position.
+        Does NOT remove stale entries — callers decide whether to serve or drop.
+        """
+        key = (ticker, data_type)
+        with self._lock:
+            result = self._cache.get(key)
+            if result is None:
+                return None
+            self._cache.move_to_end(key)           # mark as recently used
+            stored = result
+        # Lock released before constructing stale DataResult (no allocation under lock)
+        ttl = self._TTL.get(data_type, 300)
+        age = time.monotonic() - stored.fetched_at
+        if age <= ttl:
+            return stored
+
+        # Past TTL — wrap as STALE so caller knows to trigger a background refresh
+        return DataResult(
+            status=ResultStatus.STALE,
+            data=stored.data,
+            source=stored.source,
+            fetched_at=stored.fetched_at,
+            fetched_wall_time=stored.fetched_wall_time,
+            ticker=stored.ticker,
+            data_type=stored.data_type,
+            error_msg="Served from stale L2 cache",
+        )
+
+    def put(self, result: "DataResult") -> None:
+        """
+        Store result.  No-op if status == UNAVAILABLE.
+        Evicts the LRU entry if adding would exceed MAX_ENTRIES.
+        """
+        if result.status == ResultStatus.UNAVAILABLE:
+            return
+        key = (result.ticker, result.data_type)
+        with self._lock:
+            if key in self._cache:
+                self._cache.move_to_end(key)
+            self._cache[key] = result
+            while len(self._cache) > self.MAX_ENTRIES:
+                self._cache.popitem(last=False)    # remove LRU (front of OrderedDict)
+
+    def invalidate(self, ticker: str) -> None:
+        """Remove all cache entries for this ticker across all DataTypes."""
+        with self._lock:
+            keys = [k for k in self._cache if k[0] == ticker]
+            for k in keys:
+                del self._cache[k]
+
+    def invalidate_all(self) -> None:
+        """Full cache wipe."""
+        with self._lock:
+            self._cache.clear()
+
+    @property
+    def size(self) -> int:
+        """Current number of cached entries."""
+        with self._lock:
+            return len(self._cache)
+
+
+class DataContract:
+    """
+    Wire-level shape validator for each DataType.
+
+    Validates that data received from yfinance has the correct structure —
+    columns present, correct index type, non-empty, correct value type.
+
+    Scope: wire-level ONLY.  Does NOT check row-count sufficiency for rolling
+    indicators — that is compute_indicators()'s job (indicators.py:21).
+    Keeping these concerns separate prevents Policy 5 violations
+    (same metric = same function across all pages).
+
+    Usage:
+        reason = DataContract.validate(df, DataType.OHLCV, "AAPL")
+        if reason is not None:
+            return unavailable(ticker, DataType.OHLCV, reason)
+    """
+
+    @staticmethod
+    def validate(data: Any, data_type: DataType, ticker: str) -> "str | None":
+        """
+        Returns None if data passes the contract for data_type.
+        Returns a reason string (non-empty) if validation fails.
+        Never raises — all exceptions are caught and returned as reason strings.
+        """
+        try:
+            if data_type in (DataType.OHLCV, DataType.INTRADAY):
+                return DataContract._validate_ohlcv(data)
+            if data_type == DataType.INFO:
+                return DataContract._validate_info(data)
+            if data_type == DataType.LIVE:
+                return DataContract._validate_live(data)
+            if data_type == DataType.BATCH:
+                return DataContract._validate_batch(data)
+            return f"Unknown DataType: {data_type}"
+        except Exception as exc:
+            return f"DataContract internal error for {ticker}/{data_type}: {exc}"
+
+    # ── Per-type validators ───────────────────────────────────────────────────
+
+    @staticmethod
+    def _validate_ohlcv(data: Any) -> "str | None":
+        if not isinstance(data, pd.DataFrame):
+            return "OHLCV: expected pd.DataFrame"
+        if data.empty:
+            return "OHLCV: DataFrame is empty"
+        required = {"Open", "High", "Low", "Close", "Volume"}
+        missing = required - set(data.columns)
+        if missing:
+            return f"OHLCV: missing columns {sorted(missing)}"
+        if not pd.api.types.is_datetime64_any_dtype(data.index):
+            return "OHLCV: index is not DatetimeIndex"
+        if not pd.api.types.is_numeric_dtype(data["Close"]):
+            return "OHLCV: Close column is not numeric"
+        return None
+
+    @staticmethod
+    def _validate_info(data: Any) -> "str | None":
+        if not isinstance(data, dict):
+            return "INFO: expected dict"
+        if not data:
+            return "INFO: empty dict"
+        return None
+
+    @staticmethod
+    def _validate_live(data: Any) -> "str | None":
+        if not isinstance(data, (int, float)):
+            return "LIVE: expected numeric (int or float)"
+        if data <= 0:
+            return f"LIVE: price must be positive, got {data}"
+        return None
+
+    @staticmethod
+    def _validate_batch(data: Any) -> "str | None":
+        if not isinstance(data, dict):
+            return "BATCH: expected dict"
+        # Each value must pass the OHLCV contract
+        for sym, df in data.items():
+            reason = DataContract._validate_ohlcv(df)
+            if reason is not None:
+                return f"BATCH[{sym}]: {reason}"
+        return None
 
 
 @dataclass
@@ -281,11 +478,14 @@ class DataManager:
     Obtain via:   dm = get_datamanager()
     Never:        dm = DataManager()   ← bypasses cache_resource, creates duplicates
 
-    M1 state
+    M2 state
     --------
-    bypass_mode == True always.
+    bypass_mode == True (property).
     Pages continue calling market_data.py directly.
     All fetch() stubs return UNAVAILABLE — pages must NOT call them yet.
+    CacheManager (L2 bounded LRU, 200 entries) is initialised and wired to
+    invalidate() / invalidate_all().
+    DataContract validator is available for use by source adapters (M4).
     Circuit breakers are instantiated and ready for M4/M5 source adapters.
     """
 
@@ -296,6 +496,11 @@ class DataManager:
         self._cache_misses:  int   = 0
         self._last_fetch_at: float | None = None
         self._lock:          threading.Lock = threading.Lock()
+
+        # M2: L2 bounded LRU cache — bypass=True means no data flows through it yet.
+        # Wired to fetch()/fetch_batch() in M4.  invalidate() and invalidate_all()
+        # delegate here immediately so the interface is consistent from M2 onward.
+        self._cache_manager: CacheManager = CacheManager()
 
         # One circuit breaker per logical source.
         # YAHOO covers both yfinance and yahooquery (same IP, same breaker).
@@ -326,7 +531,7 @@ class DataManager:
             ),
         }
 
-        log.info("DataManager M1 initialised — bypass_mode=True, circuit breakers ready")
+        log.info("DataManager M2 initialised — bypass_mode=True, CacheManager ready, circuit breakers ready")
 
     # ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -419,14 +624,18 @@ class DataManager:
         """
         Atomically clears all cache layers for this ticker.
         Called on stock switch (replaces cache_buster pattern in M4).
-        M1: no-op.
+        M2: clears L2 CacheManager.
         """
+        if self._cache_manager is not None:
+            self._cache_manager.invalidate(ticker)
 
     def invalidate_all(self) -> None:
         """
         Full cache wipe.  Called on global Refresh button.
-        M1: no-op.
+        M2: clears L2 CacheManager.
         """
+        if self._cache_manager is not None:
+            self._cache_manager.invalidate_all()
 
     def prefetch(self, tickers: list[str], data_type: DataType) -> None:
         """
@@ -471,7 +680,7 @@ def get_datamanager() -> DataManager:
         dm._cache_misses  = 0
         dm._last_fetch_at = None
         dm._lock          = threading.Lock()
-        dm._cache_manager = None  # M2: populated below; None signals no cache available
+        dm._cache_manager = None  # M2: None signals no cache available in emergency fallback
         dm._breakers      = {
             SourceTag.YAHOO: CircuitBreaker(
                 SourceTag.YAHOO, failure_threshold=3,

@@ -717,6 +717,31 @@ def run(FM):
         "def unavailable(" in dm,
         "unavailable() factory function must be defined — never return None from DataManager")
 
+    # R24.M2 — CacheManager + DataContract contracts
+    chk("R24.M2", "dm_cache_manager_class",
+        "class CacheManager" in dm,
+        "CacheManager class must be defined in data_manager.py (M2)")
+
+    chk("R24.M2", "dm_cache_manager_get",
+        "def get(" in dm and "CacheManager" in dm,
+        "CacheManager.get() method must be defined")
+
+    chk("R24.M2", "dm_cache_manager_put",
+        "def put(" in dm and "CacheManager" in dm,
+        "CacheManager.put() method must be defined")
+
+    chk("R24.M2", "dm_data_contract_class",
+        "class DataContract" in dm,
+        "DataContract class must be defined in data_manager.py (M2)")
+
+    chk("R24.M2", "dm_data_contract_validate",
+        "def validate(" in dm and "DataContract" in dm,
+        "DataContract.validate() static method must be defined")
+
+    chk("R24.M2", "dm_cache_manager_wired",
+        "_cache_manager" in dm,
+        "DataManager must hold a _cache_manager instance (M2)")
+
     # R25 · v5.33 governance policy enforcement (OPEN-017) ───────────────────
     # Verifies the 7 governance policies (GSI_GOVERNANCE.md) are enforced
     # in code, not just documented. Each check maps to a specific policy.
