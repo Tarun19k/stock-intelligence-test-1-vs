@@ -162,6 +162,12 @@ _ticker_cache_time: dict = {}
 _ticker_cache_period: dict = {}   # sym → period string used when data was fetched
 _TICKER_CACHE_TTL = 300  # seconds — match get_price_data TTL
 
+# ── Module-level info cache (survives across Streamlit rerenders) ────────────
+# Mirrors _ticker_cache but stores fundamentals dicts from get_ticker_info().
+# Serves stale fundamentals during 429 cooldowns so P/E, P/B, ROE, sector
+# do not go blank. Streamlit-specific — replaced by Upstash Redis at migration.
+_info_cache: dict = {}   # ticker → dict from yf.Ticker.info
+
 # ── Observability instrumentation (v5.34) ────────────────────────────────────
 # No Streamlit calls — pure counters. Read via get_health_stats() / get_rate_limit_state().
 _cache_stats: dict = {"hits": 0, "misses": 0}   # _ticker_cache read counters
@@ -501,22 +507,26 @@ def get_ticker_info(ticker: str, cache_buster: int = 0) -> dict:
     Fetch metadata/fundamentals for a ticker.
     cache_buster: same semantics as get_price_data.
     Returns {} on any failure — callers must handle missing keys gracefully.
+    On 429 cooldown: returns last known good data from _info_cache (stale fallback).
     Note: yfinance raises TypeError internally for some futures tickers (CL=F,
     GC=F etc.) — this is a known upstream issue, handled silently here.
     """
-    if _is_rate_limited():                         # v5.29 — abort during cooldown
-        return {}
+    if _is_rate_limited():
+        # Return stale fundamentals rather than blank — P/E, P/B, sector survive cooldown
+        return _info_cache.get(ticker, {})
     _global_throttle()
     try:
         result = yf.Ticker(ticker).info
-        return result if isinstance(result, dict) else {}
+        if isinstance(result, dict) and result:
+            _info_cache[ticker] = result   # update stale fallback on success
+            return result
+        return {}
     except TypeError:
         # Known yfinance issue with futures/commodity tickers — not our bug.
-        # Return empty dict; _detect_asset_class will fall back to ticker suffix.
         return {}
     except Exception as e:
         log_error(f"get_ticker_info:{ticker}", e)
-        return {}
+        return _info_cache.get(ticker, {})   # serve stale on any unexpected error
 
 
 @st.cache_data(ttl=300, show_spinner=False)
