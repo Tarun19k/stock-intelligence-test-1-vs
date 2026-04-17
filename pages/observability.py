@@ -610,8 +610,10 @@ def _render_sprint_monitor_tab() -> None:
                     x=ids,
                     y=[a if a is not None else 0 for a in actuals],
                     name="actual k",
-                    marker_color="#4C9BE8",
-                    opacity=[1.0 if a is not None else 0.3 for a in actuals],
+                    marker=dict(
+                        color="#4C9BE8",
+                        opacity=[1.0 if a is not None else 0.3 for a in actuals],
+                    ),
                 )
             fig.update_layout(
                 barmode="group",
