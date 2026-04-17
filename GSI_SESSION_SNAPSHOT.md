@@ -388,3 +388,26 @@ python3 regression.py (all 427 checks must pass) AND python3 -c "..." compliance
 **Q09. Current sprint and pending pre-sprint work:** v5.38 COMPLETE (session_027, 2026-04-14). Next sprint: v5.39 (not yet planned). GSI_WIP.md Status: IDLE. Pending pre-sprint work: PLAYWRIGHT-07 (obs-P1b Sprint Monitor tab) and PLAYWRIGHT-08 (obs-P1c Risk & Compliance tab) deferred — no live Streamlit instance at sprint close. Also: Playwright-01 through -06 still never run. Note: GSI_session.json meta.last_session shows session_026 — likely not updated at session_027 close (minor doc gap). UPDATED from SNAPSHOT-012.
 
 **Q10. Pre-push gate:** Two commands: (1) python3 regression.py (446 checks confirmed this session); (2) python3 compliance_check.py — 10/10 gates confirmed this session. UPDATED from SNAPSHOT-012 (was 9/9).
+
+## SNAPSHOT-014 | 2026-04-17 | session_029 | v5.39 | QSet-v1
+*Compared to SNAPSHOT-013 (QSet-v1). Deviations: none. Updated: Q01 (446→451 baseline), Q04 (M1→M2 DataManager shipped), Q09 (v5.39 COMPLETE), Q10 (446→451 count). New questions: none.*
+
+**Q01. Regression baseline:** 451/451 PASS (run this session). CLAUDE.md and GSI_session.json show 452 — baseline drift: 452 was documented when manifest was IN_PROGRESS (R27.struct = 4 checks active); at COMPLETE, R27.struct stops, R27.complete starts (1 check), net −3. Correct always-on COMPLETE-mode baseline is 451. UPDATED from SNAPSHOT-013 (was 446).
+
+**Q02. R27 enforcement scope:** R27 enforces GSI_SPRINT_MANIFEST.json completeness. IN_PROGRESS: R27.log (per-file change-log checks), R27.A/B (tier content checks), R27.struct (4 structural gates: token_budget_present, tier_a_checks_complete, token_burn_log_is_last, cross_sprint_log_closed). COMPLETE: R27.complete (1 check: wip_idle_at_sprint_close). Current manifest: v5.39 COMPLETE. Unchanged from SNAPSHOT-013.
+
+**Q03. yfinance import restriction:** Only market_data.py may import yfinance. All 14 other project files are banned. R3 regression check (15 checks) enforces this. Unchanged from SNAPSHOT-013.
+
+**Q04. DataManager bypass mode:** DataManager is now at M2 (v5.39). CacheManager (bounded LRU L2, 200 entries, OrderedDict) + DataContract wire-level validator are implemented and wired. bypass_mode property returns True (self._bypass = True hardcoded, set False in M3). Pages still use market_data.py directly. M3 (worker thread) deferred — replaced by Vercel Workflow DevKit. M4 = YAHOO adapter + pages migration. R24 (10 checks) + R24.M2 (6 new checks, added v5.39) enforce module structure. UPDATED from SNAPSHOT-013 (was M1 skeleton only).
+
+**Q05. Signal arbitration hierarchy:** Weinstein Stage veto → Elder Triple Screen → momentum score. Stage AVOID veto → hard AVOID regardless of score. Stage WATCH veto → caps at WATCH. Elder suppress_buy=True → caps at WATCH. All vetoes produce conflict strings disclosed in UI. Implemented in compute_unified_verdict() in indicators.py (line 520). Unchanged from SNAPSHOT-013.
+
+**Q06. M3 routing guard (grp_explicitly_selected):** session_state flag (default False). Set True by group selector on_change callback (app.py line 120). Reset False on market switch (app.py line 59). Gates 49-ticker batch download at app.py line 258. R22 (20 checks) enforces lazy-loading contracts. Unchanged from SNAPSHOT-013.
+
+**Q07. DO NOT UNDO rule 12:** Raw Momentum score (X/100) must NOT appear in _render_header_static(). Confirmed: score variable is set (line 116) but NOT rendered in the markdown output — only verdict badge, plain-English reason, and align text are shown. Score IS present in _tab_insights() KPI panel (line 949) as permitted. ADR-008 is the final record. Unchanged from SNAPSHOT-013.
+
+**Q08. Permanent Tier A manifest checks:** Five required: (1) sync_docs_passes; (2) compliance_baseline_current; (3) pr_template_baseline_current; (4) decisions_has_sprint_adr; (5) qa_standards_has_brief. Unchanged from SNAPSHOT-013.
+
+**Q09. Current sprint and pending pre-sprint work:** v5.39 COMPLETE (session_028, 2026-04-17). GSI_WIP.md Status: IDLE. Carry-forward: (1) PLAYWRIGHT-09 deferred — navigate to /observability, DEV_TOKEN gsi-dev-2026, Sprint Monitor tab, assert no opacity error banner (Playwright MCP backend closed mid-session); (2) tests/test_data_manager_m2.py — 36 unit tests require Python 3.9 (/Users/home/Library/Python/3.9/bin/python3), not system Python 3.14. UPDATED from SNAPSHOT-013.
+
+**Q10. Pre-push gate:** Two commands: (1) python3 regression.py — 451 checks (COMPLETE-mode baseline); (2) python3 compliance_check.py — 10/10 gates (C10 = SEBI disclaimer in week_summary.py). Compliance catches SEBI/XSS violations in page files that regression alone misses. UPDATED from SNAPSHOT-013 (was 446 checks).

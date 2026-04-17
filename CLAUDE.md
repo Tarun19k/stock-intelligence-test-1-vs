@@ -67,7 +67,7 @@ Check before ANY version change in requirements.txt. compliance_check.py C9 bloc
 
 ## Current State (v5.39 — 2026-04-17)
 
-**Regression baseline: 452/452 PASS** *(stable base; sprint-specific checks (R27/R30/R31/R32) activate when manifest status == IN_PROGRESS)*
+**Regression baseline: 451/451 PASS** *(stable base; sprint-specific checks (R27/R30/R31/R32) activate when manifest status == IN_PROGRESS; baseline is 451 at COMPLETE, ~454 during IN_PROGRESS when R27.struct adds 4 checks)*
 
 **v5.35 sprint: COMPLETE**
 
