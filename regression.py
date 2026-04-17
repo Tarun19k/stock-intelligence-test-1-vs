@@ -690,7 +690,7 @@ def run(FM):
 
     chk("R24.v527", "dm_bypass_mode_method",
         "def bypass_mode" in dm,
-        "DataManager.bypass_mode() must be defined")
+        "DataManager.bypass_mode property must be defined")
 
     chk("R24.v527", "dm_get_health_method",
         "def get_health" in dm,

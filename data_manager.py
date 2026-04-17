@@ -450,7 +450,7 @@ def get_datamanager() -> DataManager:
     Usage:
         from data_manager import get_datamanager, DataType, Priority
         dm = get_datamanager()
-        if dm.bypass_mode():
+        if dm.bypass_mode:
             df = get_price_data(ticker, ...)   # direct market_data.py call
         else:
             result = dm.fetch(ticker, DataType.OHLCV, Priority.P1)
