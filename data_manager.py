@@ -117,6 +117,10 @@ def unavailable(ticker: str, data_type: DataType, reason: str) -> DataResult:
     Factory for UNAVAILABLE DataResult.
     Use this everywhere — never construct DataResult(UNAVAILABLE) inline.
     Never return None from any DataManager method.
+
+    Note: fetched_wall_time defaults to time.time() at construction — it does NOT
+    represent a real fetch time.  Callers must guard on .ok or status before using
+    fetched_wall_time for Policy 7 "data as of HH:MM" display.
     """
     return DataResult(
         status=ResultStatus.UNAVAILABLE,
@@ -279,7 +283,7 @@ class DataManager:
 
     M1 state
     --------
-    bypass_mode() == True always.
+    bypass_mode == True always.
     Pages continue calling market_data.py directly.
     All fetch() stubs return UNAVAILABLE — pages must NOT call them yet.
     Circuit breakers are instantiated and ready for M4/M5 source adapters.
