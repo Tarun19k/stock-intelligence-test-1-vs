@@ -23,12 +23,12 @@ Status:        IDLE
 Session ID:    session_028
 Version:       v5.39
 Last updated:  2026-04-17
-Sprint:        v5.39 COMPLETE (T1–T7 all done, sprint close pending)
-Manifest:      GSI_SPRINT_MANIFEST.json (IN_PROGRESS — close sequence pending)
+Sprint:        v5.39 COMPLETE (T1–T7 done, manifest archived)
+Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.39.json
 Next session:  session_029
 Regression:    452/452 PASS (always-on baseline)
 Compliance:    10/10 PASS
-Branch:        main
+Branch:        main @ 04c48ef
 ```
 
 ## Deferred Playwright tests — RESOLVED session_028
