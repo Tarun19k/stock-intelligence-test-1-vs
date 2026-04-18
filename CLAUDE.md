@@ -215,6 +215,7 @@ utils.py            safe_run(fn, context, default), sanitise(text, max_len)
 15. **QA brief protocol:** Always include before/after screenshots and explicit expected text. Never rely on numbered fix lists alone — tester must know exactly what they are looking at on screen. Learned from v5.31 Fix1/Fix2 numbering confusion.
 16. **Do NOT use `period="1mo"` for `get_batch_data()` calls that feed indicators.** 1mo returns ~22 rows; `compute_indicators()` guard at line 21 requires ≥30 rows — returns raw df silently, causing default RSI=50 across all tickers (DF-01 root cause). Minimum: `period="3mo"`.
 17. **Data-as-of disclosure required on all aggregated sections.** Portfolio Allocator, Top Movers, and macro cards must show a timestamp or data-period label. Never display derived/calculated output without temporal attribution.
+18. **Do NOT route Haiku-tier tasks through subagent-driven development.** Sequential estimate < 43k tokens = sequential execution. No exceptions. Subagent overhead (~40–50k fixed per item) exceeds the work cost for all T1/T2 items. Haiku subagents run 7–11× over estimate; sequential Haiku runs 0.87×. Break-even for subagent routing is sequential est ≥ 43k (T3 only). This rule also applies when using the `superpowers:subagent-driven-development` skill — minimum Sonnet for all dispatched agents, and only when sequential est ≥ 43k. ADR-030.
 
 ---
 
@@ -285,6 +286,7 @@ R8 EP list: verify `_refresh_fragment` absent from app.py EP, `_make_live_price_
 | OPEN-024 | P2 | mean_acc extracted in _render_forecast_accuracy_report (week_summary.py:1104) but never rendered. Docstring promises Mean Price Accuracy KPI. |
 | OPEN-025 | P2 | UNSTABLE threshold boundary: code fires at `>= 15` but comment + UI text say `> 15`. Align all three. |
 | OPEN-026 | P3 | CLAUDE.md Key Entry Points not updated: `_render_forecast_accuracy_report` + `compute_stability_score` missing from EP tables; compute_stability_score also missing from regression R8. |
+| OPEN-027 | P1 | Run one full sprint under v5.40 token tiering rules (T1/T2/T3 + Rule 18). Validate actual variance <20% before Phase 3 (TokenTrack OSS extraction). Phase 3 gate: human review required. |
 
 ## Governance Policy Framework (v5.38)
 
@@ -402,6 +404,7 @@ When starting a new sprint or implementation task:
   "items": [
     {
       "id": "item-id",
+      "tier": "T1|T2|T3",
       "mode": "sequential | parallel_agent",
       "model": "haiku | sonnet | opus",
       "model_rationale": "one sentence — why this model is sufficient/required",
@@ -409,6 +412,8 @@ When starting a new sprint or implementation task:
       "files_touched": 1,
       "risk": "low | medium | high",
       "est_tokens": "8k–12k",
+      "est_input_tokens": "Xk",
+      "est_output_tokens": "Xk",
       "permissions_required": ["file-read", "file-write", "bash-python3"],
       "playwright": "PLAYWRIGHT-ID: Navigate … Assert … Edge cases: … | N/A — reason"
     }
