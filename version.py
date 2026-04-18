@@ -227,8 +227,25 @@ VERSION_LOG = [
                "R24.M2: 6 new regression checks for CacheManager + DataContract. "
                "DataManager M3 (worker thread) explicitly deferred — Vercel Workflow DevKit territory. "
                "Closed OPEN-027/028/029 (resolved v5.37, stale in docs). "
-               "Regression baseline: 452/452 PASS (446 + 6 R24.M2 checks).")}
+               "Regression baseline: 452/452 PASS (446 + 6 R24.M2 checks).")},
+    {"version": "v5.40", "date": "2026-04-18",
+     "notes": ("Token optimization infrastructure sprint (session_030). "
+               "T1/T2/T3 tier classification system: T1=doc/single .py ≤20 lines, "
+               "T2=multi-section/2-file coherence, T3=new subsystem/≥43k seq est. "
+               "Rule 18: Haiku-tier tasks are never subagent-routed; break-even threshold = 43k sequential est. "
+               "R36: IN_PROGRESS manifest items must have tier field (T1/T2/T3). "
+               "R37: T1 .py items must appear in GSI_QA_STANDARDS.md test brief (COMPLETE gate). "
+               "R38: T1 items cannot touch signal-path files (indicators.py, market_data.py, dashboard.py). "
+               "C11: latest token-burn-log.jsonl entry must have tier field in all items[]. "
+               "token-burn-log.jsonl schema_version 2: adds tier, execution.actual_mode, "
+               "est_input_tokens, est_output_tokens, actual_input_tokens, actual_output_tokens per item. "
+               "analyze_token_burns.py: variance_alerts() function — flags sprints and items >1.5× est. "
+               "ADR-030: T1/T2/T3 decision record + calibrated multipliers (Haiku 0.87×, Sonnet 0.97×, "
+               "Haiku subagent 7-11× BANNED, Sonnet subagent 1.4× ≥43k only). "
+               "token-model-rules.md updated: calibrated multipliers, T1/T2/T3 table, Sprint Budget Guide. "
+               "close-session.md: new /close-session command writes session_breadcrumb.json before /clear — "
+               "enables 5-9k lean startup vs 35-50k /new-session on deliberate clears. "
+               "Regression baseline: 451/451 PASS (always-on; R36/R37/R38 sprint-active only).")}
 ]
 
-    # v5.39 appended above
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]
