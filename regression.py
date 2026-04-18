@@ -1080,6 +1080,89 @@ def run(FM):
                     "docs/ai-ops/token-burn-log.jsonl not found — run gov-token-policy to create it")
 
 
+    # R36 · Sprint Manifest tier field requirement ───────────────────────────────
+    # When manifest status == IN_PROGRESS, every non-DONE, non-section item must
+    # declare a tier field with value T1, T2, or T3.
+    # Enforces token-optimization strategy: every item must be classified before
+    # work starts. Unclassified items cannot be routed to the correct execution mode.
+    if os.path.exists("GSI_SPRINT_MANIFEST.json"):
+        try:
+            import json as _j36
+            _m36 = _j36.load(open("GSI_SPRINT_MANIFEST.json"))
+        except Exception:
+            _m36 = {}
+        if _m36.get("status") == "IN_PROGRESS":
+            _valid_tiers36 = {"T1", "T2", "T3"}
+            for _it36 in _m36.get("items", []):
+                if "_section" in _it36 or _it36.get("status") == "DONE":
+                    continue
+                _iid36 = _it36.get("id", "?")
+                _tier36 = str(_it36.get("tier", "")).strip()
+                chk("R36", f"tier_field:{_iid36}",
+                    _tier36 in _valid_tiers36,
+                    f"item '{_iid36}' missing tier field — must be T1, T2, or T3 "
+                    f"(token-optimization rule, session_029 — see docs/ai-ops/token-model-rules.md)")
+
+
+    # R37 · T1 .py items must have QA brief at sprint close ──────────────────────
+    # When manifest status == COMPLETE, any item classified T1 that touches a .py
+    # file must have its item ID present in GSI_QA_STANDARDS.md.
+    # Prevents T1 silently skipping QA review for code-touching items — the smallest
+    # code changes carry regulatory risk (SEBI/signal-path) that requires a QA note.
+    if os.path.exists("GSI_SPRINT_MANIFEST.json"):
+        try:
+            import json as _j37
+            _m37 = _j37.load(open("GSI_SPRINT_MANIFEST.json"))
+        except Exception:
+            _m37 = {}
+        if _m37.get("status") == "COMPLETE":
+            _qa37 = open("GSI_QA_STANDARDS.md").read() if os.path.exists("GSI_QA_STANDARDS.md") else ""
+            for _it37 in _m37.get("items", []):
+                if "_section" in _it37:
+                    continue
+                if _it37.get("tier") != "T1":
+                    continue
+                _files37 = _it37.get("files", [])
+                if not any(str(f).endswith(".py") for f in _files37):
+                    continue
+                _iid37 = _it37.get("id", "?")
+                chk("R37", f"t1_py_in_qa:{_iid37}",
+                    _iid37 in _qa37,
+                    f"T1 item '{_iid37}' touches .py files but item ID not found in "
+                    f"GSI_QA_STANDARDS.md — add a QA note at sprint close (required for all T1 code items)")
+
+
+    # R38 · T1 items must not touch signal-path files ─────────────────────────────
+    # Signal-path files carry financial signal logic: indicators.py, market_data.py,
+    # dashboard.py, pages/dashboard.py. Changes to these files affect BUY/WATCH/AVOID
+    # verdicts and require at minimum an inline review pass (T2).
+    # Any item classified T1 that touches a signal-path file must be reclassified T2+.
+    # Fires during both IN_PROGRESS and COMPLETE to catch retrospective misclassification.
+    if os.path.exists("GSI_SPRINT_MANIFEST.json"):
+        try:
+            import json as _j38
+            _m38 = _j38.load(open("GSI_SPRINT_MANIFEST.json"))
+        except Exception:
+            _m38 = {}
+        if _m38.get("status") in ("IN_PROGRESS", "COMPLETE"):
+            _signal_paths38 = {
+                "indicators.py", "market_data.py",
+                "dashboard.py", "pages/dashboard.py"
+            }
+            for _it38 in _m38.get("items", []):
+                if "_section" in _it38:
+                    continue
+                if _it38.get("tier") != "T1":
+                    continue
+                _iid38 = _it38.get("id", "?")
+                _files38 = {str(f) for f in _it38.get("files", [])}
+                _hits38 = _files38 & _signal_paths38
+                chk("R38", f"t1_not_signal_path:{_iid38}",
+                    len(_hits38) == 0,
+                    f"T1 item '{_iid38}' touches signal-path file(s) {sorted(_hits38)} — "
+                    f"reclassify as T2 minimum (financial signal safety, session_029 ADR-030)")
+
+
 def verify_zip(zip_path: str):
     """R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.
     Catches fixes applied to in-memory FM but not written to the zip."""

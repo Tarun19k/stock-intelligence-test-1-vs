@@ -411,3 +411,26 @@ python3 regression.py (all 427 checks must pass) AND python3 -c "..." compliance
 **Q09. Current sprint and pending pre-sprint work:** v5.39 COMPLETE (session_028, 2026-04-17). GSI_WIP.md Status: IDLE. Carry-forward: (1) PLAYWRIGHT-09 deferred — navigate to /observability, DEV_TOKEN gsi-dev-2026, Sprint Monitor tab, assert no opacity error banner (Playwright MCP backend closed mid-session); (2) tests/test_data_manager_m2.py — 36 unit tests require Python 3.9 (/Users/home/Library/Python/3.9/bin/python3), not system Python 3.14. UPDATED from SNAPSHOT-013.
 
 **Q10. Pre-push gate:** Two commands: (1) python3 regression.py — 451 checks (COMPLETE-mode baseline); (2) python3 compliance_check.py — 10/10 gates (C10 = SEBI disclaimer in week_summary.py). Compliance catches SEBI/XSS violations in page files that regression alone misses. UPDATED from SNAPSHOT-013 (was 446 checks).
+
+## SNAPSHOT-015 | 2026-04-18 | session_030 | v5.39 | QSet-v1
+*Compared to SNAPSHOT-014 (QSet-v1). Deviations: none. Updated: Q09 (v5.39 COMPLETE → session_030 start, v5.40 Phase 1 pending). New questions: none.*
+
+**Q01. Regression baseline:** 451/451 PASS (run this session). Matches CLAUDE.md COMPLETE-mode baseline. Unchanged from SNAPSHOT-014.
+
+**Q02. R27 enforcement scope:** Unchanged from SNAPSHOT-014 — regression.py not modified since session_029 baseline correction. R27 enforces GSI_SPRINT_MANIFEST.json completeness; content checks active only IN_PROGRESS; R27.complete (1 check) active at COMPLETE.
+
+**Q03. yfinance import restriction:** Unchanged from SNAPSHOT-014 — only market_data.py may import yfinance; R3 (15 checks) enforces. No new modules added.
+
+**Q04. DataManager bypass mode:** Unchanged from SNAPSHOT-014 — DataManager at M2 (CacheManager + DataContract). bypass_mode=True until M4. Pages use market_data.py directly. R24 + R24.M2 (10+6 checks) enforce.
+
+**Q05. Signal arbitration hierarchy:** Unchanged from SNAPSHOT-014 — Weinstein Stage veto → Elder Triple Screen → momentum score. compute_unified_verdict() in indicators.py (line 520). Vetoes disclosed in UI.
+
+**Q06. M3 routing guard:** Unchanged from SNAPSHOT-014 — grp_explicitly_selected session_state flag; R22 (20 checks) enforces lazy-loading contracts.
+
+**Q07. DO NOT UNDO rule 12:** Unchanged from SNAPSHOT-014 — raw Momentum score absent from _render_header_static(); present in KPI panel only. ADR-008 final record.
+
+**Q08. Permanent Tier A manifest checks:** Unchanged from SNAPSHOT-014 — 5 checks: sync_docs_passes, compliance_baseline_current, pr_template_baseline_current, decisions_has_sprint_adr, qa_standards_has_brief.
+
+**Q09. Current sprint and pending pre-sprint work:** session_029 COMPLETE (baseline correction + WIP plan). GSI_WIP.md Status: IDLE. Next: v5.40 Phase 1 (8 items, ~37k tokens, all sequential — Block A Sonnet first). Carry-forward: PLAYWRIGHT-09 still deferred; test_data_manager_m2.py requires Python 3.9. UPDATED from SNAPSHOT-014.
+
+**Q10. Pre-push gate:** Unchanged from SNAPSHOT-014 — python3 regression.py (451 checks) + python3 compliance_check.py (10/10). Compliance catches SEBI/XSS violations regression alone misses.

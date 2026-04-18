@@ -19,14 +19,14 @@
 ## Session Status
 
 ```
-Status:        IDLE
-Session ID:    session_029
-Version:       v5.39
+Status:        ACTIVE
+Session ID:    session_030
+Version:       v5.39 → v5.40
 Last updated:  2026-04-18
-Sprint:        v5.39 COMPLETE — v5.40 PLANNED (see PENDING SPRINT below)
-Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.39.json
-Next session:  session_030
-Regression:    451/451 PASS (corrected baseline — COMPLETE mode)
+Sprint:        v5.40 IN_PROGRESS (Token Optimization — Rule 18 Wiring)
+Manifest:      GSI_SPRINT_MANIFEST.json (active)
+Prev session:  session_029
+Regression:    451/451 PASS (entering baseline)
 Compliance:    10/10 PASS
 Branch:        main @ c60c90a
 ```

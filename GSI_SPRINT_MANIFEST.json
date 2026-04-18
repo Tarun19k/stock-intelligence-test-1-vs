@@ -1,15 +1,16 @@
 {
   "_comment": "Sprint manifest — read by regression.py R27. Set status to IN_PROGRESS when implementation starts. Archive to docs/sprint_archive/ on close.",
-  "sprint_version": "v5.39",
-  "sprint_name": "Data Layer Hardening",
-  "status": "COMPLETE",
-  "created": "2026-04-15",
-  "closed": "2026-04-17",
-  "session": "session_028",
-  "regression_baseline_entering": 446,
-  "regression_baseline_expected_exit": 452,
-  "_baseline_note": "446 confirmed entering (stable post-v5.38). T5 adds 6 new R24.M2 checks → 452 at exit. R27/R30/R31/R32/R35 active during IN_PROGRESS.",
-  "_close_checklist": "Manual steps at sprint close: (1) python3 sync_docs.py exits 0; (2) python3 regression.py → confirm 452 PASS; (3) Archive manifest to docs/sprint_archive/.",
+  "sprint_version": "v5.40",
+  "sprint_name": "Token Optimization — Rule 18 Wiring",
+  "status": "IN_PROGRESS",
+  "created": "2026-04-18",
+  "closed": null,
+  "session": "session_030",
+  "regression_baseline_entering": 451,
+  "regression_baseline_expected_exit": 451,
+  "_baseline_note": "451 confirmed entering (COMPLETE-mode post-v5.39). R36/R37/R38 added by item a1 are IN_PROGRESS-only checks — fire when manifest status=IN_PROGRESS. COMPLETE-mode baseline stays 451. In-sprint total after a1: ~458 (451 + R27.struct 4 + R36 1 + R37 1 + R38 1).",
+  "_close_checklist": "Manual steps at sprint close: (1) python3 sync_docs.py exits 0; (2) python3 regression.py → confirm 451 PASS (COMPLETE mode); (3) Archive manifest to docs/sprint_archive/.",
+
   "checks": [
     {
       "id": "sync_docs_passes",
@@ -20,454 +21,724 @@
     {
       "id": "compliance_baseline_current",
       "tier": "A",
-      "must_contain": ["ALL 452 CHECKS PASS"],
+      "must_contain": ["ALL 451 CHECKS PASS"],
       "target_file": "GSI_COMPLIANCE_CHECKLIST.md"
     },
     {
       "id": "pr_template_baseline_current",
       "tier": "A",
-      "must_contain": ["ALL 452 CHECKS PASS"],
+      "must_contain": ["ALL 451 CHECKS PASS"],
       "target_file": ".github/PULL_REQUEST_TEMPLATE.md"
     },
     {
       "id": "decisions_has_sprint_adr",
       "tier": "A",
-      "must_contain": ["v5.39"],
+      "must_contain": ["v5.40"],
       "target_file": "GSI_DECISIONS.md"
     },
     {
       "id": "qa_standards_has_brief",
       "tier": "A",
-      "must_contain": ["v5.39"],
+      "must_contain": ["v5.40"],
       "target_file": "GSI_QA_STANDARDS.md"
     },
     {
-      "id": "t1_lock_ordering_fix",
+      "id": "a1_r36_check_present",
       "tier": "B",
-      "must_contain": ["sources = {tag.name: b.state.name for tag, b in self._breakers.items()}"],
-      "target_file": "data_manager.py"
-    },
-    {
-      "id": "t1_breakers_emergency_fallback",
-      "tier": "B",
-      "must_contain": ["SourceTag.YAHOO: CircuitBreaker(", "SourceTag.NSEPYTHON: CircuitBreaker("],
-      "target_file": "data_manager.py"
-    },
-    {
-      "id": "t2_info_cache",
-      "tier": "B",
-      "must_contain": ["_info_cache: dict = {}"],
-      "target_file": "market_data.py"
-    },
-    {
-      "id": "t5_cache_manager",
-      "tier": "B",
-      "must_contain": ["class CacheManager"],
-      "target_file": "data_manager.py"
-    },
-    {
-      "id": "t5_data_contract",
-      "tier": "B",
-      "must_contain": ["class DataContract"],
-      "target_file": "data_manager.py"
-    },
-    {
-      "id": "t5_r24_m2",
-      "tier": "B",
-      "must_contain": ["R24.M2"],
+      "must_contain": ["R36"],
       "target_file": "regression.py"
+    },
+    {
+      "id": "a1_r37_check_present",
+      "tier": "B",
+      "must_contain": ["R37"],
+      "target_file": "regression.py"
+    },
+    {
+      "id": "a1_r38_check_present",
+      "tier": "B",
+      "must_contain": ["R38"],
+      "target_file": "regression.py"
+    },
+    {
+      "id": "a2_variance_alert_present",
+      "tier": "B",
+      "must_contain": ["OVER"],
+      "target_file": "docs/ai-ops/analyze_token_burns.py"
+    },
+    {
+      "id": "b1_c11_check_present",
+      "tier": "B",
+      "must_contain": ["C11"],
+      "target_file": "compliance_check.py"
+    },
+    {
+      "id": "b2_rule18_present",
+      "tier": "B",
+      "must_contain": ["Rule 18", "43k"],
+      "target_file": "CLAUDE.md"
+    },
+    {
+      "id": "b2_tier_field_in_template",
+      "tier": "B",
+      "must_contain": ["\"tier\": \"T1|T2|T3\""],
+      "target_file": "CLAUDE.md"
+    },
+    {
+      "id": "c3_adr030_present",
+      "tier": "B",
+      "must_contain": ["ADR-030"],
+      "target_file": "GSI_DECISIONS.md"
+    },
+    {
+      "id": "c4_close_session_exists",
+      "tier": "B",
+      "must_contain": ["session_breadcrumb.json"],
+      "target_file": ".claude/commands/close-session.md"
+    },
+    {
+      "id": "d1_version_entry",
+      "tier": "B",
+      "must_contain": ["v5.40"],
+      "target_file": "version.py"
     },
     {
       "id": "token_burn_log_entry",
       "tier": "B",
-      "must_contain": ["v5.39", "schema_version", "actual_tokens_methodology"],
+      "must_contain": ["v5.40", "schema_version", "actual_tokens_methodology"],
       "target_file": "docs/ai-ops/token-burn-log.jsonl"
     }
   ],
+
   "items": [
     {
-      "id": "T1-m1-critical-fixes",
-      "title": "Fix M1 critical bugs in data_manager.py",
-      "status": "pending",
-      "model": "haiku",
-      "model_rationale": "Mechanical find-and-replace fixes in one file; no design judgment required.",
-      "mode": "sequential",
-      "agents": "1 × sequential",
-      "files_touched": 1,
-      "risk": "low",
-      "est_tokens": "8k-10k",
-      "permissions_required": ["file-read", "file-write", "bash-python3"],
-      "playwright": "N/A — data_manager.py has no user-visible UI; fix is internal to bypass-mode DataManager"
-    },
-    {
-      "id": "T2-info-cache-stale",
-      "title": "get_ticker_info stale fallback in market_data.py",
-      "status": "pending",
-      "model": "haiku",
-      "model_rationale": "Three-line pattern addition mirroring _ticker_cache; purely mechanical.",
-      "mode": "sequential",
-      "agents": "1 × sequential",
-      "files_touched": 1,
-      "risk": "low",
-      "est_tokens": "6k-8k",
-      "permissions_required": ["file-read", "file-write", "bash-python3"],
-      "playwright": "N/A — internal fallback logic; no UI change; verified by regression only"
-    },
-    {
-      "id": "T3-plotly-opacity",
-      "title": "Plotly bar opacity fix in pages/observability.py",
-      "status": "pending",
-      "model": "haiku",
-      "model_rationale": "One-line Plotly API fix; target line is known (line 614).",
-      "mode": "sequential",
-      "agents": "1 × sequential",
-      "files_touched": 1,
-      "risk": "low",
-      "est_tokens": "4k-6k",
-      "permissions_required": ["file-read", "file-write", "bash-python3"],
-      "playwright": "PLAYWRIGHT-09: Navigate to http://localhost:8501/observability, unlock with DEV_TOKEN 'gsi-dev-2026', click Sprint Monitor tab. Assert: no red error banner containing 'Invalid value' or 'opacity'. Assert: bar chart renders or 'No token_budget.items' caption visible. Edge cases: if manifest has no items, caption is acceptable — error banner is not."
-    },
-    {
-      "id": "T4-doc-cleanup",
-      "title": "Close OPEN-027/028/029, update regression baseline, fix meta.last_session",
-      "status": "pending",
-      "model": "haiku",
-      "model_rationale": "Doc-only edits; string deletions and number updates in CLAUDE.md and GSI_session.json.",
-      "mode": "sequential",
-      "agents": "1 × sequential",
-      "files_touched": 2,
-      "risk": "low",
-      "est_tokens": "5k-7k",
-      "permissions_required": ["file-read", "file-write", "bash-python3"],
-      "playwright": "N/A — doc-only changes; no page files modified"
-    },
-    {
-      "id": "T5-cachemanager-datacontract",
-      "title": "DataManager M2 — CacheManager + DataContract + unit tests + R24.M2",
+      "id": "a1",
+      "tier": "T2",
+      "title": "regression.py — R36/R37/R38 tier enforcement checks",
+      "sub_sprint": "v5.40a",
       "status": "pending",
       "model": "sonnet",
-      "model_rationale": "Multi-class implementation with threading, LRU logic, TDD test suite, and regression extension — requires Sonnet's reasoning for correctness.",
+      "model_rationale": "Multi-condition logic across 3 new check categories; regex + manifest JSON parsing; Sonnet for correctness on first-attempt pass.",
       "mode": "sequential",
       "agents": "1 × sequential",
-      "files_touched": 3,
+      "files": ["regression.py"],
+      "files_touched": 1,
       "risk": "medium",
-      "est_tokens": "35k-45k",
-      "permissions_required": ["file-read", "file-write", "bash-python3"],
-      "playwright": "N/A — bypass=True throughout M2; no pages route through DataManager; no user-visible UI change"
-    },
-    {
-      "id": "T6-regression-docs",
-      "title": "Regression baseline + CLAUDE.md + GSI_SPRINT.md + sync_docs",
-      "status": "pending",
-      "model": "haiku",
-      "model_rationale": "Baseline count update, open item edit, sprint Done section — all mechanical doc edits.",
-      "mode": "sequential",
-      "agents": "1 × sequential",
-      "files_touched": 2,
-      "risk": "low",
       "est_tokens": "5k-7k",
+      "pass_criterion": "python3 regression.py passes with R36/R37/R38 present and passing on current IN_PROGRESS manifest",
       "permissions_required": ["file-read", "file-write", "bash-python3"],
-      "playwright": "N/A — doc-only changes"
+      "playwright": "N/A — regression.py has no UI; change is internal tooling only"
     },
     {
-      "id": "token-burn-log",
-      "title": "Token burn log JSONL entry (Policy 8 / R35)",
-      "status": "DONE",
-      "model": "haiku",
-      "model_rationale": "Single JSONL line append; no code changes.",
+      "id": "a2",
+      "tier": "T2",
+      "title": "analyze_token_burns.py — variance alert flag (⚠ OVER)",
+      "sub_sprint": "v5.40a",
+      "status": "pending",
+      "model": "sonnet",
+      "model_rationale": "Conditional logic on ratio threshold with banner output; Sonnet to get the 1.5× threshold logic and sprint-level banner exactly right first try.",
       "mode": "sequential",
       "agents": "1 × sequential",
+      "files": ["docs/ai-ops/analyze_token_burns.py"],
       "files_touched": 1,
       "risk": "low",
       "est_tokens": "3k-5k",
+      "pass_criterion": "python3 docs/ai-ops/analyze_token_burns.py outputs ⚠ OVER on synthetic item with actual > 1.5× est midpoint; sprint banner fires at >50% variance",
       "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "N/A — CLI script, no UI"
+    },
+    {
+      "id": "b1",
+      "tier": "T1",
+      "title": "compliance_check.py — C11 JSONL tier field check",
+      "sub_sprint": "v5.40b",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "Single new check following existing C9/C10 pattern; mechanical copy-and-adapt.",
+      "_note": "Check ID is C11 — C10 is already taken by SEBI week_summary check (added v5.38).",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": ["compliance_check.py"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "2k-3k",
+      "pass_criterion": "python3 compliance_check.py passes 11/11 with C11 present; C11 checks latest token-burn-log.jsonl entry has tier in each items[] object",
+      "permissions_required": ["file-read", "file-write", "bash-python3"],
+      "playwright": "N/A — compliance_check.py has no UI"
+    },
+    {
+      "id": "b2",
+      "tier": "T1",
+      "title": "CLAUDE.md — Rule 18 DO NOT UNDO + tier field in token_budget template + OPEN-027",
+      "sub_sprint": "v5.40b",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "Three targeted text insertions in one doc file; no logic required.",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": ["CLAUDE.md"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "2k-4k",
+      "pass_criterion": "CLAUDE.md has Rule 18 in DO NOT UNDO list; token_budget items[] template has tier field; OPEN-027 in Open Items table",
+      "permissions_required": ["file-read", "file-write"],
+      "playwright": "N/A — doc-only change"
+    },
+    {
+      "id": "c1",
+      "tier": "T1",
+      "title": "token-model-rules.md — calibrated multiplier table + T1/T2/T3 decision tree",
+      "sub_sprint": "v5.40c",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "Doc update replacing one table and adding a decision tree checklist; fully specified content from session_029 investigation.",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": ["docs/ai-ops/token-model-rules.md"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "1k-3k",
+      "pass_criterion": "token-model-rules.md Part 2 table has calibrated multipliers; T1/T2/T3 decision tree with 4-condition checklist present",
+      "permissions_required": ["file-read", "file-write"],
+      "playwright": "N/A — doc-only change"
+    },
+    {
+      "id": "c2",
+      "tier": "T1",
+      "title": "token-burn-log.jsonl — schema comment (tier + execution.actual_mode + input/output split)",
+      "sub_sprint": "v5.40c",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "Comment-only edit on schema header line in JSONL file; no data row changes.",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": ["docs/ai-ops/token-burn-log.jsonl"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "1k-2k",
+      "pass_criterion": "token-burn-log.jsonl schema comment documents: tier field, execution.actual_mode field, est_input_tokens, est_output_tokens, actual_input_tokens, actual_output_tokens fields",
+      "permissions_required": ["file-read", "file-write"],
+      "playwright": "N/A — doc-only change"
+    },
+    {
+      "id": "c3",
+      "tier": "T1",
+      "title": "GSI_DECISIONS.md — ADR-030 (T1/T2/T3 routing, 43k break-even, haiku-never-subagent)",
+      "sub_sprint": "v5.40c",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "Append-only ADR entry; fully specified content from session_029 investigation findings.",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": ["GSI_DECISIONS.md"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "1k-2k",
+      "pass_criterion": "GSI_DECISIONS.md has ADR-030 entry with T1/T2/T3 definitions, 43k break-even threshold, haiku-never-subagent rule, calibrated multipliers table",
+      "permissions_required": ["file-read", "file-write"],
+      "playwright": "N/A — doc-only change"
+    },
+    {
+      "id": "c4",
+      "tier": "T1",
+      "title": ".claude/commands/close-session.md — breadcrumb write + lean startup enabler",
+      "sub_sprint": "v5.40c",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "New command file; writes session_breadcrumb.json + updates WIP status before /clear; fully specified from session_029 design.",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": [".claude/commands/close-session.md"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "1k-3k",
+      "pass_criterion": ".claude/commands/close-session.md exists; contains instructions to write .claude/session_breadcrumb.json with version/regression/snapshot fields; confirms WIP IDLE before writing breadcrumb",
+      "permissions_required": ["file-write"],
+      "playwright": "N/A — command file, no UI"
+    },
+    {
+      "id": "d1",
+      "tier": "T1",
+      "title": "version.py — v5.40 entry",
+      "sub_sprint": "v5.40d",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "Append one version entry to VERSION_LOG; purely mechanical.",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": ["version.py"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "1k-2k",
+      "pass_criterion": "version.py VERSION_LOG has v5.40 entry summarizing Phase 1 token optimization changes",
+      "permissions_required": ["file-read", "file-write"],
+      "playwright": "N/A — version file only"
+    },
+    {
+      "id": "token-burn-log",
+      "tier": "T1",
+      "title": "Token burn log JSONL entry (Policy 8 / R35)",
+      "sub_sprint": "v5.40d",
+      "status": "pending",
+      "model": "haiku",
+      "model_rationale": "Single JSONL line append with actuals; filled at sprint close from session context.",
+      "mode": "sequential",
+      "agents": "1 × sequential",
+      "files": ["docs/ai-ops/token-burn-log.jsonl"],
+      "files_touched": 1,
+      "risk": "low",
+      "est_tokens": "2k-4k",
+      "pass_criterion": "docs/ai-ops/token-burn-log.jsonl has v5.40 entry; all actual_tokens fields filled (not null); actual_input_tokens + actual_output_tokens populated; python3 docs/ai-ops/analyze_token_burns.py parses without error",
+      "permissions_required": ["file-read", "file-write"],
       "playwright": "N/A — doc-only change"
     }
   ],
+
   "file_change_log": [
     {
-      "file": "data_manager.py",
+      "file": "regression.py",
       "change_type": "modify",
-      "sprint_items": ["T1-m1-critical-fixes", "T5-cachemanager-datacontract"],
-      "doc_updates_required": "CLAUDE.md file structure entry for data_manager.py",
+      "sprint_items": ["a1"],
+      "doc_updates_required": "CLAUDE.md baseline note if check count changes at COMPLETE mode",
       "no_doc_update_reason": null
     },
     {
-      "file": "market_data.py",
+      "file": "docs/ai-ops/analyze_token_burns.py",
       "change_type": "modify",
-      "sprint_items": ["T2-info-cache-stale"],
+      "sprint_items": ["a2"],
       "doc_updates_required": null,
-      "no_doc_update_reason": "Internal fallback; no public API change; no new entry points"
+      "no_doc_update_reason": "Internal CLI script — no doc entry required; CLAUDE.md Living Documentation table already references docs/ai-ops/"
     },
     {
-      "file": "pages/observability.py",
+      "file": "compliance_check.py",
       "change_type": "modify",
-      "sprint_items": ["T3-plotly-opacity"],
-      "doc_updates_required": null,
-      "no_doc_update_reason": "One-line Plotly fix; no new entry points or API surface"
+      "sprint_items": ["b1"],
+      "doc_updates_required": "GSI_COMPLIANCE_CHECKLIST.md check count (10→11); .github/PULL_REQUEST_TEMPLATE.md count",
+      "no_doc_update_reason": null
     },
     {
       "file": "CLAUDE.md",
       "change_type": "modify",
-      "sprint_items": ["T4-doc-cleanup", "T6-regression-docs"],
-      "doc_updates_required": "Self — this is the doc being updated",
-      "no_doc_update_reason": null
+      "sprint_items": ["b2"],
+      "doc_updates_required": null,
+      "no_doc_update_reason": "CLAUDE.md is itself the governance doc — self-documenting"
     },
     {
-      "file": "GSI_session.json",
+      "file": "docs/ai-ops/token-model-rules.md",
       "change_type": "modify",
-      "sprint_items": ["T4-doc-cleanup"],
+      "sprint_items": ["c1"],
       "doc_updates_required": null,
-      "no_doc_update_reason": "Meta field update only; no structural change"
-    },
-    {
-      "file": "tests/test_data_manager_m2.py",
-      "change_type": "create",
-      "sprint_items": ["T5-cachemanager-datacontract"],
-      "doc_updates_required": null,
-      "no_doc_update_reason": "New test file; not referenced in CLAUDE.md file structure (test files excluded from rebuild order)"
-    },
-    {
-      "file": "tests/__init__.py",
-      "change_type": "create",
-      "sprint_items": ["T5-cachemanager-datacontract"],
-      "doc_updates_required": null,
-      "no_doc_update_reason": "Package init file; no doc entry needed"
-    },
-    {
-      "file": "regression.py",
-      "change_type": "modify",
-      "sprint_items": ["T5-cachemanager-datacontract"],
-      "doc_updates_required": null,
-      "no_doc_update_reason": "R24.M2 checks added; CLAUDE.md regression suite section is description-level only, not line-level"
-    },
-    {
-      "file": "GSI_SPRINT.md",
-      "change_type": "modify",
-      "sprint_items": ["T6-regression-docs"],
-      "doc_updates_required": null,
-      "no_doc_update_reason": "Sprint board update — is itself a governance doc"
+      "no_doc_update_reason": "doc-only file in docs/ai-ops/; no pointer update required"
     },
     {
       "file": "docs/ai-ops/token-burn-log.jsonl",
       "change_type": "modify",
-      "sprint_items": ["T7-token-burn-log"],
+      "sprint_items": ["c2", "token-burn-log"],
       "doc_updates_required": null,
-      "no_doc_update_reason": "Append-only dataset; no structural doc change needed"
+      "no_doc_update_reason": "dataset file; CLAUDE.md Living Documentation table already references it"
+    },
+    {
+      "file": "GSI_DECISIONS.md",
+      "change_type": "modify",
+      "sprint_items": ["c3"],
+      "doc_updates_required": null,
+      "no_doc_update_reason": "append-only ADR log; no pointer update required"
+    },
+    {
+      "file": ".claude/commands/close-session.md",
+      "change_type": "create",
+      "sprint_items": ["c4"],
+      "doc_updates_required": "CLAUDE.md .claude/commands/ reference (36 → 37 slash commands count)",
+      "no_doc_update_reason": null
+    },
+    {
+      "file": "version.py",
+      "change_type": "modify",
+      "sprint_items": ["d1"],
+      "doc_updates_required": null,
+      "no_doc_update_reason": "version.py is self-documenting; CLAUDE.md Current State updated in b2"
     }
   ],
+
   "token_budget": {
     "items": [
       {
-        "id": "T1-m1-critical-fixes",
-        "mode": "sequential",
-        "model": "haiku",
-        "model_rationale": "Mechanical find-and-replace in one file; no design judgment",
-        "agents": "1 × sequential",
-        "files_touched": 1,
-        "risk": "low",
-        "est_tokens": "8k-10k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — internal data_manager.py only"
-      },
-      {
-        "id": "T2-info-cache-stale",
-        "mode": "sequential",
-        "model": "haiku",
-        "model_rationale": "Three-line pattern addition mirroring _ticker_cache",
-        "agents": "1 × sequential",
-        "files_touched": 1,
-        "risk": "low",
-        "est_tokens": "6k-8k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — internal fallback"
-      },
-      {
-        "id": "T3-plotly-opacity",
-        "mode": "sequential",
-        "model": "haiku",
-        "model_rationale": "One-line Plotly API fix at known line",
-        "agents": "1 × sequential",
-        "files_touched": 1,
-        "risk": "low",
-        "est_tokens": "4k-6k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "PLAYWRIGHT-09"
-      },
-      {
-        "id": "T4-doc-cleanup",
-        "mode": "sequential",
-        "model": "haiku",
-        "model_rationale": "String deletions and number updates in two doc files",
-        "agents": "1 × sequential",
-        "files_touched": 2,
-        "risk": "low",
-        "est_tokens": "5k-7k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — doc-only"
-      },
-      {
-        "id": "T5-cachemanager-datacontract",
+        "id": "a1",
+        "tier": "T2",
         "mode": "sequential",
         "model": "sonnet",
-        "model_rationale": "Multi-class TDD implementation with threading and LRU logic",
+        "model_rationale": "3 new check categories with manifest JSON parsing; Sonnet for first-attempt correctness",
         "agents": "1 × sequential",
-        "files_touched": 3,
+        "files_touched": 1,
         "risk": "medium",
-        "est_tokens": "35k-45k",
+        "est_tokens": "6k",
+        "est_input_tokens": "4k",
+        "est_output_tokens": "2k",
         "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — bypass=True, no page changes"
+        "playwright": "N/A — no UI changes"
       },
       {
-        "id": "T6-regression-docs",
+        "id": "a2",
+        "tier": "T2",
+        "mode": "sequential",
+        "model": "sonnet",
+        "model_rationale": "Threshold logic + banner conditional; Sonnet to get ratio comparison right first try",
+        "agents": "1 × sequential",
+        "files_touched": 1,
+        "risk": "low",
+        "est_tokens": "4k",
+        "est_input_tokens": "2k",
+        "est_output_tokens": "2k",
+        "permissions_required": ["file-read", "file-write", "bash-python3"],
+        "playwright": "N/A — no UI changes"
+      },
+      {
+        "id": "b1",
+        "tier": "T1",
         "mode": "sequential",
         "model": "haiku",
-        "model_rationale": "Baseline count and doc text updates",
+        "model_rationale": "Copy C10 pattern, adapt for JSONL tier field; purely mechanical",
         "agents": "1 × sequential",
-        "files_touched": 2,
+        "files_touched": 1,
         "risk": "low",
-        "est_tokens": "5k-7k",
+        "est_tokens": "2k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "1k",
         "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — doc-only"
+        "playwright": "N/A — no UI changes"
+      },
+      {
+        "id": "b2",
+        "tier": "T1",
+        "mode": "sequential",
+        "model": "haiku",
+        "model_rationale": "3 targeted insertions in known CLAUDE.md sections; no logic",
+        "agents": "1 × sequential",
+        "files_touched": 1,
+        "risk": "low",
+        "est_tokens": "3k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "2k",
+        "permissions_required": ["file-read", "file-write"],
+        "playwright": "N/A — doc-only change"
+      },
+      {
+        "id": "c1",
+        "tier": "T1",
+        "mode": "sequential",
+        "model": "haiku",
+        "model_rationale": "Replace one table, add one checklist; fully specified content",
+        "agents": "1 × sequential",
+        "files_touched": 1,
+        "risk": "low",
+        "est_tokens": "2k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "1k",
+        "permissions_required": ["file-read", "file-write"],
+        "playwright": "N/A — doc-only change"
+      },
+      {
+        "id": "c2",
+        "tier": "T1",
+        "mode": "sequential",
+        "model": "haiku",
+        "model_rationale": "Comment-only edit on schema header; 1-2 lines changed",
+        "agents": "1 × sequential",
+        "files_touched": 1,
+        "risk": "low",
+        "est_tokens": "1k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "0.5k",
+        "permissions_required": ["file-read", "file-write"],
+        "playwright": "N/A — doc-only change"
+      },
+      {
+        "id": "c3",
+        "tier": "T1",
+        "mode": "sequential",
+        "model": "haiku",
+        "model_rationale": "Append-only ADR entry; fully specified from investigation",
+        "agents": "1 × sequential",
+        "files_touched": 1,
+        "risk": "low",
+        "est_tokens": "1k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "0.5k",
+        "permissions_required": ["file-read", "file-write"],
+        "playwright": "N/A — doc-only change"
+      },
+      {
+        "id": "c4",
+        "tier": "T1",
+        "mode": "sequential",
+        "model": "haiku",
+        "model_rationale": "New file; fully specified command structure from session_029",
+        "agents": "1 × sequential",
+        "files_touched": 1,
+        "risk": "low",
+        "est_tokens": "2k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "1.5k",
+        "permissions_required": ["file-write"],
+        "playwright": "N/A — command file"
+      },
+      {
+        "id": "d1",
+        "tier": "T1",
+        "mode": "sequential",
+        "model": "haiku",
+        "model_rationale": "Single version log entry append; purely mechanical",
+        "agents": "1 × sequential",
+        "files_touched": 1,
+        "risk": "low",
+        "est_tokens": "1k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "0.5k",
+        "permissions_required": ["file-read", "file-write"],
+        "playwright": "N/A — version file"
       },
       {
         "id": "token-burn-log",
+        "tier": "T1",
         "mode": "sequential",
         "model": "haiku",
-        "model_rationale": "Single JSONL line append",
+        "model_rationale": "JSONL append with sprint actuals; filled from session context at close",
         "agents": "1 × sequential",
         "files_touched": 1,
         "risk": "low",
-        "est_tokens": "3k-5k",
-        "permissions_required": ["file-read", "file-write", "bash-python3"],
-        "playwright": "N/A — doc-only"
+        "est_tokens": "3k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "2k",
+        "permissions_required": ["file-read", "file-write"],
+        "playwright": "N/A — doc-only change"
       }
     ],
     "overhead": {
-      "session_start_context": "~15k",
-      "regression_runs": "7 × 3k = ~21k",
+      "session_start_context": "~15k (all input)",
+      "regression_runs": "10 × 3k = 30k (mostly input)",
       "sync_docs": "~2k",
-      "sprint_close_sequence": "~10k"
+      "sprint_close_sequence": "~8k"
     },
     "totals": {
-      "main_context_est": "66k–88k items + 48k overhead = ~114k–136k",
-      "agent_est": "0 (all sequential)",
-      "grand_total_est": "~114k–136k"
+      "items_est_sum": "~25k",
+      "overhead_est": "~55k",
+      "grand_total_est": "~80k",
+      "input_pct_est": "~72% (overhead is input-heavy; items ~60% input)",
+      "agent_est": "0k (all sequential — Rule 18 applied)"
     },
-    "notes": "T5 is the only Sonnet item at 35k-45k — all others are Haiku-eligible. T5 is the only split candidate if context runs low."
+    "notes": "All items T1/T2 sequential per Rule 18. No item >10k. Zero subagent routing. v5.39 equivalent at subagent routing would have been ~344k — this plan targets ~80k (77% reduction)."
   },
+
   "token_optimisations": [
     {
-      "decision": "All tasks sequential (no worktree agents)",
-      "type": "scope_narrow",
-      "items_affected": ["T1-m1-critical-fixes", "T2-info-cache-stale", "T3-plotly-opacity", "T4-doc-cleanup", "T6-regression-docs", "T7-token-burn-log"],
-      "saving_est": "~0k main-context (subagent-driven; each is isolated per skill)",
-      "detail": "Subagent-driven development already isolates each task; no additional worktree isolation needed for single-file changes"
+      "decision": "All items sequential — zero subagent routing",
+      "type": "no_subagent",
+      "items_affected": ["a1", "a2", "b1", "b2", "c1", "c2", "c3", "c4", "d1", "token-burn-log"],
+      "saving_est": "~264k tokens vs v5.39 subagent approach (344k → 80k est)",
+      "detail": "Rule 18: all items T1/T2 with est <10k each. Break-even for subagent is 43k — zero items qualify. Haiku subagent would have been 7-11× multiplier; sequential Haiku is 0.87× and sequential Sonnet is 0.97×."
     },
     {
-      "decision": "T4 batches CLAUDE.md + GSI_session.json (both doc-only)",
-      "type": "batch",
-      "items_affected": ["T4-doc-cleanup"],
-      "saving_est": "~5k (one subagent instead of two)",
-      "detail": "Both files are doc-only; changes are independent string edits with no regression interaction between them"
+      "decision": "Block B/C/D items use Haiku",
+      "type": "model_tier",
+      "items_affected": ["b1", "b2", "c1", "c2", "c3", "c4", "d1", "token-burn-log"],
+      "saving_est": "~8k tokens vs Sonnet for all items",
+      "detail": "T1 items are doc/config edits with fully specified content. Haiku 0.87× multiplier applies. Block A (a1, a2) uses Sonnet because they require logic correctness on first attempt."
+    },
+    {
+      "decision": "Session breadcrumb lean startup (after c4)",
+      "type": "read_avoidance",
+      "items_affected": ["session_030 close"],
+      "saving_est": "~41k at next /clear (50k new-session → 9k lean startup)",
+      "detail": "close-session.md (c4) writes breadcrumb before /clear. Breadcrumb captures version/regression/snapshot — skips source file reads for Q01/Q09/Q10 at next startup."
     }
   ],
+
   "token_burn_actuals": {
-    "schema_version": "1",
+    "schema_version": "2",
+    "_schema_note": "v2 adds est_input_tokens, est_output_tokens, actual_input_tokens, actual_output_tokens per item for input/output split tracking",
     "actual_tokens_methodology": "self_estimate",
-    "sessions": ["session_028"],
-    "date_opened": "2026-04-15",
+    "sessions": ["session_030"],
+    "date_opened": "2026-04-18",
     "date_closed": null,
     "items": [
       {
-        "id": "T1-m1-critical-fixes",
-        "model": "haiku",
-        "mode": "sequential",
-        "est_tokens": "8k-10k",
-        "actual_tokens": null,
-        "quality": {
-          "regression_passed_first_try": null,
-          "rework_rounds": 0,
-          "wasted_tokens_est": 0,
-          "outcome": "clean"
-        }
-      },
-      {
-        "id": "T2-info-cache-stale",
-        "model": "haiku",
-        "mode": "sequential",
-        "est_tokens": "6k-8k",
-        "actual_tokens": null,
-        "quality": {
-          "regression_passed_first_try": null,
-          "rework_rounds": 0,
-          "wasted_tokens_est": 0,
-          "outcome": "clean"
-        }
-      },
-      {
-        "id": "T3-plotly-opacity",
-        "model": "haiku",
-        "mode": "sequential",
-        "est_tokens": "4k-6k",
-        "actual_tokens": null,
-        "quality": {
-          "regression_passed_first_try": null,
-          "rework_rounds": 0,
-          "wasted_tokens_est": 0,
-          "outcome": "clean"
-        }
-      },
-      {
-        "id": "T4-doc-cleanup",
-        "model": "haiku",
-        "mode": "sequential",
-        "est_tokens": "5k-7k",
-        "actual_tokens": null,
-        "quality": {
-          "regression_passed_first_try": null,
-          "rework_rounds": 0,
-          "wasted_tokens_est": 0,
-          "outcome": "clean"
-        }
-      },
-      {
-        "id": "T5-cachemanager-datacontract",
+        "id": "a1",
+        "tier": "T2",
         "model": "sonnet",
         "mode": "sequential",
-        "est_tokens": "35k-45k",
+        "est_tokens": "6k",
+        "est_input_tokens": "4k",
+        "est_output_tokens": "2k",
         "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
         "quality": {
           "regression_passed_first_try": null,
           "rework_rounds": 0,
           "wasted_tokens_est": 0,
-          "outcome": "clean"
+          "outcome": null
         }
       },
       {
-        "id": "T6-regression-docs",
-        "model": "haiku",
+        "id": "a2",
+        "tier": "T2",
+        "model": "sonnet",
         "mode": "sequential",
-        "est_tokens": "5k-7k",
+        "est_tokens": "4k",
+        "est_input_tokens": "2k",
+        "est_output_tokens": "2k",
         "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
         "quality": {
           "regression_passed_first_try": null,
           "rework_rounds": 0,
           "wasted_tokens_est": 0,
-          "outcome": "clean"
+          "outcome": null
+        }
+      },
+      {
+        "id": "b1",
+        "tier": "T1",
+        "model": "haiku",
+        "mode": "sequential",
+        "est_tokens": "2k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "1k",
+        "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": null
+        }
+      },
+      {
+        "id": "b2",
+        "tier": "T1",
+        "model": "haiku",
+        "mode": "sequential",
+        "est_tokens": "3k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "2k",
+        "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": null
+        }
+      },
+      {
+        "id": "c1",
+        "tier": "T1",
+        "model": "haiku",
+        "mode": "sequential",
+        "est_tokens": "2k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "1k",
+        "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": null
+        }
+      },
+      {
+        "id": "c2",
+        "tier": "T1",
+        "model": "haiku",
+        "mode": "sequential",
+        "est_tokens": "1k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "0.5k",
+        "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": null
+        }
+      },
+      {
+        "id": "c3",
+        "tier": "T1",
+        "model": "haiku",
+        "mode": "sequential",
+        "est_tokens": "1k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "0.5k",
+        "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": null
+        }
+      },
+      {
+        "id": "c4",
+        "tier": "T1",
+        "model": "haiku",
+        "mode": "sequential",
+        "est_tokens": "2k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "1.5k",
+        "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": null
+        }
+      },
+      {
+        "id": "d1",
+        "tier": "T1",
+        "model": "haiku",
+        "mode": "sequential",
+        "est_tokens": "1k",
+        "est_input_tokens": "0.5k",
+        "est_output_tokens": "0.5k",
+        "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": null
         }
       },
       {
         "id": "token-burn-log",
+        "tier": "T1",
         "model": "haiku",
         "mode": "sequential",
-        "est_tokens": "3k-5k",
+        "est_tokens": "3k",
+        "est_input_tokens": "1k",
+        "est_output_tokens": "2k",
         "actual_tokens": null,
+        "actual_input_tokens": null,
+        "actual_output_tokens": null,
         "quality": {
           "regression_passed_first_try": null,
           "rework_rounds": 0,
           "wasted_tokens_est": 0,
-          "outcome": "clean"
+          "outcome": null
         }
       }
     ],
@@ -477,10 +748,16 @@
       "sprint_close_actual": null
     },
     "totals": {
-      "est_tokens_sum": "66k-88k",
+      "est_tokens_sum": "~25k (items only)",
+      "est_input_tokens_sum": "~12.5k (items only; overhead adds ~55k input)",
+      "est_output_tokens_sum": "~12.5k (items only)",
       "actual_tokens_sum": null,
+      "actual_input_tokens_sum": null,
+      "actual_output_tokens_sum": null,
       "delta_vs_est": null,
-      "variance_pct": null
+      "variance_pct": null,
+      "input_output_ratio_est": "~72/28 (input-heavy due to context overhead)",
+      "input_output_ratio_actual": null
     },
     "learnings": ""
   }
