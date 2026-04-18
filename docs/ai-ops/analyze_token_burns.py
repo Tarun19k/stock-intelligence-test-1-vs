@@ -173,6 +173,55 @@ def _waste_rate(entries):
     print()
 
 
+def _variance_alerts(entries):
+    """Scan entries for per-item and sprint-level token overruns.
+
+    Per-item:  ⚠ OVER when actual > 1.5× est midpoint.
+    Sprint:    ⚠ SPRINT OVER when total actual > 1.5× est (variance > +50%).
+    Items and sprints with null actuals are skipped (open sprints).
+    """
+    any_alert = False
+    print("## Variance alerts")
+
+    for e in entries:
+        sprint = e.get("sprint", "?")
+
+        # Sprint-level check ───────────────────────────────────────────────────
+        totals = e.get("totals", {})
+        est_sum = _parse_ktoken(totals.get("est_tokens_sum"))
+        raw_actual_sum = totals.get("actual_tokens_sum")
+        if isinstance(raw_actual_sum, (int, float)):
+            actual_sum_k = raw_actual_sum / 1000.0 if raw_actual_sum > 1000 else float(raw_actual_sum)
+        else:
+            actual_sum_k = _parse_ktoken(raw_actual_sum)
+
+        if est_sum and actual_sum_k and actual_sum_k > 0:
+            sprint_ratio = actual_sum_k / est_sum
+            if sprint_ratio > 1.5:
+                variance_pct = (sprint_ratio - 1.0) * 100
+                print(f"⚠  SPRINT OVER: {sprint}  actual={actual_sum_k:.0f}k  "
+                      f"est={est_sum:.0f}k  variance=+{variance_pct:.0f}%  ratio={sprint_ratio:.1f}×")
+                any_alert = True
+
+        # Per-item checks ──────────────────────────────────────────────────────
+        for it in e.get("items", []):
+            item_id = it.get("id", "?")
+            est_mid = _parse_ktoken(it.get("est_tokens"))
+            actual = it.get("actual_tokens")
+            if est_mid is None or actual is None:
+                continue  # skip null (open sprint items)
+            actual_k = actual / 1000.0 if actual > 1000 else float(actual)
+            ratio = actual_k / est_mid
+            if ratio > 1.5:
+                print(f"  ⚠ OVER  [{sprint}] {item_id:<32} "
+                      f"actual={actual_k:.0f}k  est={est_mid:.0f}k  ratio={ratio:.1f}×")
+                any_alert = True
+
+    if not any_alert:
+        print("  ✓ No overruns detected (all items and sprints within 1.5× estimate)")
+    print()
+
+
 def main():
     sprint_filter = None
     check_only = False
@@ -198,6 +247,7 @@ def main():
     label = f" (sprint: {sprint_filter})" if sprint_filter else f" ({len(entries)} sprints)"
     print(f"# Token Burn Analysis{label}\n")
     _sprint_table(entries)
+    _variance_alerts(entries)
     _model_accuracy(entries)
     _mode_efficiency(entries)
     _overhead_trend(entries)
