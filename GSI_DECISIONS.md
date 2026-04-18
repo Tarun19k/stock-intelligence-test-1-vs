@@ -512,3 +512,33 @@ unchanged — it still serves any cached data as a last resort regardless of per
 **Consequences:** CacheManager L2 and _info_cache in market_data.py are Streamlit-specific scaffolding — documented as such and not carried to Vercel. DataResult, DataContract, CircuitBreaker are pure Python and port unchanged to Vercel Python API routes. M3 explicitly deferred with migration rationale in CLAUDE.md OPEN-007-M3.
 
 ---
+
+## ADR-030 | 2026-04-18 | v5.40 | ACTIVE
+**Title:** T1/T2/T3 sprint item tiering + 43k subagent break-even threshold (Rule 18)
+
+**Context:** v5.39 sprint incurred a +347% token overrun (344k actual vs 66–88k estimated). Root-cause investigation (session_029, 5-domain forum: CTO + Financial + Statistical + Technical + Compliance) identified a single root cause: Haiku-tier tasks were routed through `superpowers:subagent-driven-development`, which spawns 3 fresh agents per task (implementer + spec reviewer + quality reviewer). Each agent independently re-loads full context (~12–17k tokens). Fixed overhead per item: ~40–50k regardless of task size. Break-even analysis: subagent routing is cost-justified only when sequential estimate ≥ 43k tokens. Below that threshold, overhead always exceeds work cost. Calibrated from 2-sprint dataset (v5.38 sequential = 0.87–0.97×; v5.39 subagent Haiku = 7–11×; T5 Sonnet subagent = 1.4× at ~40k est).
+
+**Decision:** Introduce T1/T2/T3 classification tiers applied to every sprint manifest item before work begins:
+- **T1** — doc-only OR single .py file ≤20 lines OR Haiku-level → sequential, inline self-check only
+- **T2** — multi-section edit, 2-file coherence, medium logic → sequential, inline review pass
+- **T3** — new subsystem >100 lines, new public API, Sonnet/Opus required, design risk → subagent (merged spec+quality reviewer) only when sequential est ≥ 43k
+
+Rule 18 added to CLAUDE.md DO NOT UNDO: "Do NOT route Haiku-tier tasks through subagent-driven development. Sequential est < 43k = sequential. No exceptions." Enforcement wiring: R36 (regression — tier field required on all IN_PROGRESS items), R37 (regression — T1 .py items in QA brief at close), R38 (regression — T1 items blocked from signal-path files), C11 (compliance — JSONL tier field in latest entry). Phase 2 (OPEN-027): validate variance <20% over one full sprint before Phase 3 OSS extraction.
+
+**Calibrated multipliers (use in all sprint manifests):**
+| Mode | Model | Multiplier | Confidence |
+|---|---|---|---|
+| Sequential | Haiku | 0.87× | High |
+| Sequential | Sonnet | 0.97× | High |
+| Subagent | Haiku | 7–11× — NEVER USE | High |
+| Subagent | Sonnet | 1.4× (if seq est ≥ 43k) | Low — 1 data point |
+| Direct | Haiku | 1.2× | Medium |
+
+**Alternatives rejected:**
+- **Subagent with pre-approved Haiku**: The context re-loading cost is inherent to the architecture — cannot be removed without changing the skill itself. Rule 18 in CLAUDE.md is the only reliable gate.
+- **Reduce agents from 3 to 1 per item**: Would eliminate QA review. Not acceptable for T3 items. T1/T2 don't need subagent at all — sequential is cheaper and sufficient.
+- **Per-sprint subagent budget cap**: Too complex to enforce. Binary rule (T1/T2 = sequential, T3 + ≥43k = subagent) is simpler and covers 95% of cases.
+
+**Consequences:** Phase 1 (v5.40, 8 items, ~80k est) is the first sprint under these rules. Phase 3 OSS extraction (TokenTrack) requires 3 hard blockers resolved: (1) strip `learnings` field of SEBI/MiFID II exposure; (2) Tier 1 blocked for signal-path files; (3) Rule 15 QA brief applies at all tiers. OPEN-027 gates Phase 3.
+
+---
