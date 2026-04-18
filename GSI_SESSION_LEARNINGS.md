@@ -297,3 +297,24 @@
 - Did not build M3 worker thread (Vercel Workflow DevKit replaces it — building now = throwaway infrastructure)
 - Did not add SQLite L3 cache (Streamlit Cloud ephemeral filesystem — near-zero production value)
 - Did not add row-count checks to DataContract (Policy 5 violation — compute_indicators owns this)
+
+## RECORD-035 | 2026-04-18 | session_029 | v5.39→v5.40
+
+**Type:** Strategic investigation + process redesign (no code committed)
+
+**Key findings:**
+1. SUBAGENT INFLATION CONFIRMED: v5.39 ran 347% over estimate because 5/7 haiku items were subagent-routed. Fixed overhead ~40-50k per item regardless of task size. T3 (opacity fix) cost 43k; sequential would have been 3k.
+2. BREAK-EVEN RULE: Subagent mode justified only when sequential estimate ≥ 43k. Below that, overhead > work. One data point (T5 Sonnet, 40k est → 57k actual = 1.4×) supports this.
+3. CALIBRATED MULTIPLIERS: Haiku sequential = 0.87× (reliable). Sonnet sequential = 0.97× (reliable). Haiku subagent = 7-11× (never use). These replace the 1.0× placeholder used in prior sprints.
+4. WIRING GAP: The tiering system has no runtime enforcement. Rule 18 in CLAUDE.md DO NOT UNDO is the only gate that survives /clear. Regression checks (R36/R37/R38) validate manifest fields but cannot intercept Agent() tool calls.
+5. SESSION STARTUP COST: /new-session costs 35-50k. close-session.md + breadcrumb reduces to ~9k. This is the single highest-leverage session-efficiency improvement available.
+6. INVESTIGATION META-COST: The 5-agent forum cost ~130k tokens (~15-20% of weekly limit). For routine calibration checks, 150-word structured JSON responses would yield same signal at 60% less output cost. Reserve verbose multi-agent forums for one-time architectural decisions.
+
+**Decisions:**
+- v5.40 = Phase 1 token optimization (35k, 8 files, all sequential). Plan in GSI_WIP.md.
+- Phase 3 OSS extraction deferred to after Phase 2 validation. 3 hard blockers documented in WIP.
+- TokenTrack concept approved directionally — name, schema, 3 commands, calibration model designed.
+
+**Anti-patterns avoided:**
+- Did NOT dispatch another review forum to evaluate the investigation findings (would have cost 80-100k)
+- Did NOT start Phase 1 implementation at session limit (would have produced half-committed files)
