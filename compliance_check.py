@@ -34,6 +34,31 @@ def _check_deps_current(repo_root: str) -> bool:
     return req_date <= dep_date
 
 
+def _check_jsonl_tier(repo_root: str) -> bool:
+    """C11 — latest token-burn-log.jsonl entry must have tier field in every items[] object.
+    Pass if file absent (first sprint before log exists) or latest entry has no items.
+    Fail if any item in the latest entry is missing a tier field."""
+    jsonl_path = os.path.join(repo_root, 'docs', 'ai-ops', 'token-burn-log.jsonl')
+    if not os.path.exists(jsonl_path):
+        return True  # no log yet — can't fail
+    try:
+        import json as _jc11
+        last_entry = None
+        with open(jsonl_path) as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    last_entry = _jc11.loads(line)
+        if last_entry is None:
+            return True  # empty file — can't fail
+        items = last_entry.get('items', [])
+        if not items:
+            return True  # no items — can't fail
+        return all('tier' in it for it in items)
+    except Exception:
+        return False  # parse error → fail
+
+
 def main() -> None:
     # CWD detection: if called from a hook context the CWD may be anywhere.
     # Resolve repo root as the directory containing this file.
@@ -65,6 +90,10 @@ def main() -> None:
         # File-level check: disclaimer must appear somewhere in week_summary.py.
         # Section-level placement (OPEN-022) is a separate P0 fix tracked in open items.
         ('SEBI disclaimer (week_summary)', 'SEBI-registered investment advisor' in files['ws']),
+        # C11 — token-burn-log.jsonl latest entry must have tier field in every items[] object.
+        # Enforces schema_version 2 (v5.40+): all sprint items must be classified T1/T2/T3.
+        # R36 enforces this at manifest-write time; C11 enforces it at JSONL-write time.
+        ('JSONL tier field (token-burn-log)', _check_jsonl_tier(_repo_root)),
     ]
 
     fails = [n for n, ok in checks if not ok]
