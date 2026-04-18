@@ -20,16 +20,73 @@
 
 ```
 Status:        IDLE
-Session ID:    session_028
+Session ID:    session_029
 Version:       v5.39
-Last updated:  2026-04-17
-Sprint:        v5.39 COMPLETE (T1–T7 done, manifest archived)
+Last updated:  2026-04-18
+Sprint:        v5.39 COMPLETE — v5.40 PLANNED (see PENDING SPRINT below)
 Manifest:      docs/sprint_archive/GSI_SPRINT_MANIFEST_v5.39.json
-Next session:  session_029
-Regression:    452/452 PASS (always-on baseline)
+Next session:  session_030
+Regression:    451/451 PASS (corrected baseline — COMPLETE mode)
 Compliance:    10/10 PASS
-Branch:        main @ 04c48ef
+Branch:        main @ c60c90a
 ```
+
+## PENDING SPRINT — v5.40 Token Optimization (session_029 decision, not yet started)
+
+Context: session_029 performed a 5-domain token burn investigation (Financial · Statistical ·
+Technical · OSS Design · Compliance). Root cause of v5.39 +347% overrun identified.
+Single rule captures 80% of savings: "Haiku tasks are never subagent-routed."
+Break-even for subagent: sequential estimate ≥ 43k tokens.
+
+### Phase 1 — Internal fix (next sprint, ~31k tokens, all sequential)
+
+Execution blocks for session_030:
+
+**Block A — Sonnet, solo, first:**
+- [ ] A1: Add R36/R37/R38 checks to `regression.py` (T2, Sonnet, ~6k)
+  - R36: every IN_PROGRESS manifest item must have `tier: T1/T2/T3` field
+  - R37: T1 items touching .py files must appear in QA Standards entry
+  - R38: T1 items touching signal-path files (indicators.py, dashboard.py,
+          pages/dashboard.py, market_data.py) → FAIL, must be T2 minimum
+  Commit after. Run regression.
+
+**Block B — Haiku batch (compliance + CLAUDE.md):**
+- [ ] B1: Add C10 check to `compliance_check.py` (T1, Haiku, ~2k)
+  - C10: latest token-burn-log.jsonl entry must have `tier` in each items[] object
+- [ ] B2: Update CLAUDE.md Rule 2 token template (T1, Haiku, ~3k)
+  - Add `"tier": "T1|T2|T3"` to token_budget items[] schema
+  - Add routing gate rule: "Haiku tasks never subagent-routed; sequential est <43k = sequential"
+  - Update token optimisation types table with correct multipliers
+  Commit each file separately.
+
+**Block C — Haiku batch (docs):**
+- [ ] C1: Update `docs/ai-ops/token-model-rules.md` (T1, Haiku, ~2k)
+  - Replace Part 2 multiplier table with calibrated values from session_029
+  - Add T1/T2/T3 classification decision tree (4-condition checklist)
+- [ ] C2: Update `docs/ai-ops/token-burn-log.jsonl` schema comment (T1, Haiku, ~1k)
+  - Add `tier` field to items[] schema definition in file header comment
+- [ ] C3: ADR-030 in `GSI_DECISIONS.md` (T1, Haiku, ~1k)
+  - Record: T1/T2/T3 routing tiers, break-even at 43k, haiku-never-subagent rule
+  Commit each file separately.
+
+**Block D — Close:**
+- [ ] D1: version.py entry for v5.40
+- [ ] D2: Sprint close sequence (~8k)
+
+### Phase 2 — Validate (one sprint under new rules, measure variance)
+### Phase 3 — TokenTrack OSS extraction (after Phase 2 confirms model)
+  HARD BLOCKER: sanitize `learnings` field before any public extraction
+  HARD BLOCKER: Tier 1 blocked for signal-path files
+  HARD BLOCKER: Hard Rule 15 QA brief applies to all tiers
+
+### Calibrated multipliers (use immediately in all sprint manifests)
+| Mode       | Model  | Multiplier vs sequential est |
+|------------|--------|------------------------------|
+| Sequential | Haiku  | 0.87×                        |
+| Sequential | Sonnet | 0.97×                        |
+| Subagent   | Haiku  | NEVER USE (7–11× effective)  |
+| Subagent   | Sonnet | 1.4× if seq est ≥43k         |
+| Direct     | Haiku  | 1.2×                         |
 
 ## Deferred Playwright tests — RESOLVED session_028
 
