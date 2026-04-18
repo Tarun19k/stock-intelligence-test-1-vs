@@ -38,24 +38,30 @@ Technical · OSS Design · Compliance). Root cause of v5.39 +347% overrun identi
 Single rule captures 80% of savings: "Haiku tasks are never subagent-routed."
 Break-even for subagent: sequential estimate ≥ 43k tokens.
 
-### Phase 1 — Internal fix (next sprint, ~31k tokens, all sequential)
+### Phase 1 — Internal fix (next sprint, ~35k tokens, all sequential)
 
 Execution blocks for session_030:
 
-**Block A — Sonnet, solo, first:**
+**Block A — Sonnet, solo, first (2 files):**
 - [ ] A1: Add R36/R37/R38 checks to `regression.py` (T2, Sonnet, ~6k)
   - R36: every IN_PROGRESS manifest item must have `tier: T1/T2/T3` field
   - R37: T1 items touching .py files must appear in QA Standards entry
   - R38: T1 items touching signal-path files (indicators.py, dashboard.py,
           pages/dashboard.py, market_data.py) → FAIL, must be T2 minimum
   Commit after. Run regression.
+- [ ] A2: Add variance alert to `docs/ai-ops/analyze_token_burns.py` (T2, Sonnet, ~4k)
+  - Flag any item where actual/est_midpoint > 1.5× with ⚠ OVER marker in output
+  - Flag any sprint where total variance > 50% with sprint-level ⚠ banner
+  Commit after.
 
 **Block B — Haiku batch (compliance + CLAUDE.md):**
 - [ ] B1: Add C10 check to `compliance_check.py` (T1, Haiku, ~2k)
   - C10: latest token-burn-log.jsonl entry must have `tier` in each items[] object
-- [ ] B2: Update CLAUDE.md Rule 2 token template (T1, Haiku, ~3k)
+- [ ] B2: Update CLAUDE.md Rule 2 token template + DO NOT UNDO (T1, Haiku, ~3k)
   - Add `"tier": "T1|T2|T3"` to token_budget items[] schema
   - Add routing gate rule: "Haiku tasks never subagent-routed; sequential est <43k = sequential"
+  - Add Rule 18 to DO NOT UNDO: "Do NOT route Haiku-tier tasks through subagent-driven
+    development. Sequential est <43k = sequential. No exceptions."
   - Update token optimisation types table with correct multipliers
   Commit each file separately.
 
@@ -64,9 +70,12 @@ Execution blocks for session_030:
   - Replace Part 2 multiplier table with calibrated values from session_029
   - Add T1/T2/T3 classification decision tree (4-condition checklist)
 - [ ] C2: Update `docs/ai-ops/token-burn-log.jsonl` schema comment (T1, Haiku, ~1k)
-  - Add `tier` field to items[] schema definition in file header comment
+  - Add `tier` + `execution.actual_mode` fields to items[] schema definition
 - [ ] C3: ADR-030 in `GSI_DECISIONS.md` (T1, Haiku, ~1k)
   - Record: T1/T2/T3 routing tiers, break-even at 43k, haiku-never-subagent rule
+- [ ] C4: New `.claude/commands/close-session.md` (T1, Haiku, ~2k)
+  - Command that writes .claude/session_breadcrumb.json + updates GSI_WIP.md
+    before any /clear — enables lean 9k startup instead of 50k new-session
   Commit each file separately.
 
 **Block D — Close:**
