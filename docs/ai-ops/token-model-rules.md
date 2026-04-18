@@ -1,6 +1,6 @@
 # GSI Token Optimization & Model Selection Rules
 # Extracted from sessions 021–022 methodology. Treat as standing policy.
-# Last updated: 2026-04-10 (session_022)
+# Last updated: 2026-04-18 (session_030 — v5.40: T1/T2/T3 tiers + calibrated multipliers)
 
 ---
 
@@ -39,6 +39,40 @@ Reserve for:
 ---
 
 ## Part 2 — Execution Mode Rules
+
+### T1/T2/T3 Tier Classification (session_029 — v5.40+)
+
+Classify every sprint item before writing the manifest. The tier determines execution mode.
+
+**Classification checklist — answer all 4:**
+1. Is the change doc-only (*.md, *.json config, no .py files)? → **T1**
+2. Is it a single .py file with ≤20 lines changed at a known location? → **T1**
+3. Are you calling Haiku? (any model or task size) → **T1** (or T2 if .py touches 2+ files)
+4. Does it require multi-file coherence, new logic, or >100 lines? → **T2 or T3**
+
+| Tier | Definition | Execution | Review |
+|---|---|---|---|
+| **T1** | Doc-only OR single .py ≤20 lines OR Haiku-level | Sequential | Inline self-check only |
+| **T2** | Multi-section edit, 2-file coherence, medium logic | Sequential | Inline review pass |
+| **T3** | New subsystem >100 lines, new public API, design risk | Subagent (merged spec+quality) | Two-stage review |
+
+**Hard rules (ADR-030 / Rule 18):**
+- T1 items are **never** subagent-routed — period.
+- T2 items with sequential est < 43k are **never** subagent-routed.
+- T3 items require sequential est ≥ 43k before subagent routing is considered.
+- Signal-path files (indicators.py, market_data.py, dashboard.py, pages/dashboard.py) cannot be T1 — must be T2 minimum.
+
+### Calibrated Multipliers (session_029 dataset — v5.38 + v5.39)
+
+| Mode | Model | Multiplier vs sequential est | Confidence |
+|---|---|---|---|
+| Sequential | Haiku | **0.87×** | High (2-sprint dataset) |
+| Sequential | Sonnet | **0.97×** | High (2-sprint dataset) |
+| Subagent | Haiku | **7–11× — DO NOT USE** | High (v5.39 catastrophic) |
+| Subagent | Sonnet | **1.4×** if seq est ≥ 43k | Low (1 data point — T5) |
+| Direct | Haiku | **1.2×** | Medium |
+
+Break-even: subagent routing is only justified when sequential est ≥ **43k tokens**. Below that threshold, the fixed overhead (~40–50k per item) always exceeds the work cost.
 
 ### Sequential vs. Parallel Decision Matrix
 
@@ -173,17 +207,18 @@ Agent: "Fix the SEBI compliance issue in home.py"  # no file path, no function, 
 4. Run regression once to confirm baseline — ~3k
 5. Begin execution
 
-### Sprint Item Budget Guide
-| Item complexity | Model | Mode | Est. tokens |
-|---|---|---|---|
-| Single-line targeted fix | Haiku | Sequential or worktree | 8–12k |
-| Multi-section page edit | Sonnet | Sequential | 15–20k |
-| Cross-file coherence fix | Sonnet | Sequential | 20–25k |
-| Doc-only batch (3–4 files) | Haiku | Single worktree agent | 15–18k |
-| New subsystem design | Opus | Sequential | 30–50k |
-| Parallel worktree cluster (3 items) | Haiku | 3× worktree agents | 45–54k agent (isolated) |
+### Sprint Item Budget Guide (calibrated — session_029)
+| Tier | Item complexity | Model | Mode | Est. tokens | Multiplier |
+|---|---|---|---|---|---|
+| T1 | Doc-only / config edit | Haiku | Sequential | 1–4k | 0.87× |
+| T1 | Single .py ≤20 lines, known location | Haiku | Sequential | 2–6k | 0.87× |
+| T2 | Multi-section page edit | Sonnet | Sequential | 6–15k | 0.97× |
+| T2 | Cross-file coherence fix | Sonnet | Sequential | 10–20k | 0.97× |
+| T3 | New subsystem / public API | Sonnet | Subagent | ≥43k | 1.4× |
+| T3 | Novel algorithm / architecture | Opus | Sequential | 30–50k | ~1.0× |
 
-**Flag any single item estimated >20k as a split candidate before starting.**
+**Flag any item estimated >20k as a T3 candidate or split candidate before starting.**
+**T1/T2 items: sequential est < 43k → always sequential. Rule 18 — no exceptions.**
 
 ---
 
