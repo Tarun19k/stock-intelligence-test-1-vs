@@ -318,3 +318,33 @@
 **Anti-patterns avoided:**
 - Did NOT dispatch another review forum to evaluate the investigation findings (would have cost 80-100k)
 - Did NOT start Phase 1 implementation at session limit (would have produced half-committed files)
+
+---
+
+## RECORD-036 | 2026-04-18 | session_030 | v5.39→v5.40 | SPRINT_CLOSE
+
+**Type:** Sprint execution + close — v5.40 Token Optimization Infrastructure
+
+**Items completed (9 of 10 code items + token-burn-log):**
+- a1: token-burn-log.jsonl schema_version 2 (tier + input/output split fields)
+- a2: analyze_token_burns.py variance_alerts() — ⚠ OVER flag for >1.5× items/sprints
+- b1: regression.py R36/R37/R38 — tier field enforcement (IN_PROGRESS + COMPLETE gates)
+- b2: CLAUDE.md Rule 18 + OPEN-027 + token_budget template tier field
+- c1: token-model-rules.md T1/T2/T3 table + calibrated multipliers + Sprint Budget Guide
+- c2: token-burn-log.jsonl skeleton entry (v5.40) with all schema_version 2 null fields
+- c3: GSI_DECISIONS.md ADR-030 — T1/T2/T3 routing + 43k break-even formal record
+- c4: .claude/commands/close-session.md — breadcrumb write + lean startup enabler
+- d1: version.py v5.40 entry
+- token-burn-log: JSONL actuals (sprint close)
+
+**Key decisions made:**
+- C11 naming conflict: Phase 1 plan said "C10" for the JSONL tier check but C10 was already taken by SEBI week_summary check (v5.38). Discovered by grepping compliance_check.py before writing — corrected to C11.
+- JSONL schema comment: JSONL doesn't support real comments; used `_schema_note` key within the JSON object — existing codebase pattern.
+- Snapshot grep key bug: `sort -t'-' -k3` for SNAPSHOT-NNN splits on the date portion, not snapshot number. Use `grep -n "^## SNAPSHOT-"` and take highest line number instead.
+- Edit-without-Read error: First GSI_DECISIONS.md edit failed with "File has not been read yet" despite tail output being available. Required a 5-line Read with offset=1 before Edit would accept.
+
+**Deviations found:** None (SNAPSHOT-015 showed no deviations vs SNAPSHOT-014)
+
+**Anti-patterns avoided:**
+- Did NOT batch code files in the same agent — R38 enforces this post-hoc; T1 items all committed independently
+- Did NOT mark COMPLETE before QA brief written — R37 gates this at regression level

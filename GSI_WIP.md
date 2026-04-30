@@ -19,11 +19,11 @@
 ## Session Status
 
 ```
-Status:        ACTIVE
+Status:        IDLE
 Session ID:    session_030
-Version:       v5.39 → v5.40
+Version:       v5.40
 Last updated:  2026-04-18
-Sprint:        v5.40 IN_PROGRESS (Token Optimization — Rule 18 Wiring)
+Sprint:        v5.40 COMPLETE (Token Optimization — Rule 18 Wiring)
 Manifest:      GSI_SPRINT_MANIFEST.json (active)
 Prev session:  session_029
 Regression:    451/451 PASS (entering baseline)

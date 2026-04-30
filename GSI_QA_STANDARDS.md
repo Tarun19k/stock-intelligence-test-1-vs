@@ -1565,3 +1565,52 @@ Infrastructure sprint — no new user-facing signals or UI changes (except one b
 **PLAYWRIGHT-09 deferred at sprint close (2026-04-17).**
 Reason: Playwright MCP browser backend closed mid-session. Code fix verified by static spec review.
 Carry to next session. Navigate to `/observability`, DEV_TOKEN `gsi-dev-2026`, Sprint Monitor tab — assert no red opacity error banner.
+
+---
+
+# v5.40 QA Brief — Token Optimization Infrastructure
+
+**Sprint type:** AI-ops infrastructure (no user-visible UI changes)
+**Changes:** Token tiering system, regression/compliance enforcement, JSONL schema_version 2, analyze_token_burns.py variance alerts, close-session command, ADR-030, Rule 18
+
+## What changed (for QA awareness)
+
+All changes are internal governance/tooling — no Streamlit pages were modified.
+
+| Item | File | Change |
+|---|---|---|
+| T1/T2/T3 tier system | CLAUDE.md, token-model-rules.md | Classification rules for sprint item routing |
+| Rule 18 | CLAUDE.md | Haiku tasks never subagent-routed; 43k break-even threshold |
+| R36 | regression.py | IN_PROGRESS manifest items must have tier field |
+| R37 | regression.py | T1 .py items must appear in this QA brief at COMPLETE |
+| R38 | regression.py | T1 items blocked from signal-path files |
+| C11 | compliance_check.py | Latest token-burn-log.jsonl entry must have tier in all items |
+| JSONL schema v2 | token-burn-log.jsonl | Adds tier + input/output token split fields per item |
+| variance_alerts() | analyze_token_burns.py | ⚠ OVER flag for sprints/items >1.5× estimate |
+| ADR-030 | GSI_DECISIONS.md | Formal decision record for T1/T2/T3 routing policy |
+| close-session.md | .claude/commands/ | New /close-session command for lean startup breadcrumb |
+| version.py | version.py | v5.40 VERSION_LOG entry |
+
+## T1 .py items in this sprint (R37 check)
+
+R37 fires at COMPLETE: all T1 .py items must be listed here. Items for v5.40:
+
+| Sprint ID | File | What changed |
+|---|---|---|
+| b1 (R36/R37/R38) | regression.py | 3 new check blocks appended after R35 |
+| a2 | docs/ai-ops/analyze_token_burns.py | `_variance_alerts()` function added + called from `main()` |
+| b2 (C11) | compliance_check.py | `_check_jsonl_tier()` helper + C11 check entry |
+| d1 | version.py | v5.40 VERSION_LOG entry appended |
+
+## Verification steps
+
+1. **Regression:** `python3 regression.py` → 451/451 PASS (always-on baseline, sprint checks inactive at COMPLETE)
+2. **Compliance:** `python3 compliance_check.py` → 11/11 PASS (C11 added)
+3. **Variance alerts:** `python3 docs/ai-ops/analyze_token_burns.py` → v5.39 SPRINT OVER flagged; v5.40 result shown after actuals filled
+
+## What I need back from QA
+
+- [ ] Regression: 451/451 always-on checks pass at COMPLETE
+- [ ] Compliance: 11/11 PASS (C11 present)
+- [ ] analyze_token_burns.py: no parse error; variance_alerts section present in output
+- [ ] All items above have no user-visible dashboard regression (no Streamlit pages changed)
