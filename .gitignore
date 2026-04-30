@@ -78,6 +78,8 @@ RALPH_PROMPT.md
 # Generated reports and screenshots (not source code)
 reports/
 /screenshots/
+# Playwright test screenshots dropped at repo root
+/test_*.png
 
 # Windows
 Thumbs.db
