@@ -424,15 +424,34 @@ def _render_top_movers(cb: int):
     if not movers:
         st.caption("Loading movers data…")
         return
+    us_market_open = st.session_state.get("market_open", False)
     cols = responsive_cols(min(len(movers[:6]), 6))
     for col, (sym, chg, price) in zip(cols, movers[:6]):
         color = "#00c853" if chg >= 0 else "#ff1744"
         arrow = "▲" if chg >= 0 else "▼"
         name  = sym.replace(".NS", "").replace(".BO", "")
+        is_futures = sym.endswith("=F")
+        # Exchange label: NSE for Indian stocks, NYSE for US equities, CME for futures
+        if is_futures:
+            exch = "CME"
+        elif sym.endswith(".NS") or sym.endswith(".BO"):
+            exch = "NSE"
+        elif sym.startswith("^"):
+            exch = "Index"
+        else:
+            exch = "NYSE"
+        exch_label = (
+            f" <span style='font-size:0.65rem;color:#7b8db5;font-weight:400'>{exch}</span>"
+        )
+        # Show "Closed" when US equity market is closed (commodity futures have own hours)
+        closed_label = (
+            " <span style='font-size:0.65rem;color:#6b7a9e'>Closed</span>"
+            if is_futures and not us_market_open else ""
+        )
         col.markdown(
             f'<div class="kpi-card" style="border-left-color:{color}">'
-            f'<div class="kpi-label">{name}</div>'
-            f'<div class="kpi-value" style="font-size:1.05rem">{price:,.2f}</div>'
+            f'<div class="kpi-label">{name}{exch_label}</div>'
+            f'<div class="kpi-value" style="font-size:1.05rem">{price:,.2f}{closed_label}</div>'
             f'<div class="kpi-delta" style="color:{color}">{arrow} {abs(chg):.2f}%</div>'
             f'</div>',
             unsafe_allow_html=True,
