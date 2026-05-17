@@ -127,11 +127,22 @@ def _render_header_static(ticker, name, country, cur_sym, info,
             align_text  = "Trend and momentum agree"
             align_color = "#00c853"
         else:
-            # OPEN-012 / C-04: Name the override — don't use generic label
-            stage = verdict.get("weinstein_stage", "")
-            stage_label = f"Stage {stage}" if stage else "Weinstein Stage"
+            # OPEN-012 / C-04: Name BOTH signals — which overrides which
+            _stage_lbl  = verdict.get("stage_label", "")
+            _elder_verd = verdict.get("elder_verdict", "")
+            # Stage 2 + Elder suppression: Elder weekly bearish overrides daily BUY
+            # Stage 3/4 + Weinstein veto: Weinstein stage overrides momentum score
+            if _stage_lbl.startswith("Stage 2") and _elder_verd:
+                align_text = (
+                    f"{sanitise(_stage_lbl, 40)} confirmed — "
+                    f"Elder weekly {sanitise(_elder_verd, 20).lower()} overrides daily BUY signal"
+                )
+            else:
+                _wl = sanitise(_stage_lbl, 40) if _stage_lbl else "Weinstein Stage"
+                align_text = (
+                    f"{_wl} overrides bullish momentum — trend cycle does not support BUY"
+                )
             align_icon  = "⚠️"
-            align_text  = f"{stage_label} overrides momentum — see Insights"
             align_color = "#ff9800"
     else:
         fsig        = sig_data["signal"]
