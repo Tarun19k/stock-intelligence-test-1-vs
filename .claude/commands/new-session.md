@@ -46,7 +46,7 @@ Read these files:
 1. `CLAUDE.md` — thin router; for architecture detail read `docs/context/architecture.md`; for hard constraints read `.claude/rules/do-not-undo.md` *(skip if already in context)*
 2. `GSI_session.json` — read ONLY the `meta` block and `open_items` array. Do NOT read the full file. Use `offset` parameter to target the relevant section (open_items starts around line 1086). The canonical open items list is in `GSI_SPRINT.md` — use GSI_session.json only to confirm `current_version` and `meta.last_session`.
 
-> **Do NOT read GSI_GOVERNANCE.md** — the 7 policies are summarized in CLAUDE.md under "Governance Policy Framework." Only read GSI_GOVERNANCE.md when amending a policy.
+> **Do NOT read GSI_GOVERNANCE.md** — the 8 policies live there and are stable. Only read it when amending a policy. The thin router CLAUDE.md does not summarize them.
 
 ## Step 3 — Regression baseline
 
@@ -77,7 +77,7 @@ Append new SNAPSHOT block to `GSI_SESSION_SNAPSHOT.md`:
 ## SNAPSHOT-[NNN] | [date] | [session_NNN] | [vX.XX] | [QSet-vN]
 *Compared to SNAPSHOT-[NNN-1] (QSet-[vN]). Deviations: [list or "none"]. Updated: [list or "none"]. New questions: [list or "none"].*
 
-**Q01. Regression baseline:** [extracted from regression.py output + CLAUDE.md]
+**Q01. Regression baseline:** [extracted from regression.py output + GSI_session.json → regression.expected_output]
 ...
 ```
 
@@ -96,7 +96,7 @@ Report:
 - Snapshot result: "No deviations" or list of deviations
 - Any pending pre-sprint tasks from GSI_WIP.md
 - Quant audit status (only if action needed)
-- OPEN items from CLAUDE.md sorted by priority (HIGH first) — do NOT re-read GSI_session.json for this
+- OPEN items from `GSI_SPRINT.md` (v5.41 section first, then backlog) sorted by priority — do NOT re-read CLAUDE.md or GSI_session.json for this
 
 Then ask: **"What would you like to work on this session?"**
 
