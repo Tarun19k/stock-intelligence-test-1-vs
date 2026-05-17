@@ -21,6 +21,17 @@
 
 ---
 
+### v5.41 Sprint — Trust Restoration (session_031, 2026-05-17)
+
+Sourced from CTO strategic brief + data freshness audit (reports/). All 4 items are P0/P1 trust issues identified in live app review. No architectural changes required.
+
+| ID | Description | Effort | Source | Governance policy |
+|---|---|---|---|---|
+| **TRUST-01** | **Crude WTI data error — ticker bar shows ~$99 (real: ~$60). CL=F futures returning stale/wrong value. Fix: add sanity bounds check ($20–$150), add "Closed" label when commodity markets offline, verify symbol for spot price.** | Low | reports/gsi-cto-brief.html | Policy 7 (data freshness) |
+| **TRUST-02** | **RSS swap — Al Jazeera general feed (cricket, politics) in home.py:448 and config.py GLOBAL_TOPICS. Replace with Reuters Markets RSS + ET Markets RSS. Add 48h freshness gate. Finance-specific only.** | Low | reports/gsi-data-freshness-report.html | Policy 7 (data freshness) |
+| **TRUST-03** | **Top Movers mixed-market labeling — India NSE (HDFCBANK) and US pre-market (GOOGL, META) in same list with no market tag or session timestamp. Add per-item NSE/NYSE label + session context (Live / Prior Close / Pre-Market).** | Low | reports/gsi-data-freshness-report.html | Policy 7 (data freshness) |
+| **OPEN-012** | **Weinstein override disclosure — when Stage vetoes Elder verdict, UI must show "Stage N override — Weinstein vetoes Elder" label. Conflict currently silent, causing decision paralysis. Required by Policy 6 (Signal Arbitration).** | Medium | audit | Policy 6 (signal arbitration) |
+
 ### Backlog (candidate items for v5.36)
 
 Sourced from GSI_session.json open_items and GSI_AUDIT_TRAIL.md open findings.
@@ -53,7 +64,7 @@ Prioritised by impact and implementation effort.
 | PROXY-07 | Tool-use guard in approval_hook — detect `tools` key in request data; block routing to Groq (no tool-use support); escalate to `deep-reasoning` or reject with clear error | Low | proxy | Policy 2 (arch) |
 | PROXY-08 | Proxy execution flow fix — env vars locked at process start; implement two-launch sequence in CLAUDE.md + sprint_planner.py; validate with live proxy test. **Batch: implement in same sequential block as HOOK-01 + OPEN-023 (all 3 touch non-UI, low-risk files — single regression run at end of block saves ~6k tokens).** | Low | proxy | Policy 2 (arch) |
 | HOOK-01 | R28 regression check: add existence check for `.claude/hooks/post_quant_flag.sh` — baseline moves 434→435. Also add `.claude/quant_audit_pending.json` to R10b list. **Dependency: if ALERT-01 ships first, this check must target `gsi_alerts.json` instead of `quant_audit_pending.json` — do not implement HOOK-01 independently after ALERT-01 is merged.** | Low | session_020 | Policy 2 (arch) |
-| **OPEN-022** | **P0-REGULATORY: SEBI disclaimer absent in two week_summary.py signal sections — Signal Summary tab (lines 649–679, BUY/WATCH/AVOID count cards) and Portfolio Allocator allocation table (lines 956–968, per-stock badges). Neither contains "SEBI" or "investment advisor". compliance_check.py only gates dashboard.py so this passes the pre-push gate silently. Fix: add co-located SEBI disclaimer in each section. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 4 (regulatory) |
+| ~~OPEN-022~~ | ~~P0-REGULATORY~~ **RESOLVED session_031 (2026-05-17)** — disclaimers confirmed at week_summary.py lines 680 + 937. C10 in compliance_check.py gates at file level. No code change needed. | Low | cto_review_v5.36 | Policy 4 (regulatory) |
 | **OPEN-023** | **P1: litellm-proxy hf-code model name malformed — config.yaml line 59 has `groq/openai/gpt-oss-20b`; README documents "Groq Qwen-QwQ-32B". Double-slash format is invalid LiteLLM Groq syntax; hf-code tier will error at runtime and break the hf-reasoning→hf-code fallback chain silently. Fix: `groq/qwen-qwq-32b` (verify exact Groq model slug). Score: 85 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 2 (arch) |
 | **OPEN-024** | **P2: mean_acc dead variable in _render_forecast_accuracy_report (week_summary.py line 1104) — extracted from report dict but never rendered. Docstring promises "Mean price accuracy (how close was P50 to actual?)". Fix: add 4th KPI card or calibration note for mean_acc. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 5 (data coherence) |
 | **OPEN-025** | **P2: UNSTABLE threshold boundary mismatch — portfolio.py lines 370–375 trigger UNSTABLE at `>= 15` (else branch), but portfolio.py comment (line 347) and week_summary.py UI text (line 898) both say `> 15`. Fix: align comment + UI to `>= 15` or change code to `> 15`. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 5 (data coherence) |

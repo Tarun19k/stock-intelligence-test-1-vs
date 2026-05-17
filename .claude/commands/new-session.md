@@ -43,8 +43,8 @@ Resume from the CHECKPOINT block exactly — start at the "Currently working on"
 ## Step 2 — Load context
 
 Read these files:
-1. `CLAUDE.md` — architecture reference, DO NOT UNDO rules, open items *(skip if already in context)*
-2. `GSI_session.json` — read ONLY the `meta` block and `open_items` array. Do NOT read the full file. Use `offset` parameter to target the relevant section (open_items starts around line 1086). The canonical open items list is in CLAUDE.md — use GSI_session.json only to confirm `current_version` and `meta.last_session`.
+1. `CLAUDE.md` — thin router; for architecture detail read `docs/context/architecture.md`; for hard constraints read `.claude/rules/do-not-undo.md` *(skip if already in context)*
+2. `GSI_session.json` — read ONLY the `meta` block and `open_items` array. Do NOT read the full file. Use `offset` parameter to target the relevant section (open_items starts around line 1086). The canonical open items list is in `GSI_SPRINT.md` — use GSI_session.json only to confirm `current_version` and `meta.last_session`.
 
 > **Do NOT read GSI_GOVERNANCE.md** — the 7 policies are summarized in CLAUDE.md under "Governance Policy Framework." Only read GSI_GOVERNANCE.md when amending a policy.
 
@@ -55,7 +55,7 @@ Run:
 python3 regression.py
 ```
 
-Confirm output matches the baseline in CLAUDE.md. If it does not match, stop and report the discrepancy — do not proceed until resolved.
+Confirm output matches the baseline in `GSI_session.json → regression.expected_output` (CLAUDE.md also shows the count as a sync-check). If it does not match, stop and report the discrepancy — do not proceed until resolved.
 
 ## Step 4 — Snapshot deviation check (CRITICAL — do not skip)
 

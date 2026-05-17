@@ -42,7 +42,7 @@ python3 regression.py
 ```
 
 Note the N/N result. This will be stored in the breadcrumb so the next session
-can verify the baseline in one command instead of re-reading CLAUDE.md.
+can verify the baseline in one command. (Authoritative count: GSI_session.json → regression.expected_output. CLAUDE.md shows it as a sync-check only.)
 
 ### Step 3 — Identify latest snapshot number
 
