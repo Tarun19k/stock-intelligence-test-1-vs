@@ -5,12 +5,12 @@
 # The "In Progress" column acts as a WIP lock alongside GSI_WIP.md.
 # ════════════════════════════════════════════════════════════════════════
 
-## Current Sprint: v5.37 — Planning
+## Current Sprint: v5.42 — Planning
 
 **Status:** Planning — backlog candidates below (sprint not yet opened)
 **Target date:** TBD
-**Regression baseline entering sprint:** 434/434
-**Goal:** TBD — pending Action 2 (financial analyst / SEBI compliance review) findings before sprint is locked.
+**Regression baseline entering sprint:** 454/454 (COMPLETE baseline)
+**Goal:** TBD — pending sprint scoping session.
 
 ### CEO Sign-offs recorded (2026-04-01)
 - S-01: WorldMonitor → stopgap link button now, Leaflet+GDELT in v5.36
@@ -32,6 +32,33 @@ Sourced from CTO strategic brief + data freshness audit (reports/). All 4 items 
 | **TRUST-03** | **Top Movers mixed-market labeling — India NSE (HDFCBANK) and US pre-market (GOOGL, META) in same list with no market tag or session timestamp. Add per-item NSE/NYSE label + session context (Live / Prior Close / Pre-Market).** | Low | reports/gsi-data-freshness-report.html | Policy 7 (data freshness) |
 | **OPEN-012** | **Weinstein override disclosure — when Stage vetoes Elder verdict, UI must show "Stage N override — Weinstein vetoes Elder" label. Conflict currently silent, causing decision paralysis. Required by Policy 6 (Signal Arbitration).** | Medium | audit | Policy 6 (signal arbitration) |
 
+
+---
+
+## Assessment Roadmap — reports/gsi-assessment.md (translated 2026-05-18)
+
+Sourced from `reports/gsi-assessment.md`. Items are sequenced into 5 phases. No phase is a sprint — each phase contains multiple sprints. Phase order is fixed: Phase N must be substantially complete before Phase N+1 begins. **Phase 1 items are the only candidates for the next sprint.**
+
+Phase dependencies:
+- Phase 2 (Portfolio core) → requires OPEN-003 (Supabase) first
+- Phase 3 (Forecast evidence) → requires Phase 2 data persistence layer
+- Phase 4/5 → require Phase 2 admin/client separation to know which surface gets what
+
+| ID | Phase | Priority | Description | Effort | Dependency |
+|---|---|---|---|---|---|
+| **ASSESS-P1-01** | **1 — Trust & Architecture** | **P1** | **Hide `YFRateLimitError` from UI. Replace raw exception text with "Data temporarily unavailable — retrying" fallback card. Users must never see internal error strings. Affects: market_data.py error handling + any page that renders raw errors.** | Low | None |
+| **ASSESS-P1-02** | **1 — Trust & Architecture** | **P2** | **Navigation redesign — replace radio-button Home/Dashboard/GI navigation with intent-first flow. Entry point should be a search bar (ticker or topic) not a mode selector. Significant UX rearchitecture.** | High | None |
+| **ASSESS-P1-03** | **1 — Trust & Architecture** | **P2** | **App positioning statement — homepage header must state what decision this tool helps make. Currently silent on purpose. One-sentence value prop visible above the fold: "Advisory intelligence for portfolio decisions."** | Low | None |
+| ASSESS-P1-04 | 1 — Trust & Architecture | P2 | Data provenance labels — every aggregated section must show source + freshness (extends Rule 17). Top Movers, Global Signals, Portfolio Allocator, macro cards. Currently only some sections have timestamps. | Medium | None |
+| ASSESS-P2-01 | 2 — Portfolio Core | P1 | Admin/client role separation — two distinct product surfaces. Admin: research, forecasting, portfolio engineering. Client: tracked portfolios, rebalance visibility, plain-English rationale. Requires authentication layer. | High | OPEN-003 (Supabase) |
+| ASSESS-P2-02 | 2 — Portfolio Core | P1 | Rebalancing engine — drift calculator (current vs target allocation), threshold-based and time-based rebalancing triggers, trade recommendation output. Core advisory value proposition. | High | OPEN-003 + ASSESS-P2-01 |
+| ASSESS-P2-03 | 2 — Portfolio Core | P2 | Risk-profiled model portfolios — pre-built allocation templates (Conservative/Balanced/Growth). Extends OPEN-006 (Portfolio Allocator UI). Gives clients a starting point for suitability. | Medium | OPEN-006 + ASSESS-P2-01 |
+| ASSESS-P3-01 | 3 — Forecast & Evidence | P1 | Forecast evidence ledger — every prediction gets a timestamp, stated assumptions, and outcome score when resolved. Makes forecasting auditable. Extends OPEN-024 (mean_acc dead variable). | Medium | Phase 2 persistence layer |
+| ASSESS-P3-02 | 3 — Forecast & Evidence | P2 | Multi-horizon forecast outputs — 1w / 1m / 3m horizons with scenario ranges (bull/base/bear). Current model outputs single horizon only. | High | ASSESS-P3-01 |
+| ASSESS-P4-01 | 4 — Intelligence Upgrade | P1 | Holdings-mapped intelligence — macro/news filtered and ranked by relevance to tracked positions. Currently intelligence layer is generic, not portfolio-aware. | High | Phase 2 holdings data |
+| ASSESS-P5-01 | 5 — Consulting Delivery | P1 | Client-readable rationale engine — plain-English reasoning card per stock recommendation (not just signal labels). "Why WATCH: RSI declining from overbought, Weinstein Stage 3, sector breadth negative." | High | Phase 2 + Phase 3 |
+| ASSESS-P5-02 | 5 — Consulting Delivery | P2 | Report/export layer — notes, recommendation history, shareable PDF/snapshot per portfolio review. Consulting workflow requirement. | High | ASSESS-P5-01 |
+
 ### Backlog (candidate items for v5.36)
 
 Sourced from GSI_session.json open_items and GSI_AUDIT_TRAIL.md open findings.
@@ -45,13 +72,13 @@ Prioritised by impact and implementation effort.
 | ID | Description | Effort | Source | Governance policy |
 |---|---|---|---|---|
 | OPEN-004 | Extract SCORING_WEIGHTS to config.py | Low | session | Policy 2 |
-| OPEN-003 | Cross-session forecast persistence (Supabase) | High | session | Policy 2 |
+| **OPEN-003** | **Cross-session forecast persistence (Supabase) — DOUBLE-CRITICAL: prerequisite for Phase 2 admin/client separation AND 21-day subscription revenue model (ASSESS-P2-01 blocks on this). No subscription product without it.** | High | session + assessment | Policy 2 |
 | C-02 | Macro data (Gold, Crude) not accessible to stock-level AI narrative | Medium | audit | OPEN-018 (Claude API) |
 | C-03 | RSI 36 described as "neutral momentum" in AI narrative — wrong | Medium | audit | OPEN-018 (Claude API) |
 | C-08 | Sector breadth computed but never passed to AI narrative engine | Medium | audit | OPEN-018 (Claude API) |
 | F-02 | India Impact formula static — not computed from live Crude price | Medium | audit | OPEN-018 (Claude API) |
 | C-01 | Sector breadth not wired to narrative — partially fixed in v5.31 | Medium | audit | OPEN-018 (Claude API) |
-| OPEN-006 | Portfolio Allocator stability score UI (shipped v5.23 — needs UI polish) | Medium | session | Policy 3 (UX) |
+| OPEN-006 | Portfolio Allocator stability score UI (shipped v5.23 — needs UI polish). **Precursor to ASSESS-P2-03 (risk-profiled model portfolios) — do before Phase 2 portfolio work.** | Medium | session | Policy 3 (UX) |
 | OPEN-007 | DataManager M2: CacheManager + DataContract validator | High | session | Policy 2 (arch) |
 | OPEN-018 | Claude API integration — live AI narrative (Opus 4.6 / Mythos-ready) | Medium | session | Policy 4,5 |
 | C-05 | Momentum score decomposition / scale disclosure | Medium | audit | Policy 5 |
@@ -66,7 +93,7 @@ Prioritised by impact and implementation effort.
 | HOOK-01 | R28 regression check: add existence check for `.claude/hooks/post_quant_flag.sh` — baseline moves 434→435. Also add `.claude/quant_audit_pending.json` to R10b list. **Dependency: if ALERT-01 ships first, this check must target `gsi_alerts.json` instead of `quant_audit_pending.json` — do not implement HOOK-01 independently after ALERT-01 is merged.** | Low | session_020 | Policy 2 (arch) |
 | ~~OPEN-022~~ | ~~P0-REGULATORY~~ **RESOLVED session_031 (2026-05-17)** — disclaimers confirmed at week_summary.py lines 680 + 937. C10 in compliance_check.py gates at file level. No code change needed. | Low | cto_review_v5.36 | Policy 4 (regulatory) |
 | **OPEN-023** | **P1: litellm-proxy hf-code model name malformed — config.yaml line 59 has `groq/openai/gpt-oss-20b`; README documents "Groq Qwen-QwQ-32B". Double-slash format is invalid LiteLLM Groq syntax; hf-code tier will error at runtime and break the hf-reasoning→hf-code fallback chain silently. Fix: `groq/qwen-qwq-32b` (verify exact Groq model slug). Score: 85 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 2 (arch) |
-| **OPEN-024** | **P2: mean_acc dead variable in _render_forecast_accuracy_report (week_summary.py line 1104) — extracted from report dict but never rendered. Docstring promises "Mean price accuracy (how close was P50 to actual?)". Fix: add 4th KPI card or calibration note for mean_acc. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 5 (data coherence) |
+| **OPEN-024** | **P2: mean_acc dead variable in _render_forecast_accuracy_report (week_summary.py line 1104) — extracted but never rendered. Fix: add 4th KPI card. Sub-item of ASSESS-P3-01 (forecast evidence ledger) — batch with that work.** | Low | cto_review_v5.36 | Policy 5 (data coherence) |
 | **OPEN-025** | **P2: UNSTABLE threshold boundary mismatch — portfolio.py lines 370–375 trigger UNSTABLE at `>= 15` (else branch), but portfolio.py comment (line 347) and week_summary.py UI text (line 898) both say `> 15`. Fix: align comment + UI to `>= 15` or change code to `> 15`. Score: 100 (CTO review 2026-04-08).** | Low | cto_review_v5.36 | Policy 5 (data coherence) |
 | **OPEN-026** | **P3-DOC: CLAUDE.md Key Entry Points not updated for two v5.36 functions — `_render_forecast_accuracy_report` in regression.py R8 EP list but absent from CLAUDE.md week_summary EP table; `compute_stability_score` absent from both CLAUDE.md portfolio EP table and regression R8 list. Fix: add both to CLAUDE.md; add compute_stability_score to regression R8. Score: 100 (CTO review 2026-04-08). Batch: same worktree agent as OPEN-025 (both doc/regression only, no .py logic — one regression run covers both, saves ~3k tokens).** | Low | cto_review_v5.36 | Policy 2 (arch) |
 | ALERT-01 | **⭐ HIGH PRIORITY — pick up next sprint.** Generalised alert system: replace `quant_audit_pending.json` with `gsi_alerts.json` — unified flag file for P0_LAUNCH_BLOCKER, CEO_DECISION, SKILL_STALE, SESSION_CLEANUP, SPRINT_CLOSE_PENDING alert types. Pre-populate with: README screenshots, ADR-025, beta list, cxo.md stale, ui-test.md stale, last_session drift. Add `post_sprint_close.sh` hook. new-session surfaces grouped summary. Foundation for top-notch governance visibility across all program state. | Medium | session_020 | Policy 2 (arch) |
@@ -74,14 +101,14 @@ Prioritised by impact and implementation effort.
 | **QA-D3-01** | **P1 (CONFIRMED 2026-04-13): `_calc_roe()` returns 0.37% for INFY.NS vs Screener.in actual 30.3% — 29.93pp gap. Root cause: `netIncomeToCommon` in USD, `bookValue × sharesOutstanding` in INR. The `returnOnEquity` field (32.68%) is within ±3pp of actual (30.3%). Fix: when `returnOnEquity` is available AND calculated value diverges >10pp, prefer `returnOnEquity`. HDFCBANK (13.18% vs 14.4% Screener) and RELIANCE (9.49% vs 8.40% Screener) both pass ±3pp. Only INFY.NS is affected (USD-reporting company on NSE).** | Low | quant_audit_session_024 | Policy 5 (data coherence) |
 | **QA-D1-01** | **P1: RSI uses Cutler's SMA (`rolling(14).mean()`) not Wilder's RMA (`ewm(com=13)`). Diverges from TradingView/Zerodha by 3–8 RSI points on stocks with <100 bars of data. Converges (<0.5pt) at >100 bars. Fix: switch to `ewm(com=13, adjust=False)` with SMA seed for first 14 values. Document: regression passes after change only if all RSI references updated.** | Medium | quant_audit_session_024 | Policy 5 (data coherence) |
 | **QA-D1-02** | **P1: ATR uses SMA(14) (`tr.rolling(14).mean()`) not Wilder's RMA. Diverges 5–15% on volatile stocks at short windows. Same fix pattern as QA-D1-01. Batch with RSI fix — same commit, same regression run.** | Medium | quant_audit_session_024 | Policy 5 (data coherence) |
-| QA-D2-04 | P2: `compute_unified_verdict()` return dict missing `veto_applied: bool` key. Policy 6 requires veto visible disclosure in UI. Veto fires correctly (Stage 4 → AVOID) but the boolean flag for UI disclosure is absent. Fix: add `"veto_applied": stage == 4` or check `conflicts` list. One-line fix in `indicators.py`. | Low | quant_audit_session_024 | Policy 6 (signal arbitration) |
+| QA-D2-04 | P3: `compute_unified_verdict()` return dict missing `veto_applied: bool` key. Display partially addressed by OPEN-012 (v5.41 — stage label now shows). Remaining: add `"veto_applied": bool` to dict for programmatic consumers. One-line fix in indicators.py. | Low | quant_audit_session_024 | Policy 6 (signal arbitration) |
 | QA-D2-03 | P2: Elder Screen 3 (entry trigger) not implemented — only 2 of 3 Elder screens active. UI labels it "Elder Triple Screen" — inaccurate. Fix A (quick): rename label to "Elder Two-Screen Filter" in UI. Fix B (full): implement Screen 3 (stochastic-based entry confirmation). | Medium | quant_audit_session_024 | Policy 5 (data coherence) |
 | QA-D1-03 | P2: Bollinger Bands use `ddof=1` (pandas default) vs TradingView `ddof=0`. ~2.6% wider bands. Not wrong per se — document the difference in UI tooltip. Fix: add chart footnote "Bollinger σ: sample std (ddof=1)". | Low | quant_audit_session_024 | Policy 7 (data freshness labeling) |
 | QA-D5-01 | P2: `EXP_DECAY=0.97` in portfolio.py vs expected ~0.94. Half-life ~23 days vs 11 days — weights older data more. Verify design intent with portfolio designer. If intentional: document in `GSI_DEPENDENCIES.md`. If unintentional: adjust to 0.94. | Low | quant_audit_session_024 | Policy 5 (data coherence) |
 | QA-D5-02 | P2: Efficient frontier has no monotonicity guard. Solver instability could produce a backwards-bending section (higher CVaR but lower return) without detection. Fix: add assertion after `compute_efficient_frontier()` — at least 10/12 points must be non-dominated. | Low | quant_audit_session_024 | Policy 5 (data coherence) |
-| **OPEN-027** | **P0-REGULATORY (Action 2): SEBI disclaimer absent from `_render_global_signals()` (home.py:343). BUY/WATCH/AVOID index signals refresh every 60s; existing caption is non-SEBI. Fix: st.caption with full SEBI text after line 343, before column loop. Playwright: verify disclaimer visible on Home page → Global Signals section.** | Low | action2_sebi | Policy 4 (regulatory) |
-| **OPEN-028** | **P0-REGULATORY (Action 2): FS-01 + FS-06 in `_render_watchlist_badges()` (global_intelligence.py:60–90). Named stocks shown with price/% but no BUY/WATCH/AVOID verdict (FS-06) and no SEBI disclaimer (FS-01). Section title "Related Stocks to Watch" implies action. Fix: (a) add SEBI caption after section header line 61; (b) fetch and display cached verdict per ticker for FS-06 compliance. Playwright: verify disclaimer + verdict badge visible in GI watchlist section.** | Medium | action2_sebi | Policy 4 (regulatory) + Policy 5 |
-| **OPEN-029** | **P0-REGULATORY (Action 2): SEBI disclaimer absent from `_render_header_static()` (dashboard.py:159–163). Verdict badge is tab-independent — visible on Charts/Forecast/Compare tabs; Insights tab disclaimer (line 1059) does NOT cover these tabs. Fix: add compact st.caption after header markdown block (after line 178). Playwright: navigate Dashboard → Charts tab → verify SEBI disclaimer present without switching to Insights.** | Low | action2_sebi | Policy 4 (regulatory) |
+| ~~OPEN-027~~ | ~~P0-REGULATORY~~ **RESOLVED v5.37 (confirmed 2026-05-18)** — SEBI caption confirmed at home.py:344. Code verified live. | Low | action2_sebi | Policy 4 |
+| ~~OPEN-028~~ | ~~P0-REGULATORY~~ **RESOLVED v5.37 (confirmed 2026-05-18)** — SEBI disclaimer at global_intelligence.py:63; per-ticker verdict badge computed at lines 84–96. Both FS-01 + FS-06 confirmed live. | Medium | action2_sebi | Policy 4 |
+| ~~OPEN-029~~ | ~~P0-REGULATORY~~ **RESOLVED v5.37 (confirmed 2026-05-18)** — SEBI caption confirmed at dashboard.py:190. Visible on all tabs (Charts/Forecast/Compare). | Low | action2_sebi | Policy 4 |
 
 ---
 
