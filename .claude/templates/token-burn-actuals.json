@@ -1,0 +1,38 @@
+{
+  "_usage": "Fill at sprint CLOSE before marking COMPLETE. Null fields fail R35. Run analyze_token_burns.py after filling.",
+  "_methodology_options": "self_estimate | api_usage_header | token_counter_tool",
+  "token_burn_actuals": {
+    "schema_version": "1",
+    "actual_tokens_methodology": "self_estimate",
+    "sessions": ["session_NNN"],
+    "date_opened": "YYYY-MM-DD",
+    "date_closed": "YYYY-MM-DD",
+    "items": [
+      {
+        "id": "item-id",
+        "model": "haiku|sonnet|opus",
+        "mode": "sequential|parallel_agent|worktree",
+        "est_tokens": "8k-12k",
+        "actual_tokens": null,
+        "quality": {
+          "regression_passed_first_try": null,
+          "rework_rounds": 0,
+          "wasted_tokens_est": 0,
+          "outcome": "clean|minor_rework|major_rework"
+        }
+      }
+    ],
+    "overhead": {
+      "regression_runs_actual": null,
+      "sync_docs_actual": null,
+      "sprint_close_actual": null
+    },
+    "totals": {
+      "est_tokens_sum": "Xk",
+      "actual_tokens_sum": null,
+      "delta_vs_est": null,
+      "variance_pct": null
+    },
+    "learnings": ""
+  }
+}

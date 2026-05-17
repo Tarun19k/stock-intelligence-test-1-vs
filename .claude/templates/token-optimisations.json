@@ -1,0 +1,21 @@
+{
+  "_usage": "Add alongside token_budget in GSI_SPRINT_MANIFEST.json. Log each optimisation decision.",
+  "_types": "parallelise | batch | split | read_avoidance | scope_narrow | defer",
+  "_quality_floors": {
+    "parallelise": "CTO must Read agent output before committing — not just run regression",
+    "batch": "Only for doc-only changes (*.md, *.json config). Never batch code files.",
+    "split": "Sub-items committed independently; B cannot start until A regression passes",
+    "read_avoidance": "BANNED for files being edited. Grep/Glob only for files searched but not modified.",
+    "scope_narrow": "Agent prompt must include: file path, target function, relevant CLAUDE.md scoped rules",
+    "defer": "Deferred items must be added to GSI_SPRINT.md backlog in the same session"
+  },
+  "token_optimisations": [
+    {
+      "decision": "short label",
+      "type": "parallelise | batch | split | read_avoidance | scope_narrow | defer",
+      "items_affected": ["item-id"],
+      "saving_est": "~Xk tokens",
+      "detail": "what was done and what alternative was rejected"
+    }
+  ]
+}

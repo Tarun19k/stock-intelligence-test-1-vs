@@ -1,0 +1,23 @@
+{
+  "_usage": "Reference schema for GSI_SPRINT_MANIFEST.json. Copy structure, fill fields before implementation.",
+  "_permanent_tier_a_checks": [
+    {"id": "sync_docs_passes",             "tier": "A", "must_contain": ["see sync_docs.py exit 0"]},
+    {"id": "compliance_baseline_current",  "tier": "A", "must_contain": ["ALL {N} CHECKS PASS"]},
+    {"id": "pr_template_baseline_current", "tier": "A", "must_contain": ["ALL {N} CHECKS PASS"]},
+    {"id": "decisions_has_sprint_adr",     "tier": "A", "must_contain": ["v{sprint_version}"]},
+    {"id": "qa_standards_has_brief",       "tier": "A", "must_contain": ["v{sprint_version}"]}
+  ],
+  "_token_burn_log_rule": "token-burn-log must be the LAST non-section item. Status: pending at sprint start, DONE only after actuals filled and JSONL entry written.",
+  "sprint_manifest_template": {
+    "sprint_version": "v5.XX",
+    "status": "IN_PROGRESS",
+    "created": "YYYY-MM-DD",
+    "session": "session_NNN",
+    "description": "Sprint description",
+    "checks": [],
+    "file_change_log": [],
+    "token_budget": {"_ref": ".claude/templates/token-budget.json"},
+    "token_optimisations": {"_ref": ".claude/templates/token-optimisations.json"},
+    "token_burn_actuals": {"_ref": ".claude/templates/token-burn-actuals.json"}
+  }
+}

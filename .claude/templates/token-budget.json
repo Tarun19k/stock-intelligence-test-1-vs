@@ -1,0 +1,34 @@
+{
+  "_usage": "Add this block to GSI_SPRINT_MANIFEST.json before implementation. Fill all fields.",
+  "token_budget": {
+    "items": [
+      {
+        "id": "item-id",
+        "tier": "T1|T2|T3",
+        "mode": "sequential | parallel_agent",
+        "model": "haiku | sonnet | opus",
+        "model_rationale": "one sentence — why this model is sufficient/required",
+        "agents": "1 × sequential | 3 × worktree-parallel",
+        "files_touched": 1,
+        "risk": "low | medium | high",
+        "est_tokens": "8k–12k",
+        "est_input_tokens": "Xk",
+        "est_output_tokens": "Xk",
+        "permissions_required": ["file-read", "file-write", "bash-python3"],
+        "playwright": "PLAYWRIGHT-ID: Navigate … Assert … Edge cases: … | N/A — reason"
+      }
+    ],
+    "overhead": {
+      "session_start_context": "~15k",
+      "regression_runs": "N × 3k",
+      "sync_docs": "~2k",
+      "sprint_close_sequence": "~10k"
+    },
+    "totals": {
+      "main_context_est": "sequential items + overhead",
+      "agent_est": "sum of parallel_agent items",
+      "grand_total_est": "main_context + agent"
+    },
+    "notes": "Flag any item > 20k as a split candidate"
+  }
+}
