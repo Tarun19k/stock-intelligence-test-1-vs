@@ -252,3 +252,6 @@ Full technical detail in `version.py` → `VERSION_LOG`.
 
 ## v5.40 — 2026-04-18
 
+
+## v5.41 — 2026-05-18
+

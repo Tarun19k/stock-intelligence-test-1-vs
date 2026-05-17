@@ -1614,3 +1614,45 @@ R37 fires at COMPLETE: all T1 .py items must be listed here. Items for v5.40:
 - [ ] Compliance: 11/11 PASS (C11 present)
 - [ ] analyze_token_burns.py: no parse error; variance_alerts section present in output
 - [ ] All items above have no user-visible dashboard regression (no Streamlit pages changed)
+
+---
+
+## QA Brief — v5.41 Trust Restoration Sprint (2026-05-18)
+
+### TRUST-01: CL=F bounds check + Top Movers exchange labels
+
+**Before:** Top Movers could show CL=F with price $0.01 or $99999. No exchange/source label shown for any ticker.
+**After:** CL=F excluded if price outside $20–$150. Each ticker shows exchange sub-label (NSE/NYSE/CME/Index). Commodity futures show "Closed" when market_open is False.
+
+**Test steps:**
+1. Open homepage → Top Movers section
+2. Verify each ticker shows a grey exchange label (NSE/NYSE/CME) beneath the name
+3. If running outside US market hours: commodity futures (CL=F, GC=F) should show "Closed" in small text
+
+**Expected text:** `CME` sub-label for futures tickers; `NSE` for `.NS` stocks; `NYSE` for US equities
+
+### TRUST-02/03: Al Jazeera RSS replaced
+
+**Before:** `https://www.aljazeera.com/xml/rss/all.xml` appeared in `home.py NEWS_FEEDS` and `config.py GLOBAL_TOPICS`. Mixed non-financial headlines into intelligence feed.
+**After:** Replaced with Reuters businessNews. Feed list reduced from 6 to 4 finance-relevant sources.
+
+**Test steps:**
+1. Open homepage → Latest Market News section
+2. All headlines should be finance/business-relevant (no sports, politics, lifestyle)
+3. Grep: `grep -r "aljazeera" pages/ config.py` should return 0 results
+
+**Expected:** No Al Jazeera URLs in homepage feeds or topic RSS lists
+
+### OPEN-012: Weinstein override label correctness (Policy 6)
+
+**Before:** Override label always showed "Weinstein Stage overrides momentum" (generic fallback due to wrong dict key).
+**After:** Shows specific stage and conflict type: e.g. "Stage 4 — Declining overrides bullish momentum — trend cycle does not support BUY"
+
+**Test steps:**
+1. Open dashboard for any stock with a WATCH/AVOID verdict caused by Weinstein-Elder conflict
+2. In the header card, look for the amber ⚠️ label immediately below the verdict badge
+3. Verify it shows the actual Weinstein stage name (e.g. "Stage 3 — Top / Distribution") not just "Weinstein Stage"
+
+**Expected text format:**
+- Stage 2 + Elder conflict: `"Stage 2 — Advancing confirmed — Elder weekly bearish overrides daily BUY signal"`
+- Stage 3/4 conflict: `"Stage 3 — Top / Distribution overrides bullish momentum — trend cycle does not support BUY"`

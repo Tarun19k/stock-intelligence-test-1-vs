@@ -117,4 +117,4 @@ else:
 "
 ```
 
-**Regression baseline:** ALL 451 CHECKS PASS (updated 2026-04-17 — v5.39; R24.M2 CacheManager+DataContract +6 checks; sprint R27 checks inactive post-close)
+**Regression baseline:** ALL 11 CHECKS PASS (compliance_check.py — v5.41, 2026-05-18) · Regression baseline: 480/480 PASS

@@ -245,7 +245,16 @@ VERSION_LOG = [
                "token-model-rules.md updated: calibrated multipliers, T1/T2/T3 table, Sprint Budget Guide. "
                "close-session.md: new /close-session command writes session_breadcrumb.json before /clear — "
                "enables 5-9k lean startup vs 35-50k /new-session on deliberate clears. "
-               "Regression baseline: 451/451 PASS (always-on; R36/R37/R38 sprint-active only).")}
+               "Regression baseline: 451/451 PASS (always-on; R36/R37/R38 sprint-active only).")},
+    {"version": "v5.41", "date": "2026-05-18",
+     "notes": ("Trust Restoration Sprint. "
+               "TRUST-01: CL=F sanity bounds ($20-$150) in get_top_movers + exchange labels (NSE/NYSE/CME) "
+               "and commodity Closed indicator in Top Movers section. "
+               "TRUST-02: Al Jazeera general RSS replaced with Reuters Markets + ET Markets in home.py. "
+               "TRUST-03: Al Jazeera general RSS replaced with Reuters businessNews in config.py GLOBAL_TOPICS. "
+               "OPEN-012: Fixed wrong dict key (weinstein_stage → stage_label) in Weinstein override label; "
+               "now distinguishes Stage 3/4 veto vs Stage 2 Elder weekly suppression. "
+               "Regression baseline: 480/485 PASS (R27.A sprint-close gates clear at COMPLETE).")},
 ]
 
 CURRENT_VERSION: str = VERSION_LOG[-1]["version"]

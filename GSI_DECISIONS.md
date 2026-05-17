@@ -542,3 +542,23 @@ Rule 18 added to CLAUDE.md DO NOT UNDO: "Do NOT route Haiku-tier tasks through s
 **Consequences:** Phase 1 (v5.40, 8 items, ~80k est) is the first sprint under these rules. Phase 3 OSS extraction (TokenTrack) requires 3 hard blockers resolved: (1) strip `learnings` field of SEBI/MiFID II exposure; (2) Tier 1 blocked for signal-path files; (3) Rule 15 QA brief applies at all tiers. OPEN-027 gates Phase 3.
 
 ---
+## ADR-031 — Weinstein override label key fix + trust RSS swap (v5.41, 2026-05-18)
+
+**Context:** v5.41 Trust Restoration Sprint addressed four P0/P1 trust defects.
+
+**Decision 1 — stage_label is the correct key for Weinstein stage string (OPEN-012):**
+`verdict.get("weinstein_stage", "")` was the wrong key. `compute_unified_verdict()` returns `"stage_label"` (a human-readable string like "Stage 3 — Top / Distribution"). The wrong key caused the override label to silently fall back to the generic "Weinstein Stage overrides momentum" for every single conflict since first implementation. Fixed to `verdict.get("stage_label", "")` and split into two conflict branches: Stage 3/4 Weinstein veto vs Stage 2 Elder weekly suppression.
+
+**Decision 2 — Al Jazeera general RSS removed from home.py NEWS_FEEDS and config.py GLOBAL_TOPICS (TRUST-02/03):**
+Al Jazeera `all.xml` mixes non-financial headlines (sports, politics, lifestyle) into the financial intelligence feed. This reduces signal/noise ratio and undermines credibility when shown to consulting clients. Replaced with Reuters businessNews in both locations. `DEFAULT_NEWS_FEEDS` in market_data.py already excluded Al Jazeera — this aligns the page-level feeds to match.
+
+**Decision 3 — CL=F sanity bounds $20–$150 in get_top_movers (TRUST-01):**
+yfinance occasionally returns bogus prices for CL=F (e.g. 0.01 or 99999). Bounds check applied at the point of result assembly, not at the fetch level. GC=F excluded from bounds check (Gold ~$2300 is outside the $20–$150 range). Errors logged to `_fetch_errors` for observability.
+
+**Alternatives considered:**
+- Applying bounds to all `=F` symbols: rejected (Gold, Silver price ranges differ significantly from crude).
+- Fixing Al Jazeera to a markets-specific feed (no dedicated financial RSS available).
+
+**Consequences:** Policy 6 (Signal Arbitration) now correctly enforced for all stocks with Weinstein-Elder conflicts. Intelligence feed is finance-relevant across all topics. Top Movers data quality gate prevents zero/bogus commodity prices from surfacing.
+
+---

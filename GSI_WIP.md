@@ -20,13 +20,13 @@
 
 ```
 Status:        IDLE
-Session ID:    session_030
-Version:       v5.40
-Last updated:  2026-04-18
-Sprint:        v5.40 COMPLETE (Token Optimization — Rule 18 Wiring)
+Session ID:    session_031
+Version:       v5.41
+Last updated:  2026-05-17
+Sprint:        v5.41 IN_PROGRESS (Trust Restoration Sprint)
 Manifest:      GSI_SPRINT_MANIFEST.json (active)
-Prev session:  session_029
-Regression:    451/451 PASS (entering baseline)
+Prev session:  session_030
+Regression:    460/460 PASS (entering baseline)
 Compliance:    10/10 PASS
 Branch:        main @ c60c90a
 ```
@@ -1172,3 +1172,12 @@ Then: `/sprint-monitor init` → set manifest IN_PROGRESS → type "go" to start
 v5.38 sprint is fully planned. Manifest at GSI_SPRINT_MANIFEST.json (status: PLANNING, 4 items + pre-sprint).
 Permissions pre-approved: file-read · file-write · bash-python3 · bash-git (no worktree/playwright/mcp needed).
 Silo audit findings (SILO-001/002/003) to be added to backlog after sprint closes — not blocking v5.38.
+
+## v5.41 Sprint Tasks — session_031 (2026-05-17)
+
+- [x] TRUST-01: market_data.py — Crude WTI $20-$150 bounds check on CL=F; pages/home.py — "Closed" label for commodities when offline
+- [x] OPEN-012: pages/dashboard.py — verify/strengthen Weinstein override label at lines 130-134 for Policy 6 compliance
+- [x] TRUST-02: pages/home.py — swap Al Jazeera general RSS → Reuters Markets + ET Markets; Top Movers add NSE/NYSE label per item
+- [x] TRUST-03: config.py GLOBAL_TOPICS — replace Al Jazeera general RSS in all topic entries
+- [x] Regression 460/460 PASS after each commit
+- [x] Sprint close: sync_docs, GSI_DECISIONS.md ADR, QA brief, token-burn-log JSONL entry

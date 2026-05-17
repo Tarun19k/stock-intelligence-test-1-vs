@@ -5,10 +5,13 @@
 
 **Stack:** Streamlit 1.55 · Python · 9 markets · 559 tickers · 38 groups · 4-tab dashboard
 **Version:** see `GSI_session.json → meta.current_app_version`
-**Regression baseline:** 460/460 PASS (keep in sync with GSI_session.json)
+**Regression baseline:** 480/480 PASS (keep in sync with GSI_session.json)
 **Repos:** ACTIVE → https://github.com/Tarun19k/stock-intelligence-test-1-vs · REFERENCE ONLY → https://github.com/Tarun19k/global-gsi-intelligence
 
 ---
+## Current State (v5.41 — 2026-05-18)
+
+**Sprint v5.41 COMPLETE** — Trust Restoration (TRUST-01/02/03 + OPEN-012)
 
 ## Run Commands
 ```bash

@@ -1,0 +1,64 @@
+
+==============================================================
+  GSI Documentation Sync — v5.41
+  2026-05-18 00:52
+==============================================================
+
+── AUTO UPDATES ──────────────────────────────────────────
+  ✅ CHANGELOG.md already current (60 versions)
+  ✅ README.md already current
+  ✅ AGENTS.md already current
+  ℹ  GSI_CONTEXT.md: auto-managed by regression.py (run regression to update)
+
+── SEMI-AUTO ──────────────────────────────────────────────────
+  ✅ GSI_SPRINT.md — In Progress empty
+  ✅ GSI_QA_STANDARDS.md — brief for v5.41 present
+
+── CONTENT ACCURACY ──────────────────────────────────────────
+  ❌ GSI_CONTEXT.md — STALE
+     Run: python3 regression.py  (auto-regenerates on 0 failures)
+     Then re-upload to Claude Project Files
+  ✅ GSI_WIP.md — Status: IDLE
+  ✅ GSI_WIP.md — Version: v5.41 ✓
+  ✅ CLAUDE.md — baseline count current
+  ✅ GSI_COMPLIANCE_CHECKLIST.md — baseline count current
+  ✅ .github/PULL_REQUEST_TEMPLATE.md — baseline count current
+  ✅ CLAUDE.md — Current State header: v5.41 — 2026-05-18 ✓
+  ✅ version.py — syntax valid
+  ✅ version.py — CURRENT_VERSION defined
+  ✅ version.py — last entry = v5.41 ✓
+  ✅ regression.py — R10b gov_docs complete (14 docs)
+  ✅ GSI_session.json — next_version: v5.42 ✓
+  ✅ GSI_PRODUCT.md — present
+  ✅ GSI_MARKETING.md — present
+  ✅ GSI_RISK_REGISTER.md — present
+  ✅ GSI_LOOPHOLE_LOG.md — present
+
+── MANUAL CHECKLIST ─────────────────────────────────────────
+  ✅ GSI_AUDIT_TRAIL.md — all closed findings have RESOLUTION records
+  ✅ GSI_DECISIONS.md — ADR entry for v5.41 found
+  ✅ GSI_SKILLS.md — no obvious new patterns
+  ✅ GSI_DEPENDENCIES.md — no new constraints detected
+  ✅ GSI_SPRINT.md — velocity table has row for v5.41 ✓
+  ⚡ GSI_SESSION_LEARNINGS.md — no RECORD entry found for v5.41
+     Add RECORD entries if any stale context, confusion, or new learning occurred
+     (Advisory — hotfix versions with no surprises may have zero records)
+
+── COMMIT ────────────────────────────────────────────────────
+  git add CHANGELOG.md README.md AGENTS.md
+  git add GSI_SPRINT.md GSI_session.json GSI_WIP.md
+  git commit -m 'docs: post-sprint sync (v5.41)'
+  git push
+  Re-upload GSI_CONTEXT.md to Claude Project Files
+
+  ── MANUAL (outside repo — not auto-checked) ──
+  memory/project_overview.md — version + baseline + ticker count
+  memory/project_open_items.md — closed items removed, new watch items added
+
+==============================================================
+  1 action(s) required:
+  1. GSI_CONTEXT.md — STALE
+==============================================================
+
+
+see sync_docs.py exit 0
