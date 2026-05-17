@@ -464,12 +464,10 @@ def _render_top_movers(cb: int):
 # ══════════════════════════════════════════════════════════════════
 
 NEWS_FEEDS = [
-    "https://www.aljazeera.com/xml/rss/all.xml",
-    "https://feeds.bbci.co.uk/news/business/rss.xml",
-    "https://feeds.bbci.co.uk/news/world/rss.xml",
     "https://feeds.reuters.com/reuters/businessNews",
-    "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
     "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+    "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
 ]
 
 
