@@ -1,0 +1,38 @@
+{
+  "session_id": "session_031",
+  "closed_at": "2026-05-17T20:06:16.494986+00:00",
+  "version": "v5.41",
+  "next_version": "v5.42",
+  "regression_baseline": "454/454 PASS (COMPLETE)",
+  "wip_status": "IDLE",
+  "last_commits": [
+    "30f98f5 chore: translate gsi-assessment into roadmap + clean stale backlog",
+    "5fc33c7 docs: post-sprint sync v5.41 \u2014 Trust Restoration Sprint COMPLETE",
+    "20b5ce4 fix(TRUST-03): replace Al Jazeera general RSS in GLOBAL_TOPICS",
+    "5c83003 fix(TRUST-02): replace Al Jazeera general RSS with Reuters + ET Markets",
+    "ae3042b fix(OPEN-012): correct Weinstein override label for Policy 6 compliance",
+    "9e73e04 fix(TRUST-01): add exchange labels + Closed indicator to Top Movers",
+    "ef54635 fix(TRUST-01): add CL=F sanity bounds in get_top_movers"
+  ],
+  "sprint_complete": "v5.41",
+  "next_sprint_candidates": [
+    "ASSESS-P1-01: Hide YFRateLimitError from UI (Low effort, P1)",
+    "ASSESS-P1-03: App positioning statement on homepage (Low effort, P2)",
+    "OPEN-023: Fix litellm-proxy hf-code model name (Low, P1)",
+    "OPEN-025: UNSTABLE threshold boundary mismatch (Low, P2)",
+    "OPEN-026: compute_stability_score missing from R8 regression (Low, p3 - 1 line)"
+  ],
+  "critical_path": "OPEN-003 (Supabase) \u2014 blocks Phase 2 admin/client separation AND 21-day subscription revenue model",
+  "active_reminders": [
+    "Business goal identification (PRIORITY.md IN PROGRESS) \u2014 hourly cron f9382c7d \u2014 stops when PRIORITY.md marked COMPLETE"
+  ],
+  "open_questions_blocking_21day_plan": [
+    "ManyChat: set up on @tarunkochhar or @thefinancialcoacher, or neither?",
+    "@thefinancialcoacher: current state \u2014 post count, followers, live or blank?"
+  ],
+  "reports_reviewed": [
+    "reports/gsi-assessment.md \u2014 fully analysed, translated to ASSESS-P1 through P5 items in GSI_SPRINT.md"
+  ],
+  "reports_not_yet_reviewed": "Check reports/ folder \u2014 gsi-assessment.md was the only one covered this session",
+  "resume_instruction": "Run /new-session. GSI_WIP.md is IDLE, v5.41 is COMPLETE. Next sprint is v5.42 \u2014 scope from ASSESS-P1-01/03 + OPEN-023/025/026. Business goal identification is parked with hourly reminder \u2014 address when ready."
+}
