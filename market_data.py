@@ -552,6 +552,11 @@ def get_top_movers(symbols: list, max_symbols: int = 20,
             lp  = float(cl.iloc[-1]) if len(cl) >= 1 else 0
             pp  = float(cl.iloc[-2]) if len(cl) >= 2 else lp
             chg = (lp - pp) / pp * 100 if pp else 0.0
+            # Sanity bounds for Crude WTI futures — bogus prices (0.01, 999999) excluded
+            # Bounds 20-150 apply only to CL=F; other futures (GC=F ~2300, BZ=F etc.) differ
+            if sym == "CL=F" and not (20 <= lp <= 150):
+                _fetch_errors[sym] = _fetch_errors.get(sym, 0) + 1
+                continue
             results.append((sym, round(chg, 2), round(lp, 2)))
         except Exception as e:
             log_error(f"get_top_movers:{sym}", e)
