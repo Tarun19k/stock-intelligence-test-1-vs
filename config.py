@@ -86,7 +86,7 @@ GLOBAL_TOPICS: dict = {
         ],
         "market_sectors": ["Energy", "Defense & Aerospace", "Shipping & Logistics", "FMCG", "Agri"],
         "rss": [
-            "https://www.aljazeera.com/xml/rss/all.xml",
+            "https://feeds.reuters.com/reuters/businessNews",
             "https://feeds.reuters.com/reuters/worldNews",
             "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
         ],
