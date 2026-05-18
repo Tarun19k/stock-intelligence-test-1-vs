@@ -513,6 +513,8 @@ def render_homepage(cb: int = 0, market_open: bool = False):
     st.markdown(
         '<div style="font-size:2rem;font-weight:900;color:#c8d6f0;margin-bottom:2px">'
         '🌐 Global Market Overview</div>'
+        '<div style="font-size:1.05rem;color:#8ba3c7;margin-bottom:6px">'
+        'Advisory intelligence for portfolio decisions.</div>'
         f'<div style="font-size:0.82rem;color:#4b6080;margin-bottom:16px">'
         f'{CURRENT_VERSION} · Live signals · India · USA · Europe · Asia · Commodities</div>',
         unsafe_allow_html=True,
