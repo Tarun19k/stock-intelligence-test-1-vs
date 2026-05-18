@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monetization Command Center — @thefinancialcoacher</title>
+<style>
+  :root {
+    --bg:       #0d1b2a;
+    --surface:  #112233;
+    --surface2: #1a2f44;
+    --border:   #1e3a52;
+    --accent:   #4fc3f7;
+    --accent2:  #81d4fa;
+    --text:     #c8d6f0;
+    --muted:    #4b6080;
+    --green:    #4caf7d;
+    --green-bg: #0d2e1e;
+    --red:      #ef5350;
+    --red-bg:   #2e0d0d;
+    --amber:    #ffb74d;
+    --amber-bg: #2e1e0d;
+    --mono:     'JetBrains Mono', 'Fira Mono', 'Courier New', monospace;
+    --sans:     -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.5; }
+
+  /* ── Header ── */
+  .header { padding: 20px 28px 0; border-bottom: 1px solid var(--border); }
+  .header h1 { font-size: 1.25rem; font-weight: 700; color: var(--accent); letter-spacing: .02em; }
+  .header p  { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 0; padding: 0 28px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .tab-btn {
+    padding: 12px 18px; cursor: pointer; font-size: .82rem; font-weight: 600;
+    color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent;
+    white-space: nowrap; transition: color .15s, border-color .15s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Content ── */
+  .tab-panel { display: none; padding: 24px 28px; }
+  .tab-panel.active { display: block; }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .card-title { font-size: .9rem; font-weight: 700; color: var(--accent2); margin-bottom: 10px; }
+  .card-sub   { font-size: .75rem; color: var(--muted); margin-bottom: 12px; }
+
+  /* ── Badges ── */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .72rem; font-family: var(--mono); font-weight: 600; }
+  .badge-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green); }
+  .badge-red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red); }
+  .badge-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber); }
+  .badge-blue   { background: #0d1e2e;          color: var(--accent); border: 1px solid var(--accent); }
+
+  /* ── Tables ── */
+  .parity-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  .parity-table th {
+    text-align: left; padding: 8px 10px; color: var(--muted); font-size: .72rem;
+    font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .parity-table td { padding: 9px 10px; border-bottom: 1px solid #0f2033; vertical-align: middle; }
+  .parity-table tr:last-child td { border-bottom: none; }
+  .parity-table tr.india-native { background: #0a1f14; }
+  .parity-table tr.stripe-block  { background: #1a0e0e; }
+  .parity-table tr.highlight     { background: #0d1e30; border-left: 2px solid var(--accent); }
+  .platform-name { font-weight: 700; }
+  .platform-name.green { color: var(--green); }
+  .platform-name.red   { color: var(--red); }
+  .platform-name.amber { color: var(--amber); }
+  .platform-name.blue  { color: var(--accent); }
+
+  /* ── Score pills ── */
+  .score { display: inline-block; width: 28px; height: 28px; border-radius: 50%; text-align: center;
+           line-height: 28px; font-family: var(--mono); font-size: .8rem; font-weight: 700; }
+  .score-5 { background: #0d3320; color: #4caf7d; }
+  .score-4 { background: #1a2e0d; color: #8bc34a; }
+  .score-3 { background: #1e2500; color: var(--amber); }
+  .score-2 { background: #2e1800; color: #ff8f00; }
+  .score-1 { background: var(--red-bg); color: var(--red); }
+
+  /* ── Key/Value pairs ── */
+  .kv { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; font-size: .8rem; }
+  .kv .key { color: var(--muted); }
+  .kv .val { color: var(--text); font-family: var(--mono); }
+  .kv .val.green { color: var(--green); }
+  .kv .val.red   { color: var(--red); }
+  .kv .val.amber { color: var(--amber); }
+
+  /* ── Grid layouts ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ── Recommendation boxes ── */
+  .rec-box { border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+  .rec-1 { background: linear-gradient(135deg, #0d2e1e, #0a1f14); border: 1px solid var(--green); }
+  .rec-2 { background: linear-gradient(135deg, #0d1e30, #091829); border: 1px solid var(--accent); }
+  .rec-3 { background: linear-gradient(135deg, #1e1a00, #150f00); border: 1px solid #7c6300; }
+  .rec-rank { font-size: .7rem; font-family: var(--mono); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+  .rec-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .rec-why  { font-size: .78rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── Stack timeline ── */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content:''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-dot  { position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); }
+  .tl-dot.done { background: var(--green); border-color: var(--green); }
+  .tl-day  { font-size: .7rem; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .tl-title{ font-weight: 700; margin: 2px 0; }
+  .tl-tasks{ font-size: .78rem; color: var(--muted); }
+  .tl-tasks li { margin-top: 3px; list-style: disc; margin-left: 16px; }
+
+  /* ── Alert banner ── */
+  .alert { padding: 10px 14px; border-radius: 6px; font-size: .8rem; margin-bottom: 16px; line-height: 1.5; }
+  .alert-red   { background: var(--red-bg); border: 1px solid var(--red); color: #ef9a9a; }
+  .alert-green { background: var(--green-bg); border: 1px solid var(--green); color: #a5d6a7; }
+  .alert-amber { background: var(--amber-bg); border: 1px solid var(--amber); color: #ffe082; }
+  .alert-blue  { background: #0d1e2e; border: 1px solid var(--accent); color: var(--accent2); }
+
+  /* ── Mono values ── */
+  .mono { font-family: var(--mono); }
+
+  /* ── Section divider ── */
+  .section-label { font-size: .7rem; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin: 20px 0 10px; }
+
+  /* ── Legend ── */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; font-size: .75rem; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* ── Stack card ── */
+  .stack-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .stack-card .tool { font-weight: 700; color: var(--accent); }
+  .stack-card .use  { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+  .stack-card .fee  { font-family: var(--mono); font-size: .78rem; color: var(--green); margin-top: 4px; }
+
+  /* ── Total score bar ── */
+  .total-bar { display: flex; align-items: center; gap: 8px; }
+  .bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
+  .bar-fill  { height: 100%; border-radius: 2px; transition: width .3s; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Monetization Command Center</h1>
+  <p>@thefinancialcoacher · India creator · 21-day revenue target · Research: 2026-05-18</p>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab(0)">① Summary & Pick</button>
+  <button class="tab-btn" onclick="showTab(1)">② Digital Products</button>
+  <button class="tab-btn" onclick="showTab(2)">③ Course & Community</button>
+  <button class="tab-btn" onclick="showTab(3)">④ India-Native & Newsletter</button>
+  <button class="tab-btn" onclick="showTab(4)">⑤ 21-Day Stack</button>
+</div>
+
+<!-- ──────────────────────────────────────── TAB 1: SUMMARY ──────────────────────────────────────── -->
+<div class="tab-panel active" id="panel-0">
+
+  <div class="alert alert-red">
+    ⚠️ <strong>Stripe India is invite-only (2025–2026).</strong> Self-serve signup unavailable. Requires PAN + GSTIN + compliant website + business verification. New individual creators rarely approved. This blocks monetisation on: Skool, Mighty Networks, Circle.so, Substack paid, Beehiiv paid, Ghost paid, Lemon Squeezy, Stan.store, and Thinkific (on lower plans).
+  </div>
+
+  <div class="alert alert-green">
+    ✅ <strong>UPI is the highest-converting payment method in India</strong> and is <strong>GST-free</strong> (RBI, confirmed April 2025). Only India-native platforms support UPI on the buyer side. This makes SuperProfile + Razorpay the only zero-friction path for Indian buyers.
+  </div>
+
+  <div class="section-label">Top 3 Picks — 21-Day Launch</div>
+  <div class="grid-3">
+    <div class="rec-box rec-1">
+      <div class="rec-rank" style="color:var(--green)">🥇 Primary</div>
+      <div class="rec-name" style="color:var(--green)">SuperProfile</div>
+      <div class="rec-why">Instagram-first, UPI native, instant INR payouts, free tier, set up in hours. Link-in-bio storefront for ebooks, coaching calls, mini-courses.</div>
+    </div>
+    <div class="rec-box rec-2">
+      <div class="rec-rank" style="color:var(--accent)">🥈 Backbone</div>
+      <div class="rec-name" style="color:var(--accent)">Razorpay Payment Pages</div>
+      <div class="rec-why">Lowest fees (2%), Welcome Offer (first ₹5k/mo free), UPI + all Indian payment methods. Use for any direct sale where SuperProfile templates don't fit.</div>
+    </div>
+    <div class="rec-box rec-3">
+      <div class="rec-rank" style="color:var(--amber)">🥉 Courses (Phase 2)</div>
+      <div class="rec-name" style="color:var(--amber)">Teachable Starter</div>
+      <div class="rec-why">Only global course platform with native India payouts (teachable:pay, 47 countries). Start when course content is ready. $29/mo + 7.5% fee.</div>
+    </div>
+  </div>
+
+  <div class="section-label">Full Platform Landscape — Parity Overview</div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green-bg);border:1px solid var(--green)"></div> India-native / UPI supported</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red-bg);border:1px solid var(--red)"></div> Stripe India blocked</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d1e30;border:1px solid var(--accent)"></div> Recommended pick</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber-bg);border:1px solid var(--amber)"></div> Conditional / workaround needed</div>
+  </div>
+
+  <div class="card">
+    <table class="parity-table">
+      <thead>
+        <tr>
+          <th>Platform</th><th>Category</th><th>Monthly Fee</th><th>Txn Fee</th>
+          <th>India Payout</th><th>UPI Buyers</th><th>Free Tier</th>
+          <th style="text-align:center">IN Payout</th>
+          <th style="text-align:center">Launch</th>
+          <th style="text-align:center">Fees</th>
+          <th style="text-align:center">Breadth</th>
+          <th style="text-align:center">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- India-native: green rows -->
+        <tr class="india-native highlight">
+          <td><span class="platform-name green">SuperProfile</span></td>
+          <td><span class="badge badge-green">India-native</span></td>
+          <td class="mono">₹0 / ₹833/mo</td>
+          <td class="mono">0%*+gw</td>
+          <td><span class="badge badge-green">✓ Instant INR</span></td>
+          <td><span class="badge badge-green">✓ UPI</span></td>
+          <td><span class="badge badge-green">✓</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:90%;background:var(--green)"></div></div><span class="mono" style="font-size:.75rem;color:var(--green)">18/20</span></div></td>
+        </tr>
+        <tr class="india-native highlight">
+          <td><span class="platform-name green">Razorpay Pages</span></td>
+          <td><span class="badge badge-green">India-native</span></td>
+          <td class="mono">₹0</td>
+          <td class="mono">2%+GST</td>
+          <td><span class="badge badge-green">✓ T+2 INR</span></td>
+          <td><span class="badge badge-green">✓ UPI</span></td>
+          <td><span class="badge badge-green">✓ ₹5k free</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-1">1</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--green)"></div></div><span class="mono" style="font-size:.75rem;color:var(--green)">16/20</span></div></td>
+        </tr>
+        <tr class="india-native">
+          <td><span class="platform-name green">Payhip</span></td>
+          <td><span class="badge badge-green">India-native*</span></td>
+          <td class="mono">$0/$29/$99</td>
+          <td class="mono">5%/2%/0%</td>
+          <td><span class="badge badge-green">✓ via Razorpay</span></td>
+          <td><span class="badge badge-green">✓ UPI</span></td>
+          <td><span class="badge badge-green">✓ 5% fee</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:90%;background:var(--green)"></div></div><span class="mono" style="font-size:.75rem;color:var(--green)">18/20</span></div></td>
+        </tr>
+        <tr class="india-native">
+          <td><span class="platform-name green">Instamojo</span></td>
+          <td><span class="badge badge-green">India-native</span></td>
+          <td class="mono">₹0</td>
+          <td class="mono">5%+₹3</td>
+          <td><span class="badge badge-green">✓ INR T+3</span></td>
+          <td><span class="badge badge-green">✓ UPI</span></td>
+          <td><span class="badge badge-green">✓</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-2">2</span></td>
+          <td style="text-align:center"><span class="score score-2">2</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:70%;background:var(--green)"></div></div><span class="mono" style="font-size:.75rem;color:var(--green)">14/20</span></div></td>
+        </tr>
+        <tr class="india-native">
+          <td><span class="platform-name green">Cashfree</span></td>
+          <td><span class="badge badge-green">India-native</span></td>
+          <td class="mono">₹0</td>
+          <td class="mono">1.95%</td>
+          <td><span class="badge badge-green">✓ T+0/1/2</span></td>
+          <td><span class="badge badge-green">✓ UPI free</span></td>
+          <td><span class="badge badge-green">✓</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-1">1</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--green)"></div></div><span class="mono" style="font-size:.75rem;color:var(--green)">16/20</span></div></td>
+        </tr>
+
+        <!-- Conditional / amber rows -->
+        <tr>
+          <td><span class="platform-name blue">Gumroad</span></td>
+          <td><span class="badge badge-blue">Global</span></td>
+          <td class="mono">$0</td>
+          <td class="mono">10%+$0.50</td>
+          <td><span class="badge badge-green">✓ INR bank</span></td>
+          <td><span class="badge badge-red">✗ No UPI</span></td>
+          <td><span class="badge badge-green">✓ 10% fee</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-2">2</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--accent)"></div></div><span class="mono" style="font-size:.75rem;color:var(--accent)">15/20</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="platform-name amber">Teachable</span></td>
+          <td><span class="badge badge-amber">Conditional</span></td>
+          <td class="mono">$29/mo</td>
+          <td class="mono">7.5%</td>
+          <td><span class="badge badge-green">✓ teachable:pay</span></td>
+          <td><span class="badge badge-red">✗ No UPI</span></td>
+          <td><span class="badge badge-red">✗ Trial only</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td style="text-align:center"><span class="score score-3">3</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--amber)"></div></div><span class="mono" style="font-size:.75rem;color:var(--amber)">15/20</span></div></td>
+        </tr>
+        <tr>
+          <td><span class="platform-name amber">Beacons.ai</span></td>
+          <td><span class="badge badge-amber">Conditional</span></td>
+          <td class="mono">$0/$10/$30</td>
+          <td class="mono">9%/0%</td>
+          <td><span class="badge badge-amber">⚠ Stripe India</span></td>
+          <td><span class="badge badge-red">✗ No UPI</span></td>
+          <td><span class="badge badge-green">✓ 9% fee</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td style="text-align:center"><span class="score score-3">3</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--amber)"></div></div><span class="mono" style="font-size:.75rem;color:var(--amber)">16/20*</span></div></td>
+        </tr>
+
+        <!-- Stripe-blocked: red rows -->
+        <tr class="stripe-block">
+          <td><span class="platform-name red">Skool</span></td>
+          <td><span class="badge badge-red">Stripe blocked</span></td>
+          <td class="mono">$9/$99/mo</td>
+          <td class="mono">10%/2.9%</td>
+          <td><span class="badge badge-red">✗ Not India</span></td>
+          <td><span class="badge badge-red">✗</span></td>
+          <td><span class="badge badge-red">✗ Trial only</span></td>
+          <td style="text-align:center"><span class="score score-1">1</span></td>
+          <td style="text-align:center"><span class="score score-2">2</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td style="text-align:center"><span class="score score-4">4</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--red)"></div></div><span class="mono" style="font-size:.75rem;color:var(--red)">11/20</span></div></td>
+        </tr>
+        <tr class="stripe-block">
+          <td><span class="platform-name red">Lemon Squeezy</span></td>
+          <td><span class="badge badge-red">Stripe blocked</span></td>
+          <td class="mono">$0</td>
+          <td class="mono">5%+$0.50</td>
+          <td><span class="badge badge-red">✗ PayPal only</span></td>
+          <td><span class="badge badge-red">✗</span></td>
+          <td><span class="badge badge-green">✓ 5% fee</span></td>
+          <td style="text-align:center"><span class="score score-2">2</span></td>
+          <td style="text-align:center"><span class="score score-3">3</span></td>
+          <td style="text-align:center"><span class="score score-3">3</span></td>
+          <td style="text-align:center"><span class="score score-3">3</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--red)"></div></div><span class="mono" style="font-size:.75rem;color:var(--red)">11/20</span></div></td>
+        </tr>
+        <tr class="stripe-block">
+          <td><span class="platform-name red">Substack</span></td>
+          <td><span class="badge badge-red">Stripe blocked</span></td>
+          <td class="mono">$0</td>
+          <td class="mono">10%+Stripe</td>
+          <td><span class="badge badge-red">✗ India blocked</span></td>
+          <td><span class="badge badge-red">✗</span></td>
+          <td><span class="badge badge-amber">✓ free only</span></td>
+          <td style="text-align:center"><span class="score score-1">1</span></td>
+          <td style="text-align:center"><span class="score score-1">1</span></td>
+          <td style="text-align:center"><span class="score score-2">2</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--red)"></div></div><span class="mono" style="font-size:.75rem;color:var(--red)">9/20</span></div></td>
+        </tr>
+        <tr class="stripe-block">
+          <td><span class="platform-name red">Kajabi</span></td>
+          <td><span class="badge badge-red">Stripe blocked</span></td>
+          <td class="mono">$71–399/mo</td>
+          <td class="mono">2.9%</td>
+          <td><span class="badge badge-red">✗ No India pay</span></td>
+          <td><span class="badge badge-red">✗</span></td>
+          <td><span class="badge badge-red">✗</span></td>
+          <td style="text-align:center"><span class="score score-2">2</span></td>
+          <td style="text-align:center"><span class="score score-3">3</span></td>
+          <td style="text-align:center"><span class="score score-1">1</span></td>
+          <td style="text-align:center"><span class="score score-5">5</span></td>
+          <td><div class="total-bar"><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--red)"></div></div><span class="mono" style="font-size:.75rem;color:var(--red)">11/20</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:.72rem;color:var(--muted)">Scores: India Payout (5) · Launch Ease (5) · Fee Efficiency at &lt;$500/mo (5) · Breadth (5) · Total /20. *Beacons conditional on Stripe India invite.</div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── TAB 2: DIGITAL PRODUCTS ──────────────────────────────────────── -->
+<div class="tab-panel" id="panel-1">
+  <div class="section-label">Digital Products Platforms — Detailed Parity</div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green-bg);border:1px solid var(--green)"></div> India-native / UPI</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red-bg);border:1px solid var(--red)"></div> Stripe India blocked</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber-bg);border:1px solid var(--amber)"></div> Conditional</div>
+  </div>
+
+  <table class="parity-table" style="margin-bottom:20px">
+    <thead>
+      <tr>
+        <th>Platform</th><th>Monthly Fee</th><th>Txn Fee (all-in)</th>
+        <th>INR Payout</th><th>UPI Buyers</th><th>Free Tier</th>
+        <th>Products</th><th>Email List</th><th>Affiliate</th>
+        <th>Setup Time</th>
+        <th style="text-align:center">IN Pay</th><th style="text-align:center">Launch</th>
+        <th style="text-align:center">Fees</th><th style="text-align:center">Breadth</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="india-native">
+        <td><span class="platform-name green">Payhip</span> <span style="font-size:.7rem;color:var(--muted)">★ Top pick</span></td>
+        <td class="mono">$0 / $29 / $99</td>
+        <td class="mono">5%+Stripe / 2% / 0%</td>
+        <td><span class="badge badge-green">✓ Razorpay INR</span></td>
+        <td><span class="badge badge-green">✓ Full UPI stack</span></td>
+        <td><span class="badge badge-green">✓ Unlimited prods</span></td>
+        <td style="font-size:.75rem">Ebooks, courses, memberships, coaching, templates, physical</td>
+        <td><span class="badge badge-green">✓ Built-in</span></td>
+        <td><span class="badge badge-green">✓ All tiers</span></td>
+        <td class="mono">1–2h</td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+      </tr>
+      <tr>
+        <td><span class="platform-name blue">Gumroad</span></td>
+        <td class="mono">$0</td>
+        <td class="mono">10%+$0.50+Stripe</td>
+        <td><span class="badge badge-green">✓ INR bank (Aug 2024)</span></td>
+        <td><span class="badge badge-red">✗ Cards only</span></td>
+        <td><span class="badge badge-green">✓ Unlimited</span></td>
+        <td style="font-size:.75rem">Ebooks, courses, memberships, subscriptions, commissions</td>
+        <td><span class="badge badge-green">✓ Buyer emails</span></td>
+        <td><span class="badge badge-green">✓ Built-in</span></td>
+        <td class="mono">&lt;1h fastest</td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+      </tr>
+      <tr>
+        <td><span class="platform-name amber">Beacons.ai</span></td>
+        <td class="mono">$0 / $10 / $30</td>
+        <td class="mono">9%+Stripe / 0%+Stripe</td>
+        <td><span class="badge badge-amber">⚠ Stripe India req.</span></td>
+        <td><span class="badge badge-red">✗ No UPI</span></td>
+        <td><span class="badge badge-green">✓ 9% fee</span></td>
+        <td style="font-size:.75rem">Downloads, courses, coaching, subscriptions, tips, invoices</td>
+        <td><span class="badge badge-green">✓ + email mktg</span></td>
+        <td><span class="badge badge-green">✓ Paid tiers</span></td>
+        <td class="mono">1–2h</td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+      </tr>
+      <tr>
+        <td><span class="platform-name amber">Whop</span></td>
+        <td class="mono">$0</td>
+        <td class="mono">~5.7–7%+$2.50/payout</td>
+        <td><span class="badge badge-amber">⚠ USD, India listed</span></td>
+        <td><span class="badge badge-red">✗ No UPI</span></td>
+        <td><span class="badge badge-green">✓ 3% fee</span></td>
+        <td style="font-size:.75rem">Community, courses, signals, newsletters, software, ebooks</td>
+        <td><span class="badge badge-green">✓ Buyer DB</span></td>
+        <td><span class="badge badge-green">✓ 30% default</span></td>
+        <td class="mono">3–6h</td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Stan.store</span></td>
+        <td class="mono">$29 / $99/mo</td>
+        <td class="mono">0%+Stripe (2.9%+$0.30)</td>
+        <td><span class="badge badge-red">✗ India excluded</span></td>
+        <td><span class="badge badge-red">✗ No UPI</span></td>
+        <td><span class="badge badge-red">✗ Trial only</span></td>
+        <td style="font-size:.75rem">Downloads, courses, memberships, coaching, bookings, community</td>
+        <td><span class="badge badge-green">✓ Pro only</span></td>
+        <td><span class="badge badge-green">✓ Pro only</span></td>
+        <td class="mono">1–2h</td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Lemon Squeezy</span></td>
+        <td class="mono">$0</td>
+        <td class="mono">5%+$0.50+vary</td>
+        <td><span class="badge badge-red">✗ Stripe blocked</span></td>
+        <td><span class="badge badge-red">✗ No UPI</span></td>
+        <td><span class="badge badge-green">✓ 5% fee</span></td>
+        <td style="font-size:.75rem">Ebooks, SaaS licenses, subscriptions, basic courses</td>
+        <td><span class="badge badge-green">✓ Basic email</span></td>
+        <td><span class="badge badge-green">✓ Built-in</span></td>
+        <td class="mono">2–4h</td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-blue">
+    💡 <strong>Payhip + Razorpay gateway</strong> is the only combination that gives Indian buyers UPI checkout AND gives Tarun direct INR bank payouts with no monthly fee. First-choice for 21-day launch.
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── TAB 3: COURSE & COMMUNITY ──────────────────────────────────────── -->
+<div class="tab-panel" id="panel-2">
+  <div class="section-label">Course & Community Platforms — Detailed Parity</div>
+  <div class="alert alert-red">
+    ⚠️ 5 of 7 platforms here require Stripe India for creator payouts. Stripe India is invite-only for new accounts (2025–2026). Only Teachable has a native workaround via teachable:pay.
+  </div>
+
+  <table class="parity-table">
+    <thead>
+      <tr>
+        <th>Platform</th><th>Monthly Fee</th><th>Txn Fee</th>
+        <th>India Payout</th><th>Community</th><th>Course Features</th>
+        <th>Free Tier</th><th>Mobile App</th>
+        <th style="text-align:center">IN Pay</th><th style="text-align:center">Launch</th>
+        <th style="text-align:center">Fees</th><th style="text-align:center">Breadth</th><th style="text-align:center">Free</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td><span class="platform-name amber">Teachable</span> <span style="font-size:.7rem;color:var(--muted)">★ Best India</span></td>
+        <td class="mono">$29/mo (Starter)</td>
+        <td class="mono">7.5%+Stripe</td>
+        <td><span class="badge badge-green">✓ teachable:pay</span></td>
+        <td style="font-size:.75rem">Basic (under lessons only, no DMs)</td>
+        <td style="font-size:.75rem">Video, quizzes, certs, drip, coaching</td>
+        <td><span class="badge badge-red">✗ Trial only</span></td>
+        <td><span class="badge badge-green">✓ Student app</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Skool</span></td>
+        <td class="mono">$9 / $99/mo</td>
+        <td class="mono">10% / 2.9%</td>
+        <td><span class="badge badge-red">✗ Not India</span></td>
+        <td style="font-size:.75rem">Best-in-class: feed, DMs, events, gamification</td>
+        <td style="font-size:.75rem">Unlimited native video, no certs/quizzes</td>
+        <td><span class="badge badge-red">✗ Trial only</span></td>
+        <td><span class="badge badge-green">✓ iOS + Android</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Thinkific</span></td>
+        <td class="mono">$36–149/mo</td>
+        <td class="mono">5%→0% + Stripe</td>
+        <td><span class="badge badge-amber">⚠ Grow plan ($149)</span></td>
+        <td style="font-size:.75rem">Spaces, cohorts, live lessons</td>
+        <td style="font-size:.75rem">Full: video, quizzes, assignments, certs, drip</td>
+        <td><span class="badge badge-red">✗ Trial only</span></td>
+        <td><span class="badge badge-green">✓ Thinkific Mobile</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Kajabi</span></td>
+        <td class="mono">$71–399/mo</td>
+        <td class="mono">2.9%+$0.30</td>
+        <td><span class="badge badge-red">✗ No India pay</span></td>
+        <td style="font-size:.75rem">Revamped communities, challenges, leaderboards</td>
+        <td style="font-size:.75rem">Full: video, quizzes, certs, AI tools, podcasts</td>
+        <td><span class="badge badge-red">✗ None</span></td>
+        <td><span class="badge badge-green">✓ Kajabi app</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Podia</span></td>
+        <td class="mono">$33 / $75/mo</td>
+        <td class="mono">5%+Stripe / 0%+Stripe</td>
+        <td><span class="badge badge-amber">⚠ PayPal (Shaker)</span></td>
+        <td style="font-size:.75rem">Topics, posts, comments — no DMs, no live</td>
+        <td style="font-size:.75rem">Video, basic quizzes, drip; no certs on Mover</td>
+        <td><span class="badge badge-red">✗ Trial only</span></td>
+        <td><span class="badge badge-red">✗ Web-only</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Circle.so</span></td>
+        <td class="mono">$89–419/mo</td>
+        <td class="mono">4%→0.5%+Stripe</td>
+        <td><span class="badge badge-red">✗ Own Stripe req.</span></td>
+        <td style="font-size:.75rem">Best: spaces, DMs, live rooms, events, paywalls</td>
+        <td style="font-size:.75rem">Modular courses — decent, not Thinkific-level</td>
+        <td><span class="badge badge-red">✗ Trial only</span></td>
+        <td><span class="badge badge-green">✓ Community app</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Mighty Networks</span></td>
+        <td class="mono">$79–354/mo</td>
+        <td class="mono">2%→0.5%+Stripe</td>
+        <td><span class="badge badge-red">✗ India restricted</span></td>
+        <td style="font-size:.75rem">Excellent: spaces, AI matchmaking, cohorts, challenges</td>
+        <td style="font-size:.75rem">Native, drip, quizzes (limited), certs</td>
+        <td><span class="badge badge-amber">⚠ Post-trial limited</span></td>
+        <td><span class="badge badge-amber">⚠ Branded (Scale+)</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-amber" style="margin-top:16px">
+    ⚡ <strong>Strategy:</strong> Use <strong>Teachable Starter ($29/mo)</strong> for courses + coaching once content is ready. For community, defer all options until Stripe India is obtained — or use SuperProfile's built-in community features as a lower-cost alternative.
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── TAB 4: INDIA-NATIVE & NEWSLETTER ──────────────────────────────────────── -->
+<div class="tab-panel" id="panel-3">
+  <div class="section-label">India-Native Platforms</div>
+
+  <table class="parity-table" style="margin-bottom:24px">
+    <thead>
+      <tr>
+        <th>Platform</th><th>Monthly Fee</th><th>Txn Fee</th>
+        <th>INR Payout</th><th>UPI Buyers</th><th>GST Handling</th>
+        <th>Products</th><th>Setup Time</th>
+        <th style="text-align:center">IN Pay</th><th style="text-align:center">Launch</th>
+        <th style="text-align:center">Fees</th><th style="text-align:center">Audience</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="india-native highlight">
+        <td><span class="platform-name green">SuperProfile</span> <span style="font-size:.7rem;color:var(--muted)">★ Top pick</span></td>
+        <td class="mono">₹0 / ₹9,999/yr</td>
+        <td class="mono">0%* + gateway</td>
+        <td><span class="badge badge-green">✓ Instant INR</span></td>
+        <td><span class="badge badge-green">✓ Full UPI</span></td>
+        <td style="font-size:.75rem">Creator responsible; GST on fees auto</td>
+        <td style="font-size:.75rem">Ebooks, 1:1 calls, memberships, courses, events, webinars</td>
+        <td class="mono">Hours</td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+      </tr>
+      <tr class="india-native highlight">
+        <td><span class="platform-name green">Razorpay Pages</span> <span style="font-size:.7rem;color:var(--muted)">★ Backbone</span></td>
+        <td class="mono">₹0</td>
+        <td class="mono">2%+GST</td>
+        <td><span class="badge badge-green">✓ T+2 INR auto</span></td>
+        <td><span class="badge badge-green">✓ UPI+cards+NB</span></td>
+        <td style="font-size:.75rem">18% GST on Razorpay fee; your sales: manual</td>
+        <td style="font-size:.75rem">Any digital product via hosted page; no storefront template</td>
+        <td class="mono">1–2 days (KYC)</td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="india-native">
+        <td><span class="platform-name green">Cashfree</span></td>
+        <td class="mono">₹0</td>
+        <td class="mono">1.95% / UPI free</td>
+        <td><span class="badge badge-green">✓ T+0/1/2 INR</span></td>
+        <td><span class="badge badge-green">✓ UPI (free)</span></td>
+        <td style="font-size:.75rem">18% GST on fee; UPI confirmed GST-free (Apr 2025)</td>
+        <td style="font-size:.75rem">Payment links, subscriptions, hosted checkout — no storefront</td>
+        <td class="mono">1–2 days (KYC)</td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+      </tr>
+      <tr class="india-native">
+        <td><span class="platform-name green">Instamojo</span></td>
+        <td class="mono">₹0 / ₹6,999/yr</td>
+        <td class="mono">5%+₹3 / 2%+₹3</td>
+        <td><span class="badge badge-green">✓ T+3 INR</span></td>
+        <td><span class="badge badge-green">✓ UPI</span></td>
+        <td style="font-size:.75rem">Auto on fees; creator handles own GST</td>
+        <td style="font-size:.75rem">PDFs, ebooks, courses, music, physical goods, payment links</td>
+        <td class="mono">2–4h</td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+      </tr>
+      <tr>
+        <td><span class="platform-name red">Graphy</span></td>
+        <td class="mono">₹1,999–8,400/mo</td>
+        <td class="mono">10%→5%</td>
+        <td><span class="badge badge-green">✓ INR weekly</span></td>
+        <td><span class="badge badge-green">✓ Full UPI</span></td>
+        <td style="font-size:.75rem">18% GST on subscription; creator handles sales GST</td>
+        <td style="font-size:.75rem">Courses, memberships, live classes, communities, DRM video</td>
+        <td class="mono">3–7 days</td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+        <td style="text-align:center"><span class="score score-4">4</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-label">Newsletter & Subscription Platforms</div>
+  <div class="alert alert-red">
+    ⚠️ All three newsletter platforms route monetisation through Stripe. Stripe India is invite-only for new accounts. Indian creators can use the free tier for list-building but cannot accept paid subscriptions without a US LLC workaround.
+  </div>
+
+  <table class="parity-table">
+    <thead>
+      <tr>
+        <th>Platform</th><th>Free Tier</th><th>Paid Tier Fee</th>
+        <th>India Paid</th><th>Audience Building</th><th>Analytics</th>
+        <th>Products Beyond Newsletter</th><th>Setup Time</th>
+        <th style="text-align:center">IN Pay (paid)</th>
+        <th style="text-align:center">Audience</th>
+        <th style="text-align:center">Fees</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="platform-name green">Beehiiv</span> <span style="font-size:.7rem;color:var(--muted)">(free only)</span></td>
+        <td class="mono">Up to 2,500 subs</td>
+        <td class="mono">$49/mo Scale; 0%+Stripe</td>
+        <td><span class="badge badge-red">✗ Stripe blocked</span></td>
+        <td style="font-size:.75rem">Best: segmentation, automations, referral, polls, surveys</td>
+        <td style="font-size:.75rem">Strong on Scale+</td>
+        <td style="font-size:.75rem">Ad marketplace (Boosts), digital products</td>
+        <td class="mono">Hours</td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-3">3</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Substack</span></td>
+        <td class="mono">Unlimited free posts</td>
+        <td class="mono">10%+Stripe 2.9%</td>
+        <td><span class="badge badge-red">✗ India blocked</span></td>
+        <td style="font-size:.75rem">Good: network, recommendations engine, clean discovery</td>
+        <td style="font-size:.75rem">Solid (opens, paid conversion, growth)</td>
+        <td style="font-size:.75rem">Podcasts, threads, chat — no digital products</td>
+        <td class="mono">Minutes</td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+      </tr>
+      <tr class="stripe-block">
+        <td><span class="platform-name red">Ghost</span></td>
+        <td class="mono">$9/mo hosted / Free self-hosted</td>
+        <td class="mono">0%+Stripe 2.9%</td>
+        <td><span class="badge badge-red">✗ Stripe blocked</span></td>
+        <td style="font-size:.75rem">Good: member CRM, tags, segments, email owned</td>
+        <td style="font-size:.75rem">Solid</td>
+        <td style="font-size:.75rem">Memberships, tiered access, basic courses</td>
+        <td class="mono">1 day / 2–5 days (self-hosted)</td>
+        <td style="text-align:center"><span class="score score-1">1</span></td>
+        <td style="text-align:center"><span class="score score-5">5</span></td>
+        <td style="text-align:center"><span class="score score-2">2</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-blue" style="margin-top:16px">
+    💡 <strong>Newsletter strategy:</strong> Use <strong>Beehiiv free tier</strong> (up to 2,500 subs) for list-building. Drive paid conversions off the newsletter into <strong>SuperProfile + Razorpay</strong>. This sidesteps the Stripe India gap entirely. Do NOT try to monetise via Substack or Beehiiv paid until a Delaware LLC or Stripe India invite is obtained.
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── TAB 5: 21-DAY STACK ──────────────────────────────────────── -->
+<div class="tab-panel" id="panel-4">
+  <div class="grid-2">
+    <div>
+      <div class="section-label">Recommended Stack — Zero Fixed Cost at Launch</div>
+      <div class="grid-2" style="margin-bottom:20px">
+        <div class="stack-card">
+          <div class="tool">SuperProfile</div>
+          <div class="use">Link-in-bio storefront · Ebooks · Coaching calls · Mini-courses</div>
+          <div class="fee">₹0/mo · 0%* + gateway (2%) · UPI native · Instant INR</div>
+        </div>
+        <div class="stack-card">
+          <div class="tool">Razorpay Payment Pages</div>
+          <div class="use">Direct payment backbone · One-off sales · Consulting fees</div>
+          <div class="fee">₹0/mo · 2%+GST · Welcome Offer: first ₹5k/mo FREE · T+2 INR</div>
+        </div>
+        <div class="stack-card">
+          <div class="tool">LinkDM (Free)</div>
+          <div class="use">Comment-to-DM automation · Lead capture · Auto-replies</div>
+          <div class="fee">₹0 · 1,000 DMs/month free · Upgrade ManyChat Pro at 500 DMs/mo</div>
+        </div>
+        <div class="stack-card">
+          <div class="tool">Beehiiv (Launch)</div>
+          <div class="use">Email list building only · Do not monetise via Beehiiv</div>
+          <div class="fee">₹0 · Up to 2,500 subscribers · Full publishing features</div>
+        </div>
+        <div class="stack-card">
+          <div class="tool">Payhip (Free)</div>
+          <div class="use">Global reach fallback · International buyers · Ebooks with UPI via Razorpay gateway</div>
+          <div class="fee">₹0/mo · 5% fee · Razorpay integration = UPI checkout</div>
+        </div>
+        <div class="stack-card" style="border-color:var(--amber)">
+          <div class="tool" style="color:var(--amber)">Teachable Starter</div>
+          <div class="use">Phase 2 only: structured courses with certificates + India payouts</div>
+          <div class="fee">$29/mo + 7.5% · Only when course content is built</div>
+        </div>
+      </div>
+
+      <div class="section-label">Monthly Cost Projection</div>
+      <div class="card">
+        <table style="width:100%;font-size:.8rem;font-family:var(--mono)">
+          <tr><td style="color:var(--muted)">Platform fixed costs</td><td style="color:var(--green)">₹0/month</td></tr>
+          <tr><td style="color:var(--muted)">Razorpay (5 sales × ₹499, 2%)</td><td>₹50</td></tr>
+          <tr><td style="color:var(--muted)">Payhip (5 intl sales, 5%)</td><td>~₹125</td></tr>
+          <tr><td style="color:var(--muted)">LinkDM upgrade (month 2+)</td><td>~₹1,600</td></tr>
+          <tr style="border-top:1px solid var(--border)">
+            <td style="color:var(--text);font-weight:700;padding-top:8px">Total infra (month 1)</td>
+            <td style="color:var(--green);font-weight:700;padding-top:8px">~₹175</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">21-Day Launch Timeline</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot done"></div>
+          <div class="tl-day">Days 1–3 · Foundation</div>
+          <div class="tl-title">Infrastructure Setup</div>
+          <ul class="tl-tasks">
+            <li>@thefinancialcoacher account · bio (Version A) · highlights</li>
+            <li>SuperProfile account + product pages (guide PDF + consulting slot)</li>
+            <li>Razorpay KYC (PAN + bank · 1–2 business days)</li>
+            <li>LinkDM Free · configure GUIDE keyword trigger</li>
+            <li>Beehiiv Launch plan · subscribe form in SuperProfile</li>
+            <li>1-page lead magnet PDF in Canva ("5 Things Every Indian Investor Must Know")</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-day">Days 4–7 · Content Launch</div>
+          <div class="tl-title">First Posts Live</div>
+          <ul class="tl-tasks">
+            <li>3 Reels: Basics → Mindset → Tools (pillar rotation)</li>
+            <li>1 carousel: Budgeting — Pillar 2</li>
+            <li>Behind the Build Reel #1: why this account exists</li>
+            <li>Daily stories: market observation (AM) + engagement poll (PM)</li>
+            <li>DM 5 warm-network contacts: "launching financial coaching — interested?"</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-day">Days 8–14 · Funnel Activation</div>
+          <div class="tl-title">First DM-Trigger Reel · Discovery Calls</div>
+          <ul class="tl-tasks">
+            <li>First DM-trigger Reel ("Comment GUIDE for the free checklist")</li>
+            <li>Monitor DMs · respond personally within 4 hours</li>
+            <li>Book 2–3 discovery calls from DM leads (free — relationship-first)</li>
+            <li>Pillar 4 carousel with GSI Dashboard screenshot reference</li>
+            <li>Cross-promote once on @tarunkochhar story</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-day">Days 15–21 · Revenue Activation</div>
+          <div class="tl-title">First Paid Transactions</div>
+          <ul class="tl-tasks">
+            <li>Offer consulting package to qualifying leads (₹500–1,500/session)</li>
+            <li>Launch first paid product on SuperProfile (ebook ₹299–499)</li>
+            <li>Embed Zerodha/Groww affiliate links in 2 Reels</li>
+            <li>Offer GSI Dashboard beta access to 3–5 consulting leads (waitlist capture)</li>
+            <li>Week 3 Sunday: revenue tally · update Google Sheets</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-label">Revenue Stream Targets — Day 21</div>
+      <div class="card">
+        <table style="width:100%;font-size:.8rem">
+          <thead><tr><th style="text-align:left;color:var(--muted);padding:4px 8px;font-weight:600;font-size:.72rem">Stream</th><th style="text-align:right;color:var(--muted);padding:4px 8px;font-weight:600;font-size:.72rem">Target</th><th style="text-align:right;color:var(--muted);padding:4px 8px;font-weight:600;font-size:.72rem">Realistic Day-21 Min</th></tr></thead>
+          <tbody>
+            <tr><td style="padding:6px 8px">Consulting sessions (warm network)</td><td style="text-align:right;font-family:var(--mono)">3 × ₹1,000</td><td style="text-align:right;font-family:var(--mono);color:var(--green)">₹3,000</td></tr>
+            <tr><td style="padding:6px 8px">Ebook sales (SuperProfile)</td><td style="text-align:right;font-family:var(--mono)">5 × ₹399</td><td style="text-align:right;font-family:var(--mono);color:var(--green)">₹1,995</td></tr>
+            <tr><td style="padding:6px 8px">Affiliate commissions</td><td style="text-align:right;font-family:var(--mono)">2 × ₹400</td><td style="text-align:right;font-family:var(--mono);color:var(--green)">₹800</td></tr>
+            <tr style="border-top:1px solid var(--border)"><td style="padding:6px 8px;font-weight:700">Day 21 Total</td><td></td><td style="text-align:right;font-family:var(--mono);color:var(--green);font-weight:700;font-size:1rem">₹5,795</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(idx) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i === idx));
+}
+</script>
+</body>
+</html>
