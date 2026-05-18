@@ -10,7 +10,7 @@ except ImportError:
 from config import CURRENT_VERSION, MARKET_SESSIONS, CURRENCY, GROUPS
 from styles import inject_css
 from utils import init_session_state, render_error_log
-from market_data import get_price_data, get_ticker_info
+from market_data import get_price_data, get_ticker_info, get_rate_limit_state
 from pages.home import render_homepage, render_ticker_bar
 from pages.dashboard import render_dashboard
 from pages.global_intelligence import render_global_intelligence
@@ -62,6 +62,16 @@ def _on_market_change():
 
 # ── Global ticker bar ────────────────────────────────────────────────────────
 render_ticker_bar(cb=st.session_state.get("cb", 0))
+
+# ── Rate-limit notice (ASSESS-P1-01) ─────────────────────────────────────────
+_rl = get_rate_limit_state()
+if _rl["in_cooldown"]:
+    _secs = int(_rl["seconds_remaining"])
+    st.info(
+        f"Market data temporarily unavailable — retrying in {_secs}s. "
+        "Showing cached data where available.",
+        icon="⏳",
+    )
 
 # ── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
