@@ -205,6 +205,17 @@ with st.sidebar:
     st.divider()
     render_error_log()
 
+    st.divider()
+    st.markdown(
+        """
+        ⚠️ **Disclaimer:** This platform is for educational and informational purposes only.
+        It does not constitute investment advice, and the creator is not a SEBI-registered
+        investment advisor. Do not make investment decisions based solely on this content.
+        Please consult a SEBI-registered advisor for personalised investment guidance.
+        """,
+        unsafe_allow_html=False,
+    )
+
 cb = st.session_state.cb
 st.session_state.market_open = market_open  # fragment reads this
 
