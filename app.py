@@ -14,6 +14,7 @@ from market_data import get_price_data, get_ticker_info, get_rate_limit_state
 from pages.home import render_homepage, render_ticker_bar
 from pages.dashboard import render_dashboard
 from pages.global_intelligence import render_global_intelligence
+from pages.council_review import render_council_review
 from pages.week_summary import (render_week_summary, render_market_overview,
                                   render_group_overview)
 
@@ -175,7 +176,7 @@ with st.sidebar:
 
     nav = st.radio(
         "Navigate",
-        ["🏠 Home", "📊 Dashboard", "🌍 Global Intelligence"],
+        ["🏠 Home", "📊 Dashboard", "🌍 Global Intelligence", "🏛️ Council Review"],
         key="nav_page",
         label_visibility="collapsed",
     )
@@ -298,6 +299,9 @@ elif nav == "📊 Dashboard":
 elif nav == "🌍 Global Intelligence":
     render_global_intelligence(cur_sym=cur_sym, cb=cb, market_open=market_open,
                                selected_market=country)
+
+elif nav == "🏛️ Council Review":
+    render_council_review(cur_sym=cur_sym, cb=cb)
 
 if _ANALYTICS_ENABLED:
     streamlit_analytics.stop_tracking()
