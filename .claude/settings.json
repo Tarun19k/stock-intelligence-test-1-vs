@@ -76,13 +76,24 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/.claude/scripts/context-saver-trigger-writer.py"
+          }
+        ]
+      }
     ]
   },
   "model": "claude-sonnet-4-6",
   "notes": [
-    "deny pip/uv installs — dependency changes must be deliberate and reviewed",
-    "deny rm — file deletion must be intentional, not accidental",
-    "deny curl/wget — no unreviewed external fetches",
-    "deny streamlit run — app should be run manually by developer, not by Claude"
+    "deny pip/uv installs \u2014 dependency changes must be deliberate and reviewed",
+    "deny rm \u2014 file deletion must be intentional, not accidental",
+    "deny curl/wget \u2014 no unreviewed external fetches",
+    "deny streamlit run \u2014 app should be run manually by developer, not by Claude"
   ]
 }
