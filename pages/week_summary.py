@@ -269,6 +269,8 @@ def render_week_summary(cur_sym: str = "₹", cb: int = 0):
         unsafe_allow_html=True,
     )
 
+    st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
+
     # ── Section 1: Global pulse ───────────────────────────────────
     _index_perf_row(cb)
     st.divider()
@@ -403,6 +405,7 @@ def render_market_overview(country: str, groups: dict,
     week_start, _, week_label, is_current = _get_week_range()
     _wk = "This Week" if is_current else "Last Week"
 
+    st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
     # ── Group performance cards ───────────────────────────────────
     st.markdown(f'<p class="section-title">📊 Group Performance — {_wk} <span style="font-size:0.72rem;color:#4b6080;font-weight:400">({week_label})</span></p>',
                 unsafe_allow_html=True)
@@ -595,6 +598,7 @@ def render_group_overview(country: str, group_name: str,
 
       # ── Top 5 gainers / losers ──────────────────────────────────
       st.divider()
+      st.caption("For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.")
       col_g, col_l = st.columns(2)
       with col_g:
           st.markdown('<p class="section-title">🟢 Top Gainers</p>',
