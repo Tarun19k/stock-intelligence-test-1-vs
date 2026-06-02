@@ -84,3 +84,16 @@ reports/
 # Windows
 Thumbs.db
 desktop.ini
+
+# Obsidian vault config (local tool state, not source)
+.obsidian/
+
+# Claude Code worktrees (ephemeral agent sessions)
+.claude/worktrees/
+
+# Claude temp memory exports (ephemeral session artifacts)
+claude-temp-memory/
+# Graphify intermediate/temp files (ephemeral extraction artifacts)
+graphify-out/.graphify_*
+graphify-out/cache/
+graphify-out/manifest.json
