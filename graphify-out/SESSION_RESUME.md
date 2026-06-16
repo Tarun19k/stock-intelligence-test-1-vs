@@ -15,7 +15,7 @@
 
 3. **7-seat full council review** — panel-convene invoked with all financial expert seats (Buffett, Munger, Dalio, Druckenmiller, Marks, Soros, Lynch) + 3 supplementary seats (Financial Planning, Quant Risk, India Regulatory). Verdict: **7 REVISE, 0 REDESIGN, 0 APPROVE**. Do not re-run unless Tarun explicitly requests it.
 
-4. **24-requirement inventory** — complete requirements assessment across 5 categories (Technical, User Goals, Infrastructure, Commercial/Regulatory, Schema Additions). Status mapped for all 24. Do not rebuild — pick up from the table.
+4. **28-requirement inventory** — complete requirements assessment across 5 categories (A1-A10, B1-B4, C1-C6, D1-D4, E1-E4). Status mapped for all 28. Do not rebuild — pick up from the table.
 
 5. **Strategic analysis on requirements** — 6-framework analysis delivered. CONSOLIDATE posture. Do not repeat.
 
@@ -49,6 +49,8 @@ The council (7 financial expert seats) must now answer the 7 pre-build sign-off 
 ## 24 REQUIREMENTS — STATUS SNAPSHOT
 
 **Have (from handover package):** Donor code (indicators.py, portfolio.py, forecast.py, market_data.py), schema SQL 0001+0002, seed files (sources + dependency graph), sweep tools, donor fixtures, synthesis prompts, SPEC.md, ARCHITECTURE.md, BUILD_PLAN.md, GSI_DONOR_AUDIT.md
+
+**28 requirements across 5 categories (A1-A10 Technical, B1-B4 User Goals, C1-C6 Infrastructure, D1-D4 Commercial, E1-E4 Schema).**
 
 **Decisions needed from Tarun (binary — next session):**
 - A1: yfinance vs EODHD
