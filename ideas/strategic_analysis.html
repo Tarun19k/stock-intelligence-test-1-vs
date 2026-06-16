@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSI → Platform · Strategic Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bg: #0b0e18;
+  --surface: #141927;
+  --surface2: #1c2438;
+  --surface3: #232d44;
+  --border: rgba(255,255,255,0.06);
+  --primary: #4f9cf9;
+  --accent: #7c5cfc;
+  --success: #22d3a0;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --glow: rgba(79,156,249,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;line-height:1.6;overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;width:100%;z-index:100;background:rgba(11,14,24,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;}
+.nav-inner{display:flex;align-items:center;gap:2rem;height:56px;max-width:1400px;margin:0 auto;}
+.nav-logo{font-size:.85rem;font-weight:700;color:var(--primary);letter-spacing:.05em;white-space:nowrap;}
+.nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{color:var(--text3);text-decoration:none;font-size:.78rem;font-weight:500;padding:.35rem .8rem;border-radius:6px;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--surface2);}
+.verdict-badge{margin-left:auto;padding:.3rem .9rem;background:linear-gradient(135deg,#f59e0b20,#ef444420);border:1px solid #f59e0b55;border-radius:20px;font-size:.72rem;font-weight:700;color:var(--warning);letter-spacing:.08em;white-space:nowrap;}
+
+/* LAYOUT */
+main{padding-top:56px;max-width:1400px;margin:0 auto;}
+section{padding:4rem 2rem;}
+section:nth-child(even){background:rgba(255,255,255,0.01);}
+
+/* HERO */
+.hero{padding:5rem 2rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(79,156,249,.12),transparent);pointer-events:none;}
+.hero-label{display:inline-block;padding:.3rem 1rem;background:rgba(79,156,249,.1);border:1px solid rgba(79,156,249,.3);border-radius:20px;font-size:.72rem;font-weight:700;color:var(--primary);letter-spacing:.12em;margin-bottom:1.5rem;}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:1rem;}
+.hero h1 span{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{color:var(--text2);font-size:1rem;max-width:640px;margin:0 auto 3rem;}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;max-width:800px;margin:0 auto;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;}
+.stat-value{font-size:2rem;font-weight:800;line-height:1;}
+.stat-label{font-size:.72rem;color:var(--text2);margin-top:.4rem;letter-spacing:.05em;}
+.stat-card.p{--c:var(--primary);}
+.stat-card.s{--c:var(--success);}
+.stat-card.w{--c:var(--warning);}
+.stat-card.a{--c:var(--accent);}
+.stat-value{color:var(--c,var(--primary));}
+
+/* SECTION HEADERS */
+.section-header{margin-bottom:2.5rem;}
+.section-tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--primary);background:rgba(79,156,249,.1);padding:.2rem .7rem;border-radius:4px;margin-bottom:.75rem;}
+.section-header h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em;}
+.section-header p{color:var(--text2);margin-top:.5rem;max-width:640px;}
+
+/* GATE TIMELINE */
+.timeline-scroll{overflow-x:auto;padding-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--surface3) transparent;}
+.timeline{display:flex;gap:0;min-width:max-content;padding:1rem 0;}
+.gate-node{display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;}
+.gate-line{flex:1;height:2px;background:linear-gradient(90deg,var(--success),var(--primary));min-width:60px;margin-top:20px;}
+.gate-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;border:2px solid var(--border);transition:all .3s;position:relative;z-index:1;}
+.gate-node.done .gate-circle{background:linear-gradient(135deg,#22d3a020,#22d3a040);border-color:var(--success);color:var(--success);}
+.gate-node.active .gate-circle{background:linear-gradient(135deg,#4f9cf920,#4f9cf940);border-color:var(--primary);color:var(--primary);box-shadow:0 0 20px rgba(79,156,249,.3);}
+.gate-node.future .gate-circle{background:var(--surface2);border-color:var(--border);color:var(--text3);}
+.gate-label{font-size:.7rem;font-weight:700;margin-top:.5rem;color:var(--text2);text-align:center;max-width:90px;}
+.gate-state{font-size:.6rem;color:var(--text3);margin-top:.2rem;}
+.gate-detail{display:none;position:absolute;top:70px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1rem;width:280px;z-index:10;font-size:.78rem;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.gate-node.open .gate-detail{display:block;}
+.gate-node:hover .gate-circle{transform:scale(1.15);}
+.gate-detail h4{font-size:.8rem;font-weight:700;margin-bottom:.5rem;color:var(--primary);}
+.gate-detail ul{list-style:none;display:flex;flex-direction:column;gap:.3rem;}
+.gate-detail ul li{color:var(--text2);padding-left:.8rem;position:relative;}
+.gate-detail ul li::before{content:'→';position:absolute;left:0;color:var(--text3);font-size:.7rem;}
+.gate-exit{margin-top:.6rem;padding:.4rem .7rem;background:rgba(34,211,160,.1);border:1px solid rgba(34,211,160,.2);border-radius:6px;font-size:.7rem;color:var(--success);}
+
+/* ARCH DIAGRAM */
+.arch-diagram{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:2rem;}
+.arch-row{display:flex;align-items:stretch;gap:1rem;margin-bottom:1rem;}
+.arch-row.sources{flex-wrap:wrap;justify-content:center;gap:.5rem;}
+.arch-source{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.4rem .8rem;font-size:.72rem;color:var(--text2);white-space:nowrap;}
+.arch-source.gray{border-color:#f59e0b44;color:var(--warning);}
+.arch-arrow-down{text-align:center;color:var(--text3);font-size:1.2rem;padding:.3rem 0;}
+.arch-boxes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+.arch-box{border-radius:12px;padding:1.25rem;border:1px solid var(--border);}
+.arch-box.worker{background:linear-gradient(135deg,rgba(79,156,249,.1),rgba(79,156,249,.05));border-color:rgba(79,156,249,.3);}
+.arch-box.db{background:linear-gradient(135deg,rgba(124,92,252,.1),rgba(124,92,252,.05));border-color:rgba(124,92,252,.3);}
+.arch-box.web{background:linear-gradient(135deg,rgba(34,211,160,.1),rgba(34,211,160,.05));border-color:rgba(34,211,160,.3);}
+.arch-box h4{font-size:.8rem;font-weight:700;margin-bottom:.5rem;}
+.arch-box.worker h4{color:var(--primary);}
+.arch-box.db h4{color:var(--accent);}
+.arch-box.web h4{color:var(--success);}
+.arch-box p{font-size:.72rem;color:var(--text2);line-height:1.5;}
+.arch-box .tech{font-size:.65rem;color:var(--text3);margin-top:.4rem;}
+.arch-arrow{display:flex;align-items:center;color:var(--text3);font-size:.8rem;padding-top:1rem;}
+.invariant-strip{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;}
+.inv-pill{padding:.2rem .6rem;border-radius:4px;font-size:.65rem;font-weight:600;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--danger);}
+
+/* COMMITMENT TRAP */
+.trap-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.trap-chain{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
+.trap-chain h3{font-size:.85rem;font-weight:700;margin-bottom:1.25rem;color:var(--text2);}
+.chain-item{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem;}
+.chain-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;margin-top:.1rem;}
+.chain-dot.ok{background:rgba(34,211,160,.15);color:var(--success);border:1px solid rgba(34,211,160,.3);}
+.chain-dot.warn{background:rgba(245,158,11,.15);color:var(--warning);border:1px solid rgba(245,158,11,.3);}
+.chain-dot.trap{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3);}
+.chain-content h5{font-size:.78rem;font-weight:600;line-height:1.3;}
+.chain-content p{font-size:.7rem;color:var(--text2);margin-top:.15rem;}
+.chain-line{width:2px;height:16px;background:var(--border);margin-left:13px;}
+.trap-verdict{padding:1rem;border-radius:10px;margin-top:1rem;}
+.trap-verdict.detected{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);}
+.trap-verdict.clear{background:rgba(34,211,160,.08);border:1px solid rgba(34,211,160,.25);}
+.trap-verdict h4{font-size:.78rem;font-weight:700;margin-bottom:.4rem;}
+.trap-verdict.detected h4{color:var(--danger);}
+.trap-verdict.clear h4{color:var(--success);}
+.trap-verdict p{font-size:.72rem;color:var(--text2);}
+
+/* INTEGRITY TABLE */
+.integrity-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.quality-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;gap:.75rem;align-items:flex-start;transition:all .2s;}
+.quality-card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-1px);}
+.q-icon{width:32px;height:32px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.q-icon.hon{background:rgba(34,211,160,.12);color:var(--success);}
+.q-icon.vio{background:rgba(239,68,68,.12);color:var(--danger);}
+.q-icon.par{background:rgba(245,158,11,.12);color:var(--warning);}
+.q-status{font-size:.65rem;font-weight:700;letter-spacing:.08em;margin-bottom:.3rem;}
+.q-status.hon{color:var(--success);}
+.q-status.vio{color:var(--danger);}
+.q-status.par{color:var(--warning);}
+.quality-card h4{font-size:.8rem;font-weight:700;margin-bottom:.2rem;}
+.quality-card p{font-size:.7rem;color:var(--text2);}
+.wrong-box{margin-top:1.5rem;background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.03));border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:1.25rem;}
+.wrong-box h4{font-size:.78rem;font-weight:700;color:var(--danger);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;}
+.wrong-box p{font-size:.82rem;color:var(--text);}
+
+/* SEVEN PILLARS */
+.pillars-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+.pillar-bars{display:flex;flex-direction:column;gap:.75rem;}
+.pillar-row{display:flex;align-items:center;gap:.75rem;}
+.pillar-name{font-size:.75rem;font-weight:600;width:110px;flex-shrink:0;color:var(--text2);}
+.pillar-bar-bg{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.pillar-bar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.pillar-score{font-size:.72rem;font-weight:700;width:24px;text-align:right;flex-shrink:0;}
+.pillar-note{font-size:.65rem;color:var(--text3);}
+.radar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
+.weakest-pillar{margin-top:1.5rem;padding:1rem;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:10px;}
+.weakest-pillar h4{font-size:.78rem;font-weight:700;color:var(--danger);margin-bottom:.4rem;}
+.weakest-pillar p{font-size:.72rem;color:var(--text2);}
+
+/* GAP REGISTER */
+.gap-controls{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.gap-filter{padding:.35rem .8rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:.72rem;cursor:pointer;transition:all .2s;}
+.gap-filter.active,.gap-filter:hover{border-color:var(--primary);color:var(--primary);background:rgba(79,156,249,.1);}
+.gap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;}
+.gap-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem;cursor:pointer;transition:all .2s;position:relative;}
+.gap-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.gap-card.hidden{display:none;}
+.gap-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
+.gap-id{font-size:.68rem;font-weight:800;color:var(--text3);}
+.gap-sev{font-size:.6rem;font-weight:700;padding:.15rem .45rem;border-radius:3px;letter-spacing:.06em;}
+.sev-p0{background:rgba(239,68,68,.15);color:var(--danger);}
+.sev-p1{background:rgba(245,158,11,.15);color:var(--warning);}
+.sev-p2{background:rgba(79,156,249,.15);color:var(--primary);}
+.gap-title{font-size:.72rem;font-weight:600;line-height:1.35;margin-bottom:.4rem;}
+.gap-status{font-size:.65rem;font-weight:600;}
+.status-done{color:var(--success);}
+.status-plan{color:var(--warning);}
+.status-tarun{color:var(--danger);}
+.status-open{color:var(--text3);}
+.gap-tooltip{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface3);border:1px solid var(--border);border-radius:8px;padding:.75rem;z-index:20;font-size:.68rem;color:var(--text2);line-height:1.5;box-shadow:0 12px 40px rgba(0,0,0,.5);}
+.gap-card:hover .gap-tooltip{display:block;}
+
+/* ACTION CLASSIFICATION */
+.action-table{width:100%;border-collapse:collapse;}
+.action-table th{text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.08em;color:var(--text3);padding:.6rem 1rem;border-bottom:1px solid var(--border);}
+.action-table td{padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.03);font-size:.78rem;vertical-align:top;}
+.action-table tr:hover td{background:rgba(255,255,255,.02);}
+.method-badge{display:inline-block;padding:.25rem .65rem;border-radius:5px;font-size:.65rem;font-weight:700;letter-spacing:.06em;}
+.m-automate{background:rgba(34,211,160,.12);color:var(--success);border:1px solid rgba(34,211,160,.2);}
+.m-persuade{background:rgba(79,156,249,.12);color:var(--primary);border:1px solid rgba(79,156,249,.2);}
+.m-enforce{background:rgba(239,68,68,.12);color:var(--danger);border:1px solid rgba(239,68,68,.2);}
+.m-ignore{background:rgba(100,116,139,.12);color:var(--text3);border:1px solid rgba(100,116,139,.2);}
+.m-incentivize{background:rgba(245,158,11,.12);color:var(--warning);border:1px solid rgba(245,158,11,.2);}
+.action-flag{font-size:.65rem;color:var(--danger);margin-top:.25rem;display:flex;align-items:center;gap:.3rem;}
+
+/* SYNTHESIS PIPELINE */
+.pipeline{display:flex;gap:0;overflow-x:auto;padding-bottom:1rem;scrollbar-width:thin;}
+.pipe-stage{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;position:relative;margin-right:2rem;}
+.pipe-stage:last-child{margin-right:0;}
+.pipe-stage::after{content:'→';position:absolute;right:-1.4rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:1.2rem;font-weight:300;}
+.pipe-stage:last-child::after{display:none;}
+.pipe-num{font-size:.65rem;font-weight:800;color:var(--text3);margin-bottom:.5rem;}
+.pipe-name{font-size:.82rem;font-weight:700;margin-bottom:.4rem;}
+.pipe-desc{font-size:.7rem;color:var(--text2);line-height:1.5;}
+.pipe-cost{display:inline-block;margin-top:.5rem;padding:.2rem .5rem;border-radius:4px;font-size:.62rem;font-weight:700;}
+.cost-zero{background:rgba(34,211,160,.1);color:var(--success);}
+.cost-low{background:rgba(245,158,11,.1);color:var(--warning);}
+.cost-high{background:rgba(239,68,68,.1);color:var(--danger);}
+
+/* BLIND SPOTS */
+.blindspot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.blindspot-card{background:var(--surface);border:1px solid rgba(239,68,68,.15);border-radius:14px;padding:1.5rem;position:relative;overflow:hidden;}
+.blindspot-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--danger),transparent);}
+.blindspot-num{font-size:3rem;font-weight:900;color:rgba(239,68,68,.08);position:absolute;top:-.5rem;right:.75rem;line-height:1;}
+.blindspot-card h4{font-size:.85rem;font-weight:700;margin-bottom:.6rem;color:var(--text);}
+.blindspot-card p{font-size:.75rem;color:var(--text2);line-height:1.6;}
+.instrument-label{display:inline-block;margin-top:.75rem;padding:.2rem .6rem;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:4px;font-size:.65rem;font-weight:700;color:var(--warning);}
+@keyframes pulse-ring{0%{transform:scale(.9);opacity:1;}100%{transform:scale(1.3);opacity:0;}}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--danger);margin-right:.4rem;position:relative;}
+.pulse::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--danger);animation:pulse-ring 1.4s ease infinite;}
+
+/* VERDICT */
+.verdict-section{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3rem;position:relative;overflow:hidden;}
+.verdict-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(79,156,249,.05),transparent);pointer-events:none;}
+.verdict-posture{text-align:center;margin-bottom:3rem;}
+.posture-label{font-size:.72rem;font-weight:700;letter-spacing:.15em;color:var(--text3);margin-bottom:.75rem;}
+.posture-value{font-size:clamp(3rem,8vw,6rem);font-weight:900;letter-spacing:-.04em;color:var(--warning);line-height:1;}
+.posture-sub{font-size:.85rem;color:var(--text2);margin-top:1rem;max-width:480px;margin-left:auto;margin-right:auto;}
+.leverage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem;}
+.leverage-card{background:var(--surface2);border-radius:14px;padding:1.5rem;border:1px solid var(--border);}
+.leverage-rank{font-size:3rem;font-weight:900;color:rgba(79,156,249,.15);line-height:1;margin-bottom:.5rem;}
+.leverage-card h4{font-size:.85rem;font-weight:700;margin-bottom:.4rem;}
+.leverage-card p{font-size:.72rem;color:var(--text2);}
+.stop-box{padding:1.5rem;background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.03));border:1px solid rgba(239,68,68,.2);border-radius:14px;}
+.stop-box h4{font-size:.78rem;font-weight:700;color:var(--danger);letter-spacing:.08em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;}
+.stop-box p{font-size:.85rem;color:var(--text);}
+
+/* ACCURACY THRESHOLDS */
+.accuracy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;}
+.acc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+.acc-metric{font-size:.7rem;font-weight:600;color:var(--text2);margin-bottom:.3rem;}
+.acc-val{font-size:1.4rem;font-weight:800;color:var(--primary);}
+.acc-window{font-size:.65rem;color:var(--text3);margin-top:.2rem;}
+.acc-scope{font-size:.62rem;color:var(--text3);}
+
+/* DONOR AUDIT */
+.donor-cols{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.donor-block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+.donor-block h3{font-size:.82rem;font-weight:700;margin-bottom:1rem;}
+.donor-row{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.75rem;}
+.donor-row:last-child{border:none;}
+.donor-tag{padding:.15rem .5rem;border-radius:4px;font-size:.62rem;font-weight:700;white-space:nowrap;}
+.d-port{background:rgba(34,211,160,.1);color:var(--success);}
+.d-retire{background:rgba(100,116,139,.1);color:var(--text3);}
+.d-new{background:rgba(124,92,252,.1);color:var(--accent);}
+.d-warn{background:rgba(245,158,11,.1);color:var(--warning);}
+.donor-desc{color:var(--text2);flex:1;}
+
+/* TOOLTIP global */
+.tip{position:relative;}
+.tip:hover .tiptext{display:block;}
+.tiptext{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:.35rem .6rem;font-size:.65rem;white-space:nowrap;z-index:50;pointer-events:none;color:var(--text2);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .trap-grid,.integrity-grid,.pillars-layout,.blindspot-grid,.leverage-grid,.donor-cols,.arch-boxes{grid-template-columns:1fr;}
+  section{padding:2.5rem 1rem;}
+}
+
+/* ANIMATE IN */
+.fade-in{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
+.fade-in.visible{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">GSI → PLATFORM</div>
+    <div class="nav-links">
+      <a href="#migration">Migration</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#trap">Commitment</a>
+      <a href="#integrity">Integrity</a>
+      <a href="#pillars">Pillars</a>
+      <a href="#gaps">Gaps</a>
+      <a href="#synthesis">Synthesis</a>
+      <a href="#actions">Actions</a>
+      <a href="#blindspots">Blindspots</a>
+      <a href="#verdict">Verdict</a>
+    </div>
+    <div class="verdict-badge">CONSOLIDATE</div>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<div class="hero fade-in">
+  <div class="hero-label">STRATEGIC ANALYSIS · 6 FRAMEWORKS · 2026-06-15</div>
+  <h1>GSI → <span>Investment Platform</span><br>Migration Analysis</h1>
+  <p class="hero-sub">Streamlit v5.41 (frozen donor) → Next.js + Supabase + Python Worker. 7 phase gates, 29 gaps audited, 9 ADRs locked. This is the strategic picture.</p>
+  <div class="hero-stats">
+    <div class="stat-card p"><div class="stat-value" data-count="7">0</div><div class="stat-label">PHASE GATES</div></div>
+    <div class="stat-card w"><div class="stat-value" data-count="29">0</div><div class="stat-label">GAPS AUDITED</div></div>
+    <div class="stat-card s"><div class="stat-value" data-count="9">0</div><div class="stat-label">ADRs LOCKED</div></div>
+    <div class="stat-card a"><div class="stat-value" data-count="12">0</div><div class="stat-label">INVARIANTS</div></div>
+    <div class="stat-card p"><div class="stat-value" data-count="8">0</div><div class="stat-label">CAPABILITY AREAS</div></div>
+    <div class="stat-card w"><div class="stat-value" data-count="5">0</div><div class="stat-label">HORIZONS (1W→3Y)</div></div>
+  </div>
+</div>
+
+<!-- MIGRATION TIMELINE -->
+<section id="migration" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">MIGRATION TRAJECTORY</div>
+    <h2>7 Gates from Donor to Platform</h2>
+    <p>Each gate is a fully verified checkpoint — CI green + QA brief + Tarun sign-off required before the next phase begins. Click any gate to expand.</p>
+  </div>
+  <div class="timeline-scroll">
+    <div class="timeline" id="gateTimeline">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">SYSTEM ARCHITECTURE</div>
+    <h2>Unidirectional Data Flow</h2>
+    <p>Sources → Worker → Supabase → Web. The UI never calls an external API — Invariant 3, enforced by Playwright network guards in every E2E test.</p>
+  </div>
+  <div class="arch-diagram">
+    <div class="arch-row sources" id="sourcesRow">
+      <span class="arch-source gray tip">yfinance (ToS gray) <span class="tiptext">GAP-15: gray-area for public exposure</span></span>
+      <span class="arch-source">NSE/BSE bhavcopy</span>
+      <span class="arch-source">AMFI NAVAll</span>
+      <span class="arch-source">RBI/SEBI RSS</span>
+      <span class="arch-source">GDELT 2.0</span>
+      <span class="arch-source">Exchange filings</span>
+      <span class="arch-source">FRED / data.gov.in</span>
+      <span class="arch-source gray tip">→ EODHD (G7+) <span class="tiptext">Paid replacement; hard gate before public exposure</span></span>
+    </div>
+    <div class="arch-arrow-down">↓ scheduled ingestion · validation gate · provenance stamp</div>
+    <div class="arch-boxes">
+      <div class="arch-box worker">
+        <h4>⚙ WORKER (Python 3.12)</h4>
+        <p>APScheduler → adapters → validation gate → repositories. Synthesis pipeline. Forecast batch. Rebalance engine (cvxpy). Rate-limit guard.</p>
+        <div class="tech">Railway/Fly · always-on · ADR-002 (3.12 not 3.14)</div>
+      </div>
+      <div class="arch-box db">
+        <h4>🗄 SUPABASE</h4>
+        <p>Postgres (all state) · Auth · Storage. RLS per-user. pgvector for embeddings. Append-only signal_audit + decisions tables.</p>
+        <div class="tech">ap-south-1 · free tier → paid at scale · ADR-009 (raw prices)</div>
+      </div>
+      <div class="arch-box web">
+        <h4>🌐 WEB (Next.js/TS)</h4>
+        <p>Reads store only under RLS. Never calls external APIs. Portfolio · Signals · Forecasts · Accuracy Ledger · Admin config UI.</p>
+        <div class="tech">Vercel · App Router · Playwright E2E baseline</div>
+      </div>
+    </div>
+    <div class="invariant-strip">
+      <span class="inv-pill">I1: Zero hardcoding</span>
+      <span class="inv-pill">I3: Web = store-only reads</span>
+      <span class="inv-pill">I5: Audit tables INSERT-only</span>
+      <span class="inv-pill">I6: No trade execution, ever</span>
+      <span class="inv-pill">I7: Migrations append-only</span>
+      <span class="inv-pill">I4: One adapter per source family</span>
+      <span class="inv-pill">I2: Engine/core is pure (no I/O)</span>
+      <span class="inv-pill">+5 more CI-enforced</span>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:2.5rem;margin-bottom:1.5rem;">
+    <div class="section-tag">ACCURACY THRESHOLDS</div>
+    <h2>Gating Signals — Not Just Measuring Them</h2>
+    <p>Signals that miss threshold are auto-demoted to "low confidence" display. The accuracy ledger is a user-visible page — trust made tangible.</p>
+  </div>
+  <div class="accuracy-grid">
+    <div class="acc-card"><div class="acc-metric">1W / 1M Directional</div><div class="acc-val">≥60%</div><div class="acc-window">Rolling 12 weeks</div><div class="acc-scope">Price-direction signals</div></div>
+    <div class="acc-card"><div class="acc-metric">3M / 1Y Directional</div><div class="acc-val">≥65%</div><div class="acc-window">Rolling 26 weeks</div><div class="acc-scope">Medium/long forecasts</div></div>
+    <div class="acc-card"><div class="acc-metric">Band Calibration</div><div class="acc-val">75–85%</div><div class="acc-window">Rolling 12 weeks</div><div class="acc-scope">All forecast bands</div></div>
+    <div class="acc-card"><div class="acc-metric">Alpha Excess Return</div><div class="acc-val">≥+2% pa</div><div class="acc-window">Rolling 6-month cohorts</div><div class="acc-scope">vs NIFTY 50 TRI</div></div>
+    <div class="acc-card"><div class="acc-metric">Alpha Hit-Rate</div><div class="acc-val">≥55%</div><div class="acc-window">Rolling 6-month cohorts</div><div class="acc-scope">F3 recommendations</div></div>
+    <div class="acc-card"><div class="acc-metric">Rebalance Efficacy</div><div class="acc-val">Sharpe ≥</div><div class="acc-window">Quarterly aggregate</div><div class="acc-scope">vs no-action counterfactual</div></div>
+  </div>
+</section>
+
+<!-- COMMITMENT TRAP -->
+<section id="trap" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">FRAMEWORK 1 · COMMITMENT TRAP</div>
+    <h2>Can You Exit Once Entered?</h2>
+    <p>Mahabharata Sabha Parva pattern — the actor who enters but cannot exit. Three dependency chains tested.</p>
+  </div>
+  <div class="trap-grid">
+    <div class="trap-chain">
+      <h3>Chain A: Data Source Lock-In</h3>
+      <div class="chain-item">
+        <div class="chain-dot ok">G0</div>
+        <div class="chain-content"><h5>Scaffold on yfinance adapter</h5><p>Proven in GSI. C-003/C-004 fixes ported.</p></div>
+      </div>
+      <div class="chain-line"></div>
+      <div class="chain-item">
+        <div class="chain-dot ok">G1–G4</div>
+        <div class="chain-content"><h5>4 phases built on yfinance dependency</h5><p>Full data layer, adapters, validation, all tests assume yfinance schema.</p></div>
+      </div>
+      <div class="chain-line"></div>
+      <div class="chain-item">
+        <div class="chain-dot trap">G7</div>
+        <div class="chain-content"><h5>⚠ Hard gate: must migrate to EODHD</h5><p>GAP-15: yfinance ToS gray for anything beyond personal use. At G7, forced re-adapter before any public exposure.</p></div>
+      </div>
+      <div class="trap-verdict detected">
+        <h4>⚠ TRAP DETECTED — Deferred Data Migration</h4>
+        <p>6 phases of infrastructure are built on a source that cannot survive public exposure. Escape vector exists (EODHD ~$20/mo) but migration cost compounds with each phase.</p>
+      </div>
+    </div>
+    <div class="trap-chain">
+      <h3>Chain B: Sequential Gate Dependencies</h3>
+      <div class="chain-item">
+        <div class="chain-dot ok">G0→G2</div>
+        <div class="chain-content"><h5>Scaffold → Universe → Portfolio</h5><p>Each phase prerequisite of next. Clean sequential chain, no circular dependency.</p></div>
+      </div>
+      <div class="chain-line"></div>
+      <div class="chain-item">
+        <div class="chain-dot warn">G3→G4</div>
+        <div class="chain-content"><h5>Forecasts require Synthesis context</h5><p>GAP-04: NIFTY TRI needed for alpha thresholds (G3). Synthesis needs dependency graph (G4). GAP-24 (risk profile) must be resolved before G5 recommendations are meaningful.</p></div>
+      </div>
+      <div class="chain-line"></div>
+      <div class="chain-item">
+        <div class="chain-dot ok">G5→G7</div>
+        <div class="chain-content"><h5>Recommendations → Design → Hardening</h5><p>Clean exits at each gate. No circular dependency in the gate chain itself.</p></div>
+      </div>
+      <div class="trap-verdict clear">
+        <h4>✓ GATE CHAIN CLEAR</h4>
+        <p>Sequential phase dependencies are clean — each gate is separable, exit is defined, no circular commitment. Blocking constraint is Tarun's risk profile input (GAP-24) before G5, not architecture.</p>
+      </div>
+    </div>
+    <div class="trap-chain">
+      <h3>Chain C: LLM Budget Spiral</h3>
+      <div class="chain-item">
+        <div class="chain-dot warn">G4</div>
+        <div class="chain-content"><h5>Synthesis goes live with Anthropic API</h5><p>daily_budget_usd in admin_config is the only guard. No hard architectural cap.</p></div>
+      </div>
+      <div class="chain-line"></div>
+      <div class="chain-item">
+        <div class="chain-dot warn">Scale</div>
+        <div class="chain-content"><h5>As universe grows, synthesis volume grows</h5><p>GAP-21 notes 50% savings available via Batches API — unimplemented until Phase 4.6. Until then, full per-call billing.</p></div>
+      </div>
+      <div class="trap-verdict detected">
+        <h4>⚠ SOFT TRAP — Cost Spiral Risk</h4>
+        <p>No hard LLM budget guard at the architecture level; the escape (Batches API) is a Phase 4.6 item. If synthesis volume spikes before 4.6, cost control is purely manual.</p>
+      </div>
+    </div>
+    <div class="trap-chain">
+      <h3>Chain D: GSI Donor Retirement</h3>
+      <div class="chain-item">
+        <div class="chain-dot ok">ADR-007</div>
+        <div class="chain-content"><h5>GSI frozen at v5.41 — zero sprints</h5><p>Clean decision. App stays deployed, untouched. Retires at Phase 5 parity. No attention split.</p></div>
+      </div>
+      <div class="chain-line"></div>
+      <div class="chain-item">
+        <div class="chain-dot ok">G5</div>
+        <div class="chain-content"><h5>GSI retired when recommendations live</h5><p>No dependency on GSI continuing to work. Donor code already extracted to donor_reference/ (read-only).</p></div>
+      </div>
+      <div class="trap-verdict clear">
+        <h4>✓ DONOR EXIT CLEAR</h4>
+        <p>ADR-007 is the cleanest decision in the package. GSI runs passively, retires on schedule, no circular commitment. This is the correct playbook for a donor migration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRITY AUDIT -->
+<section id="integrity" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">FRAMEWORK 2 · INTEGRITY AUDIT</div>
+    <h2>Vidura Niti — Six Qualities of Wise Counsel</h2>
+    <p>Applied to the platform's architectural intent and the decisions already locked in.</p>
+  </div>
+  <div class="integrity-grid">
+    <div class="quality-card">
+      <div class="q-icon hon">⚖</div>
+      <div>
+        <div class="q-status hon">HONOURED</div>
+        <h4>Integrity — Truth-telling</h4>
+        <p>Accuracy ledger auto-demotes underperforming signals. "A demoted, honest signal beats a confident wrong one, always." No flattery in the system design.</p>
+      </div>
+    </div>
+    <div class="quality-card">
+      <div class="q-icon par">✋</div>
+      <div>
+        <div class="q-status par">PARTIALLY VIOLATED</div>
+        <h4>Restraint — Non-covetousness</h4>
+        <p>18 of 29 gaps are "DONE (plan)" — plan-level closures, not verified implementations. The audit may be creating false confidence. Restraint means marking the distinction.</p>
+      </div>
+    </div>
+    <div class="quality-card">
+      <div class="q-icon hon">🛡</div>
+      <div>
+        <div class="q-status hon">HONOURED</div>
+        <h4>Non-harm — Non-injury</h4>
+        <p>Recommendations only — never execution. SEBI/FCA compliance documentation. Tax implications flagged (GAP-25). Family user accessibility via layered disclosure.</p>
+      </div>
+    </div>
+    <div class="quality-card">
+      <div class="q-icon hon">⚓</div>
+      <div>
+        <div class="q-status hon">HONOURED</div>
+        <h4>Steadiness — Under pressure</h4>
+        <p>ADR-007 (GSI frozen) is clean and maintained. APScheduler as single scheduler (ADR-006) resolves the dual-scheduling ambiguity without wavering. No scope creep added.</p>
+      </div>
+    </div>
+    <div class="quality-card">
+      <div class="q-icon vio">⚠</div>
+      <div>
+        <div class="q-status vio">VIOLATED</div>
+        <h4>Objectivity — No pride distorting judgment</h4>
+        <p>All 15 architecture decisions and all 9 ADRs resolved in a single day (2026-06-11). Speed can reflect decisiveness — or suppress dissenting analysis. No second-mover validation recorded.</p>
+      </div>
+    </div>
+    <div class="quality-card">
+      <div class="q-icon hon">💗</div>
+      <div>
+        <div class="q-status hon">HONOURED</div>
+        <h4>Compassion — Human cost awareness</h4>
+        <p>GAP-26 (personas), GAP-28 (mobile-first), GAP-29 ("what's next" view) all reflect real empathy for different users. "Real people making real money decisions" is stated explicitly.</p>
+      </div>
+    </div>
+  </div>
+  <div class="wrong-box">
+    <h4>⚠ The thing we know is wrong but are doing anyway:</h4>
+    <p>Building 6 full phases of infrastructure, tests, and adapters on yfinance — a source documented as gray-area for anything beyond personal use (GAP-15, COMPLIANCE_NOTES) — before committing to the licensed replacement that any public exposure requires.</p>
+  </div>
+</section>
+
+<!-- SEVEN PILLARS -->
+<section id="pillars" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">FRAMEWORK 3 · SEVEN-PILLAR STRESS TEST</div>
+    <h2>Kautilya's Saptanga — Structural Viability</h2>
+    <p>Weakness in any one pillar undermines all others. The weakest pillar is the binding constraint.</p>
+  </div>
+  <div class="pillars-layout">
+    <div>
+      <div class="pillar-bars" id="pillarBars"></div>
+      <div class="weakest-pillar" style="margin-top:1.5rem;">
+        <h4>⚠ Weakest Pillar: Market (Users) — 2/5</h4>
+        <p>No user personas (GAP-26), no defined risk tolerance (GAP-24), and "family/friends" as the G7 target remains abstract. The rebalancing engine at G5 will optimize for an undefined objective without this resolved.</p>
+      </div>
+    </div>
+    <div class="radar-wrap">
+      <canvas id="radarChart" width="400" height="400"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- GAP REGISTER -->
+<section id="gaps" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">GAP REGISTER · 29 ITEMS</div>
+    <h2>Pre-Build Audit — What Was Missing</h2>
+    <p>All gaps from the handover package audit, classified by severity and status. Hover any card for detail.</p>
+  </div>
+  <div class="gap-controls">
+    <button class="gap-filter active" data-filter="all">All (29)</button>
+    <button class="gap-filter" data-filter="p0">P0 Critical (3)</button>
+    <button class="gap-filter" data-filter="p1">P1 Phase-blocking (17)</button>
+    <button class="gap-filter" data-filter="p2">P2 Recorded (9)</button>
+    <button class="gap-filter" data-filter="done">✓ Done</button>
+    <button class="gap-filter" data-filter="plan">Plan-only</button>
+    <button class="gap-filter" data-filter="tarun">Tarun-owned</button>
+  </div>
+  <div class="gap-grid" id="gapGrid"></div>
+</section>
+
+<!-- SYNTHESIS PIPELINE -->
+<section id="synthesis" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">THE CROWN JEWEL · SYNTHESIS PIPELINE</div>
+    <h2>Event → Impact → Signal — 5 Stages</h2>
+    <p>The LLM is the scalpel, not the conveyor belt. Expected survival rate: 10–20% of raw events reach Stage 3 (expensive). All knobs live in admin_config.</p>
+  </div>
+  <div class="pipeline">
+    <div class="pipe-stage">
+      <div class="pipe-num">STAGE 1</div>
+      <div class="pipe-name">Dedupe & Cluster</div>
+      <div class="pipe-desc">pgvector cosine similarity clusters duplicate news within 48h. Only cluster representatives proceed.</div>
+      <div class="pipe-cost cost-zero">~$0 · local model</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">STAGE 2</div>
+      <div class="pipe-name">Relevance Filter</div>
+      <div class="pipe-desc">Entity/graph match against dependency edges + small-model YES/NO check. Hard daily call cap. Expected drop: 80–90%.</div>
+      <div class="pipe-cost cost-low">Low cost · capped</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">STAGE 3</div>
+      <div class="pipe-name">LLM Synthesis</div>
+      <div class="pipe-desc">Full Anthropic call on survivors only. JSON output: affected instruments, direction, magnitude, confidence, rationale, proposed graph edges.</div>
+      <div class="pipe-cost cost-high">High cost · budget guarded</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">STAGE 4</div>
+      <div class="pipe-name">Materiality Gate</div>
+      <div class="pipe-desc">score = confidence × magnitude. Only score ≥ synthesis.materiality_min triggers a signal update. Sub-threshold results stored but not surfaced.</div>
+      <div class="pipe-cost cost-zero">~$0 · pure logic</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">STAGE 5</div>
+      <div class="pipe-name">Signal Update + Audit</div>
+      <div class="pipe-desc">UPSERT signals. INSERT signal_audit (append-only). Decay job runs nightly — stale news doesn't pin signals forever. Admin approves proposed graph edges.</div>
+      <div class="pipe-cost cost-zero">~$0 · DB write</div>
+    </div>
+  </div>
+  <div style="margin-top:1.5rem;padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:.78rem;color:var(--text2);">
+    <strong style="color:var(--text);">Worked example (Spec §9.3 acceptance test):</strong> "Cabinet approves mining royalty changes" → S1: 6 outlet copies → 1 representative. S2: graph match hits policy_domain:mining edges → miners, metal consumers, capital-goods suppliers. S3: Coal India ↑ (0.7×0.8=0.56), Hindalco ↓ (0.5×0.6=0.30), unheld mining-services firm flagged as alpha. S4: all pass 0.35 threshold. S5: 3 signal updates + audit rows; alpha candidate forwarded to advise engine.
+  </div>
+</section>
+
+<!-- ACTION CLASSIFICATION -->
+<section id="actions" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">FRAMEWORK 4 · KAUTILYA SHADGUNYA</div>
+    <h2>Six Action Methods — Classification</h2>
+    <p>Every pending action classified. Misclassification is a common failure mode — using Enforce where Persuade was needed.</p>
+  </div>
+  <table class="action-table">
+    <thead>
+      <tr>
+        <th>ACTION</th>
+        <th>METHOD</th>
+        <th>RATIONALE</th>
+        <th>PHASE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Build Phase 0 scaffold + CI pipeline</td>
+        <td><span class="method-badge m-automate">AUTOMATE</span></td>
+        <td>Fully specified. No human decision needed. Proceed autonomously.</td>
+        <td>G0</td>
+      </tr>
+      <tr>
+        <td>Define user risk profile + investment goals (GAP-24)</td>
+        <td><span class="method-badge m-persuade">PERSUADE</span></td>
+        <td>Requires Tarun's introspection on goals, horizon, risk tolerance. Cannot be engineered away.</td>
+        <td>Pre-G5</td>
+      </tr>
+      <tr>
+        <td>Commission EODHD subscription / trial</td>
+        <td><span class="method-badge m-enforce">ENFORCE</span></td>
+        <td><strong>Hard gate</strong> before G7 public exposure. Must be scheduled NOW — not deferred to G6.</td>
+        <td>Pre-G7</td>
+      </tr>
+      <tr>
+        <td><strong>⚠ Current treatment of yfinance risk (GAP-15)</strong></td>
+        <td><span class="method-badge m-ignore">IGNORE</span></td>
+        <td><div class="action-flag">⚠ MISCLASSIFICATION — being treated as Ignore when it should be Enforce. Building 6 phases on a deferred risk compounds the migration cost.</div></td>
+        <td>G0–G6</td>
+      </tr>
+      <tr>
+        <td>Implement Anthropic Batches API + prompt caching (GAP-21)</td>
+        <td><span class="method-badge m-automate">AUTOMATE</span></td>
+        <td>50% LLM savings. Pure technical implementation. Should be wired at Phase 4 architecture, not Phase 4.6 afterthought.</td>
+        <td>G4</td>
+      </tr>
+      <tr>
+        <td>Tax annotation on trim/exit recommendations (GAP-25)</td>
+        <td><span class="method-badge m-automate">AUTOMATE</span></td>
+        <td>Rule-based: holding period → STCG/LTCG annotation. Mechanical, no judgment required.</td>
+        <td>G5</td>
+      </tr>
+      <tr>
+        <td>Platform naming + trademark check (GAP-23)</td>
+        <td><span class="method-badge m-persuade">PERSUADE</span></td>
+        <td>Creative/strategic decision only Tarun can make. Can't be built around. Due before Phase 6 design brief.</td>
+        <td>Pre-G6</td>
+      </tr>
+      <tr>
+        <td>GSI Dashboard (v5.41, frozen, deployed)</td>
+        <td><span class="method-badge m-ignore">IGNORE</span></td>
+        <td>Correct classification. Running fine, frozen, retires automatically at G5 parity. Zero sprints, zero attention.</td>
+        <td>Now</td>
+      </tr>
+      <tr>
+        <td>Family user personas + design references (GAP-26)</td>
+        <td><span class="method-badge m-persuade">PERSUADE</span></td>
+        <td>Requires Tarun to sketch 2–3 concrete personas before Phase 6 design brief can be written.</td>
+        <td>Pre-G6</td>
+      </tr>
+      <tr>
+        <td>Feedback loop — mark recommendation acted/ignored (GAP-27)</td>
+        <td><span class="method-badge m-automate">AUTOMATE</span></td>
+        <td>UI affordance + DB table. Richest fuel for trust and improvement. Should be Phase 5, not post-G7 backlog.</td>
+        <td>G5</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- BLIND SPOTS -->
+<section id="blindspots" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">FRAMEWORK 5 · UNBIASED OBSERVER</div>
+    <h2>What We're Not Seeing</h2>
+    <p>Stoic Phantasia — what an unbiased witness reports that the decision-maker is not measuring.</p>
+  </div>
+  <div class="blindspot-grid">
+    <div class="blindspot-card">
+      <div class="blindspot-num">1</div>
+      <h4><span class="pulse"></span>LLM Cost Spiral — No Hard Architectural Cap</h4>
+      <p>The daily_budget_usd in admin_config is a manual knob, not a hard guard enforced in code. As the held universe grows from 1 ticker (G1) to full portfolio (G2+), synthesis event volume scales. There's no circuit breaker in synthesis/llm.py — only admin config that a busy session might not check.</p>
+      <div class="instrument-label">Instrument needed: real-time synthesis cost dashboard + hard cap in llm.py pre-call check</div>
+    </div>
+    <div class="blindspot-card">
+      <div class="blindspot-num">2</div>
+      <h4><span class="pulse"></span>"DONE (plan)" ≠ "DONE (verified)"</h4>
+      <p>18 of 29 gaps are marked with a status like "DONE (schema/plan)" or "DONE (note)" — meaning the solution was designed on paper but not implemented or tested. The gap register doesn't distinguish between a verified, running fix and a documented intention. This creates a false-confidence floor going into Phase 0.</p>
+      <div class="instrument-label">Instrument needed: a verification column in GAP_REGISTER with ✓ tested / planned / open</div>
+    </div>
+    <div class="blindspot-card">
+      <div class="blindspot-num">3</div>
+      <h4><span class="pulse"></span>Mobile-First Is Stated But Not Gated Until Phase 6</h4>
+      <p>GAP-28 says "Tarun lives on mobile — mobile is the default surface." But the Playwright default viewport is noted there, and actual mobile-responsive design is Phase 6. That means G1 through G5 UIs are built without mobile validation — 5 phases of potentially desktop-first decisions that become retrofit work at G6.</p>
+      <div class="instrument-label">Instrument needed: mobile viewport in Playwright from Phase 1.5 onward — not Phase 6.2</div>
+    </div>
+  </div>
+</section>
+
+<!-- DONOR AUDIT -->
+<section class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">GSI DONOR AUDIT · ADR-007</div>
+    <h2>What GSI Gives vs. What Gets Left Behind</h2>
+    <p>Port the algorithms, retire the architecture. GSI's value was in the computation layer; everything user-facing starts new.</p>
+  </div>
+  <div class="donor-cols">
+    <div class="donor-block">
+      <h3>From GSI donor_reference/</h3>
+      <div class="donor-row"><span class="donor-tag d-port">PORT</span><span class="donor-desc">indicators.py — all technical signal math (pure core)</span></div>
+      <div class="donor-row"><span class="donor-tag d-port">PORT</span><span class="donor-desc">portfolio.py — P&L math, allocation, risk metrics</span></div>
+      <div class="donor-row"><span class="donor-tag d-port">PORT</span><span class="donor-desc">forecast.py — bootstrap engine, horizon math</span></div>
+      <div class="donor-row"><span class="donor-tag d-port">PORT</span><span class="donor-desc">market_data.py — yf adapter patterns, C-003/C-004 fixes</span></div>
+      <div class="donor-row"><span class="donor-tag d-port">PORT</span><span class="donor-desc">calc/sanitise — numeric utilities, data cleaning</span></div>
+      <div class="donor-row"><span class="donor-tag d-warn">QUIRKS</span><span class="donor-desc">config.py — 29 known defects (smart quotes, rate-limit, 429 spiral)</span></div>
+    </div>
+    <div class="donor-block">
+      <h3>New Platform — rebuilt from scratch</h3>
+      <div class="donor-row"><span class="donor-tag d-new">NEW</span><span class="donor-desc">Ingest-to-store architecture (eliminates 429 death spiral)</span></div>
+      <div class="donor-row"><span class="donor-tag d-new">NEW</span><span class="donor-desc">LLM synthesis pipeline — event → impact → signal</span></div>
+      <div class="donor-row"><span class="donor-tag d-new">NEW</span><span class="donor-desc">Accuracy ledger + signal auto-demotion</span></div>
+      <div class="donor-row"><span class="donor-tag d-new">NEW</span><span class="donor-desc">Multi-user RLS from day one (family exposure at G7)</span></div>
+      <div class="donor-row"><span class="donor-tag d-new">NEW</span><span class="donor-desc">Next.js + Vercel (replacing Streamlit Cloud)</span></div>
+      <div class="donor-row"><span class="donor-tag d-retire">RETIRE</span><span class="donor-desc">Streamlit UI, app.py, pages/, styles, GSI branding</span></div>
+      <div class="donor-row"><span class="donor-tag d-retire">RETIRE</span><span class="donor-desc">482 regression tests (grep-based) → replaced by pytest + Playwright</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGIC VERDICT -->
+<section id="verdict" class="fade-in">
+  <div class="section-header">
+    <div class="section-tag">FRAMEWORK 6 · STRATEGIC VERDICT</div>
+    <h2>Posture & Leverage</h2>
+  </div>
+  <div class="verdict-section">
+    <div class="verdict-posture">
+      <div class="posture-label">STRATEGIC POSTURE</div>
+      <div class="posture-value">CONSOLIDATE</div>
+      <div class="posture-sub">The plan has superb structural enforcement (Pillar 6 = 5/5) but two pillars score 2/5 — Allies (data sourcing) and Market (user definition). Extending scope before shoring these up risks building toward an undefined objective on a legally fragile foundation.</div>
+    </div>
+    <div class="leverage-grid">
+      <div class="leverage-card">
+        <div class="leverage-rank">01</div>
+        <h4>EODHD trial + adapter in Phase 0 backlog</h4>
+        <p>Commit to the licensed replacement NOW, not at G7. Build the EODHD adapter in parallel with Phase 1. The migration cost compounds with every phase built on yfinance alone. A $20/mo subscription resolves GAP-15 structurally.</p>
+      </div>
+      <div class="leverage-card">
+        <div class="leverage-rank">02</div>
+        <h4>Risk profile + 2 user personas before G5</h4>
+        <p>The rebalancing engine (cvxpy, Phase 5) optimizes a portfolio — but toward what? Without Tarun's goals, time horizon, and risk tolerance defined, the G5 output is generic optimization, not personal investment guidance. This is the spec's own stated north star.</p>
+      </div>
+      <div class="leverage-card">
+        <div class="leverage-rank">03</div>
+        <h4>Hard LLM budget cap in synthesis/llm.py — not just admin_config</h4>
+        <p>Wire the daily budget as a pre-call assertion in code, not a config value that requires manual monitoring. Cost spirals are not self-announcing — they show up in the bill, not the logs. GAP-21's Batches API savings should be Phase 4 architecture, not Phase 4.6.</p>
+      </div>
+    </div>
+    <div class="stop-box">
+      <h4>⛔ ONE THING TO STOP DOING IMMEDIATELY</h4>
+      <p>Treating "DONE (plan)" gaps as resolved. 18 of 29 gaps in the register are plan-level closures — designed on paper but not tested. Before Phase 0 begins, add a verification column to GAP_REGISTER.md. A gap that hasn't been tested in a running system is still open. False-completed gaps are the most dangerous kind.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// COUNTER ANIMATION
+function animateCounters() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count);
+    let current = 0;
+    const step = target / 30;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.round(current);
+      if (current >= target) clearInterval(timer);
+    }, 30);
+  });
+}
+
+// INTERSECTION OBSERVER for fade-in
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.05 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// NAV ACTIVE STATE
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+  navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+});
+
+// GATE TIMELINE DATA
+const gates = [
+  { id: 'G0', label: 'Scaffold', state: 'Start', status: 'active', items: ['Monorepo skeleton', 'Python 3.12 + ruff + pytest', 'Next.js + TS + Playwright', 'CI workflow (sweeps)'], exit: 'CI green · core ported with tests · local stack boots' },
+  { id: 'G1', label: 'Vertical Slice', state: 'One ticker', status: 'future', items: ['Yahoo adapter + rate-limit', 'EOD ingestion job', 'Signal computation job', 'Web: instrument page', 'Playwright E2E', 'Failure health digest'], exit: 'Source → store → signal → UI, zero request-time external calls' },
+  { id: 'G2', label: 'Universe', state: 'Full portfolio', status: 'future', items: ['NSE/BSE bhavcopy adapter', 'CSV/CAS portfolio parser', 'Portfolio dashboard', 'Corporate actions (GAP-06)', 'Market calendar (GAP-07)'], exit: "Tarun's real portfolio loads and renders correctly" },
+  { id: 'G3', label: 'Forecasts', state: 'Accuracy live', status: 'future', items: ['5-horizon runners', 'Forecast persistence', 'Scoring + accuracy ledger', 'Auto-demotion flags', 'NIFTY TRI benchmark (GAP-04)'], exit: 'Ledger populated from backfill; demotion behavior visible' },
+  { id: 'G4', label: 'Synthesis', state: 'LLM pipeline', status: 'future', items: ['RSS + filings adapters', 'GDELT adapter', 'Dedupe/cluster (pgvector)', 'Dependency graph v1', 'LLM synthesis stage'], exit: 'Mining-policy test from §9.3 passes on real + test portfolio' },
+  { id: 'G5', label: 'Recommendations', state: 'Rebalancing', status: 'future', items: ['Regime detector', 'Rebalance engine (cvxpy)', 'Alpha discovery', 'Recommendations UI + audit', 'Efficacy tracking'], exit: 'Recommendations reviewed against Tarun\'s judgment for one full cycle' },
+  { id: 'G6', label: 'Design', state: 'UX elevated', status: 'future', items: ['DESIGN_BRIEF from references', 'Component library pass', 'Mobile responsiveness', 'Full Playwright suite'], exit: 'UX review with Tarun; Playwright suite is accepted regression baseline' },
+  { id: 'G7', label: 'Hardening', state: 'Family exposure', status: 'future', items: ['Prod environment cutover', 'Auth invite flow for family', 'Compliance pass', 'Chaos test (upstream kill)', '⚠ EODHD migration required'], exit: 'First external user invited' },
+];
+
+function renderTimeline() {
+  const tl = document.getElementById('gateTimeline');
+  gates.forEach((g, i) => {
+    const node = document.createElement('div');
+    node.className = `gate-node ${g.status}`;
+    node.innerHTML = `
+      ${i > 0 ? '<div class="gate-line"></div>' : ''}
+      <div class="gate-circle">${g.id}</div>
+      <div class="gate-label">${g.label}</div>
+      <div class="gate-state">${g.state}</div>
+      <div class="gate-detail">
+        <h4>${g.id} — ${g.label}</h4>
+        <ul>${g.items.map(it => `<li>${it}</li>`).join('')}</ul>
+        <div class="gate-exit">Exit: ${g.exit}</div>
+      </div>
+    `;
+    node.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = node.classList.contains('open');
+      document.querySelectorAll('.gate-node').forEach(n => n.classList.remove('open'));
+      if (!wasOpen) node.classList.add('open');
+    });
+    tl.appendChild(node);
+  });
+}
+document.addEventListener('click', () => document.querySelectorAll('.gate-node').forEach(n => n.classList.remove('open')));
+
+// PILLAR BARS
+const pillars = [
+  { name: 'Owner', score: 4, color: '#4f9cf9', note: 'Clear vision; single owner; bandwidth limited' },
+  { name: 'Agents', score: 4, color: '#7c5cfc', note: 'Well-specified autonomy model; no code review' },
+  { name: 'Market', score: 2, color: '#ef4444', note: 'No personas (GAP-26), no risk profile (GAP-24)' },
+  { name: 'Infrastructure', score: 3, color: '#f59e0b', note: 'Free tier; yfinance gray; 500MB model in worker' },
+  { name: 'Treasury', score: 3, color: '#f59e0b', note: 'LLM costs unbudgeted; 50% savings not yet implemented' },
+  { name: 'Enforcement', score: 5, color: '#22d3a0', note: '12 invariants; 2 sweep tools; Playwright; pytest' },
+  { name: 'Allies', score: 2, color: '#ef4444', note: 'yfinance gray; EODHD not yet licensed; API cost risk' },
+];
+
+function renderPillarBars() {
+  const container = document.getElementById('pillarBars');
+  pillars.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'pillar-row';
+    row.innerHTML = `
+      <div class="pillar-name">${p.name}</div>
+      <div class="pillar-bar-bg"><div class="pillar-bar-fill" style="width:${p.score/5*100}%;background:${p.color};" data-target="${p.score/5*100}"></div></div>
+      <div class="pillar-score" style="color:${p.color}">${p.score}/5</div>
+    `;
+    row.title = p.note;
+    container.appendChild(row);
+    const note = document.createElement('div');
+    note.className = 'pillar-note';
+    note.textContent = p.note;
+    note.style.cssText = 'font-size:.62rem;color:var(--text3);padding:.1rem 0 .3rem 0;margin-left:110px;';
+    container.appendChild(note);
+  });
+}
+
+// RADAR CHART
+function renderRadar() {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: pillars.map(p => p.name),
+      datasets: [{
+        label: 'Current State',
+        data: pillars.map(p => p.score),
+        backgroundColor: 'rgba(79,156,249,0.12)',
+        borderColor: '#4f9cf9',
+        borderWidth: 2,
+        pointBackgroundColor: pillars.map(p => p.color),
+        pointBorderColor: 'transparent',
+        pointRadius: 5,
+      }, {
+        label: 'Target (5/5)',
+        data: pillars.map(() => 5),
+        backgroundColor: 'transparent',
+        borderColor: 'rgba(255,255,255,0.06)',
+        borderWidth: 1,
+        borderDash: [4,4],
+        pointRadius: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0, max: 5,
+          ticks: { stepSize: 1, color: '#64748b', backdropColor: 'transparent', font: { size: 10 } },
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          angleLines: { color: 'rgba(255,255,255,0.04)' },
+          pointLabels: { color: '#94a3b8', font: { size: 12, weight: '600' } }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        tooltip: { backgroundColor: '#141927', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#1c2438', borderWidth: 1 }
+      }
+    }
+  });
+}
+
+// GAP REGISTER DATA
+const gaps = [
+  { id:'GAP-01', sev:'P0', title:'Sweep tools missing from CI', status:'done', statusText:'DONE — wired in CI 0.1', detail:'hardcode_sweep.py + purity_check.py now exist and self-tested. CI enforces invariants 1/9/11.' },
+  { id:'GAP-02', sev:'P0', title:'Donor code unavailable for equivalence tests', status:'done', statusText:'DONE — fixtures committed', detail:'donor_reference/ vendored + gen_donor_fixtures.py run. donor_indicators_fixture.json + synth_ohlcv.parquet committed.' },
+  { id:'GAP-03', sev:'P0', title:'Synthesis prompt templates missing', status:'done', statusText:'DONE — prompts written', detail:'relevance.md + synthesize.md with data-not-instructions injection guard. Phase 4.6 unblocked.' },
+  { id:'GAP-04', sev:'P1', title:'No NIFTY 50 TRI source — alpha unmeasurable', status:'plan', statusText:'PLAN — CC verifies at 3.6', detail:'yfinance ^NSEI is price index, not TRI. niftyindices source added + benchmark.primary config. Verify live at Phase 3.6.' },
+  { id:'GAP-05', sev:'P1', title:'RSS feed lists were empty placeholders', status:'plan', statusText:'PLAN — verify URLs at 4.1', detail:'Official-first allowlist filled: RBI×2, SEBI, PIB, 3 financial. Exchange filings via poller (no stable public RSS).' },
+  { id:'GAP-06', sev:'P1', title:'Corporate actions unhandled — silent P&L corruption', status:'plan', statusText:'PLAN — CC builds at 2.8', detail:'Migration 0002: corporate_actions + price_adjustments. Raw prices stay bhavcopy-true; adjusted series derived. ADR-009.' },
+  { id:'GAP-07', sev:'P1', title:'No market calendar — staleness logic lies on weekends', status:'plan', statusText:'PLAN — CC at 2.9', detail:'market_calendar table in 0002 + nse_calendar source. Gates all market-hours schedules.' },
+  { id:'GAP-08', sev:'P1', title:'FX handling for US holdings unspecified', status:'plan', statusText:'PLAN — note in SCHEMA', detail:'FRED DEXINUS seeded. Rule: views consolidate via macro_series fx. CC implements in v_portfolio_positions.' },
+  { id:'GAP-09', sev:'P1', title:'QA_STANDARDS deferred — Phase 0 CI has no conventions', status:'done', statusText:'DONE — QA_STANDARDS.md written', detail:'pytest pyramid, fixtures policy, Playwright route-guard snippet, gate coverage map, QA-brief format.' },
+  { id:'GAP-10', sev:'P1', title:'Scheduler ambiguity: pg_cron vs APScheduler', status:'done', statusText:'DONE — ADR-006', detail:'APScheduler in-worker is the single scheduler. pg_cron unused for jobs. All cadence keys in admin_config.' },
+  { id:'GAP-11', sev:'P1', title:'Embedding model was a placeholder', status:'done', statusText:'DONE — ADR-008', detail:'sentence-transformers/all-mpnet-base-v2 (768-dim, local, $0). Worker image +~500MB. Revisit if RAM-constrained.' },
+  { id:'GAP-12', sev:'P1', title:'Dependency graph seed absent', status:'done', statusText:'DONE — seed file committed', detail:'config/dependency_graph.seed.json — 6 edges incl. mining acceptance-test path. CC extends for held sectors at 4.4.' },
+  { id:'GAP-13', sev:'P1', title:'No failure visibility until Phase 7', status:'plan', statusText:'PLAN — CC at 1.7', detail:'Daily run-health digest + optional webhook. alerts.* config. Silent ingestion failures now surfaced from Phase 1.' },
+  { id:'GAP-14', sev:'P1', title:'No backup — accuracy ledger loss risk', status:'plan', statusText:'PLAN — CC at 3.7', detail:'Nightly pg_dump → Storage, 30-day rotation, restore drill. The credibility asset must be protected.' },
+  { id:'GAP-15', sev:'P1', title:'yfinance ToS gray for public exposure', status:'plan', statusText:'PLAN — TARUN at G7+', detail:'COMPLIANCE_NOTES: personal-use documented. EODHD is hard pre-public gate. Entire platform built on gray source until then.', flag:true },
+  { id:'GAP-16', sev:'P1', title:'CAS PDF parsing risk underestimated', status:'plan', statusText:'PLAN — evaluate casparser', detail:'casparser (MIT) is purpose-built. Evaluate before hand-rolling. TARUN supplies redacted fixture before Phase 2.' },
+  { id:'GAP-17', sev:'P1', title:'§9.6 chaos test absent from plan', status:'done', statusText:'DONE — BUILD_PLAN 7.5', detail:'Kill an upstream source, verify stale-stamped serving. The F-trace orphan is now closed.' },
+  { id:'GAP-18', sev:'P0', title:'GSI fate undecided — attention-split risk', status:'done', statusText:'DONE — ADR-007', detail:'GSI frozen at v5.41. Retired at Phase 5 parity. GSI restructure plan SUPERSEDED. Zero sprints.' },
+  { id:'GAP-19', sev:'P0', title:'Tarun-owned prerequisites scattered', status:'tarun', statusText:'TARUN — before Phase 0', detail:'Supabase, Vercel, Railway, Anthropic key, GitHub repo. Redacted CAS fixture before Phase 2. Name before Phase 6.' },
+  { id:'GAP-20', sev:'P2', title:'Web error tracking absent', status:'open', statusText:'CC backlog', detail:'Sentry free tier at Phase 6/7. Family-user bug reports will be "it broke" without this.' },
+  { id:'GAP-21', sev:'P2', title:'Anthropic Batches API + caching unexploited', status:'plan', statusText:'PLAN — CC at 4.6', detail:'~50% LLM savings available. llm.use_batch_api config added. Should be Phase 4 architecture, not 4.6 afterthought.', flag:true },
+  { id:'GAP-22', sev:'P2', title:'Future asset classes need enum migration path', status:'open', statusText:'Recorded', detail:'bonds/gold/FD/real-estate. instruments.kind extension is 1-line migration; valuation engines are the real work.' },
+  { id:'GAP-23', sev:'P2', title:'Platform name undecided, trademark unchecked', status:'tarun', statusText:'TARUN — before Phase 6', detail:'No name = no brand/domain. MCA search not run. Monetization posture unset. Calendar at G5.' },
+  { id:'GAP-24', sev:'P1', title:'Rebalance target undefined — no risk profile', status:'tarun', statusText:'TARUN — before G5', detail:'The advise engine optimizes returns — but toward whose goals? Risk slider vs goal-based planning decision needed.', flag:true },
+  { id:'GAP-25', sev:'P1', title:'Tax-aware advice missing', status:'plan', statusText:'PLAN — CC at G5', detail:'STCG/LTCG annotations on every trim/exit. Annotate v1, tax-optimized rebalancing later.' },
+  { id:'GAP-26', sev:'P1', title:'No user personas — "right levels of guidance" undefined', status:'tarun', statusText:'TARUN — before G6', detail:'2–3 personas (Tarun; less-literate family member; etc.) needed before Phase 6 design brief.', flag:true },
+  { id:'GAP-27', sev:'P2', title:'No recommendation feedback loop', status:'open', statusText:'Post-G7 backlog', detail:'Let user mark acted/ignored/disagreed. Richest fuel for trust and model improvement vs user judgment.' },
+  { id:'GAP-28', sev:'P1', title:'Mobile-first stated but not gated until Phase 6', status:'plan', statusText:'PLAN — Phase 6', detail:'Tarun lives on mobile. 5 phases of potentially desktop-first UIs built before mobile validation.', flag:true },
+  { id:'GAP-29', sev:'P1', title:'No prioritized "what\'s next" portfolio action view', status:'tarun', statusText:'TARUN — after GAP-24', detail:'Portfolio-wide prioritized action queue. Depends on GAP-24 (goals frame). The synthesis of everything.' },
+];
+
+function renderGaps() {
+  const grid = document.getElementById('gapGrid');
+  gaps.forEach(g => {
+    const card = document.createElement('div');
+    const statusClass = g.status === 'done' ? 'status-done' : g.status === 'plan' ? 'status-plan' : g.status === 'tarun' ? 'status-tarun' : 'status-open';
+    const statusIcon = g.status === 'done' ? '✓' : g.status === 'plan' ? '⚡' : g.status === 'tarun' ? '👤' : '○';
+    card.className = `gap-card ${g.flag ? 'gap-flagged' : ''}`;
+    card.dataset.sev = g.sev.toLowerCase();
+    card.dataset.status = g.status;
+    if (g.flag) card.style.borderColor = 'rgba(239,68,68,0.25)';
+    card.innerHTML = `
+      <div class="gap-header">
+        <span class="gap-id">${g.id}</span>
+        <span class="gap-sev sev-${g.sev.toLowerCase()}">${g.sev}</span>
+      </div>
+      <div class="gap-title">${g.title}</div>
+      <div class="gap-status ${statusClass}">${statusIcon} ${g.statusText}</div>
+      <div class="gap-tooltip">${g.detail}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function setupGapFilters() {
+  document.querySelectorAll('.gap-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.gap-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.gap-card').forEach(card => {
+        let show = false;
+        if (filter === 'all') show = true;
+        else if (filter === 'p0') show = card.dataset.sev === 'p0';
+        else if (filter === 'p1') show = card.dataset.sev === 'p1';
+        else if (filter === 'p2') show = card.dataset.sev === 'p2';
+        else if (filter === 'done') show = card.dataset.status === 'done';
+        else if (filter === 'plan') show = card.dataset.status === 'plan';
+        else if (filter === 'tarun') show = card.dataset.status === 'tarun';
+        card.classList.toggle('hidden', !show);
+      });
+    });
+  });
+}
+
+// INIT
+window.addEventListener('load', () => {
+  animateCounters();
+  renderTimeline();
+  renderPillarBars();
+  renderRadar();
+  renderGaps();
+  setupGapFilters();
+});
+</script>
+</body>
+</html>
