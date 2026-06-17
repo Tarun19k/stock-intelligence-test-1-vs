@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSI Platform — Expert Council Briefing</title>
+<style>
+:root {
+  --bg: #0b1120;
+  --surface: #141e33;
+  --surface2: #1a2540;
+  --border: #263352;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --subtle: #94a3b8;
+  --accent: #38bdf8;
+  --phase-a: #3b82f6;
+  --phase-b: #f97316;
+  --phase-c: #a855f7;
+  --good: #22c55e;
+  --partial: #f59e0b;
+  --weak: #ef4444;
+  --warn-bg: #f59e0b0f;
+  --warn-border: #f59e0b30;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, 'Segoe UI', sans-serif; }
+
+html, body { height: 100vh; overflow: hidden; background: var(--bg); color: var(--text); font-size: 12px; }
+
+body { display: flex; flex-direction: column; }
+
+/* ── HEADER ── */
+.hdr {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.hdr-left { display: flex; align-items: center; gap: 12px; }
+.hdr-title { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: -0.3px; }
+.tag {
+  font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px;
+  border: 1px solid; letter-spacing: 0.3px; text-transform: uppercase;
+}
+.tag-open { color: #60a5fa; border-color: #1d4ed850; background: #1d4ed810; }
+.tag-mode { color: #a78bfa; border-color: #7c3aed50; background: #7c3aed10; }
+.hdr-right { font-size: 10px; color: var(--muted); }
+.hdr-right strong { color: var(--good); }
+
+/* ── STATS BAR ── */
+.stats {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 18px;
+  display: flex; align-items: center; gap: 0;
+  flex-shrink: 0;
+}
+.stat-block { display: flex; align-items: baseline; gap: 5px; padding: 0 18px; }
+.stat-block:first-child { padding-left: 0; }
+.stat-n { font-size: 18px; font-weight: 800; color: var(--accent); line-height: 1; }
+.stat-n.warn { color: var(--weak); }
+.stat-l { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.vdiv { width: 1px; height: 22px; background: var(--border); }
+.stats-note { margin-left: auto; font-size: 10px; color: var(--muted); font-style: italic; }
+
+/* ── MAIN GRID ── */
+.main { flex: 1; display: grid; grid-template-columns: 1fr 268px; overflow: hidden; min-height: 0; }
+
+/* ── LEFT: CONDITIONS ── */
+.conds { padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+
+.phase { display: flex; flex-direction: column; gap: 5px; }
+
+.ph-hdr { display: flex; align-items: center; gap: 8px; }
+.ph-tag {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 3px; border: 1px solid; white-space: nowrap; flex-shrink: 0;
+}
+.ph-a .ph-tag { color: var(--phase-a); border-color: #3b82f640; background: #3b82f610; }
+.ph-b .ph-tag { color: var(--phase-b); border-color: #f9731640; background: #f9731610; }
+.ph-c .ph-tag { color: var(--phase-c); border-color: #a855f740; background: #a855f710; }
+.ph-sub { font-size: 10px; color: var(--muted); }
+.ph-line { flex: 1; height: 1px; }
+.ph-a .ph-line { background: linear-gradient(90deg, #3b82f640, transparent); }
+.ph-b .ph-line { background: linear-gradient(90deg, #f9731640, transparent); }
+.ph-c .ph-line { background: linear-gradient(90deg, #a855f740, transparent); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.grid1 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+/* Condition card */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 10px 8px 13px;
+  position: relative; cursor: default;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.card:hover { border-color: #334466; transform: translateY(-1px); }
+
+.card-bar { position: absolute; left: 0; top: 4px; bottom: 4px; width: 3px; border-radius: 2px; }
+.ph-a .card-bar { background: var(--phase-a); }
+.ph-b .card-bar { background: var(--phase-b); }
+.ph-c .card-bar { background: var(--phase-c); }
+
+.card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+.c-num { font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.c-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot-good { background: var(--good); }
+.dot-partial { background: var(--partial); }
+.dot-weak { background: var(--weak); }
+.dot-min { background: var(--weak); opacity: 0.45; }
+
+.c-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.25; }
+
+.chips { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 4px; }
+.chip {
+  font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 3px;
+  border: 1px solid; white-space: nowrap;
+}
+.chip-a { color: #60a5fa; border-color: #1d4ed840; background: #1d4ed810; }
+.chip-b { color: #fb923c; border-color: #c2410c40; background: #c2410c10; }
+.chip-c { color: #c084fc; border-color: #7e22ce40; background: #7e22ce10; }
+.chip-s { color: #4ade80; border-color: #15803d40; background: #15803d10; }
+
+.c-q { font-size: 10px; color: var(--subtle); line-height: 1.4; font-style: italic; }
+
+/* ── RIGHT: SIDEBAR ── */
+.sidebar {
+  border-left: 1px solid var(--border);
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 0;
+  overflow: hidden;
+}
+.sb-block { padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+.sb-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.sb-title {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--muted); margin-bottom: 6px;
+}
+
+/* Platform context */
+.ctx-row { display: flex; gap: 5px; margin-bottom: 2px; font-size: 10px; }
+.ctx-k { color: var(--muted); width: 56px; flex-shrink: 0; }
+.ctx-v { color: var(--text); font-weight: 500; }
+.ctx-v.bad { color: var(--weak); }
+.ctx-v.good-val { color: var(--good); }
+
+/* Seats */
+.seat-row { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; font-size: 10px; }
+.seat-ico { width: 14px; text-align: center; font-size: 10px; flex-shrink: 0; }
+.seat-nm { flex: 1; font-weight: 500; color: var(--text); }
+.seat-c { font-size: 9px; color: var(--muted); }
+.main-seat { border-left: 2px solid var(--phase-a); padding-left: 4px; }
+.supp-seat { border-left: 2px solid var(--good); padding-left: 4px; }
+
+/* Inputs needed */
+.inp-item {
+  background: var(--warn-bg); border: 1px solid var(--warn-border);
+  border-radius: 4px; padding: 5px 7px; margin-bottom: 4px;
+}
+.inp-label { font-size: 9px; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 1px; }
+.inp-desc { font-size: 10px; color: var(--subtle); line-height: 1.3; }
+
+/* Legend */
+.leg-row { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--subtle); margin-bottom: 2px; }
+.leg-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.leg-note { font-size: 9px; color: var(--muted); margin-top: 4px; font-style: italic; }
+
+/* ── FOOTER ── */
+.ftr {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 7px 18px; display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.ftr-action { font-size: 11px; font-weight: 600; color: var(--accent); }
+.ftr-action .arrow { color: var(--good); margin-right: 4px; }
+.ftr-comm { font-size: 10px; color: var(--muted); }
+.ftr-comm strong { color: var(--phase-b); }
+.ftr-graph { font-size: 10px; color: var(--muted); }
+.ftr-graph span { color: var(--good); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <span class="hdr-title">GSI Platform — Expert Council Briefing</span>
+    <span class="tag tag-open">7 Conditions Open</span>
+    <span class="tag tag-mode">Design Advisory Mode</span>
+  </div>
+  <div class="hdr-right">2026-06-18 &nbsp;·&nbsp; Build gate: <strong>0 / 7 ✓</strong> &nbsp;·&nbsp; All 7 must ✓ before G0</div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats">
+  <div class="stat-block"><span class="stat-n">28</span><span class="stat-l">Requirements</span></div>
+  <div class="vdiv"></div>
+  <div class="stat-block"><span class="stat-n">7</span><span class="stat-l">Sign-off Conditions</span></div>
+  <div class="vdiv"></div>
+  <div class="stat-block"><span class="stat-n">10</span><span class="stat-l">Expert Seats</span></div>
+  <div class="vdiv"></div>
+  <div class="stat-block"><span class="stat-n">3</span><span class="stat-l">Run Phases</span></div>
+  <div class="vdiv"></div>
+  <div class="stat-block"><span class="stat-n warn">5/7</span><span class="stat-l">Graph Gaps</span></div>
+  <div class="vdiv"></div>
+  <div class="stat-block"><span class="stat-n" style="color:var(--good)">2</span><span class="stat-l">Tarun Inputs Needed</span></div>
+  <div class="stats-note">Panel runs in advisory mode · Output: guidance for 7 binary decisions → G0 build begins</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT: CONDITIONS -->
+  <div class="conds">
+
+    <!-- PHASE A -->
+    <div class="phase ph-a">
+      <div class="ph-hdr">
+        <span class="ph-tag">Phase A · Run in parallel</span>
+        <span class="ph-sub">4 conditions · independent · no cross-deps</span>
+        <div class="ph-line"></div>
+      </div>
+      <div class="grid2">
+
+        <div class="card">
+          <div class="card-bar ph-a"></div>
+          <div class="card-top">
+            <span class="c-num">Cond 1 · A1 · Data Source</span>
+            <div class="c-dot dot-weak" title="Graph: WEAK — no decision-framework nodes"></div>
+          </div>
+          <div class="c-title">yfinance vs EODHD</div>
+          <div class="chips">
+            <span class="chip chip-a">Druckenmiller</span>
+            <span class="chip chip-a">Marks</span>
+          </div>
+          <div class="c-q">Cost, ToS risk, data quality — which source survives personal use commercially? What breaks if yfinance is violated?</div>
+        </div>
+
+        <div class="card">
+          <div class="card-bar ph-a"></div>
+          <div class="card-top">
+            <span class="c-num">Cond 5 · A4 · Macro Classifier</span>
+            <div class="c-dot dot-good" title="Graph: GOOD — Dalio 4-quadrant in community C59"></div>
+          </div>
+          <div class="c-title">Macro Regime Classifier</div>
+          <div class="chips">
+            <span class="chip chip-a">Dalio</span>
+          </div>
+          <div class="c-q">4-quadrant (Growth↑↓ × Inflation↑↓): specify exact data inputs needed for India-market classifier.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-bar ph-a"></div>
+          <div class="card-top">
+            <span class="c-num">Cond 6 · D1 · Regulatory</span>
+            <div class="c-dot dot-partial" title="Graph: PARTIAL — newsletter compliance exists, platform path not mapped"></div>
+          </div>
+          <div class="c-title">SEBI Compliance Path</div>
+          <div class="chips">
+            <span class="chip chip-s">India Regulatory</span>
+          </div>
+          <div class="c-q">Personal → family → paid public: obligations at each step. Where does RIA registration become mandatory?</div>
+        </div>
+
+        <div class="card">
+          <div class="card-bar ph-a"></div>
+          <div class="card-top">
+            <span class="c-num">Cond 7 · A5 · Sizing</span>
+            <div class="c-dot dot-weak" title="Graph: WEAK — Kelly criterion not found as a node"></div>
+          </div>
+          <div class="c-title">Position Sizing Framework</div>
+          <div class="chips">
+            <span class="chip chip-s">Quant Risk</span>
+          </div>
+          <div class="c-q">Produce Kelly-based rules: full / half / quarter Kelly thresholds, max concentration, min position size.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PHASE B -->
+    <div class="phase ph-b">
+      <div class="ph-hdr">
+        <span class="ph-tag">Phase B · After Cond 1 resolved</span>
+        <span class="ph-sub">2 conditions · data source decision gates fundamentals; fundamentals gates classification schema</span>
+        <div class="ph-line"></div>
+      </div>
+      <div class="grid2">
+
+        <div class="card">
+          <div class="card-bar ph-b"></div>
+          <div class="card-top">
+            <span class="c-num">Cond 4 · A2/A3 · Fundamentals</span>
+            <div class="c-dot dot-weak" title="Graph: WEAK — ROIC/FCF not present as schema field nodes"></div>
+          </div>
+          <div class="c-title">Fundamental Data Layer</div>
+          <div class="chips">
+            <span class="chip chip-b">Buffett</span>
+            <span class="chip chip-b">Munger</span>
+          </div>
+          <div class="c-q">ROIC, FCF, P/E, PEG, promoter pledge — which are essential vs noise? Scope the minimum viable set to actually fetch.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-bar ph-b"></div>
+          <div class="card-top">
+            <span class="c-num">Cond 2 · A2 schema · Lynch</span>
+            <div class="c-dot dot-partial" title="Graph: PARTIAL — Lynch as panel advisor known, no instrument table schema nodes"></div>
+          </div>
+          <div class="c-title">Stock Classification Schema</div>
+          <div class="chips">
+            <span class="chip chip-b">Lynch</span>
+          </div>
+          <div class="c-q">Map Lynch 6-category system (Fast Grower → Asset Play) to instrument table enum. Which fields distinguish each category?</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PHASE C -->
+    <div class="phase ph-c">
+      <div class="ph-hdr">
+        <span class="ph-tag">Phase C · Tarun input first</span>
+        <span class="ph-sub">1 condition · needs ₹ investable range + time-horizon per bucket before this seat runs</span>
+        <div class="ph-line"></div>
+      </div>
+      <div class="grid1">
+
+        <div class="card">
+          <div class="card-bar ph-c"></div>
+          <div class="card-top">
+            <span class="c-num">Cond 3 · B1-B3 · Portfolio</span>
+            <div class="c-dot dot-min" title="Graph: MINIMAL — no portfolio bucket design nodes"></div>
+          </div>
+          <div class="c-title">Bucket Architecture Design</div>
+          <div class="chips">
+            <span class="chip chip-s">Financial Planning</span>
+            <span class="chip chip-c">Soros</span>
+          </div>
+          <div class="c-q">Design time-horizon buckets (emergency / medium / long-term) with allocation per bucket. Soros adds: does the bucket structure itself change investor behaviour (reflexivity)?</div>
+        </div>
+
+        <!-- Spacer card placeholder to keep grid balanced -->
+        <div style="background:transparent; border:1px dashed var(--border); border-radius:6px; padding:8px 10px; display:flex; align-items:center; justify-content:center;">
+          <span style="font-size:10px; color:var(--muted); font-style:italic;">Phase C runs only after Tarun confirms ₹ amount + horizon</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /conds -->
+
+  <!-- RIGHT: SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Platform context -->
+    <div class="sb-block">
+      <div class="sb-title">Platform Context</div>
+      <div class="ctx-row"><span class="ctx-k">Stack</span><span class="ctx-v">Supabase · Python · Streamlit</span></div>
+      <div class="ctx-row"><span class="ctx-k">Markets</span><span class="ctx-v">559 tickers · 9 markets · India-primary</span></div>
+      <div class="ctx-row"><span class="ctx-k">Has now</span><span class="ctx-v">indicators, portfolio, forecast, schema 0001-0002</span></div>
+      <div class="ctx-row"><span class="ctx-k">Missing</span><span class="ctx-v bad">All 7 sign-off conditions</span></div>
+      <div class="ctx-row"><span class="ctx-k">Build gate</span><span class="ctx-v bad">0 / 7 ✓ — build blocked</span></div>
+      <div class="ctx-row"><span class="ctx-k">Investor</span><span class="ctx-v">Personal · India · No SEBI RIA</span></div>
+      <div class="ctx-row"><span class="ctx-k">Data now</span><span class="ctx-v">yfinance (free · personal ToS only)</span></div>
+    </div>
+
+    <!-- Seat roster -->
+    <div class="sb-block">
+      <div class="sb-title">Expert Seat Roster</div>
+      <div class="seat-row main-seat"><span class="seat-ico">📈</span><span class="seat-nm">Druckenmiller</span><span class="seat-c">Cond 1</span></div>
+      <div class="seat-row main-seat"><span class="seat-ico">⚖️</span><span class="seat-nm">Marks</span><span class="seat-c">Cond 1</span></div>
+      <div class="seat-row main-seat"><span class="seat-ico">🌐</span><span class="seat-nm">Dalio</span><span class="seat-c">Cond 5</span></div>
+      <div class="seat-row main-seat"><span class="seat-ico">🏛️</span><span class="seat-nm">Buffett</span><span class="seat-c">Cond 4</span></div>
+      <div class="seat-row main-seat"><span class="seat-ico">🔍</span><span class="seat-nm">Munger</span><span class="seat-c">Cond 4</span></div>
+      <div class="seat-row main-seat"><span class="seat-ico">🎯</span><span class="seat-nm">Lynch</span><span class="seat-c">Cond 2</span></div>
+      <div class="seat-row main-seat"><span class="seat-ico">🔄</span><span class="seat-nm">Soros</span><span class="seat-c">Cond 3</span></div>
+      <div class="seat-row supp-seat"><span class="seat-ico">🏦</span><span class="seat-nm">Financial Planning</span><span class="seat-c">Cond 3</span></div>
+      <div class="seat-row supp-seat"><span class="seat-ico">📐</span><span class="seat-nm">Quant Risk</span><span class="seat-c">Cond 7</span></div>
+      <div class="seat-row supp-seat"><span class="seat-ico">🇮🇳</span><span class="seat-nm">India Regulatory</span><span class="seat-c">Cond 6</span></div>
+    </div>
+
+    <!-- Tarun inputs needed -->
+    <div class="sb-block">
+      <div class="sb-title">⚠ Tarun Input Needed</div>
+      <div class="inp-item">
+        <div class="inp-label">Phase C unlock — Cond 3</div>
+        <div class="inp-desc">Investable ₹ range + intended time horizon per bucket (e.g., emergency 1-2yr, long 7+yr)</div>
+      </div>
+      <div class="inp-item">
+        <div class="inp-label">Environment — C1-C4 gate</div>
+        <div class="inp-desc">Supabase project ready? Python 3.12? Node? Git repo URL confirmed?</div>
+      </div>
+    </div>
+
+    <!-- Graph coverage legend -->
+    <div class="sb-block">
+      <div class="sb-title">Graph Coverage (agentic-ops graph)</div>
+      <div class="leg-row"><div class="leg-dot dot-good"></div>Good — framework nodes exist (Cond 5 · Dalio C59)</div>
+      <div class="leg-row"><div class="leg-dot dot-partial"></div>Partial — advisor refs, no schema nodes (Cond 2, 6)</div>
+      <div class="leg-row"><div class="leg-dot dot-weak"></div>Weak — no design decision nodes (Cond 1, 4, 7)</div>
+      <div class="leg-row"><div class="leg-dot dot-min"></div>Minimal — concept absent entirely (Cond 3)</div>
+      <div class="leg-note">After council: graphify --update on GSI workspace → new design nodes added</div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+</div><!-- /main -->
+
+<!-- FOOTER -->
+<div class="ftr">
+  <div class="ftr-action">
+    <span class="arrow">▶</span>
+    Confirm ₹ range + horizon → Run Phase A (4 seats in parallel) → Phase B → Phase C → 7 binary decisions → G0
+  </div>
+  <div class="ftr-graph">After session: <span>graphify --update</span> → 5+ new design nodes</div>
+  <div class="ftr-comm">Commercial: <strong>Stream D (GSI subscription)</strong> · blocked on G0 · gate = all 7 ✓</div>
+</div>
+
+</body>
+</html>
