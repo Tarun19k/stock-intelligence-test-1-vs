@@ -1,7 +1,7 @@
-# Graph Report - stock-intelligence-test-1-vs  (2026-06-12)
+# Graph Report - stock-intelligence-test-1-vs  (2026-06-17)
 
 ## Corpus Check
-- 47 files · ~1,243,187 words
+- 47 files · ~1,248,557 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8384a110`
+- Built from commit: `a6bd4a59`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -221,7 +221,7 @@ Nodes (15): info_tip(), log_error(), Label + ℹ️ icon with native HTML title=
 
 ### Community 26 - "Community 26"
 Cohesion: 0.18
-Nodes (11): Enum, CircuitState, DataType, Priority, data_manager.py — Global Stock Intelligence Dashboard DataManager: resilient dat, ResultStatus, validate(), _validate_batch() (+3 more)
+Nodes (11): Enum, CircuitState, DataType, Priority, data_manager.py — Global Stock Intelligence Dashboard DataManager: resilient dat, SourceTag, validate(), _validate_batch() (+3 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.24
@@ -253,7 +253,7 @@ Nodes (15): ADX Trend Metric (31.0), Algorithmic Signal Panel, ATR Volatility Me
 
 ### Community 34 - "Community 34"
 Cohesion: 0.15
-Nodes (5): DataContract, Wire-level shape validator for each DataType.      Validates that data received, SourceTag, TestDataContractINFO, TestDataContractLIVE
+Nodes (5): DataContract, Wire-level shape validator for each DataType.      Validates that data received, ResultStatus, TestDataContractINFO, TestDataContractLIVE
 
 ### Community 35 - "Community 35"
 Cohesion: 0.22
@@ -264,12 +264,12 @@ Cohesion: 0.2
 Nodes (13): _market_of(), Personalised AI career & investment action cards., Render one expandable topic card with chain + news + watchlist., Horizontal cascade of geopolitical impact nodes., Main entry point — called from app.py routing., Infer market from ticker suffix for watchlist filtering (OPEN-014)., Live mini price badges for a topic watchlist., render_global_intelligence() (+5 more)
 
 ### Community 37 - "Community 37"
-Cohesion: 0.15
-Nodes (14): Breadcrumb: Current Week > India > Nifty 50, Weekly Returns All Stocks Bar Chart, Market Filter (India), Nifty 50 Group, 49 Stocks Tracked Label, Sidebar Group Selector, Sidebar Stock Selector, No Stock Selected State (showing weekly summary) (+6 more)
-
-### Community 38 - "Community 38"
 Cohesion: 0.14
 Nodes (14): Refresh Data Button, Search Filter (Company Name or Symbol), Market CLOSED Status, Market CLOSED Badge, Market CLOSED Indicator, Nav: Dashboard, Nav: Global Intelligence, Nav: Home (+6 more)
+
+### Community 38 - "Community 38"
+Cohesion: 0.15
+Nodes (14): Breadcrumb: Current Week > India > Nifty 50, Weekly Returns All Stocks Bar Chart, Market Filter (India), Nifty 50 Group, 49 Stocks Tracked Label, Sidebar Group Selector, Sidebar Stock Selector, No Stock Selected State (showing weekly summary) (+6 more)
 
 ### Community 39 - "Community 39"
 Cohesion: 0.27

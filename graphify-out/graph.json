@@ -1584,7 +1584,7 @@
       "source_file": "data_manager.py",
       "source_location": "L58",
       "id": "stock_intelligence_test_1_vs_data_manager_resultstatus",
-      "community": 26,
+      "community": 34,
       "norm_label": "resultstatus"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "data_manager.py",
       "source_location": "L65",
       "id": "stock_intelligence_test_1_vs_data_manager_sourcetag",
-      "community": 34,
+      "community": 26,
       "norm_label": "sourcetag"
     },
     {
@@ -8093,7 +8093,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "left sidebar navigation",
       "id": "ui_sidebar"
     },
@@ -8119,7 +8119,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "stock search bar",
       "id": "ui_search_bar"
     },
@@ -8145,7 +8145,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "nifty 50 group",
       "id": "group_nifty50"
     },
@@ -8249,7 +8249,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "market closed indicator",
       "id": "ui_market_status"
     },
@@ -8262,7 +8262,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "refresh data button",
       "id": "ui_refresh_button"
     },
@@ -8951,7 +8951,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "group selector (nifty 50)",
       "id": "ui_group_selector"
     },
@@ -8964,7 +8964,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "stock selector (choose an option)",
       "id": "ui_stock_selector"
     },
@@ -8977,7 +8977,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "nav: home",
       "id": "ui_nav_home"
     },
@@ -8990,7 +8990,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "nav: dashboard",
       "id": "ui_nav_dashboard"
     },
@@ -9003,7 +9003,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "nav: global intelligence",
       "id": "ui_nav_global_intelligence"
     },
@@ -9016,7 +9016,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "market closed badge",
       "id": "ui_market_closed_badge"
     },
@@ -9029,7 +9029,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "refresh data button",
       "id": "ui_refresh_data_button"
     },
@@ -9068,7 +9068,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "49 stocks tracked label",
       "id": "label_49_stocks_tracked"
     },
@@ -9575,7 +9575,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "search box",
       "id": "ui_search_box"
     },
@@ -10199,7 +10199,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "sidebar group selector",
       "id": "sidebar_group_selector"
     },
@@ -10212,7 +10212,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "sidebar stock selector",
       "id": "sidebar_stock_selector"
     },
@@ -10329,7 +10329,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "ui state: no stock selected (showing weekly summary)",
       "id": "ui_state_no_stock_selected"
     },
@@ -10615,7 +10615,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "market closed status",
       "id": "status_market_closed"
     },
@@ -11642,7 +11642,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "market filter (india)",
       "id": "filter_market"
     },
@@ -11655,7 +11655,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "search filter (company name or symbol)",
       "id": "filter_search"
     },
@@ -12110,7 +12110,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 37,
       "norm_label": "refresh data button",
       "id": "button_refresh_data"
     },
@@ -13202,7 +13202,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "group current view",
       "id": "view_group_current"
     },
@@ -13215,7 +13215,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "weekly returns tab",
       "id": "tab_weekly_returns"
     },
@@ -13228,7 +13228,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "portfolio allocator tab",
       "id": "tab_portfolio_allocator"
     },
@@ -13241,7 +13241,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "signal summary tab",
       "id": "tab_signal_summary"
     },
@@ -13254,7 +13254,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "weekly returns all stocks bar chart",
       "id": "chart_weekly_returns_all_stocks"
     },
@@ -13397,7 +13397,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "breadcrumb: current week > india > nifty 50",
       "id": "breadcrumb_current_week_india"
     },
@@ -13410,7 +13410,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 38,
       "norm_label": "no stock selected state (showing weekly summary)",
       "id": "state_no_stock_selected"
     },
@@ -38728,5 +38728,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8384a110ba6ecadea6914414bf47784249520da8"
+  "built_at_commit": "a6bd4a59488a4411d35eccdefa3696d72828a385"
 }
