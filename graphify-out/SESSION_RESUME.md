@@ -10,6 +10,17 @@
 - Found: requirement count stated as "24" in original session output; actual table count is 28
 - Fixed: MEMORY.md index, project_gsi_platform_requirements.md description, project_session_2026_06_17_gsi.md, SESSION_RESUME.md — all corrected to 28
 - Commits: a6bd4a5 (requirement count fix), 5014c78 (graphify artefacts)
+- Two council miss patterns documented (scope misread + count fabrication)
+
+## 2026-06-18 HOUSEKEEPING — COMPLETE
+- agent-teams work (agentic-operations workspace) committed: 23c6d45
+  → docs/agent-teams/ (5 files: architecture, capabilities, quickstart, marketing-strategy, README)
+  → docs/superpowers/plans/2026-06-15-capabilities-matrix.md (847 lines, implementation plan)
+- DECISION: agent-teams NOT inherited into this session — context near compaction, cross-workspace
+  mixing would corrupt both; resume in fresh agentic-operations session with /chief-of-staff recover
+- GOVERNANCE GAP IDENTIFIED: no pre-compaction hook exists in Claude Code; Stop hooks fire at
+  session end only; compaction is not hookable; SESSION_RESUME.md is the sole continuity mechanism
+  and only works if close-session ran before the context filled
 - Two council misses documented: (1) scope misread on Krishna synthesis question; (2) count fabrication in strategic analysis summary
 - No other inaccuracies found in memory files or council verdict content
 
