@@ -1,9 +1,17 @@
 # SESSION_RESUME.md — GSI Tool Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-15 → 2026-06-17 (multi-day)
+**Session date:** 2026-06-15 → 2026-06-18 (multi-day, verification pass completed)
 **Session name:** GSI tool
 **Workspace:** stock-intelligence-test-1-vs
+
+## 2026-06-18 VERIFICATION PASS — COMPLETE
+- Tarun manually pasted full conversation history; CoS ran accuracy audit
+- Found: requirement count stated as "24" in original session output; actual table count is 28
+- Fixed: MEMORY.md index, project_gsi_platform_requirements.md description, project_session_2026_06_17_gsi.md, SESSION_RESUME.md — all corrected to 28
+- Commits: a6bd4a5 (requirement count fix), 5014c78 (graphify artefacts)
+- Two council misses documented: (1) scope misread on Krishna synthesis question; (2) count fabrication in strategic analysis summary
+- No other inaccuracies found in memory files or council verdict content
 
 ---
 
