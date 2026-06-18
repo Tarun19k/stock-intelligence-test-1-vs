@@ -1584,7 +1584,7 @@
       "source_file": "data_manager.py",
       "source_location": "L58",
       "id": "stock_intelligence_test_1_vs_data_manager_resultstatus",
-      "community": 34,
+      "community": 26,
       "norm_label": "resultstatus"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "data_manager.py",
       "source_location": "L65",
       "id": "stock_intelligence_test_1_vs_data_manager_sourcetag",
-      "community": 26,
+      "community": 34,
       "norm_label": "sourcetag"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "data_manager.py",
       "source_location": "L83",
       "id": "stock_intelligence_test_1_vs_data_manager_dataresult",
-      "community": 44,
+      "community": 60,
       "norm_label": "dataresult"
     },
     {
@@ -1638,7 +1638,7 @@
       "source_file": "data_manager.py",
       "source_location": "L116",
       "id": "stock_intelligence_test_1_vs_data_manager_unavailable",
-      "community": 44,
+      "community": 20,
       "norm_label": "unavailable()"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "data_manager.py",
       "source_location": "L184",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_get",
-      "community": 44,
+      "community": 60,
       "norm_label": ".get()"
     },
     {
@@ -1764,7 +1764,7 @@
       "source_file": "data_manager.py",
       "source_location": "L334",
       "id": "stock_intelligence_test_1_vs_data_manager_healthsnapshot",
-      "community": 60,
+      "community": 20,
       "norm_label": "healthsnapshot"
     },
     {
@@ -1773,7 +1773,7 @@
       "source_file": "data_manager.py",
       "source_location": "L355",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker",
-      "community": 19,
+      "community": 41,
       "norm_label": "circuitbreaker"
     },
     {
@@ -1782,7 +1782,7 @@
       "source_file": "data_manager.py",
       "source_location": "L372",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_init",
-      "community": 19,
+      "community": 41,
       "norm_label": ".__init__()"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_file": "data_manager.py",
       "source_location": "L399",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_allow_request",
-      "community": 19,
+      "community": 41,
       "norm_label": ".allow_request()"
     },
     {
@@ -1809,7 +1809,7 @@
       "source_file": "data_manager.py",
       "source_location": "L430",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_record_success",
-      "community": 19,
+      "community": 41,
       "norm_label": ".record_success()"
     },
     {
@@ -1818,7 +1818,7 @@
       "source_file": "data_manager.py",
       "source_location": "L440",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_record_failure",
-      "community": 19,
+      "community": 41,
       "norm_label": ".record_failure()"
     },
     {
@@ -1827,7 +1827,7 @@
       "source_file": "data_manager.py",
       "source_location": "L474",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager",
-      "community": 19,
+      "community": 20,
       "norm_label": "datamanager"
     },
     {
@@ -1836,7 +1836,7 @@
       "source_file": "data_manager.py",
       "source_location": "L492",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_init",
-      "community": 19,
+      "community": 41,
       "norm_label": ".__init__()"
     },
     {
@@ -1854,7 +1854,7 @@
       "source_file": "data_manager.py",
       "source_location": "L547",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_is_healthy",
-      "community": 19,
+      "community": 20,
       "norm_label": ".is_healthy()"
     },
     {
@@ -1863,7 +1863,7 @@
       "source_file": "data_manager.py",
       "source_location": "L562",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_get_health",
-      "community": 60,
+      "community": 20,
       "norm_label": ".get_health()"
     },
     {
@@ -1872,7 +1872,7 @@
       "source_file": "data_manager.py",
       "source_location": "L584",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_get_breaker",
-      "community": 19,
+      "community": 20,
       "norm_label": ".get_breaker()"
     },
     {
@@ -1881,7 +1881,7 @@
       "source_file": "data_manager.py",
       "source_location": "L591",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_fetch",
-      "community": 44,
+      "community": 20,
       "norm_label": ".fetch()"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_file": "data_manager.py",
       "source_location": "L606",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_fetch_batch",
-      "community": 44,
+      "community": 20,
       "norm_label": ".fetch_batch()"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "data_manager.py",
       "source_location": "L623",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_invalidate",
-      "community": 19,
+      "community": 20,
       "norm_label": ".invalidate()"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_file": "data_manager.py",
       "source_location": "L632",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_invalidate_all",
-      "community": 19,
+      "community": 20,
       "norm_label": ".invalidate_all()"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "data_manager.py",
       "source_location": "L640",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_prefetch",
-      "community": 19,
+      "community": 20,
       "norm_label": ".prefetch()"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "data_manager.py",
       "source_location": "L652",
       "id": "stock_intelligence_test_1_vs_data_manager_get_datamanager",
-      "community": 19,
+      "community": 41,
       "norm_label": "get_datamanager()"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "data_manager.py",
       "source_location": "L84",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_84",
-      "community": 44,
+      "community": 60,
       "norm_label": "every datamanager response is a dataresult.     data is none if and only if stat"
     },
     {
@@ -1971,7 +1971,7 @@
       "source_file": "data_manager.py",
       "source_location": "L117",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_117",
-      "community": 44,
+      "community": 20,
       "norm_label": "factory for unavailable dataresult.     use this everywhere \u2014 never construct da"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "data_manager.py",
       "source_location": "L185",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_185",
-      "community": 44,
+      "community": 60,
       "norm_label": "returns dataresult if the entry exists (fresh or stale), none if not found."
     },
     {
@@ -2043,7 +2043,7 @@
       "source_file": "data_manager.py",
       "source_location": "L335",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_335",
-      "community": 60,
+      "community": 20,
       "norm_label": "point-in-time health state.  consumed by sidebar observability panel (m6).     r"
     },
     {
@@ -2052,7 +2052,7 @@
       "source_file": "data_manager.py",
       "source_location": "L356",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_356",
-      "community": 19,
+      "community": 41,
       "norm_label": "per-source circuit breaker.  three-state machine:          closed \u2500\u2500(n consecuti"
     },
     {
@@ -2061,7 +2061,7 @@
       "source_file": "data_manager.py",
       "source_location": "L400",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_400",
-      "community": 19,
+      "community": 41,
       "norm_label": "returns true if a request should proceed.         closed  \u2192 always true."
     },
     {
@@ -2070,7 +2070,7 @@
       "source_file": "data_manager.py",
       "source_location": "L431",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_431",
-      "community": 19,
+      "community": 41,
       "norm_label": "call after any successful fetch from this source."
     },
     {
@@ -2079,7 +2079,7 @@
       "source_file": "data_manager.py",
       "source_location": "L441",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_441",
-      "community": 19,
+      "community": 41,
       "norm_label": "call after any failed fetch from this source."
     },
     {
@@ -2088,7 +2088,7 @@
       "source_file": "data_manager.py",
       "source_location": "L475",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_475",
-      "community": 19,
+      "community": 20,
       "norm_label": "singleton resilient data access layer.      obtain via:   dm = get_datamanager()"
     },
     {
@@ -2106,7 +2106,7 @@
       "source_file": "data_manager.py",
       "source_location": "L548",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_548",
-      "community": 19,
+      "community": 20,
       "norm_label": "true if at least one source breaker is closed and datamanager is not in bypass."
     },
     {
@@ -2115,7 +2115,7 @@
       "source_file": "data_manager.py",
       "source_location": "L563",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_563",
-      "community": 60,
+      "community": 20,
       "norm_label": "always safe to call \u2014 never raises.         returns a snapshot of current health"
     },
     {
@@ -2124,7 +2124,7 @@
       "source_file": "data_manager.py",
       "source_location": "L585",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_585",
-      "community": 19,
+      "community": 20,
       "norm_label": "direct access to a source's circuit breaker. used by source adapters (m4/m5)."
     },
     {
@@ -2133,7 +2133,7 @@
       "source_file": "data_manager.py",
       "source_location": "L599",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_599",
-      "community": 44,
+      "community": 20,
       "norm_label": "synchronous data fetch.  returns dataresult \u2014 never raises.         m1: always r"
     },
     {
@@ -2142,7 +2142,7 @@
       "source_file": "data_manager.py",
       "source_location": "L614",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_614",
-      "community": 44,
+      "community": 20,
       "norm_label": "batch fetch.  returns partial results \u2014 callers handle missing keys.         m1:"
     },
     {
@@ -2151,7 +2151,7 @@
       "source_file": "data_manager.py",
       "source_location": "L624",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_624",
-      "community": 19,
+      "community": 20,
       "norm_label": "atomically clears all cache layers for this ticker.         called on stock swit"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_file": "data_manager.py",
       "source_location": "L633",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_633",
-      "community": 19,
+      "community": 20,
       "norm_label": "full cache wipe.  called on global refresh button.         m2: clears l2 cachema"
     },
     {
@@ -2169,7 +2169,7 @@
       "source_file": "data_manager.py",
       "source_location": "L641",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_641",
-      "community": 19,
+      "community": 20,
       "norm_label": "fire-and-forget p2 enqueue for background warm-up.         m1: no-op."
     },
     {
@@ -2178,7 +2178,7 @@
       "source_file": "data_manager.py",
       "source_location": "L653",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_653",
-      "community": 19,
+      "community": 41,
       "norm_label": "returns the shared datamanager singleton.      @st.cache_resource ensures exactl"
     },
     {
@@ -2619,7 +2619,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L1",
       "id": "litellm_proxy_validate_models_py",
-      "community": 41,
+      "community": 42,
       "norm_label": "validate_models.py"
     },
     {
@@ -2628,7 +2628,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L65",
       "id": "litellm_proxy_validate_models_load_yaml",
-      "community": 41,
+      "community": 42,
       "norm_label": "_load_yaml()"
     },
     {
@@ -2637,7 +2637,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L117",
       "id": "litellm_proxy_validate_models_parse_config",
-      "community": 41,
+      "community": 42,
       "norm_label": "parse_config()"
     },
     {
@@ -2646,7 +2646,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L145",
       "id": "litellm_proxy_validate_models_query_health",
-      "community": 41,
+      "community": 42,
       "norm_label": "query_health()"
     },
     {
@@ -2655,7 +2655,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L175",
       "id": "litellm_proxy_validate_models_extract_names",
-      "community": 41,
+      "community": 42,
       "norm_label": "_extract_names()"
     },
     {
@@ -2664,7 +2664,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L198",
       "id": "litellm_proxy_validate_models_show_spend",
-      "community": 41,
+      "community": 42,
       "norm_label": "_show_spend()"
     },
     {
@@ -2673,7 +2673,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L256",
       "id": "litellm_proxy_validate_models_main",
-      "community": 41,
+      "community": 42,
       "norm_label": "main()"
     },
     {
@@ -2682,7 +2682,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L66",
       "id": "litellm_proxy_validate_models_rationale_66",
-      "community": 41,
+      "community": 42,
       "norm_label": "load a yaml file.  uses pyyaml when available; falls back to a minimal     line-"
     },
     {
@@ -2691,7 +2691,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L118",
       "id": "litellm_proxy_validate_models_rationale_118",
-      "community": 41,
+      "community": 42,
       "norm_label": "parse config.yaml and return [(alias, provider_model), ...] in order.     return"
     },
     {
@@ -2700,7 +2700,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L146",
       "id": "litellm_proxy_validate_models_rationale_146",
-      "community": 41,
+      "community": 42,
       "norm_label": "get {proxy_url}/health with bearer auth.     returns parsed json dict on success"
     },
     {
@@ -2709,7 +2709,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L176",
       "id": "litellm_proxy_validate_models_rationale_176",
-      "community": 41,
+      "community": 42,
       "norm_label": "extract model name strings from a health endpoint list.     litellm may return d"
     },
     {
@@ -2718,7 +2718,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L199",
       "id": "litellm_proxy_validate_models_rationale_199",
-      "community": 41,
+      "community": 42,
       "norm_label": "fetch /spend from the litellm proxy and print a per-provider cost summary.     e"
     },
     {
@@ -3042,7 +3042,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L1",
       "id": "archive_global_intelligence_old_py",
-      "community": 42,
+      "community": 43,
       "norm_label": "global_intelligence_old.py"
     },
     {
@@ -3051,7 +3051,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L15",
       "id": "archive_global_intelligence_old_render_impact_chain",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_impact_chain()"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L44",
       "id": "archive_global_intelligence_old_render_watchlist_badges",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_watchlist_badges()"
     },
     {
@@ -3069,7 +3069,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L84",
       "id": "archive_global_intelligence_old_render_next_steps_ai",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_next_steps_ai()"
     },
     {
@@ -3078,7 +3078,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L102",
       "id": "archive_global_intelligence_old_render_topic_card",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_topic_card()"
     },
     {
@@ -3087,7 +3087,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L161",
       "id": "archive_global_intelligence_old_s",
-      "community": 42,
+      "community": 43,
       "norm_label": "_s()"
     },
     {
@@ -3096,7 +3096,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L163",
       "id": "archive_global_intelligence_old_render_global_intelligence",
-      "community": 42,
+      "community": 43,
       "norm_label": "render_global_intelligence()"
     },
     {
@@ -3105,7 +3105,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L16",
       "id": "archive_global_intelligence_old_rationale_16",
-      "community": 42,
+      "community": 43,
       "norm_label": "horizontal cascade of geopolitical impact nodes."
     },
     {
@@ -3114,7 +3114,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L45",
       "id": "archive_global_intelligence_old_rationale_45",
-      "community": 42,
+      "community": 43,
       "norm_label": "live mini price badges for a topic watchlist."
     },
     {
@@ -3123,7 +3123,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L85",
       "id": "archive_global_intelligence_old_rationale_85",
-      "community": 42,
+      "community": 43,
       "norm_label": "personalised ai career & investment action cards."
     },
     {
@@ -3132,7 +3132,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L103",
       "id": "archive_global_intelligence_old_rationale_103",
-      "community": 42,
+      "community": 43,
       "norm_label": "render one expandable topic card with chain + news + watchlist."
     },
     {
@@ -3141,7 +3141,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L164",
       "id": "archive_global_intelligence_old_rationale_164",
-      "community": 42,
+      "community": 43,
       "norm_label": "main entry point \u2014 called from app.py routing."
     },
     {
@@ -5067,7 +5067,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L86",
       "id": "tests_test_data_manager_m2_testcachemanagerhit_test_unavailable_not_stored",
-      "community": 44,
+      "community": 20,
       "norm_label": ".test_unavailable_not_stored()"
     },
     {
@@ -9627,7 +9627,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "ticker tape bar",
       "id": "ticker_tape_bar"
     },
@@ -9640,7 +9640,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "gold price widget",
       "id": "gold_price_widget"
     },
@@ -9653,7 +9653,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "crude wti price widget",
       "id": "crude_wti_widget"
     },
@@ -9666,7 +9666,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "usd/inr exchange rate widget",
       "id": "usd_inr_widget"
     },
@@ -9679,7 +9679,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "search ui settled state",
       "id": "search_ui_settled"
     },
@@ -9692,7 +9692,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "macro market data",
       "id": "macro_market_data"
     },
@@ -9705,7 +9705,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "price change indicator",
       "id": "price_change_indicator"
     },
@@ -12903,7 +12903,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "streamlit application",
       "id": "streamlit_app"
     },
@@ -14112,7 +14112,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "stock price card (\u20b91,304.70)",
       "id": "stock_price_card"
     },
@@ -14125,7 +14125,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "sell signal badge",
       "id": "signal_badge_sell"
     },
@@ -14411,7 +14411,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "declining trend signal (stage 4 \u2014 price 9.6% below 50-week average)",
       "id": "declining_trend_signal"
     },
@@ -14424,7 +14424,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "52-week high price reference",
       "id": "52week_high_metric"
     },
@@ -14437,7 +14437,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "52-week low price reference",
       "id": "52week_low_metric"
     },
@@ -14996,7 +14996,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "gsi qa audit report v5.36",
       "id": "gsi_qa_audit_report"
     },
@@ -15009,7 +15009,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "gsi version 5.36",
       "id": "gsi_version_536"
     },
@@ -15022,7 +15022,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "qa test suite",
       "id": "qa_test_suite"
     },
@@ -15035,7 +15035,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "qa pass status",
       "id": "qa_pass_status"
     },
@@ -15048,7 +15048,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "qa fail status",
       "id": "qa_fail_status"
     },
@@ -15061,7 +15061,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "regression tests",
       "id": "regression_tests"
     },
@@ -15074,7 +15074,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "dashboard tabs",
       "id": "dashboard_tabs"
     },
@@ -15087,7 +15087,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "market data checks",
       "id": "market_data_checks"
     },
@@ -15100,7 +15100,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "compliance checks",
       "id": "compliance_checks"
     },
@@ -15113,7 +15113,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "ui validation",
       "id": "ui_validation"
     },
@@ -15126,7 +15126,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "sector and group tests",
       "id": "sector_group_tests"
     },
@@ -15139,7 +15139,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "ticker validation",
       "id": "ticker_validation"
     },
@@ -15152,7 +15152,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "error log section",
       "id": "error_log_section"
     },
@@ -15165,7 +15165,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "performance metrics",
       "id": "performance_metrics"
     },
@@ -15178,7 +15178,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "summary scorecard",
       "id": "summary_scorecard"
     },
@@ -15191,7 +15191,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "indian equities market",
       "id": "indian_equities_market"
     },
@@ -15204,7 +15204,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "top movers section",
       "id": "top_movers_section"
     },
@@ -15217,7 +15217,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "macro cards",
       "id": "macro_cards"
     },
@@ -15230,7 +15230,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "sebi compliance",
       "id": "sebi_compliance"
     },
@@ -15243,7 +15243,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "data-as-of disclosure",
       "id": "data_disclosure"
     },
@@ -15256,7 +15256,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "green pass indicators",
       "id": "green_pass_indicators"
     },
@@ -15269,7 +15269,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "red fail indicators",
       "id": "red_fail_indicators"
     },
@@ -15282,7 +15282,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 20,
+      "community": 19,
       "norm_label": "yellow warning indicators",
       "id": "yellow_warning_indicators"
     },
@@ -38728,5 +38728,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2e34e8f2921a3318b7fc86645ed3096d38c46f68"
+  "built_at_commit": "0d64d5173c2b4ecf07353e156f79ac3a081e1952"
 }
