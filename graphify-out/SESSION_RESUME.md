@@ -40,6 +40,27 @@
 
 ---
 
+## 2026-06-19 RAG GATEWAY + SYSTEMS ANALYSIS — COMPLETE
+
+- **RAG Gateway P0** fully built and deployed cross-device:
+  - `~/.claude/scripts/rag-gateway.sh` — three-tier routing (GRAPH-ONLY/SUPPLEMENT/EXTERNAL-ONLY), exit codes 0/2/1, gap logging, git-based freshness check, fail-open
+  - `~/.claude/config/rag-gateway.conf` — configurable thresholds (THRESHOLD_HIGH=5, LOW=3, FRESHNESS_MAX_COMMITS=10)
+  - `housekeeping-stop-hook.sh` extended — grooming pass (section 4): min-entries gate (10), top-5 miss topics → ENRICHMENT_LOG.md proposals
+  - `auto-sync.sh` updated — conf bootstrap added (tarun-global-memory/config/)
+  - `tarun-global-memory` commit `99a0a37` — all scripts + conf cross-device
+  - `agentic-operations` commit `210f72d` — spec + rag-data/ dir
+  - `stock-intelligence-test-1-vs` commit `c65f87e` — rag-data/ dir
+  - Council reviewed: Constraint Enforcer (4 conditions) + Synthesis Chair (2 amendments)
+  - Premortem logged: window-8671-2026-06-18
+- **Systems analysis completed** — feedback loop gap map:
+  - G1: No unified session-start reader (8 sequential reads) — Phase 1
+  - G2: Pre-compaction ingest missing — Phase 3 (IDEA-016/017)
+  - G3: RAG enforcement gap — dispatch table row not yet in research-development skill
+  - G4: Respond stage absent — no feedback signals from any stage
+- **Phase plan defined:** P1 session-start-reader → P2 respond signals → P3 JSONL watcher
+- **IDEA-017 status (from memory):** Session Intelligence Dashboard built v1; 20 sessions/17 compactions/avg continuity 12/100 — validates urgency of this session's infrastructure work
+- **Pending G3 fix:** dispatch table row in `~/.claude/skills/research-development/SKILL.md` — 5 min, Haiku-tier, first action next session
+
 ## 2026-06-18 INFRASTRUCTURE SPRINT — COMPLETE
 
 - **Housekeeping skill** built: `~/.claude/skills/housekeeping/SKILL.md` — 6 modes (checkpoint, compact-ready, memory-audit, ideas-log, close, status); active listener architecture with Tier 1 (Stop hook, LIVE), Tier 2 (JSONL watcher, IDEA-016), Tier 3 (graphify --update)
@@ -71,7 +92,13 @@
 **Phase C — awaiting Tarun input (₹ investable range + time horizons):**
 - Condition 3 (Bucket architecture: liquidity amount per bucket + time horizon per bucket)
 
-**Next session first action:** Invoke panel-convene + expert seats for Phase A in sequence. After Phase A council runs → graphify --update on GSI workspace to write design decision nodes → Tarun reviews council outputs → makes 7 decisions → design review → build begins (G0).
+**Next session first action (G3 fix — 5 min):** Add dispatch table row to `~/.claude/skills/research-development/SKILL.md`:
+```
+| Internal org-corpus topic | rag-gateway.sh first → Tavily only on GRAPH_MISS exit(1) | Never skip graph check for internal topics |
+```
+Then: Invoke panel-convene + expert seats for GSI Phase A in sequence (Druckenmiller+Marks Cond 1, Dalio Cond 5, India Regulatory Cond 6, Quant Risk Cond 7). After Phase A → graphify --update → Tarun reviews → makes 7 decisions → design review → G0 build.
+
+**Phase 1 (next session or after Phase A):** Build `session-start-reader.py` — unified state read replaces 8 sequential CoS reads; wires pending_pickup[] consumer so CC inputs are never silently lost.
 
 ---
 
