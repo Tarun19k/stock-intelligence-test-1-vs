@@ -1,9 +1,9 @@
 # SESSION_RESUME.md — GSI Tool Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-15 → 2026-06-18 (multi-day, verification pass completed)
-**Session name:** GSI tool
-**Workspace:** stock-intelligence-test-1-vs
+**Session date:** 2026-06-15 → 2026-06-18 (multi-day, active)
+**Session name:** GSI tool + housekeeping infrastructure
+**Workspace:** stock-intelligence-test-1-vs (primary) + agentic-operations (parallel workstream)
 
 ## 2026-06-18 VERIFICATION PASS — COMPLETE
 - Tarun manually pasted full conversation history; CoS ran accuracy audit
@@ -40,14 +40,38 @@
 
 ---
 
+## 2026-06-18 INFRASTRUCTURE SPRINT — COMPLETE
+
+- **Housekeeping skill** built: `~/.claude/skills/housekeeping/SKILL.md` — 6 modes (checkpoint, compact-ready, memory-audit, ideas-log, close, status); active listener architecture with Tier 1 (Stop hook, LIVE), Tier 2 (JSONL watcher, IDEA-016), Tier 3 (graphify --update)
+- **Stop hook #7** added: `housekeeping-stop-hook.sh` — SESSION_RESUME safety net + graph update trigger + status snapshot; position 7 in Stop chain (last); deployed to tarun-global-memory commit `2fb77e0`
+- **Council briefing HTML** built: `ideas/council_briefing_2026-06-18.html` — no-scroll 80/20 one-pager, Phase A/B/C layout, 7 conditions, seat roster, graph coverage, Tarun inputs; commit `2e34e8f`
+- **Council mode confirmed:** Tarun confirmed advisory mode — council answers on GSI TOOL DESIGN, not corpus calibration
+- **Graph coverage gaps noted:** 5 of 7 conditions have weak/minimal graph coverage; graphify --update required after council runs
+- **Haiku review gate** established: all Haiku outputs reviewed by Sonnet/Opus before commit; memory `feedback_haiku_review_gate.md`
+- **IDEA-016** parked: Pre-Compaction Context Continuity Automation — HIGH PRIORITY
+
+---
+
 ## EXACT RESUME POINT
 
-**Where we stopped:** Tarun said "I would have the council answer these questions, but first save all progress and complete housekeeping."
+**Where we stopped:** Infrastructure sprint complete. Housekeeping compact-ready gate run — 3 gaps resolved in this pass.
 
-**What "the council answering questions" means:**
-The council (7 financial expert seats) must now answer the 7 pre-build sign-off conditions — specifically the open decisions Tarun has not yet made. The council's role in the next session is to provide their best guidance on each decision so Tarun can decide efficiently rather than researching each from scratch.
+**Council mode confirmed:** Tarun confirmed design advisory mode (not corpus calibration). Run Phase A council seats directly on GSI tool design conditions.
 
-**Next session first action:** Invoke panel-convene + the 7 expert seats to address each pre-build sign-off condition in turn. After the council runs, Tarun makes the 7 decisions. Then design review. Then build begins.
+**Phase A — ready to run immediately (no Tarun input needed):**
+- Condition 1 (Data Source: yfinance vs EODHD) → Druckenmiller + Marks
+- Condition 5 (Macro Regime: Dalio 4-quadrant inputs) → Dalio
+- Condition 6 (SEBI compliance path) → India Regulatory seat
+- Condition 7 (Position sizing framework) → Quant Risk seat
+
+**Phase B — depends on Condition 1 decision:**
+- Condition 4 (Fundamental data layer: ROIC, FCF, P/E — source depends on A1)
+- Condition 2 (Stock classification schema — CoS drafts)
+
+**Phase C — awaiting Tarun input (₹ investable range + time horizons):**
+- Condition 3 (Bucket architecture: liquidity amount per bucket + time horizon per bucket)
+
+**Next session first action:** Invoke panel-convene + expert seats for Phase A in sequence. After Phase A council runs → graphify --update on GSI workspace to write design decision nodes → Tarun reviews council outputs → makes 7 decisions → design review → build begins (G0).
 
 ---
 
@@ -65,7 +89,7 @@ The council (7 financial expert seats) must now answer the 7 pre-build sign-off 
 
 ---
 
-## 24 REQUIREMENTS — STATUS SNAPSHOT
+## 28 REQUIREMENTS — STATUS SNAPSHOT
 
 **Have (from handover package):** Donor code (indicators.py, portfolio.py, forecast.py, market_data.py), schema SQL 0001+0002, seed files (sources + dependency graph), sweep tools, donor fixtures, synthesis prompts, SPEC.md, ARCHITECTURE.md, BUILD_PLAN.md, GSI_DONOR_AUDIT.md
 

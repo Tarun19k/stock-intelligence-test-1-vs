@@ -9,7 +9,7 @@
       "source_file": "regression.py",
       "source_location": "L1",
       "id": "regression_py",
-      "community": 58,
+      "community": 57,
       "norm_label": "regression.py"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "regression.py",
       "source_location": "L17",
       "id": "stock_intelligence_test_1_vs_regression_load_files",
-      "community": 58,
+      "community": 57,
       "norm_label": "load_files()"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "regression.py",
       "source_location": "L25",
       "id": "stock_intelligence_test_1_vs_regression_chk",
-      "community": 58,
+      "community": 57,
       "norm_label": "chk()"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "regression.py",
       "source_location": "L28",
       "id": "stock_intelligence_test_1_vs_regression_run",
-      "community": 58,
+      "community": 57,
       "norm_label": "run()"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "regression.py",
       "source_location": "L1166",
       "id": "stock_intelligence_test_1_vs_regression_verify_zip",
-      "community": 58,
+      "community": 57,
       "norm_label": "verify_zip()"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "regression.py",
       "source_location": "L1178",
       "id": "stock_intelligence_test_1_vs_regression_report",
-      "community": 58,
+      "community": 57,
       "norm_label": "report()"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "regression.py",
       "source_location": "L1167",
       "id": "stock_intelligence_test_1_vs_regression_rationale_1167",
-      "community": 58,
+      "community": 57,
       "norm_label": "r-zip \u00b7 ki-014: re-read packaged zip from disk and run full suite.     catches f"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "generate_context.py",
       "source_location": "L1",
       "id": "generate_context_py",
-      "community": 47,
+      "community": 48,
       "norm_label": "generate_context.py"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "generate_context.py",
       "source_location": "L15",
       "id": "stock_intelligence_test_1_vs_generate_context_find_repo_root",
-      "community": 47,
+      "community": 48,
       "norm_label": "find_repo_root()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "generate_context.py",
       "source_location": "L23",
       "id": "stock_intelligence_test_1_vs_generate_context_extract_dnu_rules",
-      "community": 47,
+      "community": 48,
       "norm_label": "extract_dnu_rules()"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "generate_context.py",
       "source_location": "L39",
       "id": "stock_intelligence_test_1_vs_generate_context_item_label",
-      "community": 47,
+      "community": 48,
       "norm_label": "item_label()"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "generate_context.py",
       "source_location": "L42",
       "id": "stock_intelligence_test_1_vs_generate_context_build",
-      "community": 47,
+      "community": 48,
       "norm_label": "build()"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "generate_context.py",
       "source_location": "L176",
       "id": "stock_intelligence_test_1_vs_generate_context_validate",
-      "community": 47,
+      "community": 48,
       "norm_label": "validate()"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "generate_context.py",
       "source_location": "L245",
       "id": "stock_intelligence_test_1_vs_generate_context_run",
-      "community": 47,
+      "community": 48,
       "norm_label": "run()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "generate_context.py",
       "source_location": "L24",
       "id": "stock_intelligence_test_1_vs_generate_context_rationale_24",
-      "community": 47,
+      "community": 48,
       "norm_label": "pull do not undo rules verbatim from claude.md \u2014 never drift from source."
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "generate_context.py",
       "source_location": "L43",
       "id": "stock_intelligence_test_1_vs_generate_context_rationale_43",
-      "community": 47,
+      "community": 48,
       "norm_label": "build content string from all sources."
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "generate_context.py",
       "source_location": "L177",
       "id": "stock_intelligence_test_1_vs_generate_context_rationale_177",
-      "community": 47,
+      "community": 48,
       "norm_label": "run all 75 validation checks. returns list of failure strings."
     },
     {
@@ -1512,7 +1512,7 @@
       "source_file": "app.py",
       "source_location": "L1",
       "id": "app_py",
-      "community": 60,
+      "community": 59,
       "norm_label": "app.py"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_file": "app.py",
       "source_location": "L43",
       "id": "stock_intelligence_test_1_vs_app_is_market_open",
-      "community": 60,
+      "community": 59,
       "norm_label": "_is_market_open()"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_file": "app.py",
       "source_location": "L53",
       "id": "stock_intelligence_test_1_vs_app_on_market_change",
-      "community": 60,
+      "community": 59,
       "norm_label": "_on_market_change()"
     },
     {
@@ -1539,7 +1539,7 @@
       "source_file": "app.py",
       "source_location": "L61",
       "id": "stock_intelligence_test_1_vs_app_rationale_61",
-      "community": 60,
+      "community": 59,
       "norm_label": "# note: do not increment cb here \u2014 that would evict all ticker caches"
     },
     {
@@ -1584,7 +1584,7 @@
       "source_file": "data_manager.py",
       "source_location": "L58",
       "id": "stock_intelligence_test_1_vs_data_manager_resultstatus",
-      "community": 26,
+      "community": 34,
       "norm_label": "resultstatus"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "data_manager.py",
       "source_location": "L83",
       "id": "stock_intelligence_test_1_vs_data_manager_dataresult",
-      "community": 54,
+      "community": 44,
       "norm_label": "dataresult"
     },
     {
@@ -1638,7 +1638,7 @@
       "source_file": "data_manager.py",
       "source_location": "L116",
       "id": "stock_intelligence_test_1_vs_data_manager_unavailable",
-      "community": 20,
+      "community": 44,
       "norm_label": "unavailable()"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "data_manager.py",
       "source_location": "L184",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_get",
-      "community": 54,
+      "community": 44,
       "norm_label": ".get()"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_file": "data_manager.py",
       "source_location": "L249",
       "id": "stock_intelligence_test_1_vs_data_manager_datacontract",
-      "community": 51,
+      "community": 34,
       "norm_label": "datacontract"
     },
     {
@@ -1764,7 +1764,7 @@
       "source_file": "data_manager.py",
       "source_location": "L334",
       "id": "stock_intelligence_test_1_vs_data_manager_healthsnapshot",
-      "community": 20,
+      "community": 60,
       "norm_label": "healthsnapshot"
     },
     {
@@ -1773,7 +1773,7 @@
       "source_file": "data_manager.py",
       "source_location": "L355",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker",
-      "community": 40,
+      "community": 19,
       "norm_label": "circuitbreaker"
     },
     {
@@ -1782,7 +1782,7 @@
       "source_file": "data_manager.py",
       "source_location": "L372",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_init",
-      "community": 40,
+      "community": 19,
       "norm_label": ".__init__()"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_file": "data_manager.py",
       "source_location": "L399",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_allow_request",
-      "community": 40,
+      "community": 19,
       "norm_label": ".allow_request()"
     },
     {
@@ -1809,7 +1809,7 @@
       "source_file": "data_manager.py",
       "source_location": "L430",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_record_success",
-      "community": 40,
+      "community": 19,
       "norm_label": ".record_success()"
     },
     {
@@ -1818,7 +1818,7 @@
       "source_file": "data_manager.py",
       "source_location": "L440",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_record_failure",
-      "community": 40,
+      "community": 19,
       "norm_label": ".record_failure()"
     },
     {
@@ -1827,7 +1827,7 @@
       "source_file": "data_manager.py",
       "source_location": "L474",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager",
-      "community": 20,
+      "community": 19,
       "norm_label": "datamanager"
     },
     {
@@ -1836,7 +1836,7 @@
       "source_file": "data_manager.py",
       "source_location": "L492",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_init",
-      "community": 40,
+      "community": 19,
       "norm_label": ".__init__()"
     },
     {
@@ -1854,7 +1854,7 @@
       "source_file": "data_manager.py",
       "source_location": "L547",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_is_healthy",
-      "community": 20,
+      "community": 19,
       "norm_label": ".is_healthy()"
     },
     {
@@ -1863,7 +1863,7 @@
       "source_file": "data_manager.py",
       "source_location": "L562",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_get_health",
-      "community": 20,
+      "community": 60,
       "norm_label": ".get_health()"
     },
     {
@@ -1872,7 +1872,7 @@
       "source_file": "data_manager.py",
       "source_location": "L584",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_get_breaker",
-      "community": 20,
+      "community": 19,
       "norm_label": ".get_breaker()"
     },
     {
@@ -1881,7 +1881,7 @@
       "source_file": "data_manager.py",
       "source_location": "L591",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_fetch",
-      "community": 20,
+      "community": 44,
       "norm_label": ".fetch()"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_file": "data_manager.py",
       "source_location": "L606",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_fetch_batch",
-      "community": 20,
+      "community": 44,
       "norm_label": ".fetch_batch()"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "data_manager.py",
       "source_location": "L623",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_invalidate",
-      "community": 20,
+      "community": 19,
       "norm_label": ".invalidate()"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_file": "data_manager.py",
       "source_location": "L632",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_invalidate_all",
-      "community": 20,
+      "community": 19,
       "norm_label": ".invalidate_all()"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "data_manager.py",
       "source_location": "L640",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_prefetch",
-      "community": 20,
+      "community": 19,
       "norm_label": ".prefetch()"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "data_manager.py",
       "source_location": "L652",
       "id": "stock_intelligence_test_1_vs_data_manager_get_datamanager",
-      "community": 40,
+      "community": 19,
       "norm_label": "get_datamanager()"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "data_manager.py",
       "source_location": "L84",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_84",
-      "community": 54,
+      "community": 44,
       "norm_label": "every datamanager response is a dataresult.     data is none if and only if stat"
     },
     {
@@ -1971,7 +1971,7 @@
       "source_file": "data_manager.py",
       "source_location": "L117",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_117",
-      "community": 20,
+      "community": 44,
       "norm_label": "factory for unavailable dataresult.     use this everywhere \u2014 never construct da"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "data_manager.py",
       "source_location": "L185",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_185",
-      "community": 54,
+      "community": 44,
       "norm_label": "returns dataresult if the entry exists (fresh or stale), none if not found."
     },
     {
@@ -2025,7 +2025,7 @@
       "source_file": "data_manager.py",
       "source_location": "L250",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_250",
-      "community": 51,
+      "community": 34,
       "norm_label": "wire-level shape validator for each datatype.      validates that data received"
     },
     {
@@ -2043,7 +2043,7 @@
       "source_file": "data_manager.py",
       "source_location": "L335",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_335",
-      "community": 20,
+      "community": 60,
       "norm_label": "point-in-time health state.  consumed by sidebar observability panel (m6).     r"
     },
     {
@@ -2052,7 +2052,7 @@
       "source_file": "data_manager.py",
       "source_location": "L356",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_356",
-      "community": 40,
+      "community": 19,
       "norm_label": "per-source circuit breaker.  three-state machine:          closed \u2500\u2500(n consecuti"
     },
     {
@@ -2061,7 +2061,7 @@
       "source_file": "data_manager.py",
       "source_location": "L400",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_400",
-      "community": 40,
+      "community": 19,
       "norm_label": "returns true if a request should proceed.         closed  \u2192 always true."
     },
     {
@@ -2070,7 +2070,7 @@
       "source_file": "data_manager.py",
       "source_location": "L431",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_431",
-      "community": 40,
+      "community": 19,
       "norm_label": "call after any successful fetch from this source."
     },
     {
@@ -2079,7 +2079,7 @@
       "source_file": "data_manager.py",
       "source_location": "L441",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_441",
-      "community": 40,
+      "community": 19,
       "norm_label": "call after any failed fetch from this source."
     },
     {
@@ -2088,7 +2088,7 @@
       "source_file": "data_manager.py",
       "source_location": "L475",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_475",
-      "community": 20,
+      "community": 19,
       "norm_label": "singleton resilient data access layer.      obtain via:   dm = get_datamanager()"
     },
     {
@@ -2106,7 +2106,7 @@
       "source_file": "data_manager.py",
       "source_location": "L548",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_548",
-      "community": 20,
+      "community": 19,
       "norm_label": "true if at least one source breaker is closed and datamanager is not in bypass."
     },
     {
@@ -2115,7 +2115,7 @@
       "source_file": "data_manager.py",
       "source_location": "L563",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_563",
-      "community": 20,
+      "community": 60,
       "norm_label": "always safe to call \u2014 never raises.         returns a snapshot of current health"
     },
     {
@@ -2124,7 +2124,7 @@
       "source_file": "data_manager.py",
       "source_location": "L585",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_585",
-      "community": 20,
+      "community": 19,
       "norm_label": "direct access to a source's circuit breaker. used by source adapters (m4/m5)."
     },
     {
@@ -2133,7 +2133,7 @@
       "source_file": "data_manager.py",
       "source_location": "L599",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_599",
-      "community": 20,
+      "community": 44,
       "norm_label": "synchronous data fetch.  returns dataresult \u2014 never raises.         m1: always r"
     },
     {
@@ -2142,7 +2142,7 @@
       "source_file": "data_manager.py",
       "source_location": "L614",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_614",
-      "community": 20,
+      "community": 44,
       "norm_label": "batch fetch.  returns partial results \u2014 callers handle missing keys.         m1:"
     },
     {
@@ -2151,7 +2151,7 @@
       "source_file": "data_manager.py",
       "source_location": "L624",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_624",
-      "community": 20,
+      "community": 19,
       "norm_label": "atomically clears all cache layers for this ticker.         called on stock swit"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_file": "data_manager.py",
       "source_location": "L633",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_633",
-      "community": 20,
+      "community": 19,
       "norm_label": "full cache wipe.  called on global refresh button.         m2: clears l2 cachema"
     },
     {
@@ -2169,7 +2169,7 @@
       "source_file": "data_manager.py",
       "source_location": "L641",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_641",
-      "community": 20,
+      "community": 19,
       "norm_label": "fire-and-forget p2 enqueue for background warm-up.         m1: no-op."
     },
     {
@@ -2178,7 +2178,7 @@
       "source_file": "data_manager.py",
       "source_location": "L653",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_653",
-      "community": 40,
+      "community": 19,
       "norm_label": "returns the shared datamanager singleton.      @st.cache_resource ensures exactl"
     },
     {
@@ -2493,7 +2493,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L1",
       "id": "litellm_proxy_sprint_planner_py",
-      "community": 34,
+      "community": 35,
       "norm_label": "sprint_planner.py"
     },
     {
@@ -2502,7 +2502,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L38",
       "id": "litellm_proxy_sprint_planner_load_model_display_names",
-      "community": 34,
+      "community": 35,
       "norm_label": "_load_model_display_names()"
     },
     {
@@ -2511,7 +2511,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L183",
       "id": "litellm_proxy_sprint_planner_classify",
-      "community": 34,
+      "community": 35,
       "norm_label": "classify()"
     },
     {
@@ -2520,7 +2520,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L299",
       "id": "litellm_proxy_sprint_planner_parse_backlog",
-      "community": 34,
+      "community": 35,
       "norm_label": "parse_backlog()"
     },
     {
@@ -2529,7 +2529,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L377",
       "id": "litellm_proxy_sprint_planner_parse_in_progress",
-      "community": 34,
+      "community": 35,
       "norm_label": "parse_in_progress()"
     },
     {
@@ -2538,7 +2538,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L438",
       "id": "litellm_proxy_sprint_planner_sprint_file_age_days",
-      "community": 34,
+      "community": 35,
       "norm_label": "_sprint_file_age_days()"
     },
     {
@@ -2547,7 +2547,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L464",
       "id": "litellm_proxy_sprint_planner_parse_done_ids",
-      "community": 34,
+      "community": 35,
       "norm_label": "_parse_done_ids()"
     },
     {
@@ -2556,7 +2556,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L487",
       "id": "litellm_proxy_sprint_planner_render_plan",
-      "community": 34,
+      "community": 35,
       "norm_label": "render_plan()"
     },
     {
@@ -2565,7 +2565,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L608",
       "id": "litellm_proxy_sprint_planner_main",
-      "community": 34,
+      "community": 35,
       "norm_label": "main()"
     },
     {
@@ -2574,7 +2574,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L39",
       "id": "litellm_proxy_sprint_planner_rationale_39",
-      "community": 34,
+      "community": 35,
       "norm_label": "read litellm-proxy/config.yaml and return a mapping of     model_name alias \u2192 pr"
     },
     {
@@ -2583,7 +2583,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L185",
       "id": "litellm_proxy_sprint_planner_rationale_185",
-      "community": 34,
+      "community": 35,
       "norm_label": "classify a backlog item into an execution tier.      priority order (first match"
     },
     {
@@ -2592,7 +2592,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L378",
       "id": "litellm_proxy_sprint_planner_rationale_378",
-      "community": 34,
+      "community": 35,
       "norm_label": "extract items from the '### in progress' table in gsi_sprint.md.     these are i"
     },
     {
@@ -2601,7 +2601,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L439",
       "id": "litellm_proxy_sprint_planner_rationale_439",
-      "community": 34,
+      "community": 35,
       "norm_label": "return the number of days since gsi_sprint.md was last committed.     returns no"
     },
     {
@@ -2610,7 +2610,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L465",
       "id": "litellm_proxy_sprint_planner_rationale_465",
-      "community": 34,
+      "community": 35,
       "norm_label": "collect all item ids that appear in any 'done' section of gsi_sprint.md.     use"
     },
     {
@@ -3150,7 +3150,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L1",
       "id": "archive_regression_py",
-      "community": 55,
+      "community": 54,
       "norm_label": "regression.py"
     },
     {
@@ -3159,7 +3159,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L14",
       "id": "archive_regression_load_files",
-      "community": 55,
+      "community": 54,
       "norm_label": "load_files()"
     },
     {
@@ -3168,7 +3168,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L22",
       "id": "archive_regression_chk",
-      "community": 55,
+      "community": 54,
       "norm_label": "chk()"
     },
     {
@@ -3177,7 +3177,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L25",
       "id": "archive_regression_run",
-      "community": 55,
+      "community": 54,
       "norm_label": "run()"
     },
     {
@@ -3186,7 +3186,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L221",
       "id": "archive_regression_verify_zip",
-      "community": 55,
+      "community": 54,
       "norm_label": "verify_zip()"
     },
     {
@@ -3195,7 +3195,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L233",
       "id": "archive_regression_report",
-      "community": 55,
+      "community": 54,
       "norm_label": "report()"
     },
     {
@@ -3204,7 +3204,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L1",
       "id": "archive_regression_rationale_1",
-      "community": 55,
+      "community": 54,
       "norm_label": "regression.py \u2014 gsi regression & validation suite run from project root: python"
     },
     {
@@ -3213,7 +3213,7 @@
       "source_file": "archive/regression_OLD.py",
       "source_location": "L222",
       "id": "archive_regression_rationale_222",
-      "community": 55,
+      "community": 54,
       "norm_label": "r-zip \u00b7 ki-014: re-read packaged zip from disk and run full suite.     catches f"
     },
     {
@@ -3222,7 +3222,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L1",
       "id": "archive_forecast_py",
-      "community": 48,
+      "community": 49,
       "norm_label": "forecast.py"
     },
     {
@@ -3231,7 +3231,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L16",
       "id": "archive_forecast_load_forecast_history",
-      "community": 48,
+      "community": 49,
       "norm_label": "load_forecast_history()"
     },
     {
@@ -3240,7 +3240,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L26",
       "id": "archive_forecast_save_forecast_history",
-      "community": 48,
+      "community": 49,
       "norm_label": "save_forecast_history()"
     },
     {
@@ -3249,7 +3249,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L34",
       "id": "archive_forecast_store_forecast",
-      "community": 48,
+      "community": 49,
       "norm_label": "store_forecast()"
     },
     {
@@ -3258,7 +3258,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L56",
       "id": "archive_forecast_resolve_forecasts",
-      "community": 48,
+      "community": 49,
       "norm_label": "resolve_forecasts()"
     },
     {
@@ -3267,7 +3267,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L76",
       "id": "archive_forecast_compute_correction_factor",
-      "community": 48,
+      "community": 49,
       "norm_label": "compute_correction_factor()"
     },
     {
@@ -3276,7 +3276,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L93",
       "id": "archive_forecast_get_accuracy_summary",
-      "community": 48,
+      "community": 49,
       "norm_label": "get_accuracy_summary()"
     },
     {
@@ -3285,7 +3285,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L112",
       "id": "archive_forecast_render_forecast_accuracy",
-      "community": 48,
+      "community": 49,
       "norm_label": "render_forecast_accuracy()"
     },
     {
@@ -3294,7 +3294,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L113",
       "id": "archive_forecast_rationale_113",
-      "community": 48,
+      "community": 49,
       "norm_label": "render accuracy tracking panel \u2014 only function here that calls st.*"
     },
     {
@@ -3303,7 +3303,7 @@
       "source_file": "archive/forecast_OLD.py",
       "source_location": "L5",
       "id": "archive_forecast_rationale_5",
-      "community": 48,
+      "community": 49,
       "norm_label": "# note: render_forecast_accuracy is the only function here that calls st.*"
     },
     {
@@ -4050,7 +4050,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L1",
       "id": "archive_indicators_py",
-      "community": 59,
+      "community": 58,
       "norm_label": "indicators.py"
     },
     {
@@ -4059,7 +4059,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L9",
       "id": "archive_indicators_compute_indicators",
-      "community": 59,
+      "community": 58,
       "norm_label": "compute_indicators()"
     },
     {
@@ -4068,7 +4068,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L85",
       "id": "archive_indicators_signal_score",
-      "community": 59,
+      "community": 58,
       "norm_label": "signal_score()"
     },
     {
@@ -4077,7 +4077,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L10",
       "id": "archive_indicators_rationale_10",
-      "community": 59,
+      "community": 58,
       "norm_label": "add rsi, macd, bollinger, sma, atr, adx, stoch, obv, volumema to df."
     },
     {
@@ -4086,7 +4086,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L86",
       "id": "archive_indicators_rationale_86",
-      "community": 59,
+      "community": 58,
       "norm_label": "compute composite signal score (0\u2013100) from latest indicator row.     returns di"
     },
     {
@@ -4842,7 +4842,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L1",
       "id": "archive_market_data_py",
-      "community": 44,
+      "community": 45,
       "norm_label": "market_data.py"
     },
     {
@@ -4851,7 +4851,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L20",
       "id": "archive_market_data_is_allowed_rss",
-      "community": 44,
+      "community": 45,
       "norm_label": "_is_allowed_rss()"
     },
     {
@@ -4860,7 +4860,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L33",
       "id": "archive_market_data_normalize_df",
-      "community": 44,
+      "community": 45,
       "norm_label": "_normalize_df()"
     },
     {
@@ -4869,7 +4869,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L78",
       "id": "archive_market_data_throttle",
-      "community": 44,
+      "community": 45,
       "norm_label": "_throttle()"
     },
     {
@@ -4878,7 +4878,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L87",
       "id": "archive_market_data_get_price_data",
-      "community": 44,
+      "community": 45,
       "norm_label": "get_price_data()"
     },
     {
@@ -4887,7 +4887,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L106",
       "id": "archive_market_data_get_ticker_info",
-      "community": 44,
+      "community": 45,
       "norm_label": "get_ticker_info()"
     },
     {
@@ -4896,7 +4896,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L116",
       "id": "archive_market_data_safe_close",
-      "community": 44,
+      "community": 45,
       "norm_label": "_safe_close()"
     },
     {
@@ -4905,7 +4905,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L129",
       "id": "archive_market_data_get_top_movers",
-      "community": 44,
+      "community": 45,
       "norm_label": "get_top_movers()"
     },
     {
@@ -4914,7 +4914,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L148",
       "id": "archive_market_data_get_news",
-      "community": 44,
+      "community": 45,
       "norm_label": "get_news()"
     },
     {
@@ -4923,7 +4923,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L34",
       "id": "archive_market_data_rationale_34",
-      "community": 44,
+      "community": 45,
       "norm_label": "guarantee df always has string columns: open high low close volume.     handles"
     },
     {
@@ -4932,7 +4932,7 @@
       "source_file": "archive/market_data.py",
       "source_location": "L117",
       "id": "archive_market_data_rationale_117",
-      "community": 44,
+      "community": 45,
       "norm_label": "return clean float series from close; guards multiindex yfinance output."
     },
     {
@@ -5067,7 +5067,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L86",
       "id": "tests_test_data_manager_m2_testcachemanagerhit_test_unavailable_not_stored",
-      "community": 15,
+      "community": 44,
       "norm_label": ".test_unavailable_not_stored()"
     },
     {
@@ -5265,7 +5265,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L206",
       "id": "tests_test_data_manager_m2_testdatacontractinfo",
-      "community": 54,
+      "community": 34,
       "norm_label": "testdatacontractinfo"
     },
     {
@@ -5274,7 +5274,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L207",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_valid_dict",
-      "community": 54,
+      "community": 34,
       "norm_label": ".test_valid_dict()"
     },
     {
@@ -5283,7 +5283,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L210",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_not_dict",
-      "community": 54,
+      "community": 34,
       "norm_label": ".test_not_dict()"
     },
     {
@@ -5292,7 +5292,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L213",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_empty_dict",
-      "community": 54,
+      "community": 34,
       "norm_label": ".test_empty_dict()"
     },
     {
@@ -5301,7 +5301,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L217",
       "id": "tests_test_data_manager_m2_testdatacontractlive",
-      "community": 51,
+      "community": 34,
       "norm_label": "testdatacontractlive"
     },
     {
@@ -5310,7 +5310,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L218",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_valid_positive_float",
-      "community": 51,
+      "community": 34,
       "norm_label": ".test_valid_positive_float()"
     },
     {
@@ -5319,7 +5319,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L221",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_valid_positive_int",
-      "community": 51,
+      "community": 34,
       "norm_label": ".test_valid_positive_int()"
     },
     {
@@ -5328,7 +5328,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L224",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_zero",
-      "community": 51,
+      "community": 34,
       "norm_label": ".test_zero()"
     },
     {
@@ -5337,7 +5337,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L227",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_negative",
-      "community": 51,
+      "community": 34,
       "norm_label": ".test_negative()"
     },
     {
@@ -5346,7 +5346,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L230",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_string",
-      "community": 51,
+      "community": 34,
       "norm_label": ".test_string()"
     },
     {
@@ -5355,7 +5355,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L233",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_none",
-      "community": 51,
+      "community": 34,
       "norm_label": ".test_none()"
     },
     {
@@ -5949,7 +5949,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L1",
       "id": "pages_global_intelligence_py",
-      "community": 35,
+      "community": 36,
       "norm_label": "global_intelligence.py"
     },
     {
@@ -5958,7 +5958,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L15",
       "id": "pages_global_intelligence_render_impact_chain",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_impact_chain()"
     },
     {
@@ -5967,7 +5967,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L44",
       "id": "pages_global_intelligence_market_of",
-      "community": 35,
+      "community": 36,
       "norm_label": "_market_of()"
     },
     {
@@ -5976,7 +5976,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L52",
       "id": "pages_global_intelligence_render_watchlist_badges",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_watchlist_badges()"
     },
     {
@@ -5985,7 +5985,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L127",
       "id": "pages_global_intelligence_render_next_steps_ai",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_next_steps_ai()"
     },
     {
@@ -5994,7 +5994,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L145",
       "id": "pages_global_intelligence_render_topic_card",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_topic_card()"
     },
     {
@@ -6003,7 +6003,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L223",
       "id": "pages_global_intelligence_s",
-      "community": 35,
+      "community": 36,
       "norm_label": "_s()"
     },
     {
@@ -6012,7 +6012,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L225",
       "id": "pages_global_intelligence_render_global_intelligence",
-      "community": 35,
+      "community": 36,
       "norm_label": "render_global_intelligence()"
     },
     {
@@ -6021,7 +6021,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L16",
       "id": "pages_global_intelligence_rationale_16",
-      "community": 35,
+      "community": 36,
       "norm_label": "horizontal cascade of geopolitical impact nodes."
     },
     {
@@ -6030,7 +6030,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L45",
       "id": "pages_global_intelligence_rationale_45",
-      "community": 35,
+      "community": 36,
       "norm_label": "infer market from ticker suffix for watchlist filtering (open-014)."
     },
     {
@@ -6039,7 +6039,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L54",
       "id": "pages_global_intelligence_rationale_54",
-      "community": 35,
+      "community": 36,
       "norm_label": "live mini price badges for a topic watchlist."
     },
     {
@@ -6048,7 +6048,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L128",
       "id": "pages_global_intelligence_rationale_128",
-      "community": 35,
+      "community": 36,
       "norm_label": "personalised ai career & investment action cards."
     },
     {
@@ -6057,7 +6057,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L147",
       "id": "pages_global_intelligence_rationale_147",
-      "community": 35,
+      "community": 36,
       "norm_label": "render one expandable topic card with chain + news + watchlist."
     },
     {
@@ -6066,7 +6066,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L228",
       "id": "pages_global_intelligence_rationale_228",
-      "community": 35,
+      "community": 36,
       "norm_label": "main entry point \u2014 called from app.py routing."
     },
     {
@@ -6642,7 +6642,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L1",
       "id": "pages_council_review_py",
-      "community": 49,
+      "community": 50,
       "norm_label": "council_review.py"
     },
     {
@@ -6651,7 +6651,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L119",
       "id": "pages_council_review_render_header",
-      "community": 49,
+      "community": 50,
       "norm_label": "_render_header()"
     },
     {
@@ -6660,7 +6660,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L142",
       "id": "pages_council_review_render_mode_selector",
-      "community": 49,
+      "community": 50,
       "norm_label": "_render_mode_selector()"
     },
     {
@@ -6669,7 +6669,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L152",
       "id": "pages_council_review_render_asset_input",
-      "community": 49,
+      "community": 50,
       "norm_label": "_render_asset_input()"
     },
     {
@@ -6678,7 +6678,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L161",
       "id": "pages_council_review_render_portfolio_input",
-      "community": 49,
+      "community": 50,
       "norm_label": "_render_portfolio_input()"
     },
     {
@@ -6687,7 +6687,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L170",
       "id": "pages_council_review_render_allocation_brief",
-      "community": 49,
+      "community": 50,
       "norm_label": "_render_allocation_brief()"
     },
     {
@@ -6696,7 +6696,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L180",
       "id": "pages_council_review_persona_card",
-      "community": 49,
+      "community": 50,
       "norm_label": "_persona_card()"
     },
     {
@@ -6705,7 +6705,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L219",
       "id": "pages_council_review_render_conflict_banner",
-      "community": 49,
+      "community": 50,
       "norm_label": "_render_conflict_banner()"
     },
     {
@@ -6714,7 +6714,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L242",
       "id": "pages_council_review_render_council_grid",
-      "community": 49,
+      "community": 50,
       "norm_label": "_render_council_grid()"
     },
     {
@@ -6723,7 +6723,7 @@
       "source_file": "pages/council_review.py",
       "source_location": "L259",
       "id": "pages_council_review_render_council_review",
-      "community": 49,
+      "community": 50,
       "norm_label": "render_council_review()"
     },
     {
@@ -6740,7 +6740,7 @@
       "file_type": "code",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L1",
-      "community": 56,
+      "community": 55,
       "norm_label": "regression_old.py",
       "id": "archive_regression_old_py"
     },
@@ -6749,7 +6749,7 @@
       "file_type": "code",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L14",
-      "community": 56,
+      "community": 55,
       "norm_label": "load_files()",
       "id": "archive_regression_old_load_files"
     },
@@ -6758,7 +6758,7 @@
       "file_type": "code",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L22",
-      "community": 56,
+      "community": 55,
       "norm_label": "chk()",
       "id": "archive_regression_old_chk"
     },
@@ -6767,7 +6767,7 @@
       "file_type": "code",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L25",
-      "community": 56,
+      "community": 55,
       "norm_label": "run()",
       "id": "archive_regression_old_run"
     },
@@ -6776,7 +6776,7 @@
       "file_type": "code",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L221",
-      "community": 56,
+      "community": 55,
       "norm_label": "verify_zip()",
       "id": "archive_regression_old_verify_zip"
     },
@@ -6785,7 +6785,7 @@
       "file_type": "code",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L233",
-      "community": 56,
+      "community": 55,
       "norm_label": "report()",
       "id": "archive_regression_old_report"
     },
@@ -6794,7 +6794,7 @@
       "file_type": "rationale",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L1",
-      "community": 56,
+      "community": 55,
       "norm_label": "regression.py \u2014 gsi regression & validation suite run from project root: python",
       "id": "archive_regression_old_rationale_1"
     },
@@ -6803,7 +6803,7 @@
       "file_type": "rationale",
       "source_file": "archive/regression_OLD.py",
       "source_location": "L222",
-      "community": 56,
+      "community": 55,
       "norm_label": "r-zip \u00b7 ki-014: re-read packaged zip from disk and run full suite.     catches f",
       "id": "archive_regression_old_rationale_222"
     },
@@ -6812,7 +6812,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L1",
-      "community": 45,
+      "community": 46,
       "norm_label": "market_data_old.py",
       "id": "archive_market_data_old_py"
     },
@@ -6821,7 +6821,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L20",
-      "community": 45,
+      "community": 46,
       "norm_label": "_is_allowed_rss()",
       "id": "archive_market_data_old_is_allowed_rss"
     },
@@ -6830,7 +6830,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L33",
-      "community": 45,
+      "community": 46,
       "norm_label": "_normalize_df()",
       "id": "archive_market_data_old_normalize_df"
     },
@@ -6839,7 +6839,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L78",
-      "community": 45,
+      "community": 46,
       "norm_label": "_throttle()",
       "id": "archive_market_data_old_throttle"
     },
@@ -6848,7 +6848,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L87",
-      "community": 45,
+      "community": 46,
       "norm_label": "get_price_data()",
       "id": "archive_market_data_old_get_price_data"
     },
@@ -6857,7 +6857,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L106",
-      "community": 45,
+      "community": 46,
       "norm_label": "get_ticker_info()",
       "id": "archive_market_data_old_get_ticker_info"
     },
@@ -6866,7 +6866,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L116",
-      "community": 45,
+      "community": 46,
       "norm_label": "_safe_close()",
       "id": "archive_market_data_old_safe_close"
     },
@@ -6875,7 +6875,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L129",
-      "community": 45,
+      "community": 46,
       "norm_label": "get_top_movers()",
       "id": "archive_market_data_old_get_top_movers"
     },
@@ -6884,7 +6884,7 @@
       "file_type": "code",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L148",
-      "community": 45,
+      "community": 46,
       "norm_label": "get_news()",
       "id": "archive_market_data_old_get_news"
     },
@@ -6893,7 +6893,7 @@
       "file_type": "rationale",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L34",
-      "community": 45,
+      "community": 46,
       "norm_label": "guarantee df always has string columns: open high low close volume.     handles",
       "id": "archive_market_data_old_rationale_34"
     },
@@ -6902,7 +6902,7 @@
       "file_type": "rationale",
       "source_file": "archive/market_data_OLD.py",
       "source_location": "L117",
-      "community": 45,
+      "community": 46,
       "norm_label": "return clean float series from close; guards multiindex yfinance output.",
       "id": "archive_market_data_old_rationale_117"
     },
@@ -8093,7 +8093,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "left sidebar navigation",
       "id": "ui_sidebar"
     },
@@ -8119,7 +8119,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "stock search bar",
       "id": "ui_search_bar"
     },
@@ -8132,7 +8132,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "group dropdown (open state)",
       "id": "ui_group_dropdown"
     },
@@ -8158,7 +8158,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "nifty next 50 group",
       "id": "group_nifty_next50"
     },
@@ -8171,7 +8171,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "sensex 30 group",
       "id": "group_sensex30"
     },
@@ -8184,7 +8184,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "it & technology sector group",
       "id": "group_it_technology"
     },
@@ -8197,7 +8197,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "banks & finance sector group",
       "id": "group_banks_finance"
     },
@@ -8210,7 +8210,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "pharma & healthcare sector group",
       "id": "group_pharma_healthcare"
     },
@@ -8223,7 +8223,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "auto & ev sector group",
       "id": "group_auto_ev"
     },
@@ -8236,7 +8236,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "fmcg & consumer sector group",
       "id": "group_fmcg_consumer"
     },
@@ -8249,7 +8249,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "market closed indicator",
       "id": "ui_market_status"
     },
@@ -8262,7 +8262,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "refresh data button",
       "id": "ui_refresh_button"
     },
@@ -8418,7 +8418,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "group-level sector selection feature",
       "id": "feature_group_selection"
     },
@@ -8964,7 +8964,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "stock selector (choose an option)",
       "id": "ui_stock_selector"
     },
@@ -8977,7 +8977,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "nav: home",
       "id": "ui_nav_home"
     },
@@ -8990,7 +8990,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "nav: dashboard",
       "id": "ui_nav_dashboard"
     },
@@ -9003,7 +9003,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "nav: global intelligence",
       "id": "ui_nav_global_intelligence"
     },
@@ -9016,7 +9016,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "market closed badge",
       "id": "ui_market_closed_badge"
     },
@@ -9029,7 +9029,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "refresh data button",
       "id": "ui_refresh_data_button"
     },
@@ -9575,7 +9575,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "search box",
       "id": "ui_search_box"
     },
@@ -10615,7 +10615,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "market closed status",
       "id": "status_market_closed"
     },
@@ -10667,7 +10667,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "global intelligence centre",
       "id": "global_intelligence_centre"
     },
@@ -10680,7 +10680,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "worldmonitor \u2014 live interactive global events map",
       "id": "worldmonitor_live_map"
     },
@@ -10693,7 +10693,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "west asia conflict",
       "id": "west_asia_conflict"
     },
@@ -10706,7 +10706,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "ai & job markets",
       "id": "ai_job_markets"
     },
@@ -10719,7 +10719,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "us rate cycle & fed policy",
       "id": "us_rate_cycle_fed_policy"
     },
@@ -10732,7 +10732,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "china slowdown & trade shifts",
       "id": "china_slowdown_trade_shifts"
     },
@@ -10758,7 +10758,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "geopolitical & technology intelligence",
       "id": "geopolitical_technology_intelligence"
     },
@@ -10771,7 +10771,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "impact chains",
       "id": "impact_chains"
     },
@@ -10784,7 +10784,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "market linkages",
       "id": "market_linkages"
     },
@@ -10797,7 +10797,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 51,
       "norm_label": "world monitor",
       "id": "world_monitor"
     },
@@ -11655,7 +11655,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "search filter (company name or symbol)",
       "id": "filter_search"
     },
@@ -11668,7 +11668,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "ticker cards grid",
       "id": "ui_ticker_cards_grid"
     },
@@ -11707,7 +11707,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 47,
       "norm_label": "choose an option placeholder",
       "id": "ui_choose_option_placeholder"
     },
@@ -12110,7 +12110,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "refresh data button",
       "id": "button_refresh_data"
     },
@@ -12903,7 +12903,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "streamlit application",
       "id": "streamlit_app"
     },
@@ -13423,7 +13423,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "signal engine",
       "id": "signal_engine"
     },
@@ -13436,7 +13436,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "weinstein stage analysis",
       "id": "weinstein_stage_analysis"
     },
@@ -13449,7 +13449,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "elder triple screen",
       "id": "elder_triple_screen"
     },
@@ -13462,7 +13462,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "composite momentum score",
       "id": "composite_score"
     },
@@ -13475,7 +13475,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "documented override hierarchy",
       "id": "override_hierarchy"
     },
@@ -13488,7 +13488,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "unified verdict",
       "id": "unified_verdict"
     },
@@ -13501,7 +13501,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "alignment indicator",
       "id": "alignment_indicator"
     },
@@ -13514,7 +13514,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "weinstein stage 2 advancing",
       "id": "weinstein_stage2_advancing"
     },
@@ -13527,7 +13527,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "buy signal",
       "id": "buy_signal"
     },
@@ -13540,7 +13540,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "trend + momentum aligned",
       "id": "trend_momentum_alignment"
     },
@@ -13553,7 +13553,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "rsi, macd, volume, atr indicators",
       "id": "rsi_macd_indicators"
     },
@@ -13579,7 +13579,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "weinstein stage analysis",
       "id": "weinstein_stage"
     },
@@ -13618,7 +13618,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "stage 2 advancing",
       "id": "stage2_advancing"
     },
@@ -13631,7 +13631,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "landing page hero section",
       "id": "landing_hero_section"
     },
@@ -13644,7 +13644,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "two frameworks one unified verdict tagline",
       "id": "tagline_two_frameworks"
     },
@@ -13657,7 +13657,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "weinstein stage analysis framework",
       "id": "framework_weinstein"
     },
@@ -13670,7 +13670,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "elder triple screen framework",
       "id": "framework_elder_triple_screen"
     },
@@ -13735,7 +13735,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "signal engine section \u2014 not one method three arbitrated",
       "id": "signal_engine_section"
     },
@@ -13748,7 +13748,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "weinstein stage signal",
       "id": "signal_weinstein_stage"
     },
@@ -13761,7 +13761,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "elder triple screen signal",
       "id": "signal_elder_triple_screen"
     },
@@ -13774,7 +13774,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "composite score signal",
       "id": "signal_composite_score"
     },
@@ -13787,7 +13787,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "rs (relative strength) indicator",
       "id": "indicator_rs"
     },
@@ -13800,7 +13800,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "macd indicator",
       "id": "indicator_macd"
     },
@@ -13813,7 +13813,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "atr indicator",
       "id": "indicator_atr"
     },
@@ -14073,7 +14073,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "view on github nav link",
       "id": "nav_view_on_github"
     },
@@ -14086,7 +14086,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "dashboard screenshot preview",
       "id": "dashboard_screenshot_preview"
     },
@@ -14866,7 +14866,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "global intelligence feature",
       "id": "globalintel_feature"
     },
@@ -14879,7 +14879,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "global intelligence dashboard tab",
       "id": "globalintel_dashboard_tab"
     },
@@ -14892,7 +14892,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "global market news section",
       "id": "globalintel_news_section"
     },
@@ -14905,7 +14905,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "news article cards",
       "id": "globalintel_news_cards"
     },
@@ -14918,7 +14918,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "market sentiment indicators",
       "id": "globalintel_sentiment_indicators"
     },
@@ -14931,7 +14931,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "market groups / sections",
       "id": "globalintel_market_groups"
     },
@@ -14970,7 +14970,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "ticker / symbol tags on news cards",
       "id": "globalintel_ticker_tags"
     },
@@ -14983,7 +14983,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 56,
       "norm_label": "multi-market coverage",
       "id": "globalintel_multi_market"
     },
@@ -14996,7 +14996,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "gsi qa audit report v5.36",
       "id": "gsi_qa_audit_report"
     },
@@ -15009,7 +15009,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "gsi version 5.36",
       "id": "gsi_version_536"
     },
@@ -15022,7 +15022,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "qa test suite",
       "id": "qa_test_suite"
     },
@@ -15035,7 +15035,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "qa pass status",
       "id": "qa_pass_status"
     },
@@ -15048,7 +15048,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "qa fail status",
       "id": "qa_fail_status"
     },
@@ -15061,7 +15061,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "regression tests",
       "id": "regression_tests"
     },
@@ -15074,7 +15074,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "dashboard tabs",
       "id": "dashboard_tabs"
     },
@@ -15087,7 +15087,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "market data checks",
       "id": "market_data_checks"
     },
@@ -15100,7 +15100,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "compliance checks",
       "id": "compliance_checks"
     },
@@ -15113,7 +15113,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "ui validation",
       "id": "ui_validation"
     },
@@ -15126,7 +15126,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "sector and group tests",
       "id": "sector_group_tests"
     },
@@ -15139,7 +15139,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "ticker validation",
       "id": "ticker_validation"
     },
@@ -15152,7 +15152,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "error log section",
       "id": "error_log_section"
     },
@@ -15165,7 +15165,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "performance metrics",
       "id": "performance_metrics"
     },
@@ -15178,7 +15178,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "summary scorecard",
       "id": "summary_scorecard"
     },
@@ -15191,7 +15191,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "indian equities market",
       "id": "indian_equities_market"
     },
@@ -15204,7 +15204,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "top movers section",
       "id": "top_movers_section"
     },
@@ -15217,7 +15217,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "macro cards",
       "id": "macro_cards"
     },
@@ -15230,7 +15230,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "sebi compliance",
       "id": "sebi_compliance"
     },
@@ -15243,7 +15243,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "data-as-of disclosure",
       "id": "data_disclosure"
     },
@@ -15256,7 +15256,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "green pass indicators",
       "id": "green_pass_indicators"
     },
@@ -15269,7 +15269,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "red fail indicators",
       "id": "red_fail_indicators"
     },
@@ -15282,7 +15282,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 20,
       "norm_label": "yellow warning indicators",
       "id": "yellow_warning_indicators"
     },
@@ -38728,5 +38728,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8d888484756bd2513038918ba862b4304b81baf0"
+  "built_at_commit": "2e34e8f2921a3318b7fc86645ed3096d38c46f68"
 }
