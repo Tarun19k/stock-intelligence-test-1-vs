@@ -73,32 +73,40 @@
 
 ---
 
-## EXACT RESUME POINT
+## EXACT RESUME POINT — 2026-06-19 (updated post Phase A council)
 
-**Where we stopped:** Infrastructure sprint complete. Housekeeping compact-ready gate run — 3 gaps resolved in this pass.
+**Where we stopped:** Phase A council complete (4 of 7 conditions resolved). G3 fix done. Two Tarun decisions now gate Phase B.
 
-**Council mode confirmed:** Tarun confirmed design advisory mode (not corpus calibration). Run Phase A council seats directly on GSI tool design conditions.
+**PHASE A — COMPLETE ✓ (resolved this session)**
+- Condition 1 (yfinance vs EODHD): KEEP yfinance now → switch at first non-self user (Marks) or first paying subscriber (Druckenmiller). BUILD provider abstraction + validation layer now.
+- Condition 5 (Macro regime): PMI(M+S) = Growth axis, RBI policy + CPI = Inflation axis. Semi-manual monthly. Current regime: RISK_ON.
+- Condition 6 (SEBI compliance): RIA mandatory at first payment. Design as analytics tool. Add disclaimer now. NISM X-A prep = 2-month lead time needed.
+- Condition 7 (Position sizing): Quarter Kelly proxy (volatility-adjusted). Hard caps: 10% max / 1% min / 35% sector / 10% cash floor. Build trade tracking table schema now.
 
-**Phase A — ready to run immediately (no Tarun input needed):**
-- Condition 1 (Data Source: yfinance vs EODHD) → Druckenmiller + Marks
-- Condition 5 (Macro Regime: Dalio 4-quadrant inputs) → Dalio
-- Condition 6 (SEBI compliance path) → India Regulatory seat
-- Condition 7 (Position sizing framework) → Quant Risk seat
+**PHASE B — GATED on GSI-D-YFINANCE decision**
+- Condition 4: Buffett + Munger — fundamental data layer (ROIC, FCF, P/E, PEG, promoter pledge — min viable set)
+- Condition 2: Lynch — stock classification schema (6-category system → instrument table enum)
 
-**Phase B — depends on Condition 1 decision:**
-- Condition 4 (Fundamental data layer: ROIC, FCF, P/E — source depends on A1)
-- Condition 2 (Stock classification schema — CoS drafts)
+**PHASE C — GATED on GSI-D-INVEST decision**
+- Condition 3: Dalio — bucket architecture (emergency/medium/long-term investable ranges)
 
-**Phase C — awaiting Tarun input (₹ investable range + time horizons):**
-- Condition 3 (Bucket architecture: liquidity amount per bucket + time horizon per bucket)
+**RESUME SEQUENCE:**
+1. Tarun answers GSI-D-YFINANCE + GSI-D-INVEST (can be done in same conversation)
+2. Run Phase B council (Buffett+Munger Cond 4, Lynch Cond 2)
+3. Run Phase C council (Dalio Cond 3) after GSI-D-INVEST answered
+4. All 7 conditions resolved → G0 build begins
+5. Critical path: C1-C4 env → A1 data source confirmed → schema additions → build sprint
 
-**Next session first action (G3 fix — 5 min):** Add dispatch table row to `~/.claude/skills/research-development/SKILL.md`:
-```
-| Internal org-corpus topic | rag-gateway.sh first → Tavily only on GRAPH_MISS exit(1) | Never skip graph check for internal topics |
-```
-Then: Invoke panel-convene + expert seats for GSI Phase A in sequence (Druckenmiller+Marks Cond 1, Dalio Cond 5, India Regulatory Cond 6, Quant Risk Cond 7). After Phase A → graphify --update → Tarun reviews → makes 7 decisions → design review → G0 build.
+**UNPLANNED ACTIONS (emerged from Phase A council — build before G0):**
+- Provider abstraction (DataProvider protocol) — before any more data calls
+- Data validation function (price/volume/NaN/sanity checks)
+- MACRO_INPUTS dict with semi-manual update protocol (monthly)
+- Dashboard disclaimer ("Not investment advice. Not SEBI registered.")
+- Trade outcome tracking table schema (empty, populate over time)
 
-**Phase 1 (next session or after Phase A):** Build `session-start-reader.py` — unified state read replaces 8 sequential CoS reads; wires pending_pickup[] consumer so CC inputs are never silently lost.
+**ALSO DONE THIS SESSION:**
+- G3 closed: dispatch table row added to ~/.claude/skills/research-development/SKILL.md
+- RAG gateway: live (from prior session, committed 4eb2188)
 
 ---
 
@@ -106,13 +114,15 @@ Then: Invoke panel-convene + expert seats for GSI Phase A in sequence (Druckenmi
 
 | # | Condition | Status | Council can help? |
 |---|---|---|---|
-| 1 | Data source decision: yfinance (personal) vs EODHD (commercial) | **OPEN — Tarun decides** | Yes — council will give cost/risk/ToS guidance |
-| 2 | Stock classification schema in instrument table from G1 | **OPEN — CoS drafts** | CoS will produce draft next session |
-| 3 | Bucket architecture design + Tarun's personal inputs (liquidity amount, horizon) | **OPEN — Tarun inputs** | Financial planning seat will give framework |
-| 4 | Fundamental data layer decision (ROIC, FCF, P/E, PEG, promoter pledge — source?) | **OPEN — depends on #1** | Council will scope minimum viable fundamentals |
-| 5 | Macro regime classifier scope (Dalio 4-quadrant inputs) | **OPEN — CoS drafts** | Dalio seat will specify exactly what data is needed |
-| 6 | SEBI compliance path (personal / family / paid public) | **OPEN — Tarun decides** | Regulatory seat will lay out the decision tree |
-| 7 | Position sizing framework (Kelly-based) | **OPEN — CoS drafts** | Quant Risk seat will produce the sizing model |
+| # | Condition | Status | Council output |
+|---|---|---|---|
+| 1 | Data source: yfinance vs EODHD | **RESOLVED ✓** | Switch at first non-self user. Build abstraction now. |
+| 2 | Stock classification schema | **PHASE B — gated on GSI-D-YFINANCE** | Lynch seat queued |
+| 3 | Bucket architecture + Tarun inputs | **PHASE C — gated on GSI-D-INVEST** | Dalio seat queued |
+| 4 | Fundamental data layer (ROIC, FCF etc) | **PHASE B — gated on GSI-D-YFINANCE** | Buffett+Munger queued |
+| 5 | Macro regime classifier | **RESOLVED ✓** | PMI+RBI+CPI inputs. Semi-manual monthly. |
+| 6 | SEBI compliance path | **RESOLVED ✓** | RIA at first payment. Analytics framing safe. |
+| 7 | Position sizing framework | **RESOLVED ✓** | Quarter Kelly proxy. Hard caps defined. |
 
 ---
 
@@ -146,13 +156,11 @@ Then: Invoke panel-convene + expert seats for GSI Phase A in sequence (Druckenmi
 
 ## OPEN DECISIONS (Tarun-owned)
 
-| Decision | Deadline | Impact |
-|---|---|---|
-| yfinance vs EODHD (A1) | Next session | Gates adapter design, all fundamentals, commercial ToS |
-| SEBI compliance path (D1) | Next session | Gates commercial launch scope |
-| Personal bucket inputs (B2) | Next session | Gates bucket architecture, Phase 2 schema |
-| Investment goals / risk tolerance (B3) | Next session | Gates rebalancing engine objective function |
-| Environment status (C1-C4) | Next session | Gates G0 build start date |
+| Decision | ID | Deadline | Impact |
+|---|---|---|---|
+| Switch trigger: first non-self user vs first paying subscriber | GSI-D-YFINANCE | This session | Gates Phase B council (Buffett+Munger+Lynch) |
+| ₹ investable range per bucket (emergency/medium/long-term) | GSI-D-INVEST | This session | Gates Phase C council (Dalio bucket arch) + Kelly math |
+| Environment setup (C1-C4 — Python env, Supabase, GHA secrets) | T-SUP-SECRETS | Tarun action | Gates G0 build start |
 
 ---
 
