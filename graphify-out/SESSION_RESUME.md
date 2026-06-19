@@ -118,7 +118,7 @@
 |---|---|---|---|
 | 1 | Data source: yfinance vs EODHD | **RESOLVED ✓** | Switch at first non-self user. Build abstraction now. |
 | 2 | Stock classification schema | **PHASE B — gated on GSI-D-YFINANCE** | Lynch seat queued |
-| 3 | Bucket architecture + Tarun inputs | **PHASE C — gated on GSI-D-INVEST** | Dalio seat queued |
+| 3 | Bucket architecture + Tarun inputs | **RESOLVED ✓** | 4-bucket design complete. ₹7.25L in GSI equity. |
 | 4 | Fundamental data layer (ROIC, FCF etc) | **PHASE B — gated on GSI-D-YFINANCE** | Buffett+Munger queued |
 | 5 | Macro regime classifier | **RESOLVED ✓** | PMI+RBI+CPI inputs. Semi-manual monthly. |
 | 6 | SEBI compliance path | **RESOLVED ✓** | RIA at first payment. Analytics framing safe. |
@@ -163,18 +163,25 @@
 | Investment goals per bucket | GSI-D-GOALS | **OPEN — needs Tarun input** | Emergency/short/medium/long-term goals determine bucket sizes. Monthly burn rate needed for emergency calc. |
 | Environment setup (C1-C4 — Python env, Supabase, GHA secrets) | T-SUP-SECRETS | BLOCKED — Tarun action | Gates G0 build start |
 
-## INVESTMENT GOALS — PENDING (Phase C input)
+## PHASE C — COMPLETE ✓ (Dalio Bucket Architecture — 2026-06-20)
 
-Total corpus: ₹16–18 Lakhs INR
+**Inputs:** ₹17L midpoint corpus · ₹80,000/month burn · Goals: travel/lifestyle/medical (near) + parenting/childcare/schooling (medium-long)
 
-Bucket framework to populate:
-- Emergency reserve: 3–6 months expenses. Liquid only (FD/liquid fund). Need: monthly burn rate.
-- Short-term (1–3 yr): Business capital buffer, near-term personal goals.
-- Medium-term (3–7 yr): House down payment, education, sabbatical.
-- Long-term (7+ yr): Retirement corpus, compounding wealth.
-- Reserve/locked: Existing illiquid commitments (PPF, NPS, ELSS). Amount locked out of investable corpus.
+| Bucket | Amount | % | Horizon | Equity % | GSI Role |
+|---|---|---|---|---|---|
+| Emergency Fortress | ₹5,00,000 | 29% | Always liquid | 0% | None |
+| Near-Term Goals | ₹2,50,000 | 15% | 1–3 yr | 0-10% | None |
+| Medium-Term Family | ₹5,00,000 | 29% | 3–7 yr | 50-60% | Equity portion (₹2.75L) |
+| Long-Term Education + Wealth | ₹4,50,000 | 27% | 7+ yr | 80-100% | Primary portfolio |
+| **Total** | **₹17,00,000** | **100%** | | | |
 
-Phase C council (Dalio bucket architecture) runs once goals are defined.
+**GSI equity portfolio (Kelly formula input): ~₹7,25,000**
+(₹2.75L medium-term equity + ₹4.5L long-term)
+
+**Critical constraint:** Medium-term bucket (₹5L) is undersized for parenting costs (₹9-18L over 7 years). Gap must come from revenue streams. GSI must surface withdrawal-pace alert if drawdown > ₹70k/month average.
+
+**Data source architecture (GSI-D-YFINANCE resolved):**
+Bhavcopy (India OHLCV, free, official NSE/BSE) + yfinance (non-India markets) + EODHD (fundamentals, paid, when needed)
 
 ---
 
