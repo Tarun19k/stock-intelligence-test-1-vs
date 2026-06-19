@@ -78,7 +78,7 @@
 **Where we stopped:** Phase A council complete (4 of 7 conditions resolved). G3 fix done. Two Tarun decisions now gate Phase B.
 
 **PHASE A — COMPLETE ✓ (resolved this session)**
-- Condition 1 (yfinance vs EODHD): KEEP yfinance now → switch at first non-self user (Marks) or first paying subscriber (Druckenmiller). BUILD provider abstraction + validation layer now.
+- Condition 1 (Data source): THREE-TIER ARCHITECTURE — Bhavcopy (India OHLCV, free, official NSE/BSE) + yfinance (non-India markets only) + EODHD (fundamentals when needed, $19-50/mo). Switch at first non-self user. BUILD provider abstraction now.
 - Condition 5 (Macro regime): PMI(M+S) = Growth axis, RBI policy + CPI = Inflation axis. Semi-manual monthly. Current regime: RISK_ON.
 - Condition 6 (SEBI compliance): RIA mandatory at first payment. Design as analytics tool. Add disclaimer now. NISM X-A prep = 2-month lead time needed.
 - Condition 7 (Position sizing): Quarter Kelly proxy (volatility-adjusted). Hard caps: 10% max / 1% min / 35% sector / 10% cash floor. Build trade tracking table schema now.
@@ -156,11 +156,25 @@
 
 ## OPEN DECISIONS (Tarun-owned)
 
-| Decision | ID | Deadline | Impact |
+| Decision | ID | Status | Detail |
 |---|---|---|---|
-| Switch trigger: first non-self user vs first paying subscriber | GSI-D-YFINANCE | This session | Gates Phase B council (Buffett+Munger+Lynch) |
-| ₹ investable range per bucket (emergency/medium/long-term) | GSI-D-INVEST | This session | Gates Phase C council (Dalio bucket arch) + Kelly math |
-| Environment setup (C1-C4 — Python env, Supabase, GHA secrets) | T-SUP-SECRETS | Tarun action | Gates G0 build start |
+| Data source architecture | GSI-D-YFINANCE | **UPDATED ✓** | Three-tier: Bhavcopy (India OHLCV, free, official) + yfinance (non-India markets) + EODHD (fundamentals when needed). Switch trigger: first non-self user. |
+| Total investable corpus | GSI-D-INVEST | **PARTIALLY ANSWERED** | ₹16–18 Lakhs total. Bucket allocation pending goal definition (see below). |
+| Investment goals per bucket | GSI-D-GOALS | **OPEN — needs Tarun input** | Emergency/short/medium/long-term goals determine bucket sizes. Monthly burn rate needed for emergency calc. |
+| Environment setup (C1-C4 — Python env, Supabase, GHA secrets) | T-SUP-SECRETS | BLOCKED — Tarun action | Gates G0 build start |
+
+## INVESTMENT GOALS — PENDING (Phase C input)
+
+Total corpus: ₹16–18 Lakhs INR
+
+Bucket framework to populate:
+- Emergency reserve: 3–6 months expenses. Liquid only (FD/liquid fund). Need: monthly burn rate.
+- Short-term (1–3 yr): Business capital buffer, near-term personal goals.
+- Medium-term (3–7 yr): House down payment, education, sabbatical.
+- Long-term (7+ yr): Retirement corpus, compounding wealth.
+- Reserve/locked: Existing illiquid commitments (PPF, NPS, ELSS). Amount locked out of investable corpus.
+
+Phase C council (Dalio bucket architecture) runs once goals are defined.
 
 ---
 
