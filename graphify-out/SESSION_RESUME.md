@@ -183,6 +183,14 @@
 **Data source architecture (GSI-D-YFINANCE resolved):**
 Bhavcopy (India OHLCV, free, official NSE/BSE) + yfinance (non-India markets) + EODHD (fundamentals, paid, when needed)
 
+**LOCKED / SEMI-LIQUID COMMITMENTS (added 2026-06-20):**
+- NPS: ₹2,50,000 — locked until retirement (age 60). 60% lump sum + 40% annuity at maturity. Equity tier (E) up to 75%. Not in GSI active portfolio — retirement instrument.
+- ELSS: ₹1,60,000 — partial liquid (3-year lock-in per tranche; some tranches may be free). Equity MF. Count as long-term bucket supplement once unlocked.
+- **AMBIGUITY TO RESOLVE next session:** Are NPS + ELSS WITHIN the ₹17L corpus or ADDITIONAL to it?
+  - If within: liquid/investable reduces to ₹12.9L → bucket allocation needs revision
+  - If additional: total corpus = ₹21.1L → bucket architecture holds, NPS/ELSS are separate instruments
+- NPS + ELSS together = ₹4,10,000 in long-term category regardless of interpretation
+
 ---
 
 ## COMMERCIAL STATE
