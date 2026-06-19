@@ -1,217 +1,187 @@
-# SESSION_RESUME.md — GSI Tool Workspace
+# SESSION_RESUME.md — GSI / AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-15 → 2026-06-18 (multi-day, active)
-**Session name:** GSI tool + housekeeping infrastructure
-**Workspace:** stock-intelligence-test-1-vs (primary) + agentic-operations (parallel workstream)
-
-## 2026-06-18 VERIFICATION PASS — COMPLETE
-- Tarun manually pasted full conversation history; CoS ran accuracy audit
-- Found: requirement count stated as "24" in original session output; actual table count is 28
-- Fixed: MEMORY.md index, project_gsi_platform_requirements.md description, project_session_2026_06_17_gsi.md, SESSION_RESUME.md — all corrected to 28
-- Commits: a6bd4a5 (requirement count fix), 5014c78 (graphify artefacts)
-- Two council miss patterns documented (scope misread + count fabrication)
-
-## 2026-06-18 HOUSEKEEPING — COMPLETE
-- agent-teams work (agentic-operations workspace) committed: 23c6d45
-  → docs/agent-teams/ (5 files: architecture, capabilities, quickstart, marketing-strategy, README)
-  → docs/superpowers/plans/2026-06-15-capabilities-matrix.md (847 lines, implementation plan)
-- DECISION: agent-teams NOT inherited into this session — context near compaction, cross-workspace
-  mixing would corrupt both; resume in fresh agentic-operations session with /chief-of-staff recover
-- GOVERNANCE GAP IDENTIFIED: no pre-compaction hook exists in Claude Code; Stop hooks fire at
-  session end only; compaction is not hookable; SESSION_RESUME.md is the sole continuity mechanism
-  and only works if close-session ran before the context filled
-- Two council misses documented: (1) scope misread on Krishna synthesis question; (2) count fabrication in strategic analysis summary
-- No other inaccuracies found in memory files or council verdict content
+**Session date:** 2026-06-20 (multi-session — Phase A/B/C complete + brand + sprint plan)
+**Workspace:** stock-intelligence-test-1-vs (GSI → now AlphaVeda)
 
 ---
 
 ## DO NOT REDO — Already completed this session
 
-1. **Strategic analysis HTML page** — built and committed at `ideas/strategic_analysis.html`. Interactive 6-framework analysis of the GSI→Platform migration, 10 sections, Chart.js radar, filterable gap register, all 29 gaps rendered. Do not rebuild.
+1. **NPS + ELSS ambiguity RESOLVED** — Tarun confirmed: ADDITIONAL to ₹17L, not within it. Total wealth = ₹21.1L. Bucket architecture holds. ₹17L is clean liquid investable corpus.
 
-2. **Plain language platform explanation** — complete explanation of the math (bootstrap forecasting, indicators, portfolio analytics, synthesis pipeline, accuracy ledger) delivered in conversation. Do not repeat.
+2. **Phase B council COMPLETE** — Conditions 2 + 4 resolved:
+   - Lynch (Condition 2): 6-category stock classification schema + `is_psu BOOLEAN` flag. Enum: `FAST_GROWER, STALWART, SLOW_GROWER, CYCLICAL, TURNAROUND, ASSET_PLAY`. Auto-suggest logic defined (EPS CAGR thresholds, sector triggers, P/B for asset plays).
+   - Buffett + Munger (Condition 4): 9-field fundamental layer (hard ceiling enforced by Munger). Fields: roic, fcf_yield, revenue_cagr_3yr, operating_margin, promoter_pledge_pct, promoter_holding_pct (Tier 1) + pe_ttm, debt_to_equity, capex_intensity (Tier 2). `fundamentals_as_of DATE NOT NULL` + `source TEXT NOT NULL` mandatory per Munger.
 
-3. **7-seat full council review** — panel-convene invoked with all financial expert seats (Buffett, Munger, Dalio, Druckenmiller, Marks, Soros, Lynch) + 3 supplementary seats (Financial Planning, Quant Risk, India Regulatory). Verdict: **7 REVISE, 0 REDESIGN, 0 APPROVE**. Do not re-run unless Tarun explicitly requests it.
+3. **ALL 7 CONDITIONS RESOLVED** — Build is fully unblocked.
 
-4. **28-requirement inventory** — complete requirements assessment across 5 categories (A1-A10, B1-B4, C1-C6, D1-D4, E1-E4). Status mapped for all 28. Do not rebuild — pick up from the table.
+4. **Product name confirmed: AlphaVeda** — New repo to be created (not the GSI repo). Name etymology: Alpha (excess returns above benchmark, first/leading) + Veda (Sanskrit: to know, ancient wisdom).
 
-5. **Strategic analysis on requirements** — 6-framework analysis delivered. CONSOLIDATE posture. Do not repeat.
+5. **Brand brief complete** — Full brand identity document at:
+   - `docs/brand/alphaveda-brand-brief.md` (source)
+   - `docs/brand/alphaveda-brand-brief.html` (rendered one-pager, open in browser)
+   - Tagline: "Know before you act." (sub: "Ancient wisdom. Modern signals.")
+   - Colors: Deep Indigo #1A1F3C + Warm Ivory #F5F3EC + Saffron Gold #E8A020
+   - Typography: Fraunces (headings) + DM Mono (data) + Inter (prose)
+   - Logo: Yantra Mark (Concept A, recommended for launch)
+   - Lead attribute: Precise (non-negotiable)
+   - SEBI anchor: "AlphaVeda illuminates the data. You drive the decision."
+   - Persona: Arjun, 34, Bengaluru, ₹5L-₹30L portfolio, 4 browser tabs open
 
----
+6. **C1-C4 environment confirmed:**
+   - C1: Supabase CLI 2.104.0 ✓ (using `supabase start` local)
+   - C2: Python 3.14.3 ✓ (pandas/numpy/streamlit wheel-tested, all clean)
+   - C3: New repo = `alphaveda` (pending creation)
+   - C4: Node v20.12.1, npm 10.5.0 ✓
 
-## 2026-06-19 RAG GATEWAY + SYSTEMS ANALYSIS — COMPLETE
+7. **Q1/Q2/Q3 architecture decisions locked:**
+   - Q1 (ingest): Option D — Hybrid. GHA cron 5:45 PM IST weekdays (+ NSE holiday guard) + lazy fallback on app startup.
+   - Q2 (environments): Parallel local (localhost:54321) + Supabase cloud (ap-south-1) from Day 1. Cut local once G2 stable.
+   - Q3 (historical depth): OHLCV 3yr · Fundamentals 5yr (20 quarters) · Macro 5yr (60 months). ~83 MB total, fits free tier.
 
-- **RAG Gateway P0** fully built and deployed cross-device:
-  - `~/.claude/scripts/rag-gateway.sh` — three-tier routing (GRAPH-ONLY/SUPPLEMENT/EXTERNAL-ONLY), exit codes 0/2/1, gap logging, git-based freshness check, fail-open
-  - `~/.claude/config/rag-gateway.conf` — configurable thresholds (THRESHOLD_HIGH=5, LOW=3, FRESHNESS_MAX_COMMITS=10)
-  - `housekeeping-stop-hook.sh` extended — grooming pass (section 4): min-entries gate (10), top-5 miss topics → ENRICHMENT_LOG.md proposals
-  - `auto-sync.sh` updated — conf bootstrap added (tarun-global-memory/config/)
-  - `tarun-global-memory` commit `99a0a37` — all scripts + conf cross-device
-  - `agentic-operations` commit `210f72d` — spec + rag-data/ dir
-  - `stock-intelligence-test-1-vs` commit `c65f87e` — rag-data/ dir
-  - Council reviewed: Constraint Enforcer (4 conditions) + Synthesis Chair (2 amendments)
-  - Premortem logged: window-8671-2026-06-18
-- **Systems analysis completed** — feedback loop gap map:
-  - G1: No unified session-start reader (8 sequential reads) — Phase 1
-  - G2: Pre-compaction ingest missing — Phase 3 (IDEA-016/017)
-  - G3: RAG enforcement gap — dispatch table row not yet in research-development skill
-  - G4: Respond stage absent — no feedback signals from any stage
-- **Phase plan defined:** P1 session-start-reader → P2 respond signals → P3 JSONL watcher
-- **IDEA-017 status (from memory):** Session Intelligence Dashboard built v1; 20 sessions/17 compactions/avg continuity 12/100 — validates urgency of this session's infrastructure work
-- **Pending G3 fix:** dispatch table row in `~/.claude/skills/research-development/SKILL.md` — 5 min, Haiku-tier, first action next session
+8. **Local-first data architecture confirmed:**
+   - AlphaVeda queries ONLY local Supabase at runtime. No external API calls in app layer.
+   - Ingest scripts (GHA cron) write to Supabase. App reads from Supabase. Sources never hit at query time.
 
-## 2026-06-18 INFRASTRUCTURE SPRINT — COMPLETE
+9. **EODHD replaced by free BSE stack:**
+   - Promoter pledge % + holding %: BSE Shareholding API (official, quarterly, primary source)
+   - Revenue, margins, cash flows: BSE Quarterly Results (XBRL)
+   - ROIC, FCF yield, capex intensity: Calculated from BSE filings via `scripts/calculate_fundamentals.py`
+   - P/E TTM, D/E: yfinance SYMBOL.NS (personal) → FMP $14/mo (commercial)
+   - Non-India OHLCV: yfinance (personal) → Financial Modeling Prep (commercial, $14/mo)
+   - EODHD cost eliminated: ₹0 at personal use, ₹1,200/mo at first subscriber
 
-- **Housekeeping skill** built: `~/.claude/skills/housekeeping/SKILL.md` — 6 modes (checkpoint, compact-ready, memory-audit, ideas-log, close, status); active listener architecture with Tier 1 (Stop hook, LIVE), Tier 2 (JSONL watcher, IDEA-016), Tier 3 (graphify --update)
-- **Stop hook #7** added: `housekeeping-stop-hook.sh` — SESSION_RESUME safety net + graph update trigger + status snapshot; position 7 in Stop chain (last); deployed to tarun-global-memory commit `2fb77e0`
-- **Council briefing HTML** built: `ideas/council_briefing_2026-06-18.html` — no-scroll 80/20 one-pager, Phase A/B/C layout, 7 conditions, seat roster, graph coverage, Tarun inputs; commit `2e34e8f`
-- **Council mode confirmed:** Tarun confirmed advisory mode — council answers on GSI TOOL DESIGN, not corpus calibration
-- **Graph coverage gaps noted:** 5 of 7 conditions have weak/minimal graph coverage; graphify --update required after council runs
-- **Haiku review gate** established: all Haiku outputs reviewed by Sonnet/Opus before commit; memory `feedback_haiku_review_gate.md`
-- **IDEA-016** parked: Pre-Compaction Context Continuity Automation — HIGH PRIORITY
+10. **6-migration schema designed** — See `docs/alphaveda-sprint-plan.md` for full SQL:
+    - 0001: instruments (ticker, exchange, Lynch classification, is_psu)
+    - 0002: ohlcv (daily OHLCV + source + ingested_at, unique ticker+date index)
+    - 0003: fundamentals (9 fields + source NOT NULL + fundamentals_as_of NOT NULL)
+    - 0004: macro_regime (PMI + RBI + CPI, unique partial index on current_regime)
+    - 0005: portfolio_buckets (4-bucket Dalio design)
+    - 0006: trade_outcomes (Quarter Kelly tracking, empty at G0)
 
----
+11. **DataProvider ABC designed** — `CommercialLicenseError` raised when `ALPHAVEDA_COMMERCIAL=true` and provider is unlicensed. Provider routing by exchange column. yfinance blocked in commercial mode.
 
-## EXACT RESUME POINT — 2026-06-19 (updated post Phase A council)
+12. **Strategic analysis complete** — 6-framework run. Key findings:
+    - Commitment trap: yfinance has no enforcement gate (fixed: CommercialLicenseError)
+    - Weakest pillar: Enforcement (0 tests at G0 start — fixed: pytest scaffold mandatory)
+    - Misclassified action: Stream A treated as Persuade, should be Enforce (ship it)
+    - Integrity violation: EODHD accepted without checking BSE primary source (fixed)
 
-**Where we stopped:** Phase A council complete (4 of 7 conditions resolved). G3 fix done. Two Tarun decisions now gate Phase B.
+13. **10-day sprint plan complete** — at `docs/alphaveda-sprint-plan.md`:
+    - Sprint 0 (Day 1): Stream A Gumroad launch — highest leverage, Tarun action
+    - G0 (Day 2-3): Repo + 6 migrations + providers + ingest + pytest
+    - G1 (Day 4-5): Streamlit app shell + real data + self-use test
+    - G2 (Day 6-8): Auth + cloud deploy + waitlist form + beta invite
+    - Checkpoint (Day 9-10): Revenue count + beta feedback
+    - Revenue goal: ≥1 Stream A sale by Day 3 · ≥1 beta user by Day 7
 
-**PHASE A — COMPLETE ✓ (resolved this session)**
-- Condition 1 (Data source): THREE-TIER ARCHITECTURE — Bhavcopy (India OHLCV, free, official NSE/BSE) + yfinance (non-India markets only) + EODHD (fundamentals when needed, $19-50/mo). Switch at first non-self user. BUILD provider abstraction now.
-- Condition 5 (Macro regime): PMI(M+S) = Growth axis, RBI policy + CPI = Inflation axis. Semi-manual monthly. Current regime: RISK_ON.
-- Condition 6 (SEBI compliance): RIA mandatory at first payment. Design as analytics tool. Add disclaimer now. NISM X-A prep = 2-month lead time needed.
-- Condition 7 (Position sizing): Quarter Kelly proxy (volatility-adjusted). Hard caps: 10% max / 1% min / 35% sector / 10% cash floor. Build trade tracking table schema now.
+14. **Revenue clock reset: 21 days → 10 days.** New deadline: 2026-06-30.
 
-**PHASE B — GATED on GSI-D-YFINANCE decision**
-- Condition 4: Buffett + Munger — fundamental data layer (ROIC, FCF, P/E, PEG, promoter pledge — min viable set)
-- Condition 2: Lynch — stock classification schema (6-category system → instrument table enum)
-
-**PHASE C — GATED on GSI-D-INVEST decision**
-- Condition 3: Dalio — bucket architecture (emergency/medium/long-term investable ranges)
-
-**RESUME SEQUENCE:**
-1. Tarun answers GSI-D-YFINANCE + GSI-D-INVEST (can be done in same conversation)
-2. Run Phase B council (Buffett+Munger Cond 4, Lynch Cond 2)
-3. Run Phase C council (Dalio Cond 3) after GSI-D-INVEST answered
-4. All 7 conditions resolved → G0 build begins
-5. Critical path: C1-C4 env → A1 data source confirmed → schema additions → build sprint
-
-**UNPLANNED ACTIONS (emerged from Phase A council — build before G0):**
-- Provider abstraction (DataProvider protocol) — before any more data calls
-- Data validation function (price/volume/NaN/sanity checks)
-- MACRO_INPUTS dict with semi-manual update protocol (monthly)
-- Dashboard disclaimer ("Not investment advice. Not SEBI registered.")
-- Trade outcome tracking table schema (empty, populate over time)
-
-**ALSO DONE THIS SESSION:**
-- G3 closed: dispatch table row added to ~/.claude/skills/research-development/SKILL.md
-- RAG gateway: live (from prior session, committed 4eb2188)
+15. **Memory updated:**
+    - `project_gsi_bucket_architecture.md` — NPS/ELSS ambiguity resolved (additional)
+    - `project_alphaveda_sprint.md` — new file, 10-day sprint state
+    - `MEMORY.md` — index updated
 
 ---
 
-## 7 PRE-BUILD SIGN-OFF CONDITIONS (the gate — BUILD DOES NOT BEGIN UNTIL ALL ✓)
+## EXACT RESUME POINT
 
-| # | Condition | Status | Council can help? |
-|---|---|---|---|
-| # | Condition | Status | Council output |
-|---|---|---|---|
-| 1 | Data source: yfinance vs EODHD | **RESOLVED ✓** | Switch at first non-self user. Build abstraction now. |
-| 2 | Stock classification schema | **PHASE B — gated on GSI-D-YFINANCE** | Lynch seat queued |
-| 3 | Bucket architecture + Tarun inputs | **RESOLVED ✓** | 4-bucket design complete. ₹7.25L in GSI equity. |
-| 4 | Fundamental data layer (ROIC, FCF etc) | **PHASE B — gated on GSI-D-YFINANCE** | Buffett+Munger queued |
-| 5 | Macro regime classifier | **RESOLVED ✓** | PMI+RBI+CPI inputs. Semi-manual monthly. |
-| 6 | SEBI compliance path | **RESOLVED ✓** | RIA at first payment. Analytics framing safe. |
-| 7 | Position sizing framework | **RESOLVED ✓** | Quarter Kelly proxy. Hard caps defined. |
+**Where we stopped:** Sprint plan complete, housekeeping checkpoint in progress.
+
+**NEXT ACTION — SPRINT 0 (Day 1) — Tarun:**
+1. Stream A: Gate 3 fix (CoS, 30 min) → Gumroad listing creation (Tarun, 30 min) → launch post (Tarun, 30 min)
+2. This is the ONLY action that generates revenue in the next 48 hours
+3. After Stream A is listed: CoS begins G0 (alphaveda repo creation → migrations → providers)
+
+**SPRINT 0 tasks by owner:**
+| Task | Owner | Effort |
+|---|---|---|
+| S0-1: Fix Gate 3 in Governance Pack README | CoS | 30 min |
+| S0-2: Gumroad listing copy review | CoS | 20 min |
+| S0-3: Create Gumroad product ($49/$99/$149) | Tarun | 30 min |
+| S0-4: Launch post (LinkedIn + X) | Tarun | 30 min |
+
+**G0 starts after Sprint 0 is live.**
 
 ---
 
-## 28 REQUIREMENTS — STATUS SNAPSHOT
+## 7 PRE-BUILD CONDITIONS — ALL RESOLVED ✓
 
-**Have (from handover package):** Donor code (indicators.py, portfolio.py, forecast.py, market_data.py), schema SQL 0001+0002, seed files (sources + dependency graph), sweep tools, donor fixtures, synthesis prompts, SPEC.md, ARCHITECTURE.md, BUILD_PLAN.md, GSI_DONOR_AUDIT.md
-
-**28 requirements across 5 categories (A1-A10 Technical, B1-B4 User Goals, C1-C6 Infrastructure, D1-D4 Commercial, E1-E4 Schema).**
-
-**Decisions needed from Tarun (binary — next session):**
-- A1: yfinance vs EODHD
-- D1: SEBI path (personal / family / public)
-- B2: Personal bucket inputs (₹ amount + when needed)
-- B3: Risk profile / investment goals
-- C1-C4: Environment confirmation (Supabase project? Python 3.12? Git repo? Node?)
-
-**CoS can produce (once decisions above are made):**
-- A2: Stock classification schema → instrument table addition
-- A4: Macro regime classifier design → new migration + seed
-- A5: Position sizing framework → recommendations table addition
-- B1: Bucket architecture → migration 0003
-- E1-E4: All schema additions
-
-**Deferred (not needed until later gate):**
-- B4 (family personas) → G6
-- D2 (platform name) → G6
-- C5 (Anthropic API key) → G4
-- A7/A8/A9 (contrarian overlay, exit framework, magnitude accuracy) → G4/G5
+| # | Condition | Status |
+|---|---|---|
+| 1 | Data source architecture | ✓ Bhavcopy + yfinance + BSE + FMP three-tier |
+| 2 | Stock classification schema | ✓ Lynch 6-enum + is_psu BOOLEAN |
+| 3 | Bucket architecture | ✓ 4-bucket ₹17L design |
+| 4 | Fundamental data layer | ✓ 9 fields, Munger ceiling, BSE as primary source |
+| 5 | Macro regime classifier | ✓ PMI + RBI/CPI semi-manual, current: RISK_ON |
+| 6 | SEBI compliance | ✓ Analytics framing, RIA at first payment |
+| 7 | Position sizing | ✓ Quarter Kelly, portfolio_value = ₹7.25L |
 
 ---
 
 ## OPEN DECISIONS (Tarun-owned)
 
-| Decision | ID | Status | Detail |
-|---|---|---|---|
-| Data source architecture | GSI-D-YFINANCE | **UPDATED ✓** | Three-tier: Bhavcopy (India OHLCV, free, official) + yfinance (non-India markets) + EODHD (fundamentals when needed). Switch trigger: first non-self user. |
-| Total investable corpus | GSI-D-INVEST | **PARTIALLY ANSWERED** | ₹16–18 Lakhs total. Bucket allocation pending goal definition (see below). |
-| Investment goals per bucket | GSI-D-GOALS | **OPEN — needs Tarun input** | Emergency/short/medium/long-term goals determine bucket sizes. Monthly burn rate needed for emergency calc. |
-| Environment setup (C1-C4 — Python env, Supabase, GHA secrets) | T-SUP-SECRETS | BLOCKED — Tarun action | Gates G0 build start |
-
-## PHASE C — COMPLETE ✓ (Dalio Bucket Architecture — 2026-06-20)
-
-**Inputs:** ₹17L midpoint corpus · ₹80,000/month burn · Goals: travel/lifestyle/medical (near) + parenting/childcare/schooling (medium-long)
-
-| Bucket | Amount | % | Horizon | Equity % | GSI Role |
-|---|---|---|---|---|---|
-| Emergency Fortress | ₹5,00,000 | 29% | Always liquid | 0% | None |
-| Near-Term Goals | ₹2,50,000 | 15% | 1–3 yr | 0-10% | None |
-| Medium-Term Family | ₹5,00,000 | 29% | 3–7 yr | 50-60% | Equity portion (₹2.75L) |
-| Long-Term Education + Wealth | ₹4,50,000 | 27% | 7+ yr | 80-100% | Primary portfolio |
-| **Total** | **₹17,00,000** | **100%** | | | |
-
-**GSI equity portfolio (Kelly formula input): ~₹7,25,000**
-(₹2.75L medium-term equity + ₹4.5L long-term)
-
-**Critical constraint:** Medium-term bucket (₹5L) is undersized for parenting costs (₹9-18L over 7 years). Gap must come from revenue streams. GSI must surface withdrawal-pace alert if drawdown > ₹70k/month average.
-
-**Data source architecture (GSI-D-YFINANCE resolved):**
-Bhavcopy (India OHLCV, free, official NSE/BSE) + yfinance (non-India markets) + EODHD (fundamentals, paid, when needed)
-
-**LOCKED / SEMI-LIQUID COMMITMENTS (added 2026-06-20):**
-- NPS: ₹2,50,000 — locked until retirement (age 60). 60% lump sum + 40% annuity at maturity. Equity tier (E) up to 75%. Not in GSI active portfolio — retirement instrument.
-- ELSS: ₹1,60,000 — partial liquid (3-year lock-in per tranche; some tranches may be free). Equity MF. Count as long-term bucket supplement once unlocked.
-- **AMBIGUITY TO RESOLVE next session:** Are NPS + ELSS WITHIN the ₹17L corpus or ADDITIONAL to it?
-  - If within: liquid/investable reduces to ₹12.9L → bucket allocation needs revision
-  - If additional: total corpus = ₹21.1L → bucket architecture holds, NPS/ELSS are separate instruments
-- NPS + ELSS together = ₹4,10,000 in long-term category regardless of interpretation
+| Decision | Default if no answer | Needed by |
+|---|---|---|
+| AlphaVeda pricing: ₹999/mo or tiered? | ₹999/mo single tier | Sprint 3 (Day 6-8) |
+| Custom domain? (alphaveda.in?) | Streamlit subdomain for now | Sprint 3 |
+| Stream C consulting: who are the 3 outreach targets? | Tarun identifies | Day 1-2 |
+| Stream A Gate 6: Tarun final sign-off on Gumroad listing | Required before listing | Sprint 0 |
 
 ---
 
 ## COMMERCIAL STATE
 
-- Stream A (Gumroad Starter Pack): STRATEGY_REVIEW_ACTIVE — active in separate session. Not this workspace.
-- GSI financial tool commercial path: Confirmed intent (Tarun: "expected to help with commercials"). Commercial path depends on SEBI decision (D1) and data source decision (A1/D4).
-- Stream C (financial consulting) via GSI: Available from day 1, no code required. Synthesis Chair recommendation from 2026-05-31 session still valid.
+- **Stream A (Gumroad Governance Pack):** SPRINT 0 — list on Day 1. OVERDUE. Gate 3 (README fix) = only remaining blocker from CoS side.
+- **Stream C (Financial consulting):** Available now, no code needed. 3 outreach targets needed from Tarun.
+- **Stream D (AlphaVeda):** G0 starts after Sprint 0. First beta user target: Day 7. First subscriber: Day 10+.
+- **Stream B (YarnZoo):** Deferred — out of 10-day scope.
+- **Revenue clock:** 10 days remaining (deadline 2026-06-30).
+
+---
+
+## KEY ARTIFACTS THIS SESSION
+
+| Artifact | Location | Status |
+|---|---|---|
+| Brand brief (Markdown) | `docs/brand/alphaveda-brand-brief.md` | Committed |
+| Brand brief (HTML) | `docs/brand/alphaveda-brand-brief.html` | Committed |
+| Sprint plan | `docs/alphaveda-sprint-plan.md` | Committed |
+| Session resume | `graphify-out/SESSION_RESUME.md` | This file |
+| Memory: bucket architecture | `~/.claude/projects/.../memory/project_gsi_bucket_architecture.md` | Updated |
+| Memory: sprint state | `~/.claude/projects/.../memory/project_alphaveda_sprint.md` | New |
 
 ---
 
 ## PARALLEL SESSION NOTE
 
-Stream A (governance pack) is active in a separate session. This workspace is the GSI financial tool ONLY. Do not conflate the two in the next session.
+Stream A (Governance Pack) has its own session history. Do not conflate with AlphaVeda. Sprint 0 cross-references Gate 3 fix from Stream A session.
 
 ---
 
-## FILES CREATED/MODIFIED THIS SESSION
+## PRIOR SESSION STATE (preserved — do not redo)
 
-| File | Status | Notes |
-|---|---|---|
-| `ideas/strategic_analysis.html` | NEW — staged for commit | Interactive 6-framework analysis, 10 sections, Chart.js |
-| `graphify-out/GRAPH_REPORT.md` | Modified (auto-graph rebuild) | |
-| `graphify-out/graph.html` | Modified (auto-graph rebuild) | |
-| `graphify-out/graph.json` | Modified (auto-graph rebuild) | |
+### 2026-06-19 RAG GATEWAY + SYSTEMS ANALYSIS — COMPLETE
+- RAG Gateway P0 fully built: `~/.claude/scripts/rag-gateway.sh` (three-tier routing)
+- G3 fix done: dispatch table row in research-development skill
+- Systems analysis complete: G1-G4 feedback loop gaps mapped
+- Phase plan: P1 session-start-reader → P2 respond signals → P3 JSONL watcher
+
+### 2026-06-19 PHASE A COUNCIL COMPLETE
+- Condition 1: Bhavcopy + yfinance + EODHD (now updated: EODHD → BSE free stack)
+- Condition 5: PMI + RBI/CPI macro regime, semi-manual monthly
+- Condition 6: SEBI compliance, analytics framing, RIA at first payment
+- Condition 7: Quarter Kelly + hard caps (10% max, 1% min, 35% sector, 10% cash floor)
+
+### 2026-06-18 INFRASTRUCTURE SPRINT — COMPLETE
+- Housekeeping skill built
+- Stop hook #7 added (housekeeping-stop-hook.sh)
+- Council briefing HTML built
+- Haiku review gate established
+
+### PRIOR WORK (session 2026-06-16 → 2026-06-18)
+- 7-seat full council: 7 REVISE verdicts (do not re-run)
+- 28-requirement inventory: complete (do not rebuild)
+- Strategic analysis: CONSOLIDATE posture (still valid)
+- RAG gateway: live (commit 4eb2188)

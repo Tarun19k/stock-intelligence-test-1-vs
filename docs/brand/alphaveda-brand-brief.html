@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlphaVeda — Brand Identity Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --indigo:   #1A1F3C;
+    --ivory:    #F5F3EC;
+    --gold:     #E8A020;
+    --teal:     #2D7A72;
+    --green:    #4A8C5C;
+    --terra:    #C0503A;
+    --gray:     #9B9490;
+    --indigo-80: rgba(26,31,60,0.08);
+    --gold-10:  rgba(232,160,32,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--ivory);
+    color: var(--indigo);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--indigo);
+    color: var(--ivory);
+    padding: 64px 60px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 480px; height: 480px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,160,32,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  .hero-name {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--ivory);
+  }
+
+  .hero-name span {
+    color: var(--gold);
+  }
+
+  .hero-tag-block {
+    text-align: right;
+    padding-top: 8px;
+  }
+
+  .hero-tagline-primary {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .hero-tagline-secondary {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245,243,236,0.5);
+  }
+
+  .hero-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(245,243,236,0.35);
+    margin-bottom: 4px;
+  }
+
+  .hero-positioning {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: rgba(245,243,236,0.82);
+    max-width: 720px;
+    margin-bottom: 48px;
+    border-left: 2px solid var(--gold);
+    padding-left: 20px;
+  }
+
+  /* Identity strip */
+  .identity-strip {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 40px;
+    align-items: start;
+    padding-top: 36px;
+    border-top: 1px solid rgba(245,243,236,0.12);
+  }
+
+  .strip-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(245,243,236,0.4);
+    margin-bottom: 12px;
+  }
+
+  .color-swatches {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .swatch-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(245,243,236,0.15);
+  }
+
+  .swatch-hex {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: rgba(245,243,236,0.4);
+  }
+
+  .font-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .font-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .font-specimen-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245,243,236,0.35);
+    min-width: 56px;
+  }
+
+  .font-fraunces { font-family: 'Fraunces', serif; font-size: 22px; color: var(--ivory); }
+  .font-dmmono   { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--gold); }
+  .font-inter    { font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(245,243,236,0.7); }
+
+  .attribute-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .chip {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(245,243,236,0.2);
+    color: rgba(245,243,236,0.75);
+  }
+
+  .chip.lead {
+    background: rgba(232,160,32,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ─── CONTENT ─── */
+  .content {
+    padding: 0 60px 80px;
+  }
+
+  .section {
+    margin-top: 64px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .section-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--indigo);
+  }
+
+  .section-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--indigo-80);
+  }
+
+  /* ─── TAGLINES ─── */
+  .taglines-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .tagline-card {
+    background: white;
+    border: 1px solid rgba(26,31,60,0.1);
+    border-radius: 10px;
+    padding: 20px 16px;
+    position: relative;
+  }
+
+  .tagline-card.winner {
+    background: var(--indigo);
+    border-color: var(--indigo);
+  }
+
+  .tagline-card.winner .tagline-text { color: var(--ivory); }
+  .tagline-card.winner .tagline-register { color: rgba(245,243,236,0.45); }
+  .tagline-card.winner .tagline-notes { color: rgba(245,243,236,0.6); }
+
+  .winner-badge {
+    position: absolute;
+    top: -10px; right: 12px;
+    background: var(--gold);
+    color: var(--indigo);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .tagline-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .tagline-text {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--indigo);
+    margin-bottom: 8px;
+  }
+
+  .tagline-register {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+
+  .tagline-notes {
+    font-size: 11px;
+    color: rgba(26,31,60,0.55);
+    line-height: 1.5;
+  }
+
+  /* ─── VISUAL IDENTITY ─── */
+  .vi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .vi-panel {
+    background: white;
+    border: 1px solid rgba(26,31,60,0.1);
+    border-radius: 12px;
+    padding: 28px;
+  }
+
+  .vi-panel-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gray);
+    margin-bottom: 20px;
+  }
+
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .palette-grid.row2 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .color-block {
+    border-radius: 8px;
+    padding: 14px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 80px;
+  }
+
+  .color-block.dark .color-name,
+  .color-block.dark .color-hex { color: rgba(245,243,236,0.9); }
+  .color-block.dark .color-role { color: rgba(245,243,236,0.5); }
+
+  .color-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(26,31,60,0.9);
+    margin-bottom: 2px;
+  }
+
+  .color-hex {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(26,31,60,0.5);
+    margin-bottom: 4px;
+  }
+
+  .color-role {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(26,31,60,0.4);
+  }
+
+  .palette-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gray);
+    margin: 14px 0 8px;
+  }
+
+  /* Type specimen */
+  .type-row {
+    border-bottom: 1px solid rgba(26,31,60,0.07);
+    padding: 16px 0;
+  }
+
+  .type-row:last-child { border-bottom: none; }
+
+  .type-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .type-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gray);
+  }
+
+  .type-use {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: var(--gray);
+  }
+
+  .type-specimen-fraunces {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--indigo);
+  }
+
+  .type-specimen-mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+
+  .type-specimen-inter {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    color: rgba(26,31,60,0.7);
+  }
+
+  /* ─── LOGO CONCEPTS ─── */
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .logo-card {
+    background: white;
+    border: 1px solid rgba(26,31,60,0.1);
+    border-radius: 12px;
+    padding: 28px 24px;
+    position: relative;
+  }
+
+  .logo-card.recommended {
+    border-color: var(--gold);
+    background: #FFFBF2;
+  }
+
+  .rec-badge {
+    position: absolute;
+    top: -10px; right: 12px;
+    background: var(--gold);
+    color: var(--indigo);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .logo-mark {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  /* Yantra mark SVG */
+  .yantra { width: 56px; height: 56px; }
+
+  /* Alpha-Akshara concept */
+  .alpha-akshara {
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--indigo);
+    line-height: 1;
+    font-family: Georgia, serif;
+    font-style: italic;
+    position: relative;
+  }
+
+  /* Constellation */
+  .constellation { width: 60px; height: 54px; }
+
+  .logo-concept-name {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--indigo);
+    margin-bottom: 8px;
+  }
+
+  .logo-concept-desc {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(26,31,60,0.6);
+  }
+
+  /* ─── PERSONALITY ─── */
+  .personality-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+
+  .attr-card {
+    background: white;
+    border: 1px solid rgba(26,31,60,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .attr-card.lead-attr {
+    border-color: var(--gold);
+    background: #FFFBF2;
+  }
+
+  .attr-header {
+    background: var(--indigo);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .attr-card.lead-attr .attr-header {
+    background: var(--gold);
+  }
+
+  .attr-card.lead-attr .attr-name { color: var(--indigo); }
+  .attr-card.lead-attr .attr-badge-lead { display: inline-block; }
+
+  .attr-name {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ivory);
+  }
+
+  .attr-badge-lead {
+    display: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: var(--indigo);
+    color: var(--gold);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .attr-body {
+    padding: 16px 18px;
+  }
+
+  .attr-desc {
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: rgba(26,31,60,0.65);
+    margin-bottom: 14px;
+  }
+
+  .do-dont {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .do-item, .dont-item {
+    font-size: 10.5px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    border-radius: 6px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .do-item {
+    background: rgba(74,140,92,0.08);
+    color: #2D6B3C;
+    border-left: 2px solid var(--green);
+  }
+
+  .dont-item {
+    background: rgba(192,80,58,0.07);
+    color: #8B3020;
+    border-left: 2px solid var(--terra);
+  }
+
+  .do-icon, .dont-icon {
+    font-size: 10px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  /* ─── TWO-COL LAYOUT ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+  }
+
+  /* ─── PERSONA ─── */
+  .persona-card {
+    background: var(--indigo);
+    border-radius: 12px;
+    overflow: hidden;
+    color: var(--ivory);
+  }
+
+  .persona-hero {
+    background: linear-gradient(135deg, #1A1F3C 0%, #252C56 100%);
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid rgba(245,243,236,0.08);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .persona-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--indigo);
+    flex-shrink: 0;
+  }
+
+  .persona-id-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ivory);
+    margin-bottom: 4px;
+  }
+
+  .persona-id-sub {
+    font-size: 12px;
+    color: rgba(245,243,236,0.55);
+    line-height: 1.5;
+  }
+
+  .persona-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(245,243,236,0.08);
+  }
+
+  .persona-stat {
+    background: var(--indigo);
+    padding: 14px 20px;
+  }
+
+  .persona-stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(245,243,236,0.35);
+    margin-bottom: 4px;
+  }
+
+  .persona-stat-value {
+    font-size: 13px;
+    color: rgba(245,243,236,0.85);
+    line-height: 1.4;
+  }
+
+  .persona-stat-value strong {
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+  }
+
+  .persona-sections {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .persona-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .persona-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .persona-list li {
+    font-size: 11.5px;
+    color: rgba(245,243,236,0.7);
+    line-height: 1.5;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .persona-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .persona-workaround {
+    padding: 16px 20px;
+    background: rgba(232,160,32,0.07);
+    border-top: 1px solid rgba(232,160,32,0.15);
+    font-size: 11.5px;
+    color: rgba(245,243,236,0.65);
+    line-height: 1.6;
+  }
+
+  .persona-workaround strong {
+    color: var(--gold);
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  /* ─── TONE OF VOICE ─── */
+  .tov-card {
+    background: white;
+    border: 1px solid rgba(26,31,60,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .tov-principle {
+    border-bottom: 1px solid rgba(26,31,60,0.07);
+  }
+
+  .tov-principle:last-child { border-bottom: none; }
+
+  .tov-header {
+    background: var(--indigo-80);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tov-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .tov-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--indigo);
+    line-height: 1.4;
+  }
+
+  .tov-rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .tov-col {
+    padding: 14px 18px;
+  }
+
+  .tov-col:first-child {
+    border-right: 1px solid rgba(26,31,60,0.07);
+    background: rgba(74,140,92,0.04);
+  }
+
+  .tov-col:last-child {
+    background: rgba(192,80,58,0.04);
+  }
+
+  .tov-col-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .tov-col:first-child .tov-col-label { color: var(--green); }
+  .tov-col:last-child .tov-col-label { color: var(--terra); }
+
+  .tov-item {
+    font-size: 11px;
+    line-height: 1.55;
+    color: rgba(26,31,60,0.65);
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(26,31,60,0.08);
+    display: flex;
+    gap: 6px;
+  }
+
+  .tov-item:last-child { border-bottom: none; }
+
+  .tov-item-icon { flex-shrink: 0; font-size: 10px; }
+
+  /* ─── SEBI LANGUAGE ─── */
+  .sebi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(26,31,60,0.1);
+  }
+
+  .sebi-col {
+    padding: 24px;
+  }
+
+  .sebi-col.approved { background: rgba(74,140,92,0.06); }
+  .sebi-col.prohibited { background: rgba(192,80,58,0.05); border-left: 1px solid rgba(26,31,60,0.08); }
+
+  .sebi-col-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(26,31,60,0.08);
+  }
+
+  .sebi-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .sebi-col.approved .sebi-badge {
+    background: var(--green);
+    color: white;
+  }
+
+  .sebi-col.prohibited .sebi-badge {
+    background: var(--terra);
+    color: white;
+  }
+
+  .sebi-col-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--indigo);
+  }
+
+  .sebi-category {
+    margin-bottom: 16px;
+  }
+
+  .sebi-cat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+
+  .sebi-phrases {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .sebi-phrase {
+    font-size: 11px;
+    padding: 4px 9px;
+    border-radius: 5px;
+    line-height: 1.35;
+  }
+
+  .sebi-col.approved .sebi-phrase {
+    background: rgba(74,140,92,0.1);
+    color: #2D6B3C;
+    border: 1px solid rgba(74,140,92,0.2);
+  }
+
+  .sebi-col.prohibited .sebi-phrase {
+    background: rgba(192,80,58,0.08);
+    color: #8B3020;
+    border: 1px solid rgba(192,80,58,0.18);
+    text-decoration: line-through;
+    text-decoration-color: rgba(192,80,58,0.5);
+  }
+
+  .sebi-disclaimer {
+    margin-top: 20px;
+    background: rgba(26,31,60,0.04);
+    border-radius: 10px;
+    border-left: 3px solid var(--teal);
+    padding: 16px 18px;
+  }
+
+  .sebi-disclaimer-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
+  .sebi-disclaimer-text {
+    font-size: 11px;
+    line-height: 1.7;
+    color: rgba(26,31,60,0.6);
+    font-style: italic;
+  }
+
+  /* ─── CONTENT PILLARS ─── */
+  .pillar-card {
+    background: white;
+    border: 1px solid rgba(26,31,60,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .pillar-header {
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid rgba(26,31,60,0.06);
+  }
+
+  .pillar-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .pillar-name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--indigo);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .pillar-hook {
+    font-size: 11.5px;
+    font-style: italic;
+    color: rgba(26,31,60,0.5);
+    line-height: 1.5;
+  }
+
+  .pillar-body {
+    padding: 16px 22px;
+  }
+
+  .pillar-formats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+
+  .format-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--indigo-80);
+    color: rgba(26,31,60,0.6);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .pillar-topics {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .pillar-topics li {
+    font-size: 11px;
+    line-height: 1.5;
+    color: rgba(26,31,60,0.6);
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .pillar-topics li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: var(--gold);
+    font-size: 14px;
+    line-height: 1.1;
+  }
+
+  /* ─── FOOTER ─── */
+  .brief-footer {
+    background: var(--indigo);
+    color: rgba(245,243,236,0.4);
+    padding: 28px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .brief-footer span { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HERO — BIG PICTURE
+════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="hero-version">Brand Brief v1.0 · 2026-06-20 · Internal</div>
+      <div class="hero-name">Alpha<span>Veda</span></div>
+    </div>
+    <div class="hero-tag-block">
+      <span class="hero-tagline-primary">"Know before you act."</span>
+      <span class="hero-tagline-secondary">Ancient wisdom. Modern signals.</span>
+    </div>
+  </div>
+
+  <p class="hero-positioning">
+    AlphaVeda is a personal portfolio analytics platform for Indian retail investors who want to move beyond gut-feel decisions and into data-driven market understanding. By synthesising technical signals, fundamental indicators, and macro patterns across NSE and BSE-listed equities, AlphaVeda surfaces the patterns in your portfolio and the market — giving you analytical clarity to ask better questions and make more informed choices on your own. <em>AlphaVeda illuminates the data. You drive the decision.</em>
+  </p>
+
+  <div class="identity-strip">
+    <!-- Colors -->
+    <div>
+      <div class="strip-label">Colour Palette</div>
+      <div class="color-swatches">
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#1A1F3C;"></div>
+          <div class="swatch-hex">#1A1F3C</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#F5F3EC; border-color:rgba(245,243,236,0.3);"></div>
+          <div class="swatch-hex">#F5F3EC</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#E8A020;"></div>
+          <div class="swatch-hex">#E8A020</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#2D7A72;"></div>
+          <div class="swatch-hex">#2D7A72</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#4A8C5C;"></div>
+          <div class="swatch-hex">#4A8C5C</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#C0503A;"></div>
+          <div class="swatch-hex">#C0503A</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fonts -->
+    <div>
+      <div class="strip-label">Typography</div>
+      <div class="font-stack">
+        <div class="font-row">
+          <div class="font-specimen-name">Headings</div>
+          <div class="font-fraunces">Fraunces</div>
+        </div>
+        <div class="font-row">
+          <div class="font-specimen-name">Data</div>
+          <div class="font-dmmono">₹7,25,000</div>
+        </div>
+        <div class="font-row">
+          <div class="font-specimen-name">Prose</div>
+          <div class="font-inter">Inter — analytical clarity</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attributes -->
+    <div>
+      <div class="strip-label">Brand Attributes</div>
+      <div class="attribute-chips">
+        <div class="chip lead">Precise ★</div>
+        <div class="chip">Calm</div>
+        <div class="chip">Deeply Indian</div>
+        <div class="chip">Empowering</div>
+        <div class="chip">Rooted in Knowledge</div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="strip-label" style="margin-bottom:6px;">Primary Persona</div>
+        <div style="font-size:12px; color:rgba(245,243,236,0.65);">Arjun · 34 · Bengaluru · ₹5L–₹30L portfolio · 4 browser tabs open</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CONTENT — ZOOMED IN
+════════════════════════════════════════════ -->
+<div class="content">
+
+  <!-- TAGLINES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Tagline Options</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="taglines-grid">
+      <div class="tagline-card winner">
+        <div class="winner-badge">Primary ✦</div>
+        <div class="tagline-num">01</div>
+        <div class="tagline-text">"Know before you act."</div>
+        <div class="tagline-register">Analytical / Direct</div>
+        <div class="tagline-notes">Short, confident. "Know" echoes Veda (Sanskrit: to know). Action-neutral — SEBI safe.</div>
+      </div>
+      <div class="tagline-card">
+        <div class="tagline-num">02</div>
+        <div class="tagline-text">"Ancient wisdom. Modern signals."</div>
+        <div class="tagline-register">Philosophical / Dual</div>
+        <div class="tagline-notes">Plays the Alpha + Veda etymology. Recommended sub-tagline for longer formats.</div>
+      </div>
+      <div class="tagline-card">
+        <div class="tagline-num">03</div>
+        <div class="tagline-text">"Your portfolio, fully understood."</div>
+        <div class="tagline-register">Modern / User-Centric</div>
+        <div class="tagline-notes">Positions the user as beneficiary. Safe for SEBI framing.</div>
+      </div>
+      <div class="tagline-card">
+        <div class="tagline-num">04</div>
+        <div class="tagline-text">"See the signal. Not the noise."</div>
+        <div class="tagline-register">Analytical / Technical</div>
+        <div class="tagline-notes">Appeals to quantitative investors. Differentiates from social tip culture.</div>
+      </div>
+      <div class="tagline-card">
+        <div class="tagline-num">05</div>
+        <div class="tagline-text">"The edge is in the insight."</div>
+        <div class="tagline-register">Performance / Aspirational</div>
+        <div class="tagline-notes">"Edge" maps to alpha without promising returns. Bold but SEBI-defensible.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISUAL IDENTITY -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Visual Identity</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="vi-grid">
+      <!-- Colour palette -->
+      <div class="vi-panel">
+        <div class="vi-panel-title">Colour Palette · Usage ratios: Indigo+Ivory 70% · Gold max 15% · Teal 10% · Signals only</div>
+
+        <div class="palette-section-label">Primary</div>
+        <div class="palette-grid">
+          <div class="color-block dark" style="background:#1A1F3C; min-height:90px;">
+            <div class="color-name">Deep Indigo</div>
+            <div class="color-hex">#1A1F3C</div>
+            <div class="color-role">Primary Dark</div>
+          </div>
+          <div class="color-block" style="background:#F5F3EC; border:1px solid rgba(26,31,60,0.12);">
+            <div class="color-name">Warm Ivory</div>
+            <div class="color-hex">#F5F3EC</div>
+            <div class="color-role">Primary Light</div>
+          </div>
+          <div class="color-block dark" style="background:#E8A020;">
+            <div class="color-name" style="color:rgba(26,31,60,0.9);">Saffron Gold</div>
+            <div class="color-hex" style="color:rgba(26,31,60,0.6);">#E8A020</div>
+            <div class="color-role" style="color:rgba(26,31,60,0.5);">Accent · Alpha Signal</div>
+          </div>
+        </div>
+
+        <div class="palette-section-label">Secondary & Signal</div>
+        <div class="palette-grid">
+          <div class="color-block dark" style="background:#2D7A72;">
+            <div class="color-name">Slate Teal</div>
+            <div class="color-hex">#2D7A72</div>
+            <div class="color-role">Charts / Macro</div>
+          </div>
+          <div class="color-block dark" style="background:#4A8C5C;">
+            <div class="color-name">Vedic Green</div>
+            <div class="color-hex">#4A8C5C</div>
+            <div class="color-role">Positive Signal</div>
+          </div>
+          <div class="color-block dark" style="background:#C0503A;">
+            <div class="color-name">Terracotta</div>
+            <div class="color-hex">#C0503A</div>
+            <div class="color-role">Risk / Drawdown</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typography specimen -->
+      <div class="vi-panel">
+        <div class="vi-panel-title">Typography — Three-layer system</div>
+
+        <div class="type-row">
+          <div class="type-meta">
+            <span class="type-label">Fraunces · Optical Serif</span>
+            <span class="type-use">Headings · Product name · Key metrics at large size</span>
+          </div>
+          <div class="type-specimen-fraunces">AlphaVeda</div>
+          <div style="font-family:'Fraunces',serif; font-size:16px; font-style:italic; color:rgba(26,31,60,0.4); margin-top:4px;">Portfolio Intelligence Platform</div>
+        </div>
+
+        <div class="type-row">
+          <div class="type-meta">
+            <span class="type-label">DM Mono · Monospace</span>
+            <span class="type-use">Numbers · Tickers · Timestamps · Table cells</span>
+          </div>
+          <div class="type-specimen-mono">₹7,25,000</div>
+          <div style="font-family:'DM Mono',monospace; font-size:12px; color:var(--gray); margin-top:4px;">RELIANCE.NS · PE 24.3x · RSI 68.4 · 2026-06-20</div>
+        </div>
+
+        <div class="type-row">
+          <div class="type-meta">
+            <span class="type-label">Inter · Variable Sans</span>
+            <span class="type-use">UI copy · Tooltips · Onboarding · Marketing prose</span>
+          </div>
+          <div class="type-specimen-inter">Price momentum (6-month) is in the top quartile of this index. Three technical indicators are aligned positively as of today's close.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGO CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Logo Concept Directions</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="logo-grid">
+      <!-- Yantra Mark -->
+      <div class="logo-card recommended">
+        <div class="rec-badge">Recommended ✦</div>
+        <div class="logo-mark">
+          <svg class="yantra" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="28,4 52,48 4,48" stroke="#1A1F3C" stroke-width="2.5" fill="rgba(232,160,32,0.08)"/>
+            <polygon points="28,14 44,44 12,44" stroke="#E8A020" stroke-width="1.5" fill="none"/>
+            <polygon points="28,24 36,40 20,40" stroke="#1A1F3C" stroke-width="1" fill="rgba(26,31,60,0.08)"/>
+            <circle cx="28" cy="34" r="2" fill="#E8A020"/>
+          </svg>
+        </div>
+        <div class="logo-concept-name">Concept A — The Yantra Mark</div>
+        <div class="logo-concept-desc">Simplified geometric form from the Sri Yantra — concentric triangles reduced to 2–3 clean lines. Upward-pointing triangle signals alpha (above benchmark). Wordmark in Fraunces beside it. Timeless, scalable, India-rooted without being ornate. Recommended for launch.</div>
+      </div>
+
+      <!-- Alpha-Akshara -->
+      <div class="logo-card recommended">
+        <div class="rec-badge">Recommended ✦</div>
+        <div class="logo-mark">
+          <div style="position:relative; display:flex; align-items:center; justify-content:center;">
+            <span style="font-family:'Fraunces',serif; font-size:56px; font-weight:700; font-style:italic; color:var(--indigo); line-height:1; display:block;">α</span>
+            <span style="position:absolute; bottom:0; right:-4px; width:8px; height:24px; border-right:2px solid var(--gold); border-bottom:2px solid var(--gold); border-radius:0 0 3px 0;"></span>
+          </div>
+        </div>
+        <div class="logo-concept-name">Concept B — The Alpha-Akshara</div>
+        <div class="logo-concept-desc">Custom letterform merging the Greek alpha symbol (α) with Devanagari stroke style — thick-thin contrast, calligraphic curve at the terminal. Reads as both "α" and as something rooted in Indian script tradition. Most distinctive. Best if custom typeface budget is available.</div>
+      </div>
+
+      <!-- Constellation -->
+      <div class="logo-card">
+        <div class="logo-mark">
+          <svg class="constellation" viewBox="0 0 60 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="12" y1="40" x2="30" y2="12" stroke="#9B9490" stroke-width="1"/>
+            <line x1="30" y1="12" x2="48" y2="28" stroke="#9B9490" stroke-width="1"/>
+            <line x1="48" y1="28" x2="36" y2="46" stroke="#9B9490" stroke-width="1"/>
+            <line x1="36" y1="46" x2="18" y2="22" stroke="#9B9490" stroke-width="1"/>
+            <circle cx="12" cy="40" r="3.5" fill="#1A1F3C"/>
+            <circle cx="30" cy="12" r="5" fill="#E8A020"/>
+            <circle cx="48" cy="28" r="3" fill="#1A1F3C"/>
+            <circle cx="36" cy="46" r="2.5" fill="#2D7A72"/>
+            <circle cx="18" cy="22" r="3" fill="#1A1F3C"/>
+          </svg>
+        </div>
+        <div class="logo-concept-name">Concept C — The Constellation Mark</div>
+        <div class="logo-concept-desc">Five dots in asymmetric pattern (star cluster) connected by thin lines — signal nodes in a market intelligence network. Dots can animate in the digital product. Less India-specific but universally legible at small sizes. Best if international expansion is planned.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRAND PERSONALITY -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="section-title">Brand Personality</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="personality-grid">
+      <!-- Precise -->
+      <div class="attr-card lead-attr">
+        <div class="attr-header">
+          <div class="attr-name">Precise</div>
+          <span class="attr-badge-lead">Lead ★</span>
+        </div>
+        <div class="attr-body">
+          <div class="attr-desc">Language is exact. Data is presented with source, timeframe, and methodology visible. Nothing is vague. This is the non-negotiable foundation.</div>
+          <div class="do-dont">
+            <div class="do-item"><span class="do-icon">✓</span>"RSI trend sustained above 60 across 8 of last 12 months."</div>
+            <div class="dont-item"><span class="dont-icon">✗</span>"This stock looks strong right now."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calm -->
+      <div class="attr-card">
+        <div class="attr-header"><div class="attr-name">Calm</div></div>
+        <div class="attr-body">
+          <div class="attr-desc">Never alarms, hypes, or reacts. The opposite of financial Twitter. The market moves — AlphaVeda holds steady.</div>
+          <div class="do-dont">
+            <div class="do-item"><span class="do-icon">✓</span>"Volatility elevated vs. 90-day baseline. Portfolio exposure: 18%."</div>
+            <div class="dont-item"><span class="dont-icon">✗</span>"ALERT: Markets crashing! Sell now!"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deeply Indian -->
+      <div class="attr-card">
+        <div class="attr-header"><div class="attr-name">Deeply Indian</div></div>
+        <div class="attr-body">
+          <div class="attr-desc">NSE/BSE tickers, Nifty/Sensex benchmarks, rupee denomination throughout. No US defaults. Respects Indian market realities: circuit filters, T+1 settlement, F&O rollover.</div>
+          <div class="do-dont">
+            <div class="do-item"><span class="do-icon">✓</span>"Benchmark: Nifty 500 TRI (dividends included)."</div>
+            <div class="dont-item"><span class="dont-icon">✗</span>"Benchmark: S&P 500 equivalent."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empowering -->
+      <div class="attr-card">
+        <div class="attr-header"><div class="attr-name">Empowering</div></div>
+        <div class="attr-body">
+          <div class="attr-desc">Puts analytical power in the user's hands. Never tells you what to do. Tells you what the data says — so you can decide. SEBI compliance is built into this attribute.</div>
+          <div class="do-dont">
+            <div class="do-item"><span class="do-icon">✓</span>"Three indicators are aligned positively as of today's close."</div>
+            <div class="dont-item"><span class="dont-icon">✗</span>"This is a buy signal."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rooted in Knowledge -->
+      <div class="attr-card">
+        <div class="attr-header"><div class="attr-name">Rooted in Knowledge</div></div>
+        <div class="attr-body">
+          <div class="attr-desc">The Veda dimension is not decorative. Market intelligence as a discipline — a structured body of knowledge that compounds over time, like learning itself.</div>
+          <div class="do-dont">
+            <div class="do-item"><span class="do-icon">✓</span>"Pattern recognition improves as your historical data deepens."</div>
+            <div class="dont-item"><span class="dont-icon">✗</span>"Premium users get more signals."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONA + TONE OF VOICE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="section-title">Primary Persona + Tone of Voice</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="two-col">
+      <!-- Persona -->
+      <div class="persona-card">
+        <div class="persona-hero">
+          <div class="persona-avatar">A</div>
+          <div>
+            <div class="persona-id-name">Arjun, 34</div>
+            <div class="persona-id-sub">Bengaluru / Mumbai / Pune<br>Mid-senior professional · Tech / Consulting / Finance-adjacent<br>Household income ₹25L–₹80L/yr</div>
+          </div>
+        </div>
+        <div class="persona-stats">
+          <div class="persona-stat">
+            <div class="persona-stat-label">Portfolio</div>
+            <div class="persona-stat-value"><strong>₹5L–₹30L</strong> direct equity</div>
+          </div>
+          <div class="persona-stat">
+            <div class="persona-stat-label">Experience</div>
+            <div class="persona-stat-value"><strong>3–8 years</strong> investing</div>
+          </div>
+          <div class="persona-stat">
+            <div class="persona-stat-label">Execution Platform</div>
+            <div class="persona-stat-value">Zerodha or Groww</div>
+          </div>
+          <div class="persona-stat">
+            <div class="persona-stat-label">Willingness to Pay</div>
+            <div class="persona-stat-value"><strong>₹500–₹1,500/mo</strong> for clear synthesis value</div>
+          </div>
+        </div>
+        <div class="persona-sections">
+          <div>
+            <div class="persona-section-title">Wants</div>
+            <ul class="persona-list">
+              <li>Understand <em>why</em> their portfolio performs the way it does</li>
+              <li>A single view connecting technical + fundamental + holdings</li>
+              <li>Decisions based on evidence, not tips or instinct</li>
+              <li>Something that makes them smarter over time</li>
+            </ul>
+          </div>
+          <div>
+            <div class="persona-section-title">Fears</div>
+            <ul class="persona-list">
+              <li>A significant loss they "should have seen coming"</li>
+              <li>Falling for a WhatsApp tip and losing capital</li>
+              <li>Buying at peak / selling at trough — no signals in view</li>
+              <li>Sophisticated analytics is "only for HNIs"</li>
+            </ul>
+          </div>
+        </div>
+        <div class="persona-workaround">
+          <strong>Current workaround</strong>
+          Screener.in · TradingView · Moneycontrol · Zerodha Kite — 4 browser tabs, 2–4 hours on weekends manually reconciling. Knows this is inefficient. Suspects a better system exists.
+        </div>
+      </div>
+
+      <!-- Tone of Voice -->
+      <div class="tov-card">
+        <div class="tov-principle">
+          <div class="tov-header">
+            <span class="tov-num">P1</span>
+            <span class="tov-title">Say what the data shows — not what it means for the user's decision</span>
+          </div>
+          <div class="tov-rows">
+            <div class="tov-col">
+              <div class="tov-col-label">✓ AlphaVeda says</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Price momentum (6-month) is in the top quartile of this index."</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Promoter holding has declined 4.2% in the last two quarters."</div>
+            </div>
+            <div class="tov-col">
+              <div class="tov-col-label">✗ AlphaVeda doesn't say</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Now is a good time to add to this position."</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Watch out — insiders may be exiting."</div>
+            </div>
+          </div>
+        </div>
+        <div class="tov-principle">
+          <div class="tov-header">
+            <span class="tov-num">P2</span>
+            <span class="tov-title">Plain language over jargon — but never dumbed down</span>
+          </div>
+          <div class="tov-rows">
+            <div class="tov-col">
+              <div class="tov-col-label">✓ AlphaVeda says</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"EV/EBITDA: 11.2x — common multiple for capital-intensive businesses."</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Debt-to-equity: 0.8 (sector range: 0.3–1.4)."</div>
+            </div>
+            <div class="tov-col">
+              <div class="tov-col-label">✗ AlphaVeda doesn't say</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Enterprise Value to EBITDA equals 11.2."</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"D/E ratio is moderate. Be careful."</div>
+            </div>
+          </div>
+        </div>
+        <div class="tov-principle">
+          <div class="tov-header">
+            <span class="tov-num">P3</span>
+            <span class="tov-title">Confident but never certain — probabilistic framing always</span>
+          </div>
+          <div class="tov-rows">
+            <div class="tov-col">
+              <div class="tov-col-label">✓ AlphaVeda says</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"In 7 of the last 10 comparable macro environments, this sector saw compressed margins."</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Pattern resembles Q3 FY22 setup — context differs, but overlap is notable."</div>
+            </div>
+            <div class="tov-col">
+              <div class="tov-col-label">✗ AlphaVeda doesn't say</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"Margins will compress this quarter."</div>
+              <div class="tov-item"><span class="tov-item-icon">→</span>"This is exactly what happened in 2022."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEBI LANGUAGE GUIDE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <h2 class="section-title">SEBI-Compliant Language Guide</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="sebi-grid">
+      <!-- Approved -->
+      <div class="sebi-col approved">
+        <div class="sebi-col-header">
+          <span class="sebi-badge">✓ Approved</span>
+          <span class="sebi-col-title">Use freely</span>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">Product Description</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">Portfolio analytics platform</span>
+            <span class="sebi-phrase">Market data visualisation</span>
+            <span class="sebi-phrase">Pattern recognition tool</span>
+            <span class="sebi-phrase">Data-driven portfolio monitoring</span>
+            <span class="sebi-phrase">Equity analytics dashboard</span>
+          </div>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">Signal Language</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">Technical indicator reading</span>
+            <span class="sebi-phrase">Momentum signal</span>
+            <span class="sebi-phrase">Historical pattern match</span>
+            <span class="sebi-phrase">Statistical overlap with prior periods</span>
+            <span class="sebi-phrase">Data point to explore</span>
+          </div>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">User Empowerment</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">Understand your portfolio better</span>
+            <span class="sebi-phrase">Surface the data behind your holdings</span>
+            <span class="sebi-phrase">Analytical clarity for your own research</span>
+            <span class="sebi-phrase">Make more informed choices</span>
+          </div>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">Disclaimer Anchors</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">For informational and analytical purposes only</span>
+            <span class="sebi-phrase">Not investment advice</span>
+            <span class="sebi-phrase">Past patterns are not predictive</span>
+            <span class="sebi-phrase">Consult a SEBI-registered advisor</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prohibited -->
+      <div class="sebi-col prohibited">
+        <div class="sebi-col-header">
+          <span class="sebi-badge">✗ Prohibited</span>
+          <span class="sebi-col-title">Never use</span>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">Recommendations → requires SEBI RA</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">Buy</span>
+            <span class="sebi-phrase">Sell</span>
+            <span class="sebi-phrase">Hold</span>
+            <span class="sebi-phrase">Add to your position</span>
+            <span class="sebi-phrase">Exit now</span>
+            <span class="sebi-phrase">Reduce exposure</span>
+          </div>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">Return Promises → misleading advertising</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">Guaranteed returns</span>
+            <span class="sebi-phrase">Assured alpha</span>
+            <span class="sebi-phrase">Beat the market with AlphaVeda</span>
+            <span class="sebi-phrase">Generate X% returns</span>
+          </div>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">Advisory Framing → requires SEBI IA</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">AlphaVeda recommends</span>
+            <span class="sebi-phrase">Our top picks</span>
+            <span class="sebi-phrase">Stock of the week</span>
+            <span class="sebi-phrase">Curated portfolio</span>
+          </div>
+        </div>
+        <div class="sebi-category">
+          <div class="sebi-cat-label">False Claims</div>
+          <div class="sebi-phrases">
+            <span class="sebi-phrase">SEBI-endorsed</span>
+            <span class="sebi-phrase">SEBI-approved signals</span>
+            <span class="sebi-phrase">Certified analytics</span>
+            <span class="sebi-phrase">Target price: ₹XXX</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mandatory disclaimer -->
+    <div class="sebi-disclaimer">
+      <div class="sebi-disclaimer-label">Mandatory Disclaimer — All marketing surfaces + in-product</div>
+      <div class="sebi-disclaimer-text">AlphaVeda is an analytics and data visualisation tool for informational purposes only. It does not provide investment advice, research recommendations, or portfolio management services. All data displayed is sourced from publicly available market feeds and is not independently verified. Past market patterns and portfolio analytics do not guarantee future performance. Users should consult a SEBI-registered Investment Adviser or Research Analyst before making any investment decisions.</div>
+    </div>
+  </div>
+
+  <!-- CONTENT PILLARS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">07</span>
+      <h2 class="section-title">Content Pillars</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="three-col">
+      <div class="pillar-card">
+        <div class="pillar-header">
+          <div class="pillar-num">Pillar 01</div>
+          <div class="pillar-name">Market Intelligence Explained</div>
+          <div class="pillar-hook">"Understand what the market is telling you — not what pundits are saying."</div>
+        </div>
+        <div class="pillar-body">
+          <div class="pillar-formats">
+            <span class="format-tag">LinkedIn threads</span>
+            <span class="format-tag">YouTube shorts</span>
+            <span class="format-tag">Signal of the Week</span>
+            <span class="format-tag">Deep-dive blogs</span>
+          </div>
+          <ul class="pillar-topics">
+            <li>What does a P/E at 40x actually mean for your risk?</li>
+            <li>How to read a Nifty 50 sector rotation chart</li>
+            <li>RSI divergence — what the chart is saying vs. what people think</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-header">
+          <div class="pillar-num">Pillar 02</div>
+          <div class="pillar-name">Portfolio Self-Awareness</div>
+          <div class="pillar-hook">"Most investors know their returns. Few understand their portfolio."</div>
+        </div>
+        <div class="pillar-body">
+          <div class="pillar-formats">
+            <span class="format-tag">Case studies</span>
+            <span class="format-tag">Metric guides</span>
+            <span class="format-tag">Checklists</span>
+            <span class="format-tag">Data literacy frameworks</span>
+          </div>
+          <ul class="pillar-topics">
+            <li>The 5 metrics Screener.in doesn't show you</li>
+            <li>How concentrated is too concentrated? Sector exposure analysis</li>
+            <li>Your portfolio vs. Nifty 500 TRI — measuring alpha correctly</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-header">
+          <div class="pillar-num">Pillar 03</div>
+          <div class="pillar-name">Indian Market Context</div>
+          <div class="pillar-hook">"Indian markets have their own logic. Your analytics should too."</div>
+        </div>
+        <div class="pillar-body">
+          <div class="pillar-formats">
+            <span class="format-tag">Monthly reports</span>
+            <span class="format-tag">FII flow explainers</span>
+            <span class="format-tag">Sector primers</span>
+            <span class="format-tag">Newsletter anchor</span>
+          </div>
+          <ul class="pillar-topics">
+            <li>FII vs. DII flow divergence — what the data shows</li>
+            <li>Budget cycle patterns in Indian equities: 15 years of data</li>
+            <li>How F&O expiry week affects your equity holdings</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- FOOTER -->
+<div class="brief-footer">
+  <div>AlphaVeda · Brand Identity Brief · <span>v1.0</span> · 2026-06-20</div>
+  <div>Internal use only · Not for distribution · SEBI analytics tool framing applies to all public materials</div>
+  <div>Lead attribute: <span>Precise</span> · Anchor line: <span>"AlphaVeda illuminates the data. You drive the decision."</span></div>
+</div>
+
+</body>
+</html>
