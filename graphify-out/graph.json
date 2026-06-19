@@ -1512,7 +1512,7 @@
       "source_file": "app.py",
       "source_location": "L1",
       "id": "app_py",
-      "community": 60,
+      "community": 59,
       "norm_label": "app.py"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_file": "app.py",
       "source_location": "L43",
       "id": "stock_intelligence_test_1_vs_app_is_market_open",
-      "community": 60,
+      "community": 59,
       "norm_label": "_is_market_open()"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_file": "app.py",
       "source_location": "L53",
       "id": "stock_intelligence_test_1_vs_app_on_market_change",
-      "community": 60,
+      "community": 59,
       "norm_label": "_on_market_change()"
     },
     {
@@ -1539,7 +1539,7 @@
       "source_file": "app.py",
       "source_location": "L61",
       "id": "stock_intelligence_test_1_vs_app_rationale_61",
-      "community": 60,
+      "community": 59,
       "norm_label": "# note: do not increment cb here \u2014 that would evict all ticker caches"
     },
     {
@@ -1575,7 +1575,7 @@
       "source_file": "data_manager.py",
       "source_location": "L50",
       "id": "stock_intelligence_test_1_vs_data_manager_datatype",
-      "community": 26,
+      "community": 34,
       "norm_label": "datatype"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "data_manager.py",
       "source_location": "L65",
       "id": "stock_intelligence_test_1_vs_data_manager_sourcetag",
-      "community": 58,
+      "community": 26,
       "norm_label": "sourcetag"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "data_manager.py",
       "source_location": "L83",
       "id": "stock_intelligence_test_1_vs_data_manager_dataresult",
-      "community": 44,
+      "community": 60,
       "norm_label": "dataresult"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "data_manager.py",
       "source_location": "L184",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_get",
-      "community": 44,
+      "community": 60,
       "norm_label": ".get()"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_file": "data_manager.py",
       "source_location": "L249",
       "id": "stock_intelligence_test_1_vs_data_manager_datacontract",
-      "community": 15,
+      "community": 34,
       "norm_label": "datacontract"
     },
     {
@@ -1773,7 +1773,7 @@
       "source_file": "data_manager.py",
       "source_location": "L355",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker",
-      "community": 40,
+      "community": 41,
       "norm_label": "circuitbreaker"
     },
     {
@@ -1782,7 +1782,7 @@
       "source_file": "data_manager.py",
       "source_location": "L372",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_init",
-      "community": 40,
+      "community": 41,
       "norm_label": ".__init__()"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_file": "data_manager.py",
       "source_location": "L399",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_allow_request",
-      "community": 40,
+      "community": 41,
       "norm_label": ".allow_request()"
     },
     {
@@ -1809,7 +1809,7 @@
       "source_file": "data_manager.py",
       "source_location": "L430",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_record_success",
-      "community": 40,
+      "community": 41,
       "norm_label": ".record_success()"
     },
     {
@@ -1818,7 +1818,7 @@
       "source_file": "data_manager.py",
       "source_location": "L440",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitbreaker_record_failure",
-      "community": 40,
+      "community": 41,
       "norm_label": ".record_failure()"
     },
     {
@@ -1836,7 +1836,7 @@
       "source_file": "data_manager.py",
       "source_location": "L492",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_init",
-      "community": 40,
+      "community": 41,
       "norm_label": ".__init__()"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "data_manager.py",
       "source_location": "L652",
       "id": "stock_intelligence_test_1_vs_data_manager_get_datamanager",
-      "community": 40,
+      "community": 41,
       "norm_label": "get_datamanager()"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "data_manager.py",
       "source_location": "L84",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_84",
-      "community": 44,
+      "community": 60,
       "norm_label": "every datamanager response is a dataresult.     data is none if and only if stat"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "data_manager.py",
       "source_location": "L185",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_185",
-      "community": 44,
+      "community": 60,
       "norm_label": "returns dataresult if the entry exists (fresh or stale), none if not found."
     },
     {
@@ -2025,7 +2025,7 @@
       "source_file": "data_manager.py",
       "source_location": "L250",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_250",
-      "community": 15,
+      "community": 34,
       "norm_label": "wire-level shape validator for each datatype.      validates that data received"
     },
     {
@@ -2052,7 +2052,7 @@
       "source_file": "data_manager.py",
       "source_location": "L356",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_356",
-      "community": 40,
+      "community": 41,
       "norm_label": "per-source circuit breaker.  three-state machine:          closed \u2500\u2500(n consecuti"
     },
     {
@@ -2061,7 +2061,7 @@
       "source_file": "data_manager.py",
       "source_location": "L400",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_400",
-      "community": 40,
+      "community": 41,
       "norm_label": "returns true if a request should proceed.         closed  \u2192 always true."
     },
     {
@@ -2070,7 +2070,7 @@
       "source_file": "data_manager.py",
       "source_location": "L431",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_431",
-      "community": 40,
+      "community": 41,
       "norm_label": "call after any successful fetch from this source."
     },
     {
@@ -2079,7 +2079,7 @@
       "source_file": "data_manager.py",
       "source_location": "L441",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_441",
-      "community": 40,
+      "community": 41,
       "norm_label": "call after any failed fetch from this source."
     },
     {
@@ -2178,7 +2178,7 @@
       "source_file": "data_manager.py",
       "source_location": "L653",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_653",
-      "community": 40,
+      "community": 41,
       "norm_label": "returns the shared datamanager singleton.      @st.cache_resource ensures exactl"
     },
     {
@@ -2493,7 +2493,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L1",
       "id": "litellm_proxy_sprint_planner_py",
-      "community": 34,
+      "community": 35,
       "norm_label": "sprint_planner.py"
     },
     {
@@ -2502,7 +2502,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L38",
       "id": "litellm_proxy_sprint_planner_load_model_display_names",
-      "community": 34,
+      "community": 35,
       "norm_label": "_load_model_display_names()"
     },
     {
@@ -2511,7 +2511,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L183",
       "id": "litellm_proxy_sprint_planner_classify",
-      "community": 34,
+      "community": 35,
       "norm_label": "classify()"
     },
     {
@@ -2520,7 +2520,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L299",
       "id": "litellm_proxy_sprint_planner_parse_backlog",
-      "community": 34,
+      "community": 35,
       "norm_label": "parse_backlog()"
     },
     {
@@ -2529,7 +2529,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L377",
       "id": "litellm_proxy_sprint_planner_parse_in_progress",
-      "community": 34,
+      "community": 35,
       "norm_label": "parse_in_progress()"
     },
     {
@@ -2538,7 +2538,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L438",
       "id": "litellm_proxy_sprint_planner_sprint_file_age_days",
-      "community": 34,
+      "community": 35,
       "norm_label": "_sprint_file_age_days()"
     },
     {
@@ -2547,7 +2547,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L464",
       "id": "litellm_proxy_sprint_planner_parse_done_ids",
-      "community": 34,
+      "community": 35,
       "norm_label": "_parse_done_ids()"
     },
     {
@@ -2556,7 +2556,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L487",
       "id": "litellm_proxy_sprint_planner_render_plan",
-      "community": 34,
+      "community": 35,
       "norm_label": "render_plan()"
     },
     {
@@ -2565,7 +2565,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L608",
       "id": "litellm_proxy_sprint_planner_main",
-      "community": 34,
+      "community": 35,
       "norm_label": "main()"
     },
     {
@@ -2574,7 +2574,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L39",
       "id": "litellm_proxy_sprint_planner_rationale_39",
-      "community": 34,
+      "community": 35,
       "norm_label": "read litellm-proxy/config.yaml and return a mapping of     model_name alias \u2192 pr"
     },
     {
@@ -2583,7 +2583,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L185",
       "id": "litellm_proxy_sprint_planner_rationale_185",
-      "community": 34,
+      "community": 35,
       "norm_label": "classify a backlog item into an execution tier.      priority order (first match"
     },
     {
@@ -2592,7 +2592,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L378",
       "id": "litellm_proxy_sprint_planner_rationale_378",
-      "community": 34,
+      "community": 35,
       "norm_label": "extract items from the '### in progress' table in gsi_sprint.md.     these are i"
     },
     {
@@ -2601,7 +2601,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L439",
       "id": "litellm_proxy_sprint_planner_rationale_439",
-      "community": 34,
+      "community": 35,
       "norm_label": "return the number of days since gsi_sprint.md was last committed.     returns no"
     },
     {
@@ -2610,7 +2610,7 @@
       "source_file": "litellm-proxy/sprint_planner.py",
       "source_location": "L465",
       "id": "litellm_proxy_sprint_planner_rationale_465",
-      "community": 34,
+      "community": 35,
       "norm_label": "collect all item ids that appear in any 'done' section of gsi_sprint.md.     use"
     },
     {
@@ -2619,7 +2619,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L1",
       "id": "litellm_proxy_validate_models_py",
-      "community": 41,
+      "community": 42,
       "norm_label": "validate_models.py"
     },
     {
@@ -2628,7 +2628,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L65",
       "id": "litellm_proxy_validate_models_load_yaml",
-      "community": 41,
+      "community": 42,
       "norm_label": "_load_yaml()"
     },
     {
@@ -2637,7 +2637,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L117",
       "id": "litellm_proxy_validate_models_parse_config",
-      "community": 41,
+      "community": 42,
       "norm_label": "parse_config()"
     },
     {
@@ -2646,7 +2646,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L145",
       "id": "litellm_proxy_validate_models_query_health",
-      "community": 41,
+      "community": 42,
       "norm_label": "query_health()"
     },
     {
@@ -2655,7 +2655,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L175",
       "id": "litellm_proxy_validate_models_extract_names",
-      "community": 41,
+      "community": 42,
       "norm_label": "_extract_names()"
     },
     {
@@ -2664,7 +2664,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L198",
       "id": "litellm_proxy_validate_models_show_spend",
-      "community": 41,
+      "community": 42,
       "norm_label": "_show_spend()"
     },
     {
@@ -2673,7 +2673,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L256",
       "id": "litellm_proxy_validate_models_main",
-      "community": 41,
+      "community": 42,
       "norm_label": "main()"
     },
     {
@@ -2682,7 +2682,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L66",
       "id": "litellm_proxy_validate_models_rationale_66",
-      "community": 41,
+      "community": 42,
       "norm_label": "load a yaml file.  uses pyyaml when available; falls back to a minimal     line-"
     },
     {
@@ -2691,7 +2691,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L118",
       "id": "litellm_proxy_validate_models_rationale_118",
-      "community": 41,
+      "community": 42,
       "norm_label": "parse config.yaml and return [(alias, provider_model), ...] in order.     return"
     },
     {
@@ -2700,7 +2700,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L146",
       "id": "litellm_proxy_validate_models_rationale_146",
-      "community": 41,
+      "community": 42,
       "norm_label": "get {proxy_url}/health with bearer auth.     returns parsed json dict on success"
     },
     {
@@ -2709,7 +2709,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L176",
       "id": "litellm_proxy_validate_models_rationale_176",
-      "community": 41,
+      "community": 42,
       "norm_label": "extract model name strings from a health endpoint list.     litellm may return d"
     },
     {
@@ -2718,7 +2718,7 @@
       "source_file": "litellm-proxy/validate_models.py",
       "source_location": "L199",
       "id": "litellm_proxy_validate_models_rationale_199",
-      "community": 41,
+      "community": 42,
       "norm_label": "fetch /spend from the litellm proxy and print a per-provider cost summary.     e"
     },
     {
@@ -2745,7 +2745,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L1",
       "id": "litellm_proxy_approval_hook_py",
-      "community": 30,
+      "community": 29,
       "norm_label": "approval_hook.py"
     },
     {
@@ -2754,7 +2754,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L65",
       "id": "litellm_proxy_approval_hook_classify",
-      "community": 30,
+      "community": 29,
       "norm_label": "_classify()"
     },
     {
@@ -2763,7 +2763,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L100",
       "id": "litellm_proxy_approval_hook_osascript",
-      "community": 30,
+      "community": 29,
       "norm_label": "_osascript()"
     },
     {
@@ -2772,7 +2772,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L109",
       "id": "litellm_proxy_approval_hook_macos_approve",
-      "community": 30,
+      "community": 29,
       "norm_label": "_macos_approve()"
     },
     {
@@ -2781,7 +2781,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L151",
       "id": "litellm_proxy_approval_hook_terminal_approve",
-      "community": 30,
+      "community": 29,
       "norm_label": "_terminal_approve()"
     },
     {
@@ -2790,7 +2790,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L191",
       "id": "litellm_proxy_approval_hook_approvallayer",
-      "community": 30,
+      "community": 29,
       "norm_label": "approvallayer"
     },
     {
@@ -2799,7 +2799,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "",
       "id": "customlogger",
-      "community": 30,
+      "community": 29,
       "norm_label": "customlogger"
     },
     {
@@ -2808,7 +2808,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L206",
       "id": "litellm_proxy_approval_hook_approvallayer_async_pre_call_hook",
-      "community": 30,
+      "community": 29,
       "norm_label": ".async_pre_call_hook()"
     },
     {
@@ -2817,7 +2817,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L276",
       "id": "litellm_proxy_approval_hook_approvallayer_async_success_callback",
-      "community": 30,
+      "community": 29,
       "norm_label": ".async_success_callback()"
     },
     {
@@ -2826,7 +2826,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L66",
       "id": "litellm_proxy_approval_hook_rationale_66",
-      "community": 30,
+      "community": 29,
       "norm_label": "classify a prompt into one of five task types.     priority: quickqa \u2192 research"
     },
     {
@@ -2835,7 +2835,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L101",
       "id": "litellm_proxy_approval_hook_rationale_101",
-      "community": 30,
+      "community": 29,
       "norm_label": "run an applescript snippet and return (stdout, returncode)."
     },
     {
@@ -2844,7 +2844,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L110",
       "id": "litellm_proxy_approval_hook_rationale_110",
-      "community": 30,
+      "community": 29,
       "norm_label": "show a native macos dialog. returns (choice, alt_model).     choice: \"approve\" |"
     },
     {
@@ -2853,7 +2853,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L152",
       "id": "litellm_proxy_approval_hook_rationale_152",
-      "community": 30,
+      "community": 29,
       "norm_label": "interactive terminal approval with timeout.     returns (choice, alt_model)."
     },
     {
@@ -2862,7 +2862,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L192",
       "id": "litellm_proxy_approval_hook_rationale_192",
-      "community": 30,
+      "community": 29,
       "norm_label": "pre-call hook: classifies the task, estimates token cost, then asks     for huma"
     },
     {
@@ -2871,7 +2871,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L213",
       "id": "litellm_proxy_approval_hook_rationale_213",
-      "community": 30,
+      "community": 29,
       "norm_label": "litellm calls this before every request. mutate data[\"model\"] to reroute."
     },
     {
@@ -2880,7 +2880,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L283",
       "id": "litellm_proxy_approval_hook_rationale_283",
-      "community": 30,
+      "community": 29,
       "norm_label": "proxy-02: fallback transparency \u2014 log when the model that actually served"
     },
     {
@@ -2889,7 +2889,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L1",
       "id": "archive_dashboard_old_py",
-      "community": 28,
+      "community": 27,
       "norm_label": "dashboard_old.py"
     },
     {
@@ -2898,7 +2898,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L23",
       "id": "archive_dashboard_old_has_ohlcv",
-      "community": 28,
+      "community": 27,
       "norm_label": "_has_ohlcv()"
     },
     {
@@ -2907,7 +2907,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L36",
       "id": "archive_dashboard_old_safe_close",
-      "community": 28,
+      "community": 27,
       "norm_label": "_safe_close()"
     },
     {
@@ -2916,7 +2916,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L47",
       "id": "archive_dashboard_old_kpi",
-      "community": 28,
+      "community": 27,
       "norm_label": "_kpi()"
     },
     {
@@ -2925,7 +2925,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L60",
       "id": "archive_dashboard_old_graph_help",
-      "community": 28,
+      "community": 27,
       "norm_label": "_graph_help()"
     },
     {
@@ -2934,7 +2934,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L71",
       "id": "archive_dashboard_old_render_header",
-      "community": 28,
+      "community": 27,
       "norm_label": "_render_header()"
     },
     {
@@ -2943,7 +2943,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L119",
       "id": "archive_dashboard_old_render_kpi_panel",
-      "community": 28,
+      "community": 27,
       "norm_label": "_render_kpi_panel()"
     },
     {
@@ -2952,7 +2952,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L159",
       "id": "archive_dashboard_old_live_kpi_panel",
-      "community": 28,
+      "community": 27,
       "norm_label": "_live_kpi_panel()"
     },
     {
@@ -2961,7 +2961,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L164",
       "id": "archive_dashboard_old_tab_charts",
-      "community": 28,
+      "community": 27,
       "norm_label": "_tab_charts()"
     },
     {
@@ -2970,7 +2970,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L261",
       "id": "archive_dashboard_old_tab_forecast",
-      "community": 28,
+      "community": 27,
       "norm_label": "_tab_forecast()"
     },
     {
@@ -2979,7 +2979,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L406",
       "id": "archive_dashboard_old_tab_compare",
-      "community": 28,
+      "community": 27,
       "norm_label": "_tab_compare()"
     },
     {
@@ -2988,7 +2988,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L496",
       "id": "archive_dashboard_old_tab_insights",
-      "community": 28,
+      "community": 27,
       "norm_label": "_tab_insights()"
     },
     {
@@ -2997,7 +2997,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L614",
       "id": "archive_dashboard_old_render_dashboard",
-      "community": 28,
+      "community": 27,
       "norm_label": "render_dashboard()"
     },
     {
@@ -3006,7 +3006,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L24",
       "id": "archive_dashboard_old_rationale_24",
-      "community": 28,
+      "community": 27,
       "norm_label": "return true only if df has all required ohlcv columns as proper series."
     },
     {
@@ -3015,7 +3015,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L37",
       "id": "archive_dashboard_old_rationale_37",
-      "community": 28,
+      "community": 27,
       "norm_label": "safely return df['close'] as a series, or default."
     },
     {
@@ -3024,7 +3024,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L48",
       "id": "archive_dashboard_old_rationale_48",
-      "community": 28,
+      "community": 27,
       "norm_label": "kpi tile \u2014 tip= adds hover tooltip on card and i\ufe0f icon on label."
     },
     {
@@ -3033,7 +3033,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L160",
       "id": "archive_dashboard_old_rationale_160",
-      "community": 28,
+      "community": 27,
       "norm_label": "fragment: re-renders live price kpis every 60 s.     charts and analysis section"
     },
     {
@@ -3042,7 +3042,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L1",
       "id": "archive_global_intelligence_old_py",
-      "community": 42,
+      "community": 43,
       "norm_label": "global_intelligence_old.py"
     },
     {
@@ -3051,7 +3051,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L15",
       "id": "archive_global_intelligence_old_render_impact_chain",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_impact_chain()"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L44",
       "id": "archive_global_intelligence_old_render_watchlist_badges",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_watchlist_badges()"
     },
     {
@@ -3069,7 +3069,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L84",
       "id": "archive_global_intelligence_old_render_next_steps_ai",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_next_steps_ai()"
     },
     {
@@ -3078,7 +3078,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L102",
       "id": "archive_global_intelligence_old_render_topic_card",
-      "community": 42,
+      "community": 43,
       "norm_label": "_render_topic_card()"
     },
     {
@@ -3087,7 +3087,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L161",
       "id": "archive_global_intelligence_old_s",
-      "community": 42,
+      "community": 43,
       "norm_label": "_s()"
     },
     {
@@ -3096,7 +3096,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L163",
       "id": "archive_global_intelligence_old_render_global_intelligence",
-      "community": 42,
+      "community": 43,
       "norm_label": "render_global_intelligence()"
     },
     {
@@ -3105,7 +3105,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L16",
       "id": "archive_global_intelligence_old_rationale_16",
-      "community": 42,
+      "community": 43,
       "norm_label": "horizontal cascade of geopolitical impact nodes."
     },
     {
@@ -3114,7 +3114,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L45",
       "id": "archive_global_intelligence_old_rationale_45",
-      "community": 42,
+      "community": 43,
       "norm_label": "live mini price badges for a topic watchlist."
     },
     {
@@ -3123,7 +3123,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L85",
       "id": "archive_global_intelligence_old_rationale_85",
-      "community": 42,
+      "community": 43,
       "norm_label": "personalised ai career & investment action cards."
     },
     {
@@ -3132,7 +3132,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L103",
       "id": "archive_global_intelligence_old_rationale_103",
-      "community": 42,
+      "community": 43,
       "norm_label": "render one expandable topic card with chain + news + watchlist."
     },
     {
@@ -3141,7 +3141,7 @@
       "source_file": "archive/global_intelligence_OLD.py",
       "source_location": "L164",
       "id": "archive_global_intelligence_old_rationale_164",
-      "community": 42,
+      "community": 43,
       "norm_label": "main entry point \u2014 called from app.py routing."
     },
     {
@@ -4050,7 +4050,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L1",
       "id": "archive_indicators_py",
-      "community": 59,
+      "community": 58,
       "norm_label": "indicators.py"
     },
     {
@@ -4059,7 +4059,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L9",
       "id": "archive_indicators_compute_indicators",
-      "community": 59,
+      "community": 58,
       "norm_label": "compute_indicators()"
     },
     {
@@ -4068,7 +4068,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L85",
       "id": "archive_indicators_signal_score",
-      "community": 59,
+      "community": 58,
       "norm_label": "signal_score()"
     },
     {
@@ -4077,7 +4077,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L10",
       "id": "archive_indicators_rationale_10",
-      "community": 59,
+      "community": 58,
       "norm_label": "add rsi, macd, bollinger, sma, atr, adx, stoch, obv, volumema to df."
     },
     {
@@ -4086,7 +4086,7 @@
       "source_file": "archive/indicators.py",
       "source_location": "L86",
       "id": "archive_indicators_rationale_86",
-      "community": 59,
+      "community": 58,
       "norm_label": "compute composite signal score (0\u2013100) from latest indicator row.     returns di"
     },
     {
@@ -4977,7 +4977,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L1",
       "id": "tests_test_data_manager_m2_py",
-      "community": 27,
+      "community": 15,
       "norm_label": "test_data_manager_m2.py"
     },
     {
@@ -4986,7 +4986,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L25",
       "id": "tests_test_data_manager_m2_make_ohlcv",
-      "community": 27,
+      "community": 30,
       "norm_label": "_make_ohlcv()"
     },
     {
@@ -5184,7 +5184,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L174",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv",
-      "community": 27,
+      "community": 30,
       "norm_label": "testdatacontractohlcv"
     },
     {
@@ -5193,7 +5193,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L175",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_valid_ohlcv",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_valid_ohlcv()"
     },
     {
@@ -5202,7 +5202,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L178",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_not_dataframe",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_not_dataframe()"
     },
     {
@@ -5211,7 +5211,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L181",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_empty_dataframe",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_empty_dataframe()"
     },
     {
@@ -5220,7 +5220,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L184",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_missing_close_column",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_missing_close_column()"
     },
     {
@@ -5229,7 +5229,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L188",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_missing_volume_column",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_missing_volume_column()"
     },
     {
@@ -5238,7 +5238,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L192",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_non_datetime_index",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_non_datetime_index()"
     },
     {
@@ -5247,7 +5247,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L196",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_non_numeric_close",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_non_numeric_close()"
     },
     {
@@ -5256,7 +5256,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L201",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_intraday_same_as_ohlcv",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_intraday_same_as_ohlcv()"
     },
     {
@@ -5265,7 +5265,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L206",
       "id": "tests_test_data_manager_m2_testdatacontractinfo",
-      "community": 58,
+      "community": 34,
       "norm_label": "testdatacontractinfo"
     },
     {
@@ -5274,7 +5274,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L207",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_valid_dict",
-      "community": 58,
+      "community": 34,
       "norm_label": ".test_valid_dict()"
     },
     {
@@ -5283,7 +5283,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L210",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_not_dict",
-      "community": 58,
+      "community": 34,
       "norm_label": ".test_not_dict()"
     },
     {
@@ -5292,7 +5292,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L213",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_empty_dict",
-      "community": 58,
+      "community": 34,
       "norm_label": ".test_empty_dict()"
     },
     {
@@ -5301,7 +5301,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L217",
       "id": "tests_test_data_manager_m2_testdatacontractlive",
-      "community": 44,
+      "community": 34,
       "norm_label": "testdatacontractlive"
     },
     {
@@ -5310,7 +5310,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L218",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_valid_positive_float",
-      "community": 44,
+      "community": 34,
       "norm_label": ".test_valid_positive_float()"
     },
     {
@@ -5319,7 +5319,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L221",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_valid_positive_int",
-      "community": 44,
+      "community": 34,
       "norm_label": ".test_valid_positive_int()"
     },
     {
@@ -5328,7 +5328,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L224",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_zero",
-      "community": 44,
+      "community": 34,
       "norm_label": ".test_zero()"
     },
     {
@@ -5337,7 +5337,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L227",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_negative",
-      "community": 44,
+      "community": 34,
       "norm_label": ".test_negative()"
     },
     {
@@ -5346,7 +5346,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L230",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_string",
-      "community": 44,
+      "community": 34,
       "norm_label": ".test_string()"
     },
     {
@@ -5355,7 +5355,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L233",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_none",
-      "community": 44,
+      "community": 34,
       "norm_label": ".test_none()"
     },
     {
@@ -5364,7 +5364,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L237",
       "id": "tests_test_data_manager_m2_testdatacontractbatch",
-      "community": 27,
+      "community": 30,
       "norm_label": "testdatacontractbatch"
     },
     {
@@ -5373,7 +5373,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L238",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_valid_batch",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_valid_batch()"
     },
     {
@@ -5382,7 +5382,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L242",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_not_dict",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_not_dict()"
     },
     {
@@ -5391,7 +5391,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L245",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_empty_batch_is_valid",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_empty_batch_is_valid()"
     },
     {
@@ -5400,7 +5400,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L249",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_inner_value_fails_ohlcv",
-      "community": 27,
+      "community": 30,
       "norm_label": ".test_inner_value_fails_ohlcv()"
     },
     {
@@ -5409,7 +5409,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L1",
       "id": "tests_test_data_manager_m2_rationale_1",
-      "community": 27,
+      "community": 15,
       "norm_label": "unit tests for datamanager m2 \u2014 cachemanager and datacontract.  run: pytest test"
     },
     {
@@ -5949,7 +5949,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L1",
       "id": "pages_global_intelligence_py",
-      "community": 35,
+      "community": 36,
       "norm_label": "global_intelligence.py"
     },
     {
@@ -5958,7 +5958,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L15",
       "id": "pages_global_intelligence_render_impact_chain",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_impact_chain()"
     },
     {
@@ -5967,7 +5967,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L44",
       "id": "pages_global_intelligence_market_of",
-      "community": 35,
+      "community": 36,
       "norm_label": "_market_of()"
     },
     {
@@ -5976,7 +5976,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L52",
       "id": "pages_global_intelligence_render_watchlist_badges",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_watchlist_badges()"
     },
     {
@@ -5985,7 +5985,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L127",
       "id": "pages_global_intelligence_render_next_steps_ai",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_next_steps_ai()"
     },
     {
@@ -5994,7 +5994,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L145",
       "id": "pages_global_intelligence_render_topic_card",
-      "community": 35,
+      "community": 36,
       "norm_label": "_render_topic_card()"
     },
     {
@@ -6003,7 +6003,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L223",
       "id": "pages_global_intelligence_s",
-      "community": 35,
+      "community": 36,
       "norm_label": "_s()"
     },
     {
@@ -6012,7 +6012,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L225",
       "id": "pages_global_intelligence_render_global_intelligence",
-      "community": 35,
+      "community": 36,
       "norm_label": "render_global_intelligence()"
     },
     {
@@ -6021,7 +6021,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L16",
       "id": "pages_global_intelligence_rationale_16",
-      "community": 35,
+      "community": 36,
       "norm_label": "horizontal cascade of geopolitical impact nodes."
     },
     {
@@ -6030,7 +6030,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L45",
       "id": "pages_global_intelligence_rationale_45",
-      "community": 35,
+      "community": 36,
       "norm_label": "infer market from ticker suffix for watchlist filtering (open-014)."
     },
     {
@@ -6039,7 +6039,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L54",
       "id": "pages_global_intelligence_rationale_54",
-      "community": 35,
+      "community": 36,
       "norm_label": "live mini price badges for a topic watchlist."
     },
     {
@@ -6048,7 +6048,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L128",
       "id": "pages_global_intelligence_rationale_128",
-      "community": 35,
+      "community": 36,
       "norm_label": "personalised ai career & investment action cards."
     },
     {
@@ -6057,7 +6057,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L147",
       "id": "pages_global_intelligence_rationale_147",
-      "community": 35,
+      "community": 36,
       "norm_label": "render one expandable topic card with chain + news + watchlist."
     },
     {
@@ -6066,7 +6066,7 @@
       "source_file": "pages/global_intelligence.py",
       "source_location": "L228",
       "id": "pages_global_intelligence_rationale_228",
-      "community": 35,
+      "community": 36,
       "norm_label": "main entry point \u2014 called from app.py routing."
     },
     {
@@ -8093,7 +8093,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "left sidebar navigation",
       "id": "ui_sidebar"
     },
@@ -8119,7 +8119,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "stock search bar",
       "id": "ui_search_bar"
     },
@@ -8249,7 +8249,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "market closed indicator",
       "id": "ui_market_status"
     },
@@ -8262,7 +8262,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "refresh data button",
       "id": "ui_refresh_button"
     },
@@ -8964,7 +8964,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "stock selector (choose an option)",
       "id": "ui_stock_selector"
     },
@@ -8977,7 +8977,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "nav: home",
       "id": "ui_nav_home"
     },
@@ -8990,7 +8990,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "nav: dashboard",
       "id": "ui_nav_dashboard"
     },
@@ -9003,7 +9003,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "nav: global intelligence",
       "id": "ui_nav_global_intelligence"
     },
@@ -9016,7 +9016,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "market closed badge",
       "id": "ui_market_closed_badge"
     },
@@ -9029,7 +9029,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "refresh data button",
       "id": "ui_refresh_data_button"
     },
@@ -9575,7 +9575,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "search box",
       "id": "ui_search_box"
     },
@@ -9627,7 +9627,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "ticker tape bar",
       "id": "ticker_tape_bar"
     },
@@ -9640,7 +9640,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "gold price widget",
       "id": "gold_price_widget"
     },
@@ -9653,7 +9653,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "crude wti price widget",
       "id": "crude_wti_widget"
     },
@@ -9666,7 +9666,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "usd/inr exchange rate widget",
       "id": "usd_inr_widget"
     },
@@ -9679,7 +9679,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "search ui settled state",
       "id": "search_ui_settled"
     },
@@ -9692,7 +9692,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "macro market data",
       "id": "macro_market_data"
     },
@@ -9705,7 +9705,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "price change indicator",
       "id": "price_change_indicator"
     },
@@ -10615,7 +10615,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "market closed status",
       "id": "status_market_closed"
     },
@@ -11655,7 +11655,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "search filter (company name or symbol)",
       "id": "filter_search"
     },
@@ -12110,7 +12110,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 38,
       "norm_label": "refresh data button",
       "id": "button_refresh_data"
     },
@@ -13423,7 +13423,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "signal engine",
       "id": "signal_engine"
     },
@@ -13436,7 +13436,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "weinstein stage analysis",
       "id": "weinstein_stage_analysis"
     },
@@ -13449,7 +13449,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "elder triple screen",
       "id": "elder_triple_screen"
     },
@@ -13462,7 +13462,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "composite momentum score",
       "id": "composite_score"
     },
@@ -13475,7 +13475,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "documented override hierarchy",
       "id": "override_hierarchy"
     },
@@ -13488,7 +13488,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "unified verdict",
       "id": "unified_verdict"
     },
@@ -13501,7 +13501,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "alignment indicator",
       "id": "alignment_indicator"
     },
@@ -13514,7 +13514,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "weinstein stage 2 advancing",
       "id": "weinstein_stage2_advancing"
     },
@@ -13527,7 +13527,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "buy signal",
       "id": "buy_signal"
     },
@@ -13540,7 +13540,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "trend + momentum aligned",
       "id": "trend_momentum_alignment"
     },
@@ -13553,7 +13553,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "rsi, macd, volume, atr indicators",
       "id": "rsi_macd_indicators"
     },
@@ -13579,7 +13579,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "weinstein stage analysis",
       "id": "weinstein_stage"
     },
@@ -13618,7 +13618,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 39,
       "norm_label": "stage 2 advancing",
       "id": "stage2_advancing"
     },
@@ -13631,7 +13631,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "landing page hero section",
       "id": "landing_hero_section"
     },
@@ -13644,7 +13644,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "two frameworks one unified verdict tagline",
       "id": "tagline_two_frameworks"
     },
@@ -13657,7 +13657,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "weinstein stage analysis framework",
       "id": "framework_weinstein"
     },
@@ -13670,7 +13670,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "elder triple screen framework",
       "id": "framework_elder_triple_screen"
     },
@@ -13683,7 +13683,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "9 markets covered stat",
       "id": "stat_markets_covered"
     },
@@ -13722,7 +13722,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "4 dashboard tabs stat",
       "id": "stat_dashboard_tabs"
     },
@@ -13735,7 +13735,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "signal engine section \u2014 not one method three arbitrated",
       "id": "signal_engine_section"
     },
@@ -13748,7 +13748,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "weinstein stage signal",
       "id": "signal_weinstein_stage"
     },
@@ -13761,7 +13761,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "elder triple screen signal",
       "id": "signal_elder_triple_screen"
     },
@@ -13774,7 +13774,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "composite score signal",
       "id": "signal_composite_score"
     },
@@ -13787,7 +13787,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "rs (relative strength) indicator",
       "id": "indicator_rs"
     },
@@ -13800,7 +13800,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "macd indicator",
       "id": "indicator_macd"
     },
@@ -13813,7 +13813,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "atr indicator",
       "id": "indicator_atr"
     },
@@ -13826,7 +13826,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "everything in one place features section",
       "id": "features_section"
     },
@@ -13839,7 +13839,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "4-tab stock dashboard feature",
       "id": "feature_4tab_dashboard"
     },
@@ -13852,7 +13852,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "global intelligence feature",
       "id": "feature_global_intelligence"
     },
@@ -13865,7 +13865,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "week summary feature",
       "id": "feature_week_summary"
     },
@@ -13878,7 +13878,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "forecast tracker feature",
       "id": "feature_forecast_tracker"
     },
@@ -13891,7 +13891,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "live ticker bar feature",
       "id": "feature_live_ticker_bar"
     },
@@ -13904,7 +13904,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "9 markets one dashboard section",
       "id": "markets_section"
     },
@@ -13917,7 +13917,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "usa market",
       "id": "market_usa"
     },
@@ -13930,7 +13930,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "europe market",
       "id": "market_europe"
     },
@@ -13943,7 +13943,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "china market",
       "id": "market_china"
     },
@@ -13956,7 +13956,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "asia-pacific market",
       "id": "market_asia_pacific"
     },
@@ -13969,7 +13969,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "west asia market",
       "id": "market_west_asia"
     },
@@ -13982,7 +13982,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "commodities market",
       "id": "market_commodities"
     },
@@ -13995,7 +13995,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "forex market",
       "id": "market_forex"
     },
@@ -14008,7 +14008,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 28,
       "norm_label": "rates and bonds market",
       "id": "market_rates_bonds"
     },
@@ -14073,7 +14073,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "view on github nav link",
       "id": "nav_view_on_github"
     },
@@ -14086,7 +14086,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 39,
+      "community": 40,
       "norm_label": "dashboard screenshot preview",
       "id": "dashboard_screenshot_preview"
     },
@@ -14112,7 +14112,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "stock price card (\u20b91,304.70)",
       "id": "stock_price_card"
     },
@@ -14125,7 +14125,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "sell signal badge",
       "id": "signal_badge_sell"
     },
@@ -14411,7 +14411,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "declining trend signal (stage 4 \u2014 price 9.6% below 50-week average)",
       "id": "declining_trend_signal"
     },
@@ -14424,7 +14424,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "52-week high price reference",
       "id": "52week_high_metric"
     },
@@ -14437,7 +14437,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "52-week low price reference",
       "id": "52week_low_metric"
     },
@@ -38728,5 +38728,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "4eb2188845c3491dcf654ae9774322071b7e812a"
+  "built_at_commit": "5e4a54f4b25b830828ad2a10d1f6b6511178505c"
 }
