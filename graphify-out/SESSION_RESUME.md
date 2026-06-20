@@ -162,24 +162,28 @@
 
 ---
 
-## OPEN DECISIONS (Tarun-owned)
+## OPEN DECISIONS (Tarun-owned) — Updated 2026-06-21
 
 | Decision | Default if no answer | Needed by |
 |---|---|---|
-| AlphaVeda pricing: ₹999/mo or tiered? | ₹999/mo single tier | Sprint 3 (Day 6-8) |
-| Custom domain? (alphaveda.in?) | Streamlit subdomain for now | Sprint 3 |
-| Stream C consulting: who are the 3 outreach targets? | Tarun identifies | Day 1-2 |
-| Stream A Gate 6: Tarun final sign-off on Gumroad listing | Required before listing | Sprint 0 |
+| P0-1: Create Supabase cloud project (ap-south-1) | BLOCKS G0 — no default | TODAY |
+| P0-2: `pip install supabase postgrest pandas_market_calendars` | BLOCKS G0 — no default | TODAY |
+| Stream C: identify 3 consulting outreach targets | OVERDUE — Day 1 passed | TODAY (now ENFORCE) |
+| Pricing validation: WhatsApp 3 Arjun-persona contacts ("would you pay ₹999/mo for X?") | ₹999/mo assumed | Before G2 waitlist goes live |
+| AlphaVeda pricing: ₹999/mo single tier or tiered? | ₹999/mo single tier | Sprint G2 |
+| Custom domain? (alphaveda.in?) | Streamlit subdomain | Sprint G2 |
+| BSE Shareholding API: run one authenticated curl test to confirm session cookie behaviour | Stub at G0, investigate before G1 | Before G1 |
+| Stream A Gate 6: final sign-off on Gumroad listing | Required before publishing | Separate session |
 
 ---
 
-## COMMERCIAL STATE
+## COMMERCIAL STATE — Updated 2026-06-21
 
-- **Stream A (Gumroad Governance Pack):** SPRINT 0 — list on Day 1. OVERDUE. Gate 3 (README fix) = only remaining blocker from CoS side.
-- **Stream C (Financial consulting):** Available now, no code needed. 3 outreach targets needed from Tarun.
-- **Stream D (AlphaVeda):** G0 starts after Sprint 0. First beta user target: Day 7. First subscriber: Day 10+.
+- **Stream A (Gumroad Governance Pack):** LATE — separate session. CoS owns S0-1/S0-2 (Gate 3 fix + copy review). Tarun owns S0-3/S0-4 (listing + post).
+- **Stream C (Financial consulting):** OVERDUE. Day 1 passed with no outreach. 3 targets needed TODAY.
+- **Stream D (AlphaVeda):** G0 ready pending P0 fixes. First beta user target: G2 (Day 5-7). First subscriber: post-G2.
 - **Stream B (YarnZoo):** Deferred — out of 10-day scope.
-- **Revenue clock:** 10 days remaining (deadline 2026-06-30).
+- **Revenue clock:** 9 days remaining (deadline 2026-06-30).
 
 ---
 

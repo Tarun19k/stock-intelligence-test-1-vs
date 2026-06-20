@@ -281,15 +281,15 @@ def ingest_if_stale():
 | Task | Owner | Effort | Dependency |
 |---|---|---|---|
 | G0-1: Create `alphaveda` GitHub repo + `.gitignore` | CoS | 15 min | None |
-| G0-2: `supabase init` + `supabase start` (local) | CoS | 15 min | G0-1 |
-| G0-3: Supabase cloud project creation + link | CoS | 15 min | G0-1 |
+| G0-2: `supabase init` + link to cloud project (cloud-only — no local Docker) | CoS | 15 min | G0-1, Tarun P0-1 |
+| G0-3: ~~REMOVED — merged into G0-2 (cloud-only, no separate local/cloud step)~~ | — | — | — |
 | G0-4: Write migration 0001 (instruments + exchange + Lynch) | CoS | 20 min | G0-2 |
 | G0-5: Write migration 0002 (ohlcv + index) | CoS | 20 min | G0-4 |
 | G0-6: Write migration 0003 (fundamentals — source/date NOT NULL) | CoS | 25 min | G0-4 |
 | G0-7: Write migration 0004 (macro_regime + unique partial index) | CoS | 20 min | None |
 | G0-8: Write migration 0005 (portfolio_buckets) | CoS | 15 min | None |
 | G0-9: Write migration 0006 (trade_outcomes) | CoS | 15 min | None |
-| G0-10: Apply all migrations → local + cloud | CoS | 15 min | G0-4 → G0-9 |
+| G0-10: Apply all migrations → cloud only (`supabase db push`) | CoS | 15 min | G0-4 → G0-9 |
 | G0-11: Write `DataProvider` ABC + `CommercialLicenseError` | CoS | 30 min | G0-10 |
 | G0-12: Write `BhavcopyCProvider` (working — NSE daily ZIP) | CoS | 45 min | G0-11 |
 | G0-13: Write `BSEShareholdingProvider` stub | CoS | 20 min | G0-11 |
@@ -301,13 +301,13 @@ def ingest_if_stale():
 | G0-19: Write `calculate_fundamentals.py` (ROIC, FCF yield, capex intensity) | CoS | 45 min | G0-13/14 |
 | G0-20: Write `update_macro.py` + staleness warning (>35 days) | CoS | 20 min | G0-10 |
 | G0-21: Write `constants.py` (DISCLAIMER + MACRO_INPUTS dict) | CoS | 15 min | None |
-| G0-22: Write `pytest` scaffold + 6 smoke tests | CoS | 30 min | G0-10 |
-| G0-23: Write `.env.example` (all env vars documented) | CoS | 10 min | All |
+| G0-22: Write `pytest` scaffold + 6 smoke tests (incl. `assert len(df) > 0` on Bhavcopy fetch) | CoS | 30 min | G0-10 |
+| G0-23: Write `.env.example` (all env vars: SUPABASE_URL, ANON_KEY, SERVICE_KEY, ALPHAVEDA_COMMERCIAL, BSE_USER_AGENT) | CoS | 10 min | All |
 | G0-24: Seed data — 10 NSE instruments + current RISK_ON macro row | CoS | 20 min | G0-10 |
-| G0-25: Ingest first real Bhavcopy batch (3yr historical via NSE bulk) | CoS | 30 min | G0-12 |
+| G0-25: ~~REMOVED FROM G0 EXIT GATE~~ — 3yr historical ingest is a one-time local setup script (`scripts/seed_historical.py`), run before G1, not a G0 dependency | — | — | — |
 | G0-26: pytest passes — G0 exit gate | CoS | — | All |
 
-**Exit criteria:** `supabase db reset` clean + `pytest` 6/6 + `python -c "from src.data.provider import get_provider"` works + `git status` shows no secrets.
+**Exit criteria:** `supabase db push` succeeds (cloud) + `pytest` 6/6 (incl. Bhavcopy row-count assertion) + `python -c "from src.data.provider import get_provider"` works + `git status` shows no secrets + `.env.example` has ALPHAVEDA_COMMERCIAL documented + all stubs raise `NotImplementedError`.
 
 ---
 
