@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+  <title>AlphaVeda — Sprint Status — 2026-06-20</title>
+  <style>
+    :root {
+      --indigo: #1A1F3C;
+      --ivory: #F5F3EC;
+      --gold: #E8A020;
+      --teal: #2D7A72;
+      --green: #4A8C5C;
+      --terra: #C0503A;
+      --slate: #2D3561;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--indigo);
+      color: var(--ivory);
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+      border-bottom: 1px solid rgba(245,243,236,0.15);
+      padding-bottom: 24px;
+    }
+    .wordmark { font-size: 28px; font-weight: 700; color: var(--gold); letter-spacing: -0.5px; }
+    .tagline { font-size: 11px; color: rgba(245,243,236,0.5); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+    .clock-wrap { text-align: right; }
+    .clock-label { font-size: 11px; color: rgba(245,243,236,0.5); text-transform: uppercase; letter-spacing: 1px; }
+    .clock-num { font-size: 56px; font-weight: 800; line-height: 1; color: var(--gold); font-family: 'Courier New', monospace; }
+    .clock-unit { font-size: 13px; color: rgba(245,243,236,0.6); margin-top: 2px; }
+    .deadline { font-size: 11px; color: rgba(245,243,236,0.4); margin-top: 4px; }
+
+    /* Revenue streams */
+    .section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(245,243,236,0.4);
+      margin-bottom: 12px;
+    }
+    .streams {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .stream {
+      background: rgba(245,243,236,0.05);
+      border: 1px solid rgba(245,243,236,0.1);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .stream-name { font-size: 11px; color: rgba(245,243,236,0.5); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .stream-label { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .stream-sub { font-size: 11px; color: rgba(245,243,236,0.5); }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+    .badge-pending { background: rgba(232,160,32,0.2); color: var(--gold); border: 1px solid rgba(232,160,32,0.4); }
+    .badge-live { background: rgba(74,140,92,0.2); color: #6fcf97; border: 1px solid rgba(74,140,92,0.4); }
+    .badge-deferred { background: rgba(245,243,236,0.05); color: rgba(245,243,236,0.3); border: 1px solid rgba(245,243,236,0.1); }
+    .badge-active { background: rgba(45,122,114,0.3); color: #4ecdc4; border: 1px solid rgba(45,122,114,0.4); }
+
+    /* Sprint table */
+    .sprints {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .sprint-row {
+      background: rgba(245,243,236,0.04);
+      border: 1px solid rgba(245,243,236,0.08);
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 180px 1fr 120px 100px;
+      align-items: center;
+      gap: 16px;
+    }
+    .sprint-name { font-size: 13px; font-weight: 600; }
+    .sprint-days { font-size: 11px; color: rgba(245,243,236,0.4); margin-top: 2px; }
+    .progress-bar-wrap { background: rgba(245,243,236,0.08); border-radius: 4px; height: 6px; }
+    .progress-bar { height: 6px; border-radius: 4px; background: var(--gold); transition: width 0.3s; }
+    .progress-label { font-size: 11px; color: rgba(245,243,236,0.5); margin-top: 6px; font-family: 'Courier New', monospace; }
+    .sprint-status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .s-planned { background: rgba(245,243,236,0.06); color: rgba(245,243,236,0.4); border: 1px solid rgba(245,243,236,0.1); }
+    .s-ready { background: rgba(232,160,32,0.15); color: var(--gold); border: 1px solid rgba(232,160,32,0.3); }
+    .sprint-owner { font-size: 11px; color: rgba(245,243,236,0.4); text-align: right; }
+
+    /* Blockers */
+    .blockers { margin-bottom: 40px; }
+    .blocker-item {
+      background: rgba(192,80,58,0.1);
+      border: 1px solid rgba(192,80,58,0.3);
+      border-left: 3px solid var(--terra);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .blocker-text { font-size: 13px; }
+    .blocker-fix { font-size: 11px; color: rgba(245,243,236,0.5); margin-top: 4px; }
+    .blocker-owner { font-size: 11px; color: var(--terra); font-weight: 600; }
+
+    /* Next action */
+    .next-action {
+      background: rgba(232,160,32,0.08);
+      border: 1px solid rgba(232,160,32,0.25);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    .next-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); margin-bottom: 8px; }
+    .next-text { font-size: 16px; font-weight: 600; line-height: 1.4; }
+    .next-sub { font-size: 12px; color: rgba(245,243,236,0.5); margin-top: 8px; }
+
+    /* P0 fixes */
+    .p0-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .p0-item {
+      background: rgba(74,140,92,0.08);
+      border: 1px solid rgba(74,140,92,0.2);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .p0-num { font-size: 10px; color: var(--green); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-family: 'Courier New', monospace; }
+    .p0-text { font-size: 12px; line-height: 1.5; }
+    .p0-cmd { font-size: 11px; color: rgba(245,243,236,0.4); margin-top: 8px; font-family: 'Courier New', monospace; background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 4px; word-break: break-all; }
+
+    footer {
+      border-top: 1px solid rgba(245,243,236,0.08);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: rgba(245,243,236,0.3);
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="wordmark">AlphaVeda</div>
+      <div class="tagline">Know before you act.</div>
+    </div>
+    <div class="clock-wrap">
+      <div class="clock-label">Revenue Clock</div>
+      <div class="clock-num" id="days">10</div>
+      <div class="clock-unit">days remaining</div>
+      <div class="deadline">Deadline: 2026-06-30</div>
+    </div>
+  </header>
+
+  <!-- Revenue Streams -->
+  <div class="section-label">Revenue Streams</div>
+  <div class="streams">
+    <div class="stream">
+      <div class="stream-name">Stream A</div>
+      <div class="stream-label">Governance Pack</div>
+      <div class="stream-sub">Gumroad · $49/$99/$149</div>
+      <div><span class="badge badge-pending">Pending — Sep. session</span></div>
+    </div>
+    <div class="stream">
+      <div class="stream-name">Stream C</div>
+      <div class="stream-label">Consulting</div>
+      <div class="stream-sub">Financial advisory · No code</div>
+      <div><span class="badge badge-active">Day 1 outreach</span></div>
+    </div>
+    <div class="stream">
+      <div class="stream-name">Stream D</div>
+      <div class="stream-label">AlphaVeda</div>
+      <div class="stream-sub">₹999/mo · Beta Day 7</div>
+      <div><span class="badge badge-pending">G0 → G1 → G2</span></div>
+    </div>
+    <div class="stream">
+      <div class="stream-name">Stream B</div>
+      <div class="stream-label">YarnZoo</div>
+      <div class="stream-sub">StitchFlow · Crochet</div>
+      <div><span class="badge badge-deferred">Deferred</span></div>
+    </div>
+  </div>
+
+  <!-- Sprint Progress -->
+  <div class="section-label">Sprint Progress</div>
+  <div class="sprints">
+    <div class="sprint-row">
+      <div>
+        <div class="sprint-name">S0 — Stream A Launch</div>
+        <div class="sprint-days">Day 1 · Separate session</div>
+      </div>
+      <div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+        <div class="progress-label">0 / 5 tasks</div>
+      </div>
+      <div><span class="sprint-status-badge s-planned">Sep. session</span></div>
+      <div class="sprint-owner">Tarun + CoS</div>
+    </div>
+    <div class="sprint-row" style="border-color: rgba(232,160,32,0.3);">
+      <div>
+        <div class="sprint-name">G0 — Foundation</div>
+        <div class="sprint-days">Day 2–3 · Next session</div>
+      </div>
+      <div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%; background: var(--gold);"></div></div>
+        <div class="progress-label">0 / 26 tasks · Ready after P0 fixes</div>
+      </div>
+      <div><span class="sprint-status-badge s-ready">Ready*</span></div>
+      <div class="sprint-owner">CoS builds</div>
+    </div>
+    <div class="sprint-row">
+      <div>
+        <div class="sprint-name">G1 — App Shell</div>
+        <div class="sprint-days">Day 4–5</div>
+      </div>
+      <div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+        <div class="progress-label">0 / 13 tasks</div>
+      </div>
+      <div><span class="sprint-status-badge s-planned">Planned</span></div>
+      <div class="sprint-owner">CoS builds</div>
+    </div>
+    <div class="sprint-row">
+      <div>
+        <div class="sprint-name">G2 — Auth + Deploy</div>
+        <div class="sprint-days">Day 6–8</div>
+      </div>
+      <div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+        <div class="progress-label">0 / 10 tasks</div>
+      </div>
+      <div><span class="sprint-status-badge s-planned">Planned</span></div>
+      <div class="sprint-owner">CoS + Tarun</div>
+    </div>
+    <div class="sprint-row">
+      <div>
+        <div class="sprint-name">RC — Revenue Check</div>
+        <div class="sprint-days">Day 9–10</div>
+      </div>
+      <div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:0%"></div></div>
+        <div class="progress-label">0 / 5 tasks</div>
+      </div>
+      <div><span class="sprint-status-badge s-planned">Planned</span></div>
+      <div class="sprint-owner">Tarun</div>
+    </div>
+  </div>
+
+  <!-- P0 Pre-G0 Fixes -->
+  <div class="section-label">P0 — Resolve Before G0 Session</div>
+  <div class="p0-grid">
+    <div class="p0-item">
+      <div class="p0-num">P0-1 · Supabase Environment</div>
+      <div class="p0-text">Cloud-only confirmed. Docker not required. Create Supabase cloud project (ap-south-1, free tier) before G0 session.</div>
+    </div>
+    <div class="p0-item">
+      <div class="p0-num">P0-2 · Missing Python Packages</div>
+      <div class="p0-text">Three packages missing: supabase SDK, postgrest, pandas_market_calendars.</div>
+      <div class="p0-cmd">pip install supabase postgrest pandas_market_calendars</div>
+    </div>
+    <div class="p0-item">
+      <div class="p0-num">P0-3 · NSE/BSE User-Agent</div>
+      <div class="p0-text">Both NSE and BSE block automated requests. All HTTP fetches in BhavcopyCProvider must include browser User-Agent header.</div>
+      <div class="p0-cmd">headers={"User-Agent": "Mozilla/5.0 ..."}</div>
+    </div>
+  </div>
+
+  <!-- Next Action -->
+  <div class="next-action">
+    <div class="next-label">Next Action</div>
+    <div class="next-text">Resolve P0-1 (create Supabase cloud project) → run P0-2 pip install → begin G0 session</div>
+    <div class="next-sub">G0 is fully designed and unblocked once P0 fixes are applied. Estimated 3.5 hrs to G0 exit gate.</div>
+  </div>
+
+  <!-- Architecture Decision Log -->
+  <div class="section-label">Locked Architecture Decisions</div>
+  <div class="blockers">
+    <div class="blocker-item" style="background:rgba(45,122,114,0.1); border-color:rgba(45,122,114,0.3); border-left-color: var(--teal);">
+      <div>
+        <div class="blocker-text">Q2: Cloud-only Supabase (ap-south-1)</div>
+        <div class="blocker-fix">Docker not installed. Cloud-only = production-identical state from Day 1. Free tier (500MB). Locked 2026-06-20.</div>
+      </div>
+      <div class="blocker-owner" style="color: #4ecdc4;">LOCKED</div>
+    </div>
+    <div class="blocker-item" style="background:rgba(45,122,114,0.1); border-color:rgba(45,122,114,0.3); border-left-color: var(--teal);">
+      <div>
+        <div class="blocker-text">Q1: Ingest — Option D Hybrid (GHA cron + lazy fallback)</div>
+        <div class="blocker-fix">GHA cron at 5:45 PM IST weekdays + NSE holiday guard + ingest_if_stale() on startup.</div>
+      </div>
+      <div class="blocker-owner" style="color: #4ecdc4;">LOCKED</div>
+    </div>
+    <div class="blocker-item" style="background:rgba(45,122,114,0.1); border-color:rgba(45,122,114,0.3); border-left-color: var(--teal);">
+      <div>
+        <div class="blocker-text">Q3: OHLCV 3yr · Fundamentals 5yr · Macro 5yr (~83MB total)</div>
+        <div class="blocker-fix">Fits Supabase free tier (500MB). Council-approved depths.</div>
+      </div>
+      <div class="blocker-owner" style="color: #4ecdc4;">LOCKED</div>
+    </div>
+    <div class="blocker-item" style="background:rgba(45,122,114,0.1); border-color:rgba(45,122,114,0.3); border-left-color: var(--teal);">
+      <div>
+        <div class="blocker-text">EODHD replaced by BSE free stack</div>
+        <div class="blocker-fix">Promoter data → BSE Shareholding API. Financials → BSE XBRL. ROIC/FCF/capex → calculated. Cost: ₹0 personal / ₹1,200/mo at first subscriber.</div>
+      </div>
+      <div class="blocker-owner" style="color: #4ecdc4;">LOCKED</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>AlphaVeda sprint-status artifact · 2026-06-20</span>
+    <span>Generated by alphaveda-artifacts skill · GSI repo docs/artifacts/</span>
+    <span>Deadline: 2026-06-30 · 10 days</span>
+  </footer>
+
+  <script>
+    // Update revenue clock based on today's date
+    (function() {
+      var deadline = new Date('2026-06-30T23:59:59');
+      var now = new Date();
+      var diff = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+      var el = document.getElementById('days');
+      if (el) {
+        el.textContent = Math.max(0, diff);
+        if (diff <= 3) el.style.color = '#C0503A';
+      }
+    })();
+  </script>
+
+</body>
+</html>
