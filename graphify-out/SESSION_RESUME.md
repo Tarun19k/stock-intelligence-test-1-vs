@@ -158,20 +158,41 @@
     Shared Supabase project (one project, separate table namespaces). GSI continues on its own path.
     Options B (AlphaVeda = next GSI) and C (sub-page of GSI) rejected — GSI governance overhead incompatible with 10-day sprint.
 
-32. **Design doc NOT YET WRITTEN** — Brainstorming skill active, design phase in progress this session.
+32. **Design doc WRITTEN — ALL 9 SECTIONS COMPLETE:**
+    `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md` (v0.2, 817 lines)
+    - Section 1: Architecture (locked decisions, 5-layer diagram, standalone repo, Supabase namespacing)
+    - Section 2: Data Model — 9 migrations fully specified with CHECK constraints, NOT NULL guards, waitlist with price_feedback + referred_by
+    - Section 3: 24-Segment Accuracy Ledger — cycle_phase.py derivation module, streak detection N=5 + STREAK_DISCOUNT_FACTOR=0.7
+    - Section 4: Data Viewer Design — 4-tab layout, pinned SEBI disclaimer (fixed-bottom HTML), .claude/rules/ directory
+    - Section 5: Signal Engine — constants.py with FUNDAMENTAL_WEIGHT_FLOOR, COLD_START_WEIGHTS (Bayesian priors), regime singleton, review notification banner
+    - Section 6: Path Optimizer — EXIT triggers E1-E4 defined, Quarter Kelly formula, bucket-aware ranking
+    - Section 7: Accuracy Feedback Loop — cold-start handling, prediction logging, outcome resolution, weight proposal pipeline
+    - Section 8: Quality Standards — async ingest, connection singleton, ingest_status table, test coverage targets, .claude/rules/
+    - Section 9: Condition-to-Artifact Trace Matrix — 13 conditions mapped to file + artifact + test (permanent fix for gap accumulation)
+
+33. **Root cause analysis complete — 11 council gaps explained:**
+    - RC-1: Earlier councils approved concepts (rules), not code artifacts (file:function:test). Section 1 review was first to require code homes.
+    - RC-2: Reliability engineering was structurally absent from all financial panel reviews. Systems seat guaranteed to miss async ingest, singleton, error surfacing.
+    - RC-3: No condition→artifact translation gate existed. 13 conditions had no mapping to files until Section 9 trace matrix.
+    - Permanent fix: Section 9 Trace Matrix (C1–C13 mapped) + two-stage review protocol documented in Section 9.
 
 ---
 
-## EXACT RESUME POINT — UPDATED 2026-06-21
+## EXACT RESUME POINT — UPDATED 2026-06-21 (post Section 9)
 
-**Where we stopped:** MVP Design brainstorming — Approach 2 approved (7/7 council), 6 guards locked, 7 implementation conditions locked. Design doc NOT yet written.
+**Where we stopped:** Design doc v0.2 complete — all 9 sections written, all 11 council gaps closed, 13-condition trace matrix complete.
 
 **NEXT ACTION — CoS:**
-Design doc v0.1 written: `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md`
-Section 1 (Architecture) complete. Sections 2–8 PENDING council review.
-Run full council review (financial panel 7 seats + strategic group) on Section 1.
-Then write Sections 2–8 incorporating council feedback.
-Then invoke `writing-plans` skill for implementation plan.
+Invoke `writing-plans` skill to create the G0 implementation plan.
+Input to writing-plans: `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md` (Section 2 migrations + Section 8 quality standards are the G0 scope).
+
+**TARUN REVIEW GATE (before writing-plans):**
+Read spec file at `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md` and confirm:
+- All 9 migrations acceptable
+- COLD_START_WEIGHTS (Section 5, constants.py) ratios look right
+- EXIT trigger E2 (3 consecutive BEAR) is not too sensitive or too slow
+- Review banner mechanism (Section 5) acceptable for quarterly gate
+If any section needs revision → state it; CoS amends before writing-plans.
 
 **TARUN P0 actions (still pending from earlier):**
 1. Create Supabase cloud project at supabase.com → region: ap-south-1 → free tier → share SUPABASE_URL + ANON_KEY + SERVICE_KEY
