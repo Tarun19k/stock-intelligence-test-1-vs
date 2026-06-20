@@ -167,8 +167,10 @@
 **Where we stopped:** MVP Design brainstorming — Approach 2 approved (7/7 council), 6 guards locked, 7 implementation conditions locked. Design doc NOT yet written.
 
 **NEXT ACTION — CoS:**
-Write MVP design document at `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md`
-Sections: architecture → data model (6 migrations + 3 accuracy tables) → 24-segment ledger → data viewer → signal engine → path optimizer → accuracy loop → quality standards.
+Design doc v0.1 written: `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md`
+Section 1 (Architecture) complete. Sections 2–8 PENDING council review.
+Run full council review (financial panel 7 seats + strategic group) on Section 1.
+Then write Sections 2–8 incorporating council feedback.
 Then invoke `writing-plans` skill for implementation plan.
 
 **TARUN P0 actions (still pending from earlier):**
