@@ -122,11 +122,56 @@
 | sprint-status | docs/artifacts/2026-06-20/sprint-status.html | 2026-06-20 |
 | session-checkpoint | docs/artifacts/2026-06-21/session-checkpoint.html | 2026-06-21 |
 
+## DO NOT REDO — Session 2026-06-21 MVP Design additions
+
+27. **AlphaVeda product definition LOCKED** — Three co-equal layers:
+    - Data quality layer (accurate, fact-checked, provenance-tracked ingestion)
+    - Data viewer layer (meaningful interpretation — co-equal with prediction layer)
+    - Signal engine + path optimizer (layered, compounding, personalized to user profile)
+    - "Right path to gain returns" = stock-level signals feeding portfolio-level path optimizer
+
+28. **Feedback loop: Option C — COUNCIL UNANIMOUS (7/7)** — Both compounding.
+    Rule-weighted accuracy (ledger-driven weight adjustment) + accumulated evidence (data depth) compound together.
+    6 mandatory guards (cannot be deferred):
+    - Guard 1: Regime-segmented accuracy — weights adjust within regime (RISK_ON/OFF/STAGFLATION/DEFLATION), not across (Dalio + Marks)
+    - Guard 2: Counter-cyclical weighting — high accuracy streaks trigger skepticism, not confidence (Soros)
+    - Guard 3: Fundamentals weight floor — ROIC/FCF/promoter pledge cannot be demoted below minimum regardless of ledger score (Buffett)
+    - Guard 4: 24-segment accuracy ledger — Lynch taxonomy (6) × Dalio regime (4) = 24 segments, not 1 global (Lynch)
+    - Guard 5: Magnitude + peak-return logging — signal quality = hit rate × magnitude factor (Druckenmiller)
+    - Guard 6: Multi-metric accuracy + quarterly human review gate before any weight adjustment applies (Munger)
+
+29. **MVP scope: Approach 2 — COUNCIL UNANIMOUS (7/7)**
+    Balanced MVP: data viewer + signal engine + path recommendations + 24-segment accuracy ledger active + auth + cloud deploy.
+    NOT A1 (data viewer only — loses accumulation days, ledger tags never recoverable).
+    NOT A3 (signal-first — no accuracy history, opacity failure, reflexivity risk).
+
+30. **7 council implementation conditions for Approach 2 (mandatory, not optional):**
+    - Buffett: Fundamentals weight floor defined in schema before first prediction logged
+    - Munger: Quarterly human review process documented before build begins
+    - Dalio: Regime tag column present and populated on every prediction row from Day 1
+    - Marks: Cycle-phase segment column in accuracy ledger schema from Day 1
+    - Soros: Counter-cyclical guard (accuracy_streak_flag) in ledger schema from Day 1
+    - Druckenmiller: Kelly-based position sizing is path optimizer output — not deferred to later sprint
+    - Lynch: Lynch classification in instrument table at G1; every signal row inherits classification
+
+31. **Architecture: Option A — AlphaVeda standalone** — Separate repo, separate codebase.
+    Shared Supabase project (one project, separate table namespaces). GSI continues on its own path.
+    Options B (AlphaVeda = next GSI) and C (sub-page of GSI) rejected — GSI governance overhead incompatible with 10-day sprint.
+
+32. **Design doc NOT YET WRITTEN** — Brainstorming skill active, design phase in progress this session.
+
+---
+
 ## EXACT RESUME POINT — UPDATED 2026-06-21
 
-**Where we stopped:** Housekeeping + bookkeeping complete. G0 fully designed, blocked on 2 Tarun P0 actions.
+**Where we stopped:** MVP Design brainstorming — Approach 2 approved (7/7 council), 6 guards locked, 7 implementation conditions locked. Design doc NOT yet written.
 
-**NEXT ACTION — P0 (TODAY) — Tarun:**
+**NEXT ACTION — CoS:**
+Write MVP design document at `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md`
+Sections: architecture → data model (6 migrations + 3 accuracy tables) → 24-segment ledger → data viewer → signal engine → path optimizer → accuracy loop → quality standards.
+Then invoke `writing-plans` skill for implementation plan.
+
+**TARUN P0 actions (still pending from earlier):**
 1. Create Supabase cloud project at supabase.com → region: ap-south-1 → free tier → share SUPABASE_URL + ANON_KEY + SERVICE_KEY
 2. Run: `pip install supabase postgrest pandas_market_calendars`
 3. Stream A (Gumroad) is in a SEPARATE session — do not block G0 on it
