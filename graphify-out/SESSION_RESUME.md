@@ -1,7 +1,8 @@
 # SESSION_RESUME.md — GSI / AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-20 (multi-session — Phase A/B/C complete + brand + sprint plan)
+**Session date:** 2026-06-21 (continued — readiness check + AWS + artifacts + strategic analysis)
+**Previous session:** 2026-06-20 (Phase A/B/C complete + brand + sprint plan)
 **Workspace:** stock-intelligence-test-1-vs (GSI → now AlphaVeda)
 
 ---
@@ -85,24 +86,65 @@
 
 ---
 
-## EXACT RESUME POINT
+## DO NOT REDO — Session 2026-06-21 additions
 
-**Where we stopped:** Sprint plan complete, housekeeping checkpoint in progress.
+16. **Q2 CHANGED: Cloud-only confirmed.** Docker not installed, no plan to install. Supabase cloud ap-south-1, free tier. Supersedes "parallel local + cloud". Locked permanently.
 
-**NEXT ACTION — SPRINT 0 (Day 1) — Tarun:**
-1. Stream A: Gate 3 fix (CoS, 30 min) → Gumroad listing creation (Tarun, 30 min) → launch post (Tarun, 30 min)
-2. This is the ONLY action that generates revenue in the next 48 hours
-3. After Stream A is listed: CoS begins G0 (alphaveda repo creation → migrations → providers)
+17. **AWS dev account confirmed clean.** Screenshot reviewed — 0 services, 0 spend. Pre-July 2025 legacy account. Always-free Lambda + EventBridge + CloudWatch + S3 covers all AlphaVeda ops at $0.00. Use `ap-south-1` region.
 
-**SPRINT 0 tasks by owner:**
-| Task | Owner | Effort |
+18. **Salesforce dev org scoped.** Stream C consulting CRM only (3 outreach targets, call notes). Not AlphaVeda infrastructure.
+
+19. **Claude Code Artifacts education complete.** Launched June 18, 2026. Beta — Team/Enterprise only. CSP: inline CSS/JS, no external calls, 16MB cap. Plan-agnostic skill created: `~/.claude/skills/alphaveda-artifacts/SKILL.md`. 4 artifact types: sprint-status, schema-viewer, data-flow, session-checkpoint. First committed at `31154ff`.
+
+20. **G0-25 (historical ingest) removed from G0 exit gate.** One-time local script, run before G1. G0 exit = schema + 10 seeds + pytest 6/6 only.
+
+21. **G0.5 added to sprint plan.** AWS Lambda + EventBridge + CloudWatch + S3. Between G0 and G1. Replaces GHA as primary ingest. SES production access: file request 48hr before first waitlist email.
+
+22. **NSE/BSE User-Agent requirement confirmed.** Both return 200 only with browser User-Agent header. All HTTP fetches in BhavcopyCProvider must include `headers={"User-Agent": "Mozilla/5.0 ..."}`. Must be in base DataProvider class.
+
+23. **G0 readiness check complete — 7/7 panel PROCEED.** 3 P0 blockers: pip packages (supabase, postgrest, pandas_market_calendars), Supabase cloud project (Tarun action), NSE User-Agent fix (CoS action at G0-12).
+
+24. **Strategic analysis complete (2026-06-21).** Posture: OFFENSIVE with Enforcement repairs. Weakest pillar: Enforcement (2/5). S0 = LATE. Stream C = now ENFORCE. Graph needs own repo. 5 graph enhancements documented. Restructured timeline in EXACT RESUME POINT above.
+
+25. **Graph enhancement plan (5 items).** E1: alphaveda repo = separate graph. E2: Indian Market as anchor node. E3: docs/architecture.md at G0. E4: Quarter Kelly as queryable node. E5: SEBI compliance as queryable community.
+
+26. **Memory updated 2026-06-21:**
+    - `project_alphaveda_sprint.md` — Q2 cloud-only, restructured sprint status, AWS + Salesforce decisions, G0-25 out of exit gate
+    - `reference_alphaveda_artifacts.md` — new file, artifacts skill reference
+    - `MEMORY.md` — index updated with artifacts entry, alphaveda sprint description updated
+
+---
+
+## ARTIFACTS
+
+| Type | Path | Generated |
 |---|---|---|
-| S0-1: Fix Gate 3 in Governance Pack README | CoS | 30 min |
-| S0-2: Gumroad listing copy review | CoS | 20 min |
-| S0-3: Create Gumroad product ($49/$99/$149) | Tarun | 30 min |
-| S0-4: Launch post (LinkedIn + X) | Tarun | 30 min |
+| sprint-status | docs/artifacts/2026-06-20/sprint-status.html | 2026-06-20 |
+| session-checkpoint | docs/artifacts/2026-06-21/session-checkpoint.html | 2026-06-21 |
 
-**G0 starts after Sprint 0 is live.**
+## EXACT RESUME POINT — UPDATED 2026-06-21
+
+**Where we stopped:** Housekeeping + bookkeeping complete. G0 fully designed, blocked on 2 Tarun P0 actions.
+
+**NEXT ACTION — P0 (TODAY) — Tarun:**
+1. Create Supabase cloud project at supabase.com → region: ap-south-1 → free tier → share SUPABASE_URL + ANON_KEY + SERVICE_KEY
+2. Run: `pip install supabase postgrest pandas_market_calendars`
+3. Stream A (Gumroad) is in a SEPARATE session — do not block G0 on it
+
+**After P0 confirmed → CoS begins G0 immediately (no further input needed from Tarun until G0 design review).**
+
+**RESTRUCTURED SPRINT TIMELINE (updated 2026-06-21):**
+| Phase | Status | Days | Key gate |
+|---|---|---|---|
+| S0 — Stream A | LATE — separate session | — | CoS owns S0-1/S0-2; Tarun owns S0-3/S0-4 |
+| P0 — Pre-build fixes | PENDING Tarun | TODAY | Supabase cloud + pip install |
+| G0 — Foundation | READY* after P0 | Day 1-2 | pytest 6/6 + schema applied + 10 seed instruments |
+| G0.5 — AWS layer | PLANNED | Day 2-3 | Lambda + EventBridge + CloudWatch + S3 |
+| G1 — App shell | PLANNED | Day 3-4 | Tarun self-use test 30min |
+| G2 — Auth + deploy | PLANNED | Day 5-7 | SES production access filed 48hr before email |
+| RC — Revenue check | PLANNED | Day 8-9 | Sales count + beta feedback |
+
+**S0 is in a SEPARATE session. G0 starts after P0 fixes, not after S0.**
 
 ---
 

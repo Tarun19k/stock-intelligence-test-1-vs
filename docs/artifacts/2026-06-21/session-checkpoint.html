@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+  <title>AlphaVeda — Session Checkpoint — 2026-06-21</title>
+  <style>
+    :root {
+      --indigo: #1A1F3C; --ivory: #F5F3EC; --gold: #E8A020;
+      --teal: #2D7A72; --green: #4A8C5C; --terra: #C0503A;
+      --slate: #2D3561;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--ivory); color: var(--indigo); min-height: 100vh; padding: 40px 32px; max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 2px solid var(--indigo); padding-bottom: 20px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .wordmark { font-size: 22px; font-weight: 700; color: var(--indigo); }
+    .session-meta { text-align: right; font-family: 'Courier New', monospace; font-size: 12px; color: rgba(26,31,60,0.5); }
+    .session-label { font-size: 18px; font-weight: 600; color: var(--indigo); }
+    h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: rgba(26,31,60,0.4); margin: 28px 0 12px; border-top: 1px solid rgba(26,31,60,0.1); padding-top: 20px; }
+    h2:first-of-type { border-top: none; padding-top: 0; }
+    .item { padding: 10px 14px; border-left: 3px solid var(--gold); background: rgba(232,160,32,0.06); border-radius: 0 6px 6px 0; margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+    .item.locked { border-left-color: var(--green); background: rgba(74,140,92,0.06); }
+    .item.action { border-left-color: var(--terra); background: rgba(192,80,58,0.06); }
+    .item.info { border-left-color: var(--teal); background: rgba(45,122,114,0.06); }
+    .tag { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 3px; margin-right: 6px; }
+    .tag-locked { background: rgba(74,140,92,0.15); color: var(--green); }
+    .tag-new { background: rgba(232,160,32,0.15); color: #9a6b00; }
+    .tag-tarun { background: rgba(192,80,58,0.15); color: var(--terra); }
+    .tag-cos { background: rgba(45,122,114,0.15); color: var(--teal); }
+    .decisions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .decision { background: rgba(26,31,60,0.04); border: 1px solid rgba(26,31,60,0.1); border-radius: 6px; padding: 12px 14px; font-size: 12px; }
+    .decision-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(26,31,60,0.4); margin-bottom: 4px; font-family: 'Courier New', monospace; }
+    .next-action { background: var(--indigo); color: var(--ivory); border-radius: 8px; padding: 20px 24px; margin-top: 8px; }
+    .next-action-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); margin-bottom: 8px; }
+    .next-action-text { font-size: 15px; font-weight: 600; line-height: 1.4; }
+    .next-action-sub { font-size: 12px; color: rgba(245,243,236,0.5); margin-top: 8px; }
+    .commits { font-family: 'Courier New', monospace; font-size: 12px; background: rgba(26,31,60,0.05); border-radius: 6px; padding: 12px 16px; }
+    .commit-row { display: flex; gap: 12px; margin-bottom: 4px; }
+    .commit-hash { color: var(--gold); }
+    .commit-msg { color: rgba(26,31,60,0.7); }
+    footer { margin-top: 40px; border-top: 1px solid rgba(26,31,60,0.1); padding-top: 16px; font-size: 11px; color: rgba(26,31,60,0.3); font-family: 'Courier New', monospace; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="wordmark">AlphaVeda</div>
+      <div class="session-label">Session Checkpoint</div>
+    </div>
+    <div class="session-meta">
+      <div>2026-06-21</div>
+      <div>G0 Readiness + Strategy Session</div>
+      <div>9 days to deadline (2026-06-30)</div>
+    </div>
+  </header>
+
+  <h2>Completed This Session</h2>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>Q2 — Cloud-only Supabase confirmed.</strong> Docker not installed. Cloud-only = production-identical from Day 1. Supabase ap-south-1, free tier (500MB). Supersedes "parallel local + cloud" from previous plan.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>AWS dev account confirmed clean.</strong> Screenshot reviewed — 0 services in use, 0 spend. Pre-July 2025 legacy account. Always-free Lambda (1M/mo) + EventBridge (14M/mo) + CloudWatch (10 metrics/10 alarms) + S3 (5GB) covers all AlphaVeda ops at $0.00 permanently.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>Salesforce scoped to Stream C CRM only.</strong> Dev org free forever. Use for consulting pipeline (3 outreach targets, call notes, follow-up). Not AlphaVeda infrastructure.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>Claude Code Artifacts — education complete + skill created.</strong> Launched June 18, 2026 (Team/Enterprise beta). CSP-enforced: inline CSS/JS only, no external calls, 16MB cap. Plan-agnostic implementation: <code>alphaveda-artifacts</code> skill at <code>~/.claude/skills/alphaveda-artifacts/SKILL.md</code>. First artifact committed at <code>31154ff</code>.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>G0-25 (3yr historical ingest) removed from G0 exit criteria.</strong> Moved to one-time local setup script run before G1. G0 exits when schema + 10 seed instruments + pytest 6/6 pass. Historical ingest is a background operation.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>G0.5 added — AWS reliability layer.</strong> Between G0 and G1: Lambda + EventBridge + CloudWatch + S3. Replaces GHA cron as primary ingest. GHA stays as backup. SES production access request to be filed 48hr before first waitlist email.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>Strategic analysis complete.</strong> Posture: OFFENSIVE with Enforcement repairs. Key findings: Enforcement pillar at 2/5 (weakest), S0 now LATE, Stream C now ENFORCE (not Persuade), graph needs own repo, pricing validation needed before G2.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>Graph enhancement plan — 5 recommendations.</strong> (E1) Separate graphs: alphaveda repo ≠ GSI repo. (E2) Promote Indian Market node as AlphaVeda anchor. (E3) Add docs/architecture.md at G0. (E4) Wire Quarter Kelly as queryable node. (E5) SEBI compliance as queryable community.</div>
+
+  <div class="item locked"><span class="tag tag-locked">Locked</span><strong>G0 readiness check complete.</strong> 3 P0 blockers identified: Docker/cloud decision (→ cloud-only resolved), pip packages missing, NSE User-Agent undocumented. Panel: 7/7 PROCEED conditional on P0 fixes.</div>
+
+  <h2>Open Decisions (Tarun-owned)</h2>
+  <div class="decisions">
+    <div class="decision">
+      <div class="decision-label">P0-1 · TODAY</div>
+      Create Supabase cloud project (ap-south-1, free tier). Provides SUPABASE_URL + ANON_KEY + SERVICE_KEY. Unblocks all 26 G0 tasks.
+    </div>
+    <div class="decision">
+      <div class="decision-label">P0-2 · TODAY</div>
+      <code style="font-size:11px;">pip install supabase postgrest pandas_market_calendars</code>. 2 minutes. Unblocks all DB code.
+    </div>
+    <div class="decision">
+      <div class="decision-label">Pricing · Sprint G2</div>
+      ₹999/mo single tier confirmed as working assumption. Validate with 3 Arjun-persona contacts via WhatsApp before waitlist goes live.
+    </div>
+    <div class="decision">
+      <div class="decision-label">Stream C · TODAY</div>
+      Identify 3 consulting outreach targets from existing network. Now ENFORCE (Day 1 passed without action).
+    </div>
+    <div class="decision">
+      <div class="decision-label">Custom domain · Sprint G2</div>
+      alphaveda.in or alphavedaapp.com? Default: Streamlit subdomain for now.
+    </div>
+    <div class="decision">
+      <div class="decision-label">Stream A Gate 6 · Sep. session</div>
+      Final sign-off on Gumroad listing before publishing.
+    </div>
+  </div>
+
+  <h2>Git Commits This Session</h2>
+  <div class="commits">
+    <div class="commit-row"><span class="commit-hash">31154ff</span><span class="commit-msg">artifact(sprint-status): G0 readiness — 2026-06-20</span></div>
+    <div class="commit-row"><span class="commit-hash">887f09c</span><span class="commit-msg">chore(session): AlphaVeda foundation — brand brief, sprint plan, session resume</span></div>
+  </div>
+
+  <h2>Next Action</h2>
+  <div class="next-action">
+    <div class="next-action-label">Resume Point</div>
+    <div class="next-action-text">Tarun: Create Supabase cloud project + pip install → share SUPABASE_URL/ANON_KEY/SERVICE_KEY → CoS begins G0 build (26 tasks, ~3.5hrs)</div>
+    <div class="next-action-sub">SESSION_RESUME.md at graphify-out/SESSION_RESUME.md · alphaveda-artifacts skill at ~/.claude/skills/alphaveda-artifacts/</div>
+  </div>
+
+  <footer>
+    <span>AlphaVeda session-checkpoint · 2026-06-21</span>
+    <span>alphaveda-artifacts skill · GSI repo docs/artifacts/</span>
+    <span>Deadline 2026-06-30</span>
+  </footer>
+</body>
+</html>
