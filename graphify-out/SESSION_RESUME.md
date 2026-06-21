@@ -117,10 +117,11 @@
 
 ## ARTIFACTS
 
-| Type | Path | Generated |
-|---|---|---|
-| sprint-status | docs/artifacts/2026-06-20/sprint-status.html | 2026-06-20 |
-| session-checkpoint | docs/artifacts/2026-06-21/session-checkpoint.html | 2026-06-21 |
+| Type | Path | Commit | Generated |
+|---|---|---|---|
+| sprint-status | docs/artifacts/2026-06-20/sprint-status.html | — | 2026-06-20 |
+| session-checkpoint | docs/artifacts/2026-06-21/session-checkpoint.html | — | 2026-06-21 |
+| mvp-spec | docs/artifacts/2026-06-21/alphaveda-mvp-spec.html | 397d5fc | 2026-06-21 |
 
 ## DO NOT REDO — Session 2026-06-21 MVP Design additions
 
@@ -176,15 +177,67 @@
     - RC-3: No condition→artifact translation gate existed. 13 conditions had no mapping to files until Section 9 trace matrix.
     - Permanent fix: Section 9 Trace Matrix (C1–C13 mapped) + two-stage review protocol documented in Section 9.
 
+34. **HTML visual artifact COMPLETE and committed:**
+    `docs/artifacts/2026-06-21/alphaveda-mvp-spec.html` — 6-tab design review (commit `397d5fc`)
+    - Tab 1: Decisions (stat strip, 4 locked decisions, 5-layer architecture, 6 guards)
+    - Tab 2: Schema (9 migration cards, waitlist with gold border)
+    - Tab 3: Accuracy Engine (24-segment CSS grid, stagger animation, hover tooltips with cold-start priors)
+    - Tab 4: Signal & Path (constants.py, E1–E4 EXIT cards, Kelly formula)
+    - Tab 5: Quality (coverage table, async ingest code, .claude/rules/ listing)
+    - Tab 6: Trace Matrix (13 conditions all green + Review Gate with 4 clickable questions)
+
+35. **Expert skills gap identified — 9 domains, pre-build gate OPEN:**
+    The 11 existing council seats (7 investor + 4 doctrine) do NOT cover:
+    - P1 (build blockers): Data Engineer, Security, UX/Product, QA Engineer
+    - P2 (pre-launch): Performance, Observability, Audit
+    - P0 doc gaps: Non-Goals spec (RFC standard missing), SLA spec (no concrete numbers)
+    See `~/.claude/projects/.../memory/project_alphaveda_expert_skills.md`
+
+36. **6-agent council plan defined (Opus for planning + reviews):**
+    R1 Red Team (Opus, High) → R2 parallel: Expert Skills (Opus, Med) + RFC Gaps (Sonnet, Med) + DESIGN.md (Sonnet, Low) → R3 Full Council 20 voices (Opus, High) → R4 Synthesis go/no-go (Opus, Med)
+    Total: 6 agents, 4 Opus + 2 Sonnet, ~2 sessions
+
+37. **Council ownership map defined — all 20 voices:**
+    Investor council: Buffett→fundamentals floor, Lynch→classification+cold-start weights, Dalio→macro_regime schema, Druckenmiller→E1-E4 exits+Kelly, Marks→cycle_phase derivation, Soros→streak counter-cyclical, Munger→data integrity+incentives
+    Doctrine: Systems Reliability→async ingest+singleton, Constraint Enforcer→SEBI+yfinance gate, Wealth & Revenue→waitlist schema, Synthesis Chair→false-consensus
+    9 new expert personas: see item 35
+
+38. **Tavily research complete — design.md best practices:**
+    - VoltAgent/awesome-design-md: DESIGN.md is a Google Stitch concept — AI agent design system file. Must create at alphaveda repo root.
+    - RFC standard (Google/Uber/Airbnb): non-goals section + SLA section mandatory — both missing from our design doc.
+    - Our design doc covers: context/scope ✓, system design ✓, data storage ✓, alternatives ✓, cross-cutting ✓. Missing: non-goals, SLAs, system-context diagram, API spec.
+
+39. **Memory files updated this session:**
+    - `project_alphaveda_expert_skills.md` — created (new file)
+    - `project_alphaveda_sprint.md` — updated (design doc complete, 9 migrations, expert skills gate)
+    - `feedback_opus_planning_reviews.md` — created (Opus for all planning/reviews)
+    - `MEMORY.md` index — 3 new entries + alphaveda_sprint line updated
+
+40. **Documentation gaps remaining (not yet written):**
+    - `DESIGN.md` at alphaveda repo root (AI agent design system — colors, typography, components)
+    - Non-goals section in design doc
+    - SLAs section in design doc
+    These are R2 scope (Agent 3 RFC + Agent 4 DESIGN.md)
+
 ---
 
-## EXACT RESUME POINT — UPDATED 2026-06-21 (post Section 9)
+## EXACT RESUME POINT — UPDATED 2026-06-21 (post continuation session)
 
-**Where we stopped:** Design doc v0.2 complete — all 9 sections written, all 11 council gaps closed, 13-condition trace matrix complete.
+**Where we stopped:** All housekeeping complete. Expert skills gate OPEN. 6-agent plan defined.
 
-**NEXT ACTION — CoS:**
-Invoke `writing-plans` skill to create the G0 implementation plan.
-Input to writing-plans: `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md` (Section 2 migrations + Section 8 quality standards are the G0 scope).
+**NEXT ACTION — requires Tarun decision first:**
+Option A or Option B for expert skills definition?
+- **Option A** (faster, today): Lightweight persona profiles written to `docs/experts/` in AlphaVeda repo → unblocks red team today
+- **Option B** (durable): Full `~/.claude/skills/` files for 4 P1 experts → survives future sessions, matches "upskilled and in place"
+
+**After decision → CoS executes in order:**
+1. R2b: Agent 3 (Sonnet) — fill RFC gaps (non-goals + SLAs) in design doc
+2. R2c: Agent 4 (Sonnet) — write DESIGN.md at alphaveda repo root
+3. R2a: Agent 2 (Opus) — define 9 expert personas (Option A or B)
+4. R1: Agent 1 (Opus, RED TEAM) — challenge design doc adversarially
+5. R3: Agent 5 (Opus, FULL COUNCIL 20 voices) — all seats vote
+6. R4: Agent 6 (Opus, SYNTHESIS) — go/no-go + conditions list
+7. writing-plans skill — only after R4 go verdict
 
 **TARUN REVIEW GATE (before writing-plans):**
 Read spec file at `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md` and confirm:
@@ -234,6 +287,7 @@ If any section needs revision → state it; CoS amends before writing-plans.
 
 | Decision | Default if no answer | Needed by |
 |---|---|---|
+| **Expert skills: Option A or B?** | A = faster today, B = durable skills files | BEFORE red team |
 | P0-1: Create Supabase cloud project (ap-south-1) | BLOCKS G0 — no default | TODAY |
 | P0-2: `pip install supabase postgrest pandas_market_calendars` | BLOCKS G0 — no default | TODAY |
 | Stream C: identify 3 consulting outreach targets | OVERDUE — Day 1 passed | TODAY (now ENFORCE) |

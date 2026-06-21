@@ -1,16 +1,16 @@
 # Graph Report - stock-intelligence-test-1-vs  (2026-06-21)
 
 ## Corpus Check
-- 47 files · ~1,288,921 words
+- 47 files · ~1,296,888 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1410 nodes · 2282 edges · 73 communities detected
+- 1410 nodes · 2282 edges · 72 communities detected
 - Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 259 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `41a22a94`
+- Built from commit: `397d5fc0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -81,13 +81,12 @@
 - [[_COMMUNITY_Community 63|Community 63]]
 - [[_COMMUNITY_Community 64|Community 64]]
 - [[_COMMUNITY_Community 65|Community 65]]
-- [[_COMMUNITY_Community 66|Community 66]]
+- [[_COMMUNITY_Community 68|Community 68]]
 - [[_COMMUNITY_Community 69|Community 69]]
 - [[_COMMUNITY_Community 70|Community 70]]
 - [[_COMMUNITY_Community 71|Community 71]]
 - [[_COMMUNITY_Community 72|Community 72]]
-- [[_COMMUNITY_Community 73|Community 73]]
-- [[_COMMUNITY_Community 78|Community 78]]
+- [[_COMMUNITY_Community 77|Community 77]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `GSI Dashboard` - 126 edges
@@ -113,7 +112,7 @@
 - `DataType` --uses--> `TestCacheManagerTTL`  [INFERRED]
   data_manager.py → tests/test_data_manager_m2.py
 
-## Communities (79 total, 12 thin omitted)
+## Communities (78 total, 11 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.06
@@ -176,20 +175,20 @@ Cohesion: 0.07
 Nodes (32): Bank Nifty Metric Card, Bar Chart Global Indices (Nifty/S&P/Nasdaq/FTSE/Hang Seng/Crude Oil/10Y UST), Dollar (USD/INR) Metric Card, Weekly Forecast Accuracy Report, Global Intelligence Navigation Item, Gold Metric Card, Group Selector, Index Performance This Week (+24 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.09
-Nodes (28): Accuracy Metrics Auto-Populate Note (after due dates pass), Forecast Table Column: Due On, First Resolution Date: 2026-04-13, Forecast Engine — Weekly Accuracy Report, Forecast Horizon 21 Days (1M), Forecast Horizon 63 Days (3M), P(Gain) Field — Probability of Gain, Forecast Status: Pending (+20 more)
+Cohesion: 0.14
+Nodes (11): CacheManager, Bounded LRU in-memory cache (L2).      Deployment note: Streamlit-specific.  Sin, Store result.  No-op if status == UNAVAILABLE.         Evicts the LRU entry if a, Remove all cache entries for this ticker across all DataTypes., _make_result(), Unit tests for DataManager M2 — CacheManager and DataContract.  Run: pytest test, TestCacheManagerHit, TestCacheManagerInvalidate (+3 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.09
-Nodes (27): Stress Regime Detected Alert Banner, Daily Return Axis (y-axis), Daily Volatility Axis (x-axis), Risk Profile Selector (Conservative / Balanced / Aggressive), Portfolio Allocator Feature, Allocation Stability Indicator (STABLE), Portfolio Size Input (10000), Expected Annual Return (+7.8%) (+19 more)
+Nodes (28): Accuracy Metrics Auto-Populate Note (after due dates pass), Forecast Table Column: Due On, First Resolution Date: 2026-04-13, Forecast Engine — Weekly Accuracy Report, Forecast Horizon 21 Days (1M), Forecast Horizon 63 Days (3M), P(Gain) Field — Probability of Gain, Forecast Status: Pending (+20 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.11
-Nodes (27): Asian Overnight Market Data, F&O Data Feature, Global Cues Context, Global Market Overview, GSI Home Screen, India Market Status (CLOSED), Live Signals Feature, Asia Market Coverage (+19 more)
+Cohesion: 0.09
+Nodes (27): Stress Regime Detected Alert Banner, Daily Return Axis (y-axis), Daily Volatility Axis (x-axis), Risk Profile Selector (Conservative / Balanced / Aggressive), Portfolio Allocator Feature, Allocation Stability Indicator (STABLE), Portfolio Size Input (10000), Expected Annual Return (+7.8%) (+19 more)
 
 ### Community 18 - "Community 18"
-Cohesion: 0.17
-Nodes (9): CacheManager, Bounded LRU in-memory cache (L2).      Deployment note: Streamlit-specific.  Sin, _make_result(), Unit tests for DataManager M2 — CacheManager and DataContract.  Run: pytest test, TestCacheManagerHit, TestCacheManagerInvalidate, TestCacheManagerLRU, TestCacheManagerMiss (+1 more)
+Cohesion: 0.11
+Nodes (27): Asian Overnight Market Data, F&O Data Feature, Global Cues Context, Global Market Overview, GSI Home Screen, India Market Status (CLOSED), Live Signals Feature, Asia Market Coverage (+19 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.09
@@ -355,21 +354,21 @@ Nodes (3): DataContract, Wire-level shape validator for each DataType.      Vali
 Cohesion: 0.4
 Nodes (4): compute_indicators(), Add RSI, MACD, Bollinger, SMA, ATR, ADX, Stoch, OBV, VolumeMA to df., Compute composite signal score (0–100) from latest indicator row.     Returns di, signal_score()
 
-### Community 65 - "Community 65"
+### Community 64 - "Community 64"
 Cohesion: 0.67
 Nodes (3): Deploy Button, Overflow Menu (Three Dots), Top Bar
 
 ## Knowledge Gaps
 - **523 isolated node(s):** `R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.     Catches f`, `Return the forecast history dict.     Primary store: st.session_state[_SS_KEY].`, `Persist the forecast history dict.     Always writes to session_state (works on`, `Record a new forecast entry (one per ticker per day).     simulation: optional d`, `Check all pending forecasts whose due date has passed and mark them     resolved` (+518 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GSI Dashboard` connect `Community 4` to `Community 0`, `Community 5`, `Community 6`, `Community 7`, `Community 12`, `Community 15`, `Community 19`, `Community 22`, `Community 28`, `Community 33`, `Community 36`, `Community 37`, `Community 38`, `Community 39`, `Community 43`, `Community 47`, `Community 51`, `Community 52`, `Community 56`, `Community 65`?**
+- **Why does `GSI Dashboard` connect `Community 4` to `Community 0`, `Community 5`, `Community 6`, `Community 7`, `Community 12`, `Community 16`, `Community 19`, `Community 22`, `Community 28`, `Community 33`, `Community 36`, `Community 37`, `Community 38`, `Community 39`, `Community 43`, `Community 47`, `Community 51`, `Community 52`, `Community 56`, `Community 64`?**
   _High betweenness centrality (0.125) - this node is a cross-community bridge._
-- **Why does `Nifty 50 (2,716 +0.20%)` connect `Community 0` to `Community 16`, `Community 17`, `Community 4`?**
+- **Why does `Nifty 50 (2,716 +0.20%)` connect `Community 0` to `Community 17`, `Community 18`, `Community 4`?**
   _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **Why does `Streamlit Application` connect `Community 19` to `Community 4`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
