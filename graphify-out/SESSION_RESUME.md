@@ -219,6 +219,18 @@
     - SLAs section in design doc
     These are R2 scope (Agent 3 RFC + Agent 4 DESIGN.md)
 
+41. **Strategic analysis complete — CONSOLIDATE posture. 4 critical findings:**
+    - TRAP DETECTED: 6-agent review chain has no acceptance criteria, no time-boxes. Perimeter controller = revenue deadline (9 days, $0 earned).
+    - Weakest pillar: Market/Users 1/5 — 0 waitlist, 0 pricing validation, Arjun persona assumed not confirmed.
+    - "100% effect" is undefined for every pending task — must be operationalized BEFORE any agent runs.
+    - The 4 review gate questions in HTML Tab 6 (Trace Matrix) are UNANSWERED — this is the only existing feedback loop and it is a broken circuit.
+    **4 mandated actions for next session (in this order):**
+    a. Answer 4 review gate questions in alphaveda-mvp-spec.html Tab 6 (Tarun: 5 min)
+    b. Write numeric acceptance criteria for every pending task (CoS: 30 min)
+    c. Send 3 WhatsApp messages to Arjun-persona investors for pricing signal (Tarun: 10 min)
+    d. Time-box full agent sequence (R1+R2+R3+R4) to 1 session — then proceed to writing-plans regardless
+    **One rule added:** Stop accepting new pre-build gates. All new expert gaps are implementation constraints, not blockers.
+
 ---
 
 ## EXACT RESUME POINT — UPDATED 2026-06-21 (post continuation session)

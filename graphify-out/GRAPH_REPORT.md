@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `397d5fc0`
+- Built from commit: `f00609c2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -175,7 +175,7 @@ Cohesion: 0.07
 Nodes (32): Bank Nifty Metric Card, Bar Chart Global Indices (Nifty/S&P/Nasdaq/FTSE/Hang Seng/Crude Oil/10Y UST), Dollar (USD/INR) Metric Card, Weekly Forecast Accuracy Report, Global Intelligence Navigation Item, Gold Metric Card, Group Selector, Index Performance This Week (+24 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (11): CacheManager, Bounded LRU in-memory cache (L2).      Deployment note: Streamlit-specific.  Sin, Store result.  No-op if status == UNAVAILABLE.         Evicts the LRU entry if a, Remove all cache entries for this ticker across all DataTypes., _make_result(), Unit tests for DataManager M2 — CacheManager and DataContract.  Run: pytest test, TestCacheManagerHit, TestCacheManagerInvalidate (+3 more)
 
 ### Community 16 - "Community 16"
@@ -195,7 +195,7 @@ Cohesion: 0.09
 Nodes (24): Compliance Checks, Dashboard Tabs, Data-as-of Disclosure, Error Log Section, Green Pass Indicators, GSI QA Audit Report v5.36, GSI Version 5.36, Indian Equities Market (+16 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.09
+Cohesion: 0.1
 Nodes (13): DataManager, HealthSnapshot, Factory for UNAVAILABLE DataResult.     Use this everywhere — never construct Da, Point-in-time health state.  Consumed by sidebar observability panel (M6).     R, True if at least one source breaker is CLOSED and DataManager is not in bypass., Always safe to call — never raises.         Returns a snapshot of current health, Direct access to a source's circuit breaker. Used by source adapters (M4/M5)., Synchronous data fetch.  Returns DataResult — never raises.         M1: always r (+5 more)
 
 ### Community 21 - "Community 21"
@@ -220,7 +220,7 @@ Nodes (15): info_tip(), log_error(), Label + ℹ️ icon with native HTML title=
 
 ### Community 26 - "Community 26"
 Cohesion: 0.18
-Nodes (12): Enum, CircuitState, DataType, Priority, data_manager.py — Global Stock Intelligence Dashboard DataManager: resilient dat, ResultStatus, SourceTag, validate() (+4 more)
+Nodes (11): Enum, CircuitState, DataType, Priority, data_manager.py — Global Stock Intelligence Dashboard DataManager: resilient dat, ResultStatus, validate(), _validate_batch() (+3 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.24
@@ -251,48 +251,48 @@ Cohesion: 0.16
 Nodes (15): ADX Trend Metric (31.0), Algorithmic Signal Panel, ATR Volatility Metric (₹34.76), Bollinger Width Metric (8.7%), MACD Daily Chart, MACD Metric (-6.775), Price Bollinger Bands Chart, RSI (14) Chart (+7 more)
 
 ### Community 34 - "Community 34"
+Cohesion: 0.15
+Nodes (5): DataContract, Wire-level shape validator for each DataType.      Validates that data received, SourceTag, TestDataContractINFO, TestDataContractLIVE
+
+### Community 35 - "Community 35"
 Cohesion: 0.22
 Nodes (13): classify(), _load_model_display_names(), main(), parse_backlog(), _parse_done_ids(), parse_in_progress(), Classify a backlog item into an execution tier.      Priority order (first match, Extract items from the '### In Progress' table in GSI_SPRINT.md.     These are i (+5 more)
 
-### Community 35 - "Community 35"
+### Community 36 - "Community 36"
 Cohesion: 0.2
 Nodes (13): _market_of(), Personalised AI career & investment action cards., Render one expandable topic card with chain + news + watchlist., Horizontal cascade of geopolitical impact nodes., Main entry point — called from app.py routing., Infer market from ticker suffix for watchlist filtering (OPEN-014)., Live mini price badges for a topic watchlist., render_global_intelligence() (+5 more)
-
-### Community 36 - "Community 36"
-Cohesion: 0.14
-Nodes (14): Refresh Data Button, Search Filter (Company Name or Symbol), Market CLOSED Status, Market CLOSED Badge, Market CLOSED Indicator, Nav: Dashboard, Nav: Global Intelligence, Nav: Home (+6 more)
 
 ### Community 37 - "Community 37"
 Cohesion: 0.15
 Nodes (14): Breadcrumb: Current Week > India > Nifty 50, Weekly Returns All Stocks Bar Chart, Market Filter (India), Nifty 50 Group, 49 Stocks Tracked Label, Sidebar Group Selector, Sidebar Stock Selector, No Stock Selected State (showing weekly summary) (+6 more)
 
 ### Community 38 - "Community 38"
+Cohesion: 0.14
+Nodes (14): Refresh Data Button, Search Filter (Company Name or Symbol), Market CLOSED Status, Market CLOSED Badge, Market CLOSED Indicator, Nav: Dashboard, Nav: Global Intelligence, Nav: Home (+6 more)
+
+### Community 39 - "Community 39"
 Cohesion: 0.27
 Nodes (13): Alignment Indicator, BUY Signal, Composite Momentum Score, Elder Triple Screen, Documented Override Hierarchy, RSI, MACD, Volume, ATR Indicators, Signal Engine, Stage 2 Advancing (+5 more)
 
-### Community 39 - "Community 39"
+### Community 40 - "Community 40"
 Cohesion: 0.17
 Nodes (13): Dashboard Screenshot Preview, Elder Triple Screen Framework, Weinstein Stage Analysis Framework, ATR Indicator, MACD Indicator, RS (Relative Strength) Indicator, Landing Page Hero Section, View on GitHub Nav Link (+5 more)
 
-### Community 40 - "Community 40"
+### Community 41 - "Community 41"
 Cohesion: 0.17
 Nodes (7): CircuitBreaker, get_datamanager(), Per-source circuit breaker.  Three-state machine:          CLOSED ──(N consecuti, Returns True if a request should proceed.         CLOSED  → always True., Call after any successful fetch from this source., Call after any failed fetch from this source., Returns the shared DataManager singleton.      @st.cache_resource ensures exactl
 
-### Community 41 - "Community 41"
+### Community 42 - "Community 42"
 Cohesion: 0.24
 Nodes (11): _extract_names(), _load_yaml(), main(), parse_config(), query_health(), Parse config.yaml and return [(alias, provider_model), ...] in order.     Return, GET {proxy_url}/health with Bearer auth.     Returns parsed JSON dict on success, Extract model name strings from a health endpoint list.     LiteLLM may return d (+3 more)
 
-### Community 42 - "Community 42"
+### Community 43 - "Community 43"
 Cohesion: 0.23
 Nodes (10): Render one expandable topic card with chain + news + watchlist., Horizontal cascade of geopolitical impact nodes., Main entry point — called from app.py routing., Live mini price badges for a topic watchlist., Personalised AI career & investment action cards., render_global_intelligence(), _render_impact_chain(), _render_next_steps_ai() (+2 more)
 
-### Community 43 - "Community 43"
+### Community 44 - "Community 44"
 Cohesion: 0.21
 Nodes (12): 52-Week High Price Reference, 52-Week Low Price Reference, Crude WTI Price Widget, Declining Trend Signal (Stage 4 — price 9.6% below 50-week average), Gold Price Widget, Macro Market Data, Price Change Indicator, Search UI Settled State (+4 more)
-
-### Community 44 - "Community 44"
-Cohesion: 0.18
-Nodes (4): DataResult, Returns DataResult if the entry exists (FRESH or STALE), None if not found., Every DataManager response is a DataResult.     data is None if and only if stat, TestDataContractLIVE
 
 ### Community 45 - "Community 45"
 Cohesion: 0.29
@@ -347,12 +347,12 @@ Cohesion: 0.43
 Nodes (5): chk(), R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.     Catches f, report(), run(), verify_zip()
 
 ### Community 58 - "Community 58"
-Cohesion: 0.33
-Nodes (3): DataContract, Wire-level shape validator for each DataType.      Validates that data received, TestDataContractINFO
-
-### Community 59 - "Community 59"
 Cohesion: 0.4
 Nodes (4): compute_indicators(), Add RSI, MACD, Bollinger, SMA, ATR, ADX, Stoch, OBV, VolumeMA to df., Compute composite signal score (0–100) from latest indicator row.     Returns di, signal_score()
+
+### Community 60 - "Community 60"
+Cohesion: 0.5
+Nodes (3): DataResult, Returns DataResult if the entry exists (FRESH or STALE), None if not found., Every DataManager response is a DataResult.     data is None if and only if stat
 
 ### Community 64 - "Community 64"
 Cohesion: 0.67
@@ -366,7 +366,7 @@ Nodes (3): Deploy Button, Overflow Menu (Three Dots), Top Bar
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GSI Dashboard` connect `Community 4` to `Community 0`, `Community 5`, `Community 6`, `Community 7`, `Community 12`, `Community 16`, `Community 19`, `Community 22`, `Community 28`, `Community 33`, `Community 36`, `Community 37`, `Community 38`, `Community 39`, `Community 43`, `Community 47`, `Community 51`, `Community 52`, `Community 56`, `Community 64`?**
+- **Why does `GSI Dashboard` connect `Community 4` to `Community 0`, `Community 5`, `Community 6`, `Community 7`, `Community 12`, `Community 16`, `Community 19`, `Community 22`, `Community 28`, `Community 33`, `Community 37`, `Community 38`, `Community 39`, `Community 40`, `Community 44`, `Community 47`, `Community 51`, `Community 52`, `Community 56`, `Community 64`?**
   _High betweenness centrality (0.125) - this node is a cross-community bridge._
 - **Why does `Nifty 50 (2,716 +0.20%)` connect `Community 0` to `Community 17`, `Community 18`, `Community 4`?**
   _High betweenness centrality (0.019) - this node is a cross-community bridge._
