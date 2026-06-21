@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlphaVeda — MVP Design Review v0.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #1A1F3C;
+  --ink-60:     rgba(26,31,60,.60);
+  --paper:      #F5F3EC;
+  --gold:       #E8A020;
+  --gold-faint: #FEF7E0;
+  --gold-bd:    rgba(232,160,32,.30);
+  --surface:    #ECEAE0;
+  --surface2:   #E2E0D4;
+  --bd:         rgba(26,31,60,.10);
+  --bd2:        rgba(26,31,60,.16);
+  --smoke:      #8D90A5;
+  --green:      #1C6B44;
+  --green-bg:   #E6F4ED;
+  --red:        #B5382D;
+  --red-bg:     #FBEAEA;
+  --navy:       #0F1326;
+  --navy2:      #161B2E;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+
+/* ── Header ── */
+.hdr{position:sticky;top:0;z-index:100;background:var(--ink);border-bottom:1px solid rgba(255,255,255,.08);padding:0 24px}
+.hdr-inner{max-width:1120px;margin:0 auto;height:58px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand-name{font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:600;color:var(--paper);letter-spacing:-.02em;font-optical-sizing:auto}
+.hdr-meta{margin-left:auto;display:flex;align-items:center;gap:10px}
+.bdg{display:inline-flex;align-items:center;font-family:'DM Mono',monospace;font-size:11px;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.bdg-v{background:rgba(232,160,32,.18);color:var(--gold);border:1px solid var(--gold-bd)}
+.bdg-ok{background:rgba(28,107,68,.22);color:#4ADE80;border:1px solid rgba(74,222,128,.25)}
+.bdg-dt{color:var(--smoke);font-size:12px}
+
+/* ── Tabs ── */
+.tabs{background:var(--surface);border-bottom:1px solid var(--bd2);padding:0 24px;position:sticky;top:58px;z-index:90}
+.tabs-inner{max-width:1120px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs-inner::-webkit-scrollbar{display:none}
+.tab{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--smoke);padding:13px 17px;border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--gold);font-weight:600}
+
+/* ── Panels ── */
+.panel{display:none;max-width:1120px;margin:0 auto;padding:48px 24px 96px}
+.panel.on{display:block}
+
+/* ── Section head ── */
+.lbl{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.h1{font-family:'Fraunces',Georgia,serif;font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1.15;margin-bottom:8px;font-optical-sizing:auto}
+.sub{color:var(--smoke);font-size:14px;margin-bottom:40px;max-width:580px}
+.h3{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:14px}
+
+/* ── Stat strip ── */
+.stats{display:flex;gap:14px;margin-bottom:40px;flex-wrap:wrap}
+.stat{flex:1;min-width:140px;background:var(--ink);color:var(--paper);border-radius:10px;padding:20px 22px}
+.stat-n{font-family:'Fraunces',Georgia,serif;font-size:42px;font-weight:300;color:var(--gold);line-height:1;letter-spacing:-.04em;font-optical-sizing:auto}
+.stat-l{font-family:'DM Mono',monospace;font-size:11px;color:rgba(245,243,236,.55);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+
+/* ── Card ── */
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:24px}
+.card-gold{background:var(--gold-faint);border:1px solid var(--gold-bd);border-radius:10px;padding:24px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mt16{margin-top:16px}.mt24{margin-top:24px}.mt32{margin-top:32px}.mt40{margin-top:40px}
+.mb16{margin-bottom:16px}.mb24{margin-bottom:24px}
+
+/* ── Pill ── */
+.pill{display:inline-flex;align-items:center;font-size:11px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:4px}
+.pill-g{background:var(--green-bg);color:var(--green)}
+.pill-au{background:var(--gold-faint);color:#8B6200;border:1px solid var(--gold-bd)}
+.pill-r{background:var(--red-bg);color:var(--red)}
+
+/* ── Layer stack ── */
+.layers{border-radius:10px;overflow:hidden;border:1px solid var(--bd2);margin-bottom:24px}
+.layer{display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--bd)}
+.layer:last-child{border-bottom:none}
+.l-num{background:var(--ink);color:var(--gold);font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:14px;font-optical-sizing:auto}
+.l-body{padding:14px 18px;background:#fff}
+.l-body strong{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
+.l-body span{font-size:12.5px;color:var(--smoke)}
+.l-arrow{text-align:center;padding:5px;background:var(--surface);color:var(--gold);font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.06em}
+
+/* ── Guards ── */
+.guard{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--bd)}
+.guard:last-child{border-bottom:none}
+.g-num{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--gold);font-family:'DM Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.g-body strong{font-size:13.5px;font-weight:600;display:block;margin-bottom:2px}
+.g-body span{font-size:12.5px;color:var(--smoke)}
+
+/* ── Migration cards ── */
+.m-card{background:#fff;border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.m-card.acc{border-color:var(--gold-bd)}
+.m-head{background:var(--surface);padding:9px 15px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd)}
+.m-card.acc .m-head{background:var(--gold-faint);border-bottom-color:var(--gold-bd)}
+.m-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--smoke)}
+.m-name{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--ink)}
+.m-card.acc .m-name{color:#8B6200}
+.m-body{padding:11px 15px}
+.col{display:flex;gap:7px;align-items:baseline;padding:3px 0;font-family:'DM Mono',monospace;font-size:12px}
+.cn{color:var(--ink);font-weight:500}
+.ct{color:#6C7086}
+.cc{font-size:10.5px;background:var(--gold-faint);color:#9B6B00;padding:1px 6px;border-radius:4px;border:1px solid var(--gold-bd)}
+.cpk{font-size:10.5px;background:var(--green-bg);color:var(--green);padding:1px 6px;border-radius:4px}
+
+/* ── 24-segment grid ── */
+.seg-wrap{overflow-x:auto}
+.seg-grid{display:grid;grid-template-columns:128px repeat(4,1fr);gap:5px;min-width:680px}
+.seg-corner{}
+.seg-ch{background:var(--ink);color:var(--paper);font-family:'DM Mono',monospace;font-size:11px;font-weight:500;text-align:center;padding:8px 5px;border-radius:6px;letter-spacing:.03em}
+.seg-ch small{display:block;font-size:9px;color:var(--smoke);margin-top:2px;font-weight:400}
+.seg-rh{background:var(--surface);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;justify-content:center}
+.seg-rh strong{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--ink);line-height:1.3}
+.seg-rh small{font-size:10px;color:var(--smoke);margin-top:2px}
+.seg-cell{background:#fff;border:1px solid var(--bd);border-radius:6px;padding:10px 10px 8px;cursor:pointer;transition:all .15s ease;position:relative;animation:cellIn .4s ease both}
+.seg-cell:hover{border-color:var(--gold);background:var(--gold-faint);transform:translateY(-2px);box-shadow:0 4px 14px rgba(26,31,60,.08)}
+.seg-obs{font-family:'DM Mono',monospace;font-size:11px;color:var(--smoke);margin-bottom:5px}
+.seg-obs strong{color:var(--ink)}
+.seg-bar{height:3px;background:var(--bd2);border-radius:2px;margin-bottom:7px}
+.seg-fill{height:100%;background:var(--gold);border-radius:2px;width:0}
+.seg-bdg{font-family:'DM Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:.04em;padding:2px 7px;border-radius:4px;background:var(--gold-faint);color:#8B6200;border:1px solid var(--gold-bd)}
+.seg-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--navy);color:var(--paper);font-family:'DM Mono',monospace;font-size:11px;padding:10px 14px;border-radius:8px;white-space:nowrap;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none}
+.seg-cell:hover .seg-tip{display:block}
+.seg-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--navy)}
+.tt{display:flex;justify-content:space-between;gap:18px;padding:2px 0;color:rgba(245,243,236,.65)}
+.tt strong{color:var(--paper)}
+@keyframes cellIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.seg-cell:nth-child(1){animation-delay:.03s}.seg-cell:nth-child(2){animation-delay:.06s}
+.seg-cell:nth-child(3){animation-delay:.09s}.seg-cell:nth-child(4){animation-delay:.12s}
+.seg-cell:nth-child(5){animation-delay:.15s}.seg-cell:nth-child(6){animation-delay:.18s}
+.seg-cell:nth-child(7){animation-delay:.21s}.seg-cell:nth-child(8){animation-delay:.24s}
+.seg-cell:nth-child(9){animation-delay:.27s}.seg-cell:nth-child(10){animation-delay:.30s}
+.seg-cell:nth-child(11){animation-delay:.33s}.seg-cell:nth-child(12){animation-delay:.36s}
+.seg-cell:nth-child(13){animation-delay:.39s}.seg-cell:nth-child(14){animation-delay:.42s}
+.seg-cell:nth-child(15){animation-delay:.45s}.seg-cell:nth-child(16){animation-delay:.48s}
+.seg-cell:nth-child(17){animation-delay:.51s}.seg-cell:nth-child(18){animation-delay:.54s}
+.seg-cell:nth-child(19){animation-delay:.57s}.seg-cell:nth-child(20){animation-delay:.60s}
+.seg-cell:nth-child(21){animation-delay:.63s}.seg-cell:nth-child(22){animation-delay:.66s}
+.seg-cell:nth-child(23){animation-delay:.69s}.seg-cell:nth-child(24){animation-delay:.72s}
+.seg-note{font-family:'DM Mono',monospace;font-size:11px;color:var(--smoke);margin-top:14px}
+
+/* ── Code block ── */
+.code{background:var(--navy);border-radius:8px;padding:18px 20px;overflow-x:auto;margin-bottom:0}
+.code code{font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.75;color:#CDD6F4;white-space:pre}
+.c-cm{color:#6C7086}.c-k{color:#89DCEB}.c-v{color:#A6E3A1}.c-s{color:#FAB387}
+.c-n{color:#F38BA8}.c-kw{color:#CBA6F7}
+
+/* ── EXIT cards ── */
+.exits{display:flex;flex-direction:column;gap:9px}
+.exit{background:#fff;border:1px solid var(--bd);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:14px 18px;display:flex;gap:14px;align-items:flex-start}
+.e-id{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;color:var(--red);font-optical-sizing:auto;line-height:1;flex-shrink:0;width:34px;margin-top:-2px}
+.e-body strong{font-size:13.5px;font-weight:600;display:block;margin-bottom:2px}
+.e-body span{font-size:12.5px;color:var(--smoke)}
+
+/* ── Kelly ── */
+.kelly{background:var(--ink);border-radius:10px;padding:28px 32px;text-align:center;margin-top:24px}
+.kelly-f{font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:300;color:var(--paper);letter-spacing:-.01em;font-optical-sizing:auto}
+.kelly-f em{color:var(--gold);font-style:normal}
+.kelly-sub{font-family:'DM Mono',monospace;font-size:11.5px;color:rgba(245,243,236,.5);margin-top:14px;line-height:1.8}
+
+/* ── Coverage table ── */
+.cov{width:100%;border-collapse:collapse;font-size:13.5px}
+.cov th{background:var(--surface);color:var(--ink);font-weight:600;font-size:12px;text-align:left;padding:10px 14px;border:1px solid var(--bd2);letter-spacing:.02em}
+.cov td{padding:10px 14px;border:1px solid var(--bd);vertical-align:top}
+.cov tr:nth-child(even) td{background:var(--surface)}
+.cov td:first-child{font-family:'DM Mono',monospace;font-size:12px}
+.cov-ok{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:4px}
+
+/* ── Trace matrix ── */
+.trace-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.trace-tbl th{background:var(--surface);color:var(--smoke);font-weight:600;font-size:11px;text-align:left;padding:10px 14px;border:1px solid var(--bd2);text-transform:uppercase;letter-spacing:.06em}
+.trace-tbl td{padding:10px 14px;border:1px solid var(--bd);vertical-align:middle}
+.trace-tbl tr:nth-child(even) td{background:var(--surface)}
+.t-id{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--gold)}
+.t-seat{font-size:12px;color:var(--smoke)}
+.t-file{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink)}
+.t-art{font-family:'DM Mono',monospace;font-size:11px;color:#6C7086}
+.t-ok{display:inline-flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--green);background:var(--green-bg);padding:3px 10px;border-radius:999px}
+
+/* ── Review gate ── */
+.rgw{background:var(--ink);border-radius:12px;padding:32px;margin-top:48px}
+.rg-title{font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:600;color:var(--paper);margin-bottom:5px;font-optical-sizing:auto}
+.rg-sub{font-size:13px;color:rgba(245,243,236,.5);margin-bottom:26px}
+.rq{margin-bottom:16px;padding:16px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px}
+.rq:last-child{margin-bottom:0}
+.rq-q{font-size:13.5px;font-weight:500;color:var(--paper);margin-bottom:11px}
+.rq-opts{display:flex;gap:7px;flex-wrap:wrap}
+.rq-opt{font-family:'DM Mono',monospace;font-size:12px;padding:5px 13px;border-radius:6px;background:rgba(255,255,255,.08);color:rgba(245,243,236,.65);border:1px solid rgba(255,255,255,.10);cursor:pointer;transition:all .15s}
+.rq-opt:hover,.rq-opt.on{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+
+/* ── Responsive ── */
+@media(max-width:720px){
+  .g2,.g3{grid-template-columns:1fr}
+  .stats{flex-direction:column}
+  .kelly-f{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .seg-cell{animation:none}
+  *{transition-duration:0ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <a class="brand" href="#">
+      <svg width="34" height="34" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" stroke="#E8A020" stroke-width="1.2" opacity=".55"/>
+        <circle cx="24" cy="24" r="13" stroke="rgba(245,243,236,.25)" stroke-width=".8"/>
+        <polygon points="24,8 10.1,32 37.9,32" stroke="#E8A020" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+        <polygon points="24,40 10.1,16 37.9,16" stroke="rgba(245,243,236,.5)" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+        <circle cx="24" cy="24" r="2.5" fill="#E8A020"/>
+      </svg>
+      <span class="brand-name">AlphaVeda</span>
+    </a>
+    <div class="hdr-meta">
+      <span class="bdg bdg-v">v0.2 Design Review</span>
+      <span class="bdg bdg-ok">11 gaps closed</span>
+      <span class="bdg bdg-dt">2026-06-21</span>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tabs" role="tablist">
+  <div class="tabs-inner">
+    <button class="tab on" onclick="sw('decisions',this)" role="tab">Decisions</button>
+    <button class="tab" onclick="sw('schema',this)" role="tab">Schema</button>
+    <button class="tab" onclick="sw('accuracy',this)" role="tab">Accuracy Engine</button>
+    <button class="tab" onclick="sw('signals',this)" role="tab">Signal & Path</button>
+    <button class="tab" onclick="sw('quality',this)" role="tab">Quality</button>
+    <button class="tab" onclick="sw('trace',this)" role="tab">Trace Matrix</button>
+  </div>
+</nav>
+
+
+<!-- ════════════════════════════════════════ DECISIONS -->
+<div class="panel on" id="tab-decisions">
+  <div class="lbl">MVP Design v0.2</div>
+  <h1 class="h1">Locked Decisions</h1>
+  <p class="sub">Four decisions sealed by unanimous council vote. Not revisitable without full council re-convene.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n">7/7</div><div class="stat-l">Council unanimous</div></div>
+    <div class="stat"><div class="stat-n">3</div><div class="stat-l">Co-equal layers</div></div>
+    <div class="stat"><div class="stat-n">24</div><div class="stat-l">Accuracy segments</div></div>
+    <div class="stat"><div class="stat-n">₹7.25L</div><div class="stat-l">GSI equity corpus</div></div>
+  </div>
+
+  <div class="g2 mb24">
+    <div class="card">
+      <div class="lbl" style="margin-bottom:8px">Architecture</div>
+      <div class="h3">Option A — Standalone repo</div>
+      <p style="font-size:13.5px;color:var(--smoke);line-height:1.6;margin-bottom:12px">New GitHub repo separate from GSI. Shared Supabase project (ap-south-1), separate table namespaces. GSI continues independently.</p>
+      <span class="pill pill-g">✓ Locked</span>
+    </div>
+    <div class="card">
+      <div class="lbl" style="margin-bottom:8px">Feedback Loop</div>
+      <div class="h3">Option C — Dual compounding</div>
+      <p style="font-size:13.5px;color:var(--smoke);line-height:1.6;margin-bottom:12px">Rule-weighted accuracy + accumulated data depth both compound. Ledger fills segment by segment. Human approves weight proposals quarterly.</p>
+      <span class="pill pill-g">✓ 7/7 unanimous</span>
+    </div>
+    <div class="card">
+      <div class="lbl" style="margin-bottom:8px">MVP Scope</div>
+      <div class="h3">Approach 2 — Balanced MVP</div>
+      <p style="font-size:13.5px;color:var(--smoke);line-height:1.6;margin-bottom:12px">Data viewer + signal engine + path optimizer + 24-segment accuracy ledger active from Day 1 + auth + cloud deploy.</p>
+      <span class="pill pill-g">✓ 7/7 unanimous</span>
+    </div>
+    <div class="card-gold">
+      <div class="lbl" style="margin-bottom:8px;color:#8B6200">Product Definition</div>
+      <div class="h3" style="color:#5C3D00">Predictions + accuracy + data viewer</div>
+      <p style="font-size:13.5px;color:#7A5300;line-height:1.6;margin-bottom:12px">All three are co-equal. Not a data viewer that also predicts. Three equal pillars working together.</p>
+      <span class="pill pill-au">Tarun confirmed 2026-06-21</span>
+    </div>
+  </div>
+
+  <div class="h3 mt32">Five-Layer Architecture</div>
+  <div class="layers">
+    <div class="layer"><div class="l-num">L5</div><div class="l-body"><strong>Presentation — Streamlit</strong><span>Data viewer · Signal display + confidence · Path recommendations + Kelly sizing · 24-segment dashboard · SEBI disclaimer pinned (fixed-bottom HTML)</span></div></div>
+    <div class="l-arrow">↑ user interaction ↑</div>
+    <div class="layer"><div class="l-num">L4</div><div class="l-body"><strong>Path Optimizer</strong><span>Bucket-aware ranking · Quarter-Kelly position sizing · EXIT triggers E1–E4 · Sector cap 35% · Cash floor 10%</span></div></div>
+    <div class="layer"><div class="l-num">L3</div><div class="l-body"><strong>Signal Engine</strong><span>Directional signals BULL/BEAR · Confidence 0–100 · Every signal tagged: regime + Lynch class + cycle_phase · Logs to accuracy_predictions on every emit</span></div></div>
+    <div class="layer"><div class="l-num">L2</div><div class="l-body"><strong>Storage — Supabase cloud, ap-south-1, free tier</strong><span>6 core tables · 3 accuracy tables · 24-segment ledger · All accuracy rows: regime_tag + cycle_phase + streak_flag</span></div></div>
+    <div class="l-arrow">↑ outcomes feed back to ledger · weight proposals quarterly ↑</div>
+    <div class="layer"><div class="l-num">L1</div><div class="l-body"><strong>Data Quality</strong><span>Bhavcopy NSE/BSE · BSE Shareholding · BSE Financials XBRL · DataProvider ABC · CommercialLicenseError gate · Provenance on every row</span></div></div>
+  </div>
+
+  <div class="h3 mt32">6 Mandatory Accuracy Guards</div>
+  <div class="card">
+    <div class="guard"><div class="g-num">1</div><div class="g-body"><strong>Regime-segmented accuracy</strong><span>Weights adjust within RISK_ON/OFF/STAGFLATION/DEFLATION, never across regimes. Prevents cross-cycle weight contamination.</span></div></div>
+    <div class="guard"><div class="g-num">2</div><div class="g-body"><strong>Counter-cyclical weighting</strong><span>Accuracy streaks (N ≥ 5 consecutive correct) trigger skepticism via STREAK_DISCOUNT_FACTOR = 0.7. Prevents reflexivity at market peak.</span></div></div>
+    <div class="guard"><div class="g-num">3</div><div class="g-body"><strong>Fundamentals weight floor</strong><span>ROIC + FCF + promoter pledge combined weight never drops below FUNDAMENTAL_WEIGHT_FLOOR = 0.30 regardless of ledger score.</span></div></div>
+    <div class="guard"><div class="g-num">4</div><div class="g-body"><strong>24-segment accuracy ledger</strong><span>Lynch classification (6) × Dalio regime (4) = 24 independent segments. Fast Grower weights never bleed into Cyclical analysis.</span></div></div>
+    <div class="guard"><div class="g-num">5</div><div class="g-body"><strong>Magnitude + peak-return logging</strong><span>Signal quality = hit rate × magnitude factor. Prevents optimising for frequency instead of return capture.</span></div></div>
+    <div class="guard"><div class="g-num">6</div><div class="g-body"><strong>Quarterly human review gate</strong><span>Weight proposals generated automatically, never auto-applied. Tarun approves or rejects every quarter. Proposal banner in Streamlit UI.</span></div></div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ SCHEMA -->
+<div class="panel" id="tab-schema">
+  <div class="lbl">Data Model</div>
+  <h1 class="h1">9 Migrations</h1>
+  <p class="sub">All CHECK constraints and NOT NULL guards in schema from Day 1. Lynch classification is NOT NULL in instruments from G0. Amber border = accuracy tables.</p>
+
+  <div class="g3 mb24">
+    <div class="m-card"><div class="m-head"><span class="m-num">0001</span><span class="m-name">instruments</span></div><div class="m-body">
+      <div class="col"><span class="cn">id</span><span class="ct">SERIAL</span><span class="cpk">PK</span></div>
+      <div class="col"><span class="cn">ticker</span><span class="ct">VARCHAR(20)</span><span class="cc">UNIQUE NOT NULL</span></div>
+      <div class="col"><span class="cn">classification</span><span class="ct">VARCHAR(20)</span><span class="cc">CHECK 6 values</span></div>
+      <div class="col"><span class="cn">exchange</span><span class="ct">VARCHAR(10)</span><span class="cc">NSE|BSE</span></div>
+      <div class="col"><span class="cn">sector, isin, is_active</span><span class="ct">—</span></div>
+    </div></div>
+
+    <div class="m-card"><div class="m-head"><span class="m-num">0002</span><span class="m-name">ohlcv</span></div><div class="m-body">
+      <div class="col"><span class="cn">instrument_id</span><span class="ct">INT FK</span></div>
+      <div class="col"><span class="cn">trade_date</span><span class="ct">DATE</span><span class="cc">NOT NULL</span></div>
+      <div class="col"><span class="cn">open/high/low/close</span><span class="ct">NUMERIC</span><span class="cc">NOT NULL</span></div>
+      <div class="col"><span class="cn">source</span><span class="ct">VARCHAR(50)</span><span class="cc">NOT NULL</span></div>
+      <div class="col"><span class="cn">UNIQUE</span><span class="ct">instrument_id + date</span></div>
+    </div></div>
+
+    <div class="m-card"><div class="m-head"><span class="m-num">0003</span><span class="m-name">fundamentals</span></div><div class="m-body">
+      <div class="col"><span class="cn">period_end</span><span class="ct">DATE</span><span class="cc">NOT NULL</span></div>
+      <div class="col"><span class="cn">roic_pct, fcf_cr</span><span class="ct">NUMERIC</span></div>
+      <div class="col"><span class="cn">promoter_pledge_pct</span><span class="ct">NUMERIC(5,2)</span></div>
+      <div class="col"><span class="cn">source</span><span class="ct">VARCHAR(50)</span><span class="cc">NOT NULL</span></div>
+      <div class="col"><span class="cn">eps, revenue_cr, d/e</span><span class="ct">—</span></div>
+    </div></div>
+
+    <div class="m-card"><div class="m-head"><span class="m-num">0004</span><span class="m-name">macro_regime</span></div><div class="m-body">
+      <div class="col"><span class="cn">regime_date</span><span class="ct">DATE</span><span class="cc">UNIQUE</span></div>
+      <div class="col"><span class="cn">regime</span><span class="ct">VARCHAR(20)</span><span class="cc">CHECK 4 regimes</span></div>
+      <div class="col"><span class="cn">rbi_rate, usd_inr</span><span class="ct">NUMERIC</span></div>
+      <div class="col"><span class="cn">nifty_vix</span><span class="ct">NUMERIC(6,2)</span></div>
+      <div class="col"><span class="cn">fii_flow_cr</span><span class="ct">NUMERIC(12,2)</span></div>
+    </div></div>
+
+    <div class="m-card"><div class="m-head"><span class="m-num">0005</span><span class="m-name">portfolio_buckets</span></div><div class="m-body">
+      <div class="col"><span class="cn">bucket_name</span><span class="ct">VARCHAR(50)</span><span class="cc">CHECK 4 buckets</span></div>
+      <div class="col"><span class="cn">target_value_inr</span><span class="ct">NUMERIC</span></div>
+      <div class="col"><span class="cn">max_position_pct</span><span class="ct">default 10.0</span></div>
+      <div class="col"><span class="cn">sector_cap_pct</span><span class="ct">default 35.0</span></div>
+      <div class="col"><span class="cn">cash_floor_pct</span><span class="ct">default 10.0</span></div>
+    </div></div>
+
+    <div class="m-card"><div class="m-head"><span class="m-num">0006</span><span class="m-name">trade_outcomes</span></div><div class="m-body">
+      <div class="col"><span class="cn">instrument_id</span><span class="ct">FK</span></div>
+      <div class="col"><span class="cn">bucket_id</span><span class="ct">FK</span></div>
+      <div class="col"><span class="cn">entry_date, entry_price</span><span class="ct">NOT NULL</span></div>
+      <div class="col"><span class="cn">exit_date, exit_price</span><span class="ct">nullable</span></div>
+      <div class="col"><span class="cn">return_pct</span><span class="ct">populated on exit</span></div>
+    </div></div>
+
+    <div class="m-card acc"><div class="m-head"><span class="m-num">0007</span><span class="m-name">accuracy_predictions</span><span class="pill pill-au" style="margin-left:auto">Accuracy</span></div><div class="m-body">
+      <div class="col"><span class="cn">direction</span><span class="ct">VARCHAR(5)</span><span class="cc">BULL|BEAR</span></div>
+      <div class="col"><span class="cn">regime_tag</span><span class="ct">NOT NULL</span><span class="cc">FK→macro_regime</span></div>
+      <div class="col"><span class="cn">lynch_class</span><span class="ct">VARCHAR(20)</span><span class="cc">CHECK 6 values</span></div>
+      <div class="col"><span class="cn">cycle_phase</span><span class="ct">VARCHAR(20)</span><span class="cc">CHECK 6 phases</span></div>
+      <div class="col"><span class="cn">accuracy_streak_flag</span><span class="ct">BOOLEAN</span><span class="cc">NOT NULL</span></div>
+    </div></div>
+
+    <div class="m-card acc"><div class="m-head"><span class="m-num">0008</span><span class="m-name">accuracy_outcomes</span><span class="pill pill-au" style="margin-left:auto">Accuracy</span></div><div class="m-body">
+      <div class="col"><span class="cn">prediction_id</span><span class="ct">FK NOT NULL</span></div>
+      <div class="col"><span class="cn">actual_direction</span><span class="ct">BULL|BEAR</span></div>
+      <div class="col"><span class="cn">actual_return</span><span class="ct">NUMERIC(8,4)</span></div>
+      <div class="col"><span class="cn">peak_return_pct</span><span class="ct">NUMERIC(8,4)</span></div>
+      <div class="col"><span class="cn">is_correct</span><span class="ct">BOOLEAN NOT NULL</span></div>
+    </div></div>
+
+    <div class="m-card acc"><div class="m-head"><span class="m-num">0009</span><span class="m-name">signal_weights</span><span class="pill pill-au" style="margin-left:auto">Accuracy</span></div><div class="m-body">
+      <div class="col"><span class="cn">lynch_class, regime</span><span class="ct">segment key</span></div>
+      <div class="col"><span class="cn">signal_name</span><span class="ct">VARCHAR(50)</span></div>
+      <div class="col"><span class="cn">weight</span><span class="ct">NUMERIC(5,4)</span></div>
+      <div class="col"><span class="cn">status</span><span class="ct">ACTIVE|PROPOSED|REJECTED</span></div>
+      <div class="col"><span class="cn">approved_by</span><span class="ct">'tarun' when approved</span></div>
+    </div></div>
+  </div>
+
+  <div class="card-gold">
+    <div class="lbl" style="color:#8B6200;margin-bottom:8px">Additional — Commercial Intelligence</div>
+    <div class="h3" style="color:#5C3D00">waitlist</div>
+    <div class="g2 mt16">
+      <div>
+        <div class="col"><span class="cn">email</span><span class="ct">UNIQUE NOT NULL</span></div>
+        <div class="col"><span class="cn">signed_up_at</span><span class="ct">TIMESTAMPTZ</span></div>
+        <div class="col"><span class="cn">converted_at</span><span class="ct">nullable</span></div>
+      </div>
+      <div>
+        <div class="col"><span class="cn">price_feedback</span><span class="ct">VARCHAR(20)</span><span class="cc">too_high|fair|too_low</span></div>
+        <div class="col"><span class="cn">referred_by</span><span class="ct">VARCHAR(200)</span></div>
+        <div class="col"><span class="cn">name</span><span class="ct">nullable</span></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#8B6200;margin-top:12px">price_feedback + referred_by are commercial intelligence. Added from Day 1 — no later migration needed.</p>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ ACCURACY ENGINE -->
+<div class="panel" id="tab-accuracy">
+  <div class="lbl">Accuracy Engine</div>
+  <h1 class="h1">The 24-Segment Ledger</h1>
+  <p class="sub">6 Lynch classifications × 4 Dalio regimes = 24 independent segments. Day 1: all cells are in PRIOR state. Each segment activates independently when N ≥ 30 observations. Hover a cell to see prior weights.</p>
+
+  <div class="card mt24" style="padding:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="lbl" style="margin-bottom:0">Day 1 — Cold Start</div>
+        <span style="font-size:13px;color:var(--smoke)">All 24 segments showing Bayesian priors from constants.py · 0 / 24 active</span>
+      </div>
+      <span class="pill pill-au">0 / 24 ACTIVE</span>
+    </div>
+
+    <div class="seg-wrap">
+      <div class="seg-grid">
+        <div class="seg-corner"></div>
+        <div class="seg-ch">RISK_ON<small>Growth, low inflation</small></div>
+        <div class="seg-ch">RISK_OFF<small>Contraction</small></div>
+        <div class="seg-ch">STAGFLATION<small>Growth↓ Inflation↑</small></div>
+        <div class="seg-ch">DEFLATION<small>Growth↓ Prices↓</small></div>
+
+        <!-- Fast Grower -->
+        <div class="seg-rh"><strong>Fast Grower</strong><small>EPS CAGR &gt;20%</small></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.30</strong></div><div class="tt"><span>eps_growth</span><strong>0.25</strong></div><div class="tt"><span>peg</span><strong>0.20</strong></div><div class="tt"><span>momentum</span><strong>0.15</strong></div><div class="tt"><span>pledge</span><strong>0.10</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.30</strong></div><div class="tt"><span>eps_growth</span><strong>0.25</strong></div><div class="tt"><span>peg</span><strong>0.20</strong></div><div class="tt"><span>momentum</span><strong>0.15</strong></div><div class="tt"><span>pledge</span><strong>0.10</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.30</strong></div><div class="tt"><span>eps_growth</span><strong>0.25</strong></div><div class="tt"><span>peg</span><strong>0.20</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.30</strong></div><div class="tt"><span>eps_growth</span><strong>0.25</strong></div><div class="tt"><span>peg</span><strong>0.20</strong></div></div></div>
+
+        <!-- Stalwart -->
+        <div class="seg-rh"><strong>Stalwart</strong><small>Steady 10–15% EPS</small></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.35</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div><div class="tt"><span>eps_growth</span><strong>0.15</strong></div><div class="tt"><span>momentum</span><strong>0.15</strong></div><div class="tt"><span>pledge</span><strong>0.10</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.35</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div><div class="tt"><span>momentum</span><strong>0.15</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.35</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div><div class="tt"><span>momentum</span><strong>0.15</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.35</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div></div></div>
+
+        <!-- Slow Grower -->
+        <div class="seg-rh"><strong>Slow Grower</strong><small>Dividend, low EPS</small></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.35</strong></div><div class="tt"><span>dividend</span><strong>0.25</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div><div class="tt"><span>pledge</span><strong>0.15</strong></div><div class="tt"><span>momentum</span><strong>0.05</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.35</strong></div><div class="tt"><span>dividend</span><strong>0.25</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.35</strong></div><div class="tt"><span>dividend</span><strong>0.25</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.35</strong></div><div class="tt"><span>dividend</span><strong>0.25</strong></div></div></div>
+
+        <!-- Cyclical -->
+        <div class="seg-rh"><strong>Cyclical</strong><small>Macro-driven demand</small></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>macro_regime</span><strong>0.35</strong></div><div class="tt"><span>momentum</span><strong>0.25</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div><div class="tt"><span>pledge</span><strong>0.10</strong></div><div class="tt"><span>fcf</span><strong>0.10</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>macro_regime</span><strong>0.35</strong></div><div class="tt"><span>momentum</span><strong>0.25</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>macro_regime</span><strong>0.35</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>macro_regime</span><strong>0.35</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div></div></div>
+
+        <!-- Turnaround -->
+        <div class="seg-rh"><strong>Turnaround</strong><small>Distressed recovery</small></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.30</strong></div><div class="tt"><span>debt_equity</span><strong>0.25</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div><div class="tt"><span>pledge</span><strong>0.15</strong></div><div class="tt"><span>momentum</span><strong>0.10</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.30</strong></div><div class="tt"><span>debt_equity</span><strong>0.25</strong></div><div class="tt"><span>roic</span><strong>0.20</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.30</strong></div><div class="tt"><span>debt_equity</span><strong>0.25</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>fcf</span><strong>0.30</strong></div><div class="tt"><span>debt_equity</span><strong>0.25</strong></div></div></div>
+
+        <!-- Asset Play -->
+        <div class="seg-rh"><strong>Asset Play</strong><small>Undervalued assets</small></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.25</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div><div class="tt"><span>book_value</span><strong>0.25</strong></div><div class="tt"><span>pledge</span><strong>0.15</strong></div><div class="tt"><span>momentum</span><strong>0.10</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.25</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div><div class="tt"><span>book_value</span><strong>0.25</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.25</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div><div class="tt"><span>book_value</span><strong>0.25</strong></div></div></div>
+        <div class="seg-cell"><div class="seg-obs"><strong>0</strong>/30 obs</div><div class="seg-bar"><div class="seg-fill"></div></div><span class="seg-bdg">PRIOR</span><div class="seg-tip"><div class="tt"><span>roic</span><strong>0.25</strong></div><div class="tt"><span>fcf</span><strong>0.25</strong></div><div class="tt"><span>book_value</span><strong>0.25</strong></div></div></div>
+      </div>
+    </div>
+    <p class="seg-note">FUNDAMENTAL_WEIGHT_FLOOR = 0.30 &nbsp;·&nbsp; OBSERVATION_THRESHOLD = 30 &nbsp;·&nbsp; STREAK_WINDOW = 5 &nbsp;·&nbsp; STREAK_DISCOUNT_FACTOR = 0.7</p>
+  </div>
+
+  <div class="h3 mt40">cycle_phase Derivation — <code style="font-size:13px">src/accuracy/cycle_phase.py</code></div>
+  <div class="code">
+    <code><span class="c-cm"># Derived at signal emit time. Inputs: regime + Nifty 200-day MA + VIX.</span>
+<span class="c-kw">PHASE_RULES</span> = [
+    <span class="c-cm"># (regime,        above_200ma, vix_low,  phase)</span>
+    (<span class="c-s">'RISK_ON'</span>,     <span class="c-kw">True</span>,  <span class="c-kw">True</span>,  <span class="c-s">'mid_bull'</span>),
+    (<span class="c-s">'RISK_ON'</span>,     <span class="c-kw">True</span>,  <span class="c-kw">False</span>, <span class="c-s">'late_bull'</span>),   <span class="c-cm"># high VIX in uptrend = late cycle</span>
+    (<span class="c-s">'RISK_ON'</span>,     <span class="c-kw">False</span>, <span class="c-kw">True</span>,  <span class="c-s">'early_bull'</span>),
+    (<span class="c-s">'RISK_OFF'</span>,    <span class="c-kw">False</span>, <span class="c-kw">False</span>, <span class="c-s">'mid_bear'</span>),
+    (<span class="c-s">'RISK_OFF'</span>,    <span class="c-kw">False</span>, <span class="c-kw">True</span>,  <span class="c-s">'late_bear'</span>),   <span class="c-cm"># low VIX in downtrend = exhaustion</span>
+    (<span class="c-s">'RISK_OFF'</span>,    <span class="c-kw">True</span>,  <span class="c-kw">False</span>, <span class="c-s">'early_bear'</span>),
+    (<span class="c-s">'STAGFLATION'</span>, <span class="c-kw">True</span>,  <span class="c-kw">False</span>, <span class="c-s">'late_bull'</span>),
+    (<span class="c-s">'DEFLATION'</span>,   <span class="c-kw">False</span>, <span class="c-kw">True</span>,  <span class="c-s">'late_bear'</span>),
+]
+<span class="c-k">VIX_CALM_THRESHOLD</span> = <span class="c-n">18.0</span>   <span class="c-cm"># constant in constants.py</span></code>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ SIGNAL & PATH -->
+<div class="panel" id="tab-signals">
+  <div class="lbl">Signal Engine + Path Optimizer</div>
+  <h1 class="h1">Constants & Controls</h1>
+  <p class="sub">Every council decision is a named constant. No magic numbers in application code. FUNDAMENTAL_WEIGHT_FLOOR applies to cold-start priors too.</p>
+
+  <div class="h3">constants.py</div>
+  <div class="code mb24">
+    <code><span class="c-cm"># Fundamentals guard — cannot be overridden by ledger regardless of segment accuracy</span>
+<span class="c-k">FUNDAMENTAL_WEIGHT_FLOOR</span> = <span class="c-n">0.30</span>
+
+<span class="c-cm"># Counter-cyclical guard (Soros)</span>
+<span class="c-k">STREAK_WINDOW</span>           = <span class="c-n">5</span>      <span class="c-cm"># N consecutive correct → flag</span>
+<span class="c-k">STREAK_DISCOUNT_FACTOR</span>  = <span class="c-n">0.7</span>
+
+<span class="c-cm"># Accuracy ledger</span>
+<span class="c-k">OBSERVATION_THRESHOLD</span>   = <span class="c-n">30</span>     <span class="c-cm"># observations before weight proposal</span>
+<span class="c-k">PROPOSAL_MIN_DELTA</span>      = <span class="c-n">0.03</span>   <span class="c-cm"># only propose if weight changes ≥3%</span>
+
+<span class="c-cm"># Position sizing</span>
+<span class="c-k">PORTFOLIO_VALUE</span>         = <span class="c-n">725000</span>  <span class="c-cm"># ₹7.25L GSI equity tranche</span>
+<span class="c-k">MAX_POSITION_PCT</span>        = <span class="c-n">0.10</span>    <span class="c-cm"># ₹72,500</span>
+<span class="c-k">MIN_POSITION_PCT</span>        = <span class="c-n">0.01</span>    <span class="c-cm"># ₹7,250</span>
+<span class="c-k">SECTOR_CAP_PCT</span>          = <span class="c-n">0.35</span>
+<span class="c-k">CASH_FLOOR_PCT</span>          = <span class="c-n">0.10</span>
+
+<span class="c-cm"># Cold-start Bayesian priors — Day 1 empty ledger (Synthesis Chair gap closed)</span>
+<span class="c-k">COLD_START_WEIGHTS</span>: dict = {
+    <span class="c-s">'fast_grower'</span>:  {<span class="c-s">'roic'</span>: <span class="c-n">0.30</span>, <span class="c-s">'eps_growth'</span>: <span class="c-n">0.25</span>, <span class="c-s">'peg'</span>: <span class="c-n">0.20</span>, <span class="c-s">'momentum'</span>: <span class="c-n">0.15</span>, <span class="c-s">'pledge'</span>: <span class="c-n">0.10</span>},
+    <span class="c-s">'stalwart'</span>:    {<span class="c-s">'roic'</span>: <span class="c-n">0.35</span>, <span class="c-s">'fcf'</span>: <span class="c-n">0.25</span>, <span class="c-s">'eps_growth'</span>: <span class="c-n">0.15</span>, <span class="c-s">'momentum'</span>: <span class="c-n">0.15</span>, <span class="c-s">'pledge'</span>: <span class="c-n">0.10</span>},
+    <span class="c-s">'slow_grower'</span>:  {<span class="c-s">'fcf'</span>: <span class="c-n">0.35</span>, <span class="c-s">'dividend'</span>: <span class="c-n">0.25</span>, <span class="c-s">'roic'</span>: <span class="c-n">0.20</span>, <span class="c-s">'pledge'</span>: <span class="c-n">0.15</span>, <span class="c-s">'momentum'</span>: <span class="c-n">0.05</span>},
+    <span class="c-s">'cyclical'</span>:    {<span class="c-s">'macro_regime'</span>: <span class="c-n">0.35</span>, <span class="c-s">'momentum'</span>: <span class="c-n">0.25</span>, <span class="c-s">'roic'</span>: <span class="c-n">0.20</span>, <span class="c-s">'pledge'</span>: <span class="c-n">0.10</span>, <span class="c-s">'fcf'</span>: <span class="c-n">0.10</span>},
+    <span class="c-s">'turnaround'</span>:  {<span class="c-s">'fcf'</span>: <span class="c-n">0.30</span>, <span class="c-s">'debt_equity'</span>: <span class="c-n">0.25</span>, <span class="c-s">'roic'</span>: <span class="c-n">0.20</span>, <span class="c-s">'pledge'</span>: <span class="c-n">0.15</span>, <span class="c-s">'momentum'</span>: <span class="c-n">0.10</span>},
+    <span class="c-s">'asset_play'</span>:  {<span class="c-s">'roic'</span>: <span class="c-n">0.25</span>, <span class="c-s">'fcf'</span>: <span class="c-n">0.25</span>, <span class="c-s">'book_value'</span>: <span class="c-n">0.25</span>, <span class="c-s">'pledge'</span>: <span class="c-n">0.15</span>, <span class="c-s">'momentum'</span>: <span class="c-n">0.10</span>},
+}
+<span class="c-cm"># All sums to 1.0 per class. FUNDAMENTAL_WEIGHT_FLOOR applies to priors too.</span>
+<span class="c-cm"># Each segment replaced independently when N ≥ 30 observations.</span></code>
+  </div>
+
+  <div class="h3 mt32">EXIT Trigger Conditions — path optimizer</div>
+  <p style="font-size:13.5px;color:var(--smoke);margin-bottom:16px">All four conditions log to trade_outcomes.exit_trigger (E1–E4). E2 requires 3 consecutive BEAR emits — not a single flip.</p>
+  <div class="exits mb24">
+    <div class="exit"><div class="e-id">E1</div><div class="e-body"><strong>Position drift outside Kelly band</strong><span>current_value &gt; max_position × 1.1 or &lt; min_position × 0.9 → Rebalance</span></div></div>
+    <div class="exit"><div class="e-id">E2</div><div class="e-body"><strong>Signal direction reversal — 3× confirmed</strong><span>BULL → BEAR on 3 consecutive emits for same instrument → Exit (reversal confirmed, not noise)</span></div></div>
+    <div class="exit"><div class="e-id">E3</div><div class="e-body"><strong>Insufficient edge</strong><span>magnitude_target drops below 3% → signal no longer asymmetric enough to hold</span></div></div>
+    <div class="exit"><div class="e-id">E4</div><div class="e-body"><strong>Sector cap breach</strong><span>Holding or adding would push sector allocation above 35% for the bucket → Exit or block</span></div></div>
+  </div>
+
+  <div class="kelly">
+    <div class="kelly-f"><em>f*</em> = ( <em>p</em> − q ÷ b ) × <em>¼</em></div>
+    <div class="kelly-sub">
+      Quarter-Kelly position sizing &nbsp;·&nbsp; p = confidence / 100 &nbsp;·&nbsp; q = 1 − p &nbsp;·&nbsp; b = magnitude_target (floor 5%)<br>
+      Position clamped: max( ₹7,250 , min( ₹72,500 , portfolio_value × f* ) )
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ QUALITY -->
+<div class="panel" id="tab-quality">
+  <div class="lbl">Quality Standards</div>
+  <h1 class="h1">Tests, Ingest & Rules</h1>
+  <p class="sub">G0 exit gate: 6 smoke tests pass. G1 exit gate: full regression suite. Every critical path has a named test.</p>
+
+  <table class="cov mb24">
+    <thead><tr><th>Layer / File</th><th>Tests</th><th>What is tested</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Migrations (9)</td><td>9</td><td>Table exists, key columns present, CHECK constraints reject invalid values</td><td><span class="cov-ok">100%</span></td></tr>
+      <tr><td>cycle_phase.py</td><td>10</td><td>All PHASE_RULES entries produce expected output for regime × MA × VIX combinations</td><td><span class="cov-ok">100%</span></td></tr>
+      <tr><td>constants.py</td><td>3</td><td>FUNDAMENTAL_WEIGHT_FLOOR enforced · COLD_START_WEIGHTS sum to 1.0 per class · SEBI_DISCLAIMER non-empty</td><td><span class="cov-ok">100%</span></td></tr>
+      <tr><td>signal engine</td><td>5</td><td>Cold-start fallback path · streak flag fires at N=5 · regime cached · floor applied · prediction logged on every emit</td><td><span class="cov-ok">100% critical</span></td></tr>
+      <tr><td>path optimizer</td><td>4</td><td>All 4 EXIT conditions trigger correctly · Kelly size within min/max bounds</td><td><span class="cov-ok">100%</span></td></tr>
+      <tr><td>outcome resolution</td><td>3</td><td>Correct/incorrect outcome logged · peak_return_pct logged · streak_flag updated after N window</td><td><span class="cov-ok">100%</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="g2">
+    <div class="card">
+      <div class="h3">Async Ingest Architecture</div>
+      <p style="font-size:13.5px;color:var(--smoke);margin-bottom:14px">Ingest scripts are separate GHA cron jobs — not blocking app startup. App starts in &lt;3s. Supabase connection is a module-level singleton.</p>
+      <div class="code">
+        <code><span class="c-cm"># src/config.py — singleton pattern</span>
+<span class="c-k">_supabase</span> = <span class="c-kw">None</span>
+
+<span class="c-kw">def</span> get_supabase_client():
+    <span class="c-kw">global</span> _supabase
+    <span class="c-kw">if</span> _supabase <span class="c-kw">is None</span>:
+        _supabase = create_client(URL, KEY)
+    <span class="c-kw">return</span> _supabase
+
+<span class="c-cm"># ingest_status table tracks run health</span>
+<span class="c-cm"># data_viewer shows STALE badge if</span>
+<span class="c-cm"># last ingest > 1 trading day ago</span></code>
+      </div>
+    </div>
+    <div class="card">
+      <div class="h3">.claude/rules/ Directory</div>
+      <p style="font-size:13.5px;color:var(--smoke);margin-bottom:14px">Three rule files committed at G0. Referenced by CLAUDE.md include directive — enforced in every Claude session in the repo.</p>
+      <div class="code">
+        <code>alphaveda/.claude/rules/
+│
+├── <span class="c-s">SEBI_COMPLIANCE.md</span>
+│   <span class="c-cm"># disclaimer pinned on every page</span>
+│   <span class="c-cm"># no RIA advisory content</span>
+│
+├── <span class="c-s">COMMERCIAL_GATE.md</span>
+│   <span class="c-cm"># CommercialLicenseError rules</span>
+│   <span class="c-cm"># yfinance blocked in prod</span>
+│
+└── <span class="c-s">DATA_SOURCES.md</span>
+    <span class="c-cm"># BSE stack = default (₹0)</span>
+    <span class="c-cm"># FMP at first non-self subscriber</span></code>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════ TRACE MATRIX -->
+<div class="panel" id="tab-trace">
+  <div class="lbl">Condition-to-Artifact Trace Matrix</div>
+  <h1 class="h1">13 Conditions — All Closed</h1>
+  <p class="sub">Permanent fix for council gap accumulation. Every condition maps to a file, a named artifact, and a test. If any row has no artifact, implementation cannot begin. Section 9 of the design doc.</p>
+
+  <div style="overflow-x:auto">
+    <table class="trace-tbl">
+      <thead>
+        <tr><th>#</th><th>Seat</th><th>File</th><th>Artifact</th><th>Condition</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="t-id">C1</td><td class="t-seat">Buffett</td><td class="t-file">constants.py</td><td class="t-art">FUNDAMENTAL_WEIGHT_FLOOR = 0.30</td><td>Fundamentals weight floor enforced, cannot be overridden</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C2</td><td class="t-seat">Munger</td><td class="t-file">pages/signals.py</td><td class="t-art">Warning banner on PROPOSED count &gt; 0</td><td>Quarterly review notification mechanism in UI</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C3</td><td class="t-seat">Dalio</td><td class="t-file">src/config.py</td><td class="t-art">get_current_regime() singleton, 24h cache</td><td>Regime-read at startup + 24h refresh, not per-emit</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C4</td><td class="t-seat">Druckenmiller</td><td class="t-file">src/portfolio/optimizer.py</td><td class="t-art">E1–E4 trigger table + emit_exit()</td><td>EXIT trigger conditions defined (all 4 cases)</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C5</td><td class="t-seat">Marks</td><td class="t-file">src/accuracy/cycle_phase.py</td><td class="t-art">derive_cycle_phase() + PHASE_RULES list</td><td>cycle_phase derivation module in repo structure</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C6</td><td class="t-seat">Soros</td><td class="t-file">constants.py + ledger.py</td><td class="t-art">STREAK_WINDOW=5, compute_streak_flag()</td><td>Streak detection N + STREAK_DISCOUNT_FACTOR defined</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C7</td><td class="t-seat">Lynch</td><td class="t-file">migrations/0001_instruments.sql</td><td class="t-art">CHECK (classification IN (6 values))</td><td>Lynch classification CHECK constraint explicit in migration</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C8</td><td class="t-seat">Reliability</td><td class="t-file">src/config.py · scripts/ · pages/</td><td class="t-art">ingest_status table + singleton + staleness badge</td><td>Async startup ingest + connection singleton + error surfacing</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C9</td><td class="t-seat">Constraint</td><td class="t-file">app.py · .claude/rules/</td><td class="t-art">Fixed-bottom SEBI HTML + 3 rule files</td><td>SEBI disclaimer pinned (not scrollable) + rules directory</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C10</td><td class="t-seat">Revenue</td><td class="t-file">migrations/waitlist.sql</td><td class="t-art">price_feedback CHECK + referred_by VARCHAR</td><td>Waitlist commercial intelligence columns from Day 1</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C11</td><td class="t-seat">Synthesis</td><td class="t-file">constants.py</td><td class="t-art">COLD_START_WEIGHTS dict (6 classes)</td><td>Cold-start Bayesian prior for Day 1 empty ledger</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C12</td><td class="t-seat">Dalio (schema)</td><td class="t-file">migrations/0007_accuracy_predictions.sql</td><td class="t-art">regime_tag NOT NULL column</td><td>Regime tag on every accuracy_predictions row, populated at insert</td><td><span class="t-ok">✓ closed</span></td></tr>
+        <tr><td class="t-id">C13</td><td class="t-seat">Marks (schema)</td><td class="t-file">migrations/0007_accuracy_predictions.sql</td><td class="t-art">cycle_phase NOT NULL CHECK column</td><td>cycle_phase in accuracy ledger schema from Day 1</td><td><span class="t-ok">✓ closed</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Review Gate -->
+  <div class="rgw">
+    <div class="rg-title">Review Gate</div>
+    <p class="rg-sub">Four questions before writing-plans can begin. Select a response — if any needs revision, CoS amends the spec before G0 starts.</p>
+
+    <div class="rq">
+      <div class="rq-q">1. All 9 migrations acceptable as specified?</div>
+      <div class="rq-opts">
+        <button class="rq-opt" onclick="pick(this)">✓ All good — proceed</button>
+        <button class="rq-opt" onclick="pick(this)">Revise waitlist columns</button>
+        <button class="rq-opt" onclick="pick(this)">Revise accuracy schema</button>
+        <button class="rq-opt" onclick="pick(this)">Revise a core migration</button>
+      </div>
+    </div>
+
+    <div class="rq">
+      <div class="rq-q">2. COLD_START_WEIGHTS ratios acceptable? (cyclical at 0.35 macro_regime, stalwart at 0.35 roic)</div>
+      <div class="rq-opts">
+        <button class="rq-opt" onclick="pick(this)">✓ Ratios look right</button>
+        <button class="rq-opt" onclick="pick(this)">Adjust fast_grower weights</button>
+        <button class="rq-opt" onclick="pick(this)">Adjust cyclical weights</button>
+        <button class="rq-opt" onclick="pick(this)">Need to review each class</button>
+      </div>
+    </div>
+
+    <div class="rq">
+      <div class="rq-q">3. EXIT trigger E2 threshold — 3 consecutive BEAR emits — right sensitivity?</div>
+      <div class="rq-opts">
+        <button class="rq-opt" onclick="pick(this)">✓ 3 is correct</button>
+        <button class="rq-opt" onclick="pick(this)">Too fast — use 5</button>
+        <button class="rq-opt" onclick="pick(this)">Too slow — use 2</button>
+      </div>
+    </div>
+
+    <div class="rq">
+      <div class="rq-q">4. Review notification — Streamlit banner when PROPOSED count &gt; 0 — sufficient for quarterly gate?</div>
+      <div class="rq-opts">
+        <button class="rq-opt" onclick="pick(this)">✓ Banner is enough</button>
+        <button class="rq-opt" onclick="pick(this)">Add email notification too</button>
+        <button class="rq-opt" onclick="pick(this)">Needs a separate review page</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function sw(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('tab-' + id).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function pick(btn) {
+  btn.closest('.rq-opts').querySelectorAll('.rq-opt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
