@@ -1,6 +1,6 @@
 # AlphaVeda MVP Design
 **Date:** 2026-06-21  
-**Status:** READY FOR USER REVIEW — Sections 1–9 complete; all 11 council gaps closed  
+**Status:** v0.3 — AMENDED POST-COUNCIL — Review gate answered; 4 migration fixes + E2 revision applied  
 **Author:** CoS (Claude Sonnet 4.6) + Tarun Kochhar  
 **Brainstorming session:** 2026-06-21, chief-of-staff + panel-convene workflow
 
@@ -262,9 +262,9 @@ CREATE TABLE fundamentals (
 CREATE TABLE macro_regime (
   id          SERIAL PRIMARY KEY,
   regime_date DATE NOT NULL UNIQUE,
-  regime      VARCHAR(20) NOT NULL CHECK (
+  regime      VARCHAR(20) NOT NULL UNIQUE CHECK (
     regime IN ('RISK_ON','RISK_OFF','STAGFLATION','DEFLATION')
-  ),
+  ),                          -- UNIQUE required: accuracy_predictions.regime_tag FK references this column
   rbi_rate    NUMERIC(4,2),
   usd_inr     NUMERIC(8,2),
   nifty_vix   NUMERIC(6,2),
@@ -309,7 +309,8 @@ CREATE TABLE trade_outcomes (
   exit_price      NUMERIC(12,2),
   position_value  NUMERIC(12,2) NOT NULL,
   return_pct      NUMERIC(8,4),          -- populated on exit
-  notes           TEXT
+  notes           TEXT,
+  exit_trigger    CHAR(2) CHECK (exit_trigger IN ('E1','E2','E3','E4'))  -- populated on EXIT signals; NULL for HOLD/BUY
 );
 ```
 
@@ -334,8 +335,8 @@ CREATE TABLE accuracy_predictions (
     cycle_phase IN ('early_bull','mid_bull','late_bull',
                     'early_bear','mid_bear','late_bear')
   ),
-  accuracy_streak_flag BOOLEAN NOT NULL DEFAULT false,
-  outcome_id          BIGINT REFERENCES accuracy_outcomes(id)  -- back-filled on resolution
+  accuracy_streak_flag BOOLEAN NOT NULL DEFAULT false
+  -- outcome_id added in 0008 via ALTER TABLE (circular FK: accuracy_outcomes doesn't exist yet at 0007 run time)
 );
 ```
 
@@ -351,6 +352,10 @@ CREATE TABLE accuracy_outcomes (
   is_correct       BOOLEAN NOT NULL,
   resolved_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Resolve circular FK: accuracy_predictions.outcome_id couldn't reference this table at 0007 run time
+ALTER TABLE accuracy_predictions
+  ADD COLUMN outcome_id BIGINT REFERENCES accuracy_outcomes(id);
 ```
 
 **0009_signal_weights.sql**
@@ -367,6 +372,18 @@ CREATE TABLE signal_weights (
   approved_by     TEXT,                  -- 'tarun' when human-approved
   observation_n   INT,                   -- how many outcomes drove this proposal
   UNIQUE (lynch_class, regime, signal_name, status)
+);
+```
+
+**0010_ingest_status.sql**
+```sql
+CREATE TABLE ingest_status (
+  id          SERIAL PRIMARY KEY,
+  script_name VARCHAR(100) NOT NULL,
+  run_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  status      VARCHAR(10) NOT NULL CHECK (status IN ('OK','FAILED','PARTIAL')),
+  error_msg   TEXT,
+  rows_written INT
 );
 ```
 
@@ -545,6 +562,14 @@ SEBI_DISCLAIMER = (
     "investment advisor before making any investment decision."
 )
 
+# EXIT trigger E2 — bucket-aware consecutive threshold + confidence floor
+E2_CONSECUTIVE_THRESHOLD: dict[str, int] = {
+    'near_term':   3,
+    'medium_term': 5,
+    'long_term':   7,
+}
+E2_CONFIDENCE_FLOOR = 50   # emits below this confidence do not count toward E2 streak
+
 # Cold-start weights (Gap 11 — Bayesian priors for Day 1)
 COLD_START_WEIGHTS: dict[str, dict[str, float]] = {
     'fast_grower':  {'roic': 0.30, 'eps_growth': 0.25, 'peg': 0.20, 'momentum_rsi': 0.15, 'pledge': 0.10},
@@ -615,6 +640,31 @@ if proposed.data:
 
 This is a passive notification banner — it does not auto-apply anything. Human review remains the gate.
 
+The same banner runs in `pages/path.py` (top of page, before recommendation list) — Tarun may navigate directly to the Path page without visiting Signals:
+
+```python
+proposed = db.table('signal_weights').select('id').eq('status','PROPOSED').execute()
+if proposed.data:
+    st.warning(
+        f"⚠ {len(proposed.data)} signal weight proposal(s) awaiting review. "
+        "Accuracy tab → Weight Proposals.",
+        icon="🔔"
+    )
+```
+
+### Weight review process (`WEIGHT_REVIEW_PROCESS.md`)
+
+Committed to repo root at G0. Content:
+
+- **Cadence:** Quarterly (every ~90 days)
+- **Reviewer:** Tarun Kochhar
+- **Trigger:** Any `signal_weights` row with `status = 'PROPOSED'` and `observation_n ≥ 30`
+- **Staleness backstop:** If oldest PROPOSED row age > 90 days, Accuracy tab shows an amber warning: "Weight proposals pending for N days — quarterly review overdue"
+- **Approval criteria:** `observation_n ≥ 30` AND `|proposed_weight − current_weight| ≥ PROPOSAL_MIN_DELTA (0.03)`
+- **Approval action:** Update `status = 'ACTIVE'`, set `approved_at = now()`, `approved_by = 'tarun'`
+- **Rejection action:** Update `status = 'REJECTED'` — proposal logged but never applied
+- **Effect:** Signal engine reads only `ACTIVE` weights. No weight change is live until this step.
+
 ---
 
 ## Section 6 — Path Optimizer Design
@@ -649,11 +699,22 @@ The path optimizer emits EXIT recommendations under exactly four conditions:
 | # | Condition | Signal |
 |---|---|---|
 | E1 | Position size drifted outside Kelly band (current_value > max_position × 1.1 OR < min_position × 0.9) | Rebalance — trim/top-up |
-| E2 | Signal direction has flipped from BULL to BEAR on 3 consecutive emits for the same instrument | Exit — signal reversal |
+| E2 | Signal direction has flipped from BULL to BEAR on N consecutive emits (confidence ≥ 50 only) where N is bucket-aware: near_term=3, medium_term=5, long_term=7 | Exit — signal reversal |
 | E3 | Latest magnitude_target dropped below 3% (signal no longer asymmetric enough) | Exit — insufficient edge |
 | E4 | Adding this position would breach sector allocation cap (35%) for the bucket | Exit or block — sector cap |
 
-EXIT signals are logged to `trade_outcomes` with an `exit_trigger` column (E1–E4). Trigger E2 requires 3 consecutive BEAR emits — not a single flip. This prevents noise-driven exits.
+EXIT signals are logged to `trade_outcomes` with an `exit_trigger` column (E1–E4). Trigger E2 thresholds and constants live in `constants.py`:
+
+```python
+E2_CONSECUTIVE_THRESHOLD = {
+    'near_term':   3,   # 3 trading days — fast exit for short horizon
+    'medium_term': 5,   # 1 trading week buffer
+    'long_term':   7,   # 1.5 weeks — long-term holdings tolerate short noise
+}
+E2_CONFIDENCE_FLOOR = 50  # low-confidence emits do not count toward E2 streak
+```
+
+E2 requires N consecutive BEAR emits (confidence ≥ E2_CONFIDENCE_FLOOR) — not a single flip. This prevents noise-driven exits. A BULL emit or a below-floor BEAR emit resets the streak counter to zero.
 
 ### Bucket-aware ranking
 
@@ -790,9 +851,9 @@ Every council condition must map to a file, artifact, and test before implementa
 | # | Council Condition | Seat | File | Artifact | Test |
 |---|---|---|---|---|---|
 | C1 | Fundamentals weight floor enforced | Buffett | `constants.py` | `FUNDAMENTAL_WEIGHT_FLOOR = 0.30` | `test_floor_enforced()` |
-| C2 | Quarterly review notification mechanism | Munger | `pages/signals.py` | Warning banner on PROPOSED count > 0 | `test_review_banner_shown()` |
+| C2 | Quarterly review notification — banner on signals + path pages; inline review UI on Accuracy tab; WEIGHT_REVIEW_PROCESS.md committed | Munger | `pages/signals.py`, `pages/path.py`, `pages/accuracy.py`, `WEIGHT_REVIEW_PROCESS.md` | Banner code in 2 pages; Accuracy tab shows PROPOSED rows with approve/reject; process doc | `test_review_banner_shown()`, `test_review_banner_on_path_page()`, `test_accuracy_tab_review_ui()` |
 | C3 | Regime-read timing: startup + 24h cache | Dalio | `src/config.py` | `get_current_regime()` singleton | `test_regime_cached()` |
-| C4 | EXIT trigger conditions defined | Druckenmiller | `src/portfolio/optimizer.py` | E1–E4 trigger table + `emit_exit()` | `test_exit_e1()` … `test_exit_e4()` |
+| C4 | EXIT trigger conditions defined; E2 bucket-aware (3/5/7) + confidence floor ≥ 50 | Druckenmiller | `src/portfolio/optimizer.py` + `constants.py` | E1–E4 trigger table, `E2_CONSECUTIVE_THRESHOLD`, `E2_CONFIDENCE_FLOOR` | `test_exit_e1()` … `test_exit_e4()`, `test_e2_confidence_floor()`, `test_e2_bucket_threshold()` |
 | C5 | cycle_phase derivation module | Marks | `src/accuracy/cycle_phase.py` | `derive_cycle_phase()` function | `test_all_phase_rules()` |
 | C6 | Streak detection N + discount factor | Soros | `constants.py` + `src/accuracy/ledger.py` | `STREAK_WINDOW`, `STREAK_DISCOUNT_FACTOR`, `compute_streak_flag()` | `test_streak_flag_fires_at_n()` |
 | C7 | Lynch classification CHECK in migration | Lynch | `migrations/0001_instruments.sql` | CHECK constraint 6 values | `test_invalid_class_rejected()` |
