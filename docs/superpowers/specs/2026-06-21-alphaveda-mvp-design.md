@@ -198,6 +198,26 @@ Supabase project: alphaveda-prod (ap-south-1)
 
 ---
 
+## Section 1.5 — Non-Goals
+
+**AlphaVeda does NOT stream real-time market prices or tick data.** The MVP ingest cadence is once daily at 5:45 PM IST via GHA cron; Supabase free tier (ap-south-1) has no websocket budget for live feeds, and Bhavcopy is an end-of-day file by design.
+
+**AlphaVeda does NOT provide SEBI-RIA investment advice or buy/sell recommendations framed as advice.** SEBI registration as a Research Analyst or Investment Adviser is a regulatory prerequisite the product does not hold in v1; every signal output is research-only, with a pinned non-dismissable disclaimer enforced by `.claude/rules/SEBI_COMPLIANCE.md` (Section 4).
+
+**AlphaVeda does NOT execute trades automatically or integrate with any broker API.** Path optimizer output is a ranked recommendation list read by Tarun; no order-routing, no Zerodha/ICICI Direct API calls, no paper-trading engine. Execution remains a manual human step.
+
+**AlphaVeda does NOT support multi-user authentication or per-user data isolation in v1.** Auth (G2) is implemented via `auth.py` and Supabase RLS but is a single-user gate only — multi-user tenancy, role-based access, and per-user portfolio isolation are deferred beyond G2 as stated in the locked decisions table (Section 1).
+
+**AlphaVeda does NOT use paid commercial data sources (FMP or equivalent) in MVP.** `FMPProvider` is present in the provider routing table but gated behind `CommercialLicenseError` until the first non-self subscriber; the free BSE stack (Bhavcopy + XBRL + Shareholding) is the sole ingest path through v1 go-live.
+
+**AlphaVeda does NOT run historical backtests or simulate past signal performance.** The accuracy ledger is forward-only — predictions are logged at emit time and resolved as outcomes arrive; retrofitting historical signals would break the regime-tag and cycle_phase integrity the council mandated for accuracy tracking (Guards 1 and 4).
+
+**AlphaVeda does NOT track portfolio P&L, realised gains, or tax lots.** P&L accounting, XIRR calculation, and cost-basis tracking live in GSI (the existing dashboard sharing the same Supabase instance); AlphaVeda reads `portfolio_buckets` for sizing context only and does not duplicate that accounting layer.
+
+**AlphaVeda does NOT ship a native mobile app or a mobile-optimised Progressive Web App in MVP.** The presentation layer is Streamlit running on Mac local dev; Streamlit's responsive layout is accepted as-is. A mobile-first redesign is a post-v1 decision gated on the waitlist subscriber count.
+
+**AlphaVeda does NOT auto-apply weight proposals from the accuracy ledger.** Weight changes require Tarun's explicit quarterly approval (Guard 6 — Munger condition, Section 7); the system writes `status = PROPOSED` and surfaces a banner notification; no code path exists that transitions a row to `ACTIVE` without human approval.
+
 ---
 
 ## Section 2 — Data Model (9 Migrations)
@@ -262,9 +282,9 @@ CREATE TABLE fundamentals (
 CREATE TABLE macro_regime (
   id          SERIAL PRIMARY KEY,
   regime_date DATE NOT NULL UNIQUE,
-  regime      VARCHAR(20) NOT NULL UNIQUE CHECK (
+  regime      VARCHAR(20) NOT NULL CHECK (
     regime IN ('RISK_ON','RISK_OFF','STAGFLATION','DEFLATION')
-  ),                          -- UNIQUE required: accuracy_predictions.regime_tag FK references this column
+  ),                          -- no UNIQUE: this is a time-series table; same regime repeats across dates
   rbi_rate    NUMERIC(4,2),
   usd_inr     NUMERIC(8,2),
   nifty_vix   NUMERIC(6,2),
@@ -326,7 +346,9 @@ CREATE TABLE accuracy_predictions (
   confidence          SMALLINT NOT NULL CHECK (confidence BETWEEN 0 AND 100),
   magnitude_target    NUMERIC(6,4),       -- expected return fraction
   horizon_days        INT NOT NULL,
-  regime_tag          VARCHAR(20) NOT NULL REFERENCES macro_regime(regime),
+  regime_tag          VARCHAR(20) NOT NULL CHECK (
+    regime_tag IN ('RISK_ON','RISK_OFF','STAGFLATION','DEFLATION')
+  ),                          -- CHECK not FK: macro_regime is a time-series, not a lookup; enum validated here
   lynch_class         VARCHAR(20) NOT NULL CHECK (
     lynch_class IN ('fast_grower','stalwart','slow_grower',
                     'cyclical','turnaround','asset_play')
@@ -839,6 +861,20 @@ These files are committed at G0 before any code. Content:
 - `SEBI_COMPLIANCE.md`: SEBI disclaimer pinned on every page; no buy/sell recommendations phrased as advice; no SEBI-RIA content
 - `COMMERCIAL_GATE.md`: CommercialLicenseError rules; yfinance blocked when ALPHAVEDA_COMMERCIAL=true; FMP at first non-self subscriber
 - `DATA_SOURCES.md`: licensed source table; BSE free stack is default; upgrade triggers
+
+### SLAs and Performance Targets
+
+All targets are set for Streamlit running on Mac local dev + Supabase free tier (ap-south-1, 500 MB, shared compute). No CDN, no dedicated DB compute. Breach actions are lightweight — the product is single-user in v1, so SLA breaches surface as manual investigation tasks, not incident pages.
+
+| Metric | Target | Measurement | Breach action |
+|---|---|---|---|
+| App cold start time (first page load after `streamlit run app.py`) | ≤ 5 seconds to interactive UI (SEBI disclaimer visible, nav rendered) | Manual timer from `streamlit run` output to browser tab interactive; logged in test notes at G0 smoke test | Audit startup imports — move heavy provider imports to lazy-load inside page functions; check Supabase singleton init latency |
+| Page render time — `data_viewer.py` with OHLCV candlestick chart (90 days of data, 1 instrument) | ≤ 4 seconds from page navigation click to chart rendered | Browser DevTools network waterfall; timed in G1 regression run against a seeded 90-day OHLCV dataset | Profile Plotly render vs Supabase query time; if query > 1.5 s, add `(instrument_id, trade_date)` index (already in 0002 UNIQUE constraint); if Plotly > 2 s, downsample to weekly for initial render |
+| Full Bhavcopy ingest job completion (NSE + BSE, ~2,000 instruments, one trading day) | ≤ 8 minutes end-to-end in GHA runner (ubuntu-latest, free tier) | GHA workflow step duration logged in `ingest_status` table (`run_at` → step end delta); visible in GHA Actions tab | Batch inserts in chunks of 500 rows using Supabase `upsert`; if still breaching, split NSE and BSE into parallel GHA jobs |
+| Signal emit latency per instrument (single instrument, regime cached, weights loaded) | ≤ 800 ms from `engine.emit(instrument_id)` call to `accuracy_predictions` row confirmed written | Unit test timer in `test_smoke.py`; measured against seeded DB with 1 ACTIVE weight row | Profile DB round-trips: regime read (should be cached), streak flag query (add index on `accuracy_outcomes.prediction_id`), weight load query |
+| Supabase read query p95 latency (simple SELECT with one WHERE clause, e.g., latest regime row) | ≤ 600 ms from Supabase client `.execute()` call to Python dict returned | Logged via `time.perf_counter()` wrapper in `get_current_regime()` during G1 regression run; p95 over 20 successive calls | If latency > 600 ms consistently: check ap-south-1 region routing from Mac; confirm SUPABASE_ANON_KEY is project-local not global; enable Supabase connection pooling (PgBouncer, free tier supports it) |
+| GHA cron job start-to-finish time (ingest + outcome resolution + ledger update) | ≤ 12 minutes total wall-clock time in GHA free-tier runner | GHA workflow `duration` field on the completed run; visible in Actions tab | If breaching: separate ingest and outcome resolution into two sequential jobs; add `continue-on-error: false` so partial runs surface immediately rather than silently completing |
+| Stale data warning latency (time from `ingested_at` threshold breach to amber badge visible in UI) | ≤ 1 page load (the staleness check runs on every `data_viewer.py` render, not cached) | Manual verification: set `ingested_at` to yesterday in test DB row, load data_viewer page, confirm amber STALE badge appears without a second reload | If badge not appearing: verify `ingest_status` query in `data_viewer.py` is reading `run_at` not a cached value; confirm Streamlit is not caching the staleness query via `@st.cache_data` |
 
 ---
 
