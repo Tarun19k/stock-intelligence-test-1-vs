@@ -1,6 +1,6 @@
 # AlphaVeda MVP Design
 **Date:** 2026-06-22  
-**Status:** v0.5 — CORRECTIVE PASS (pre-R4 readiness council: C-1..C-4 closed)  
+**Status:** v0.6 — R4 SYNTHESIS PASS (BC-1..BC-8 closed; build conditions met; CONDITIONAL GO)  
 **Author:** CoS (Claude Sonnet 4.6) + Tarun Kochhar  
 **Brainstorming session:** 2026-06-21, chief-of-staff + panel-convene workflow
 
@@ -131,6 +131,7 @@ alphaveda/                      ← new GitHub repo
 ├── src/
 │   ├── data/
 │   │   ├── provider.py         ← DataProvider ABC + routing
+│   │   ├── regime.py           ← get_current_regime() as-of join + freshness guard (spec: Section 5)
 │   │   ├── bhavcopy.py
 │   │   ├── bse_shareholding.py
 │   │   ├── bse_financials.py
@@ -139,6 +140,7 @@ alphaveda/                      ← new GitHub repo
 │   ├── signals/
 │   │   ├── engine.py           ← signal emit + accuracy log
 │   │   ├── arbitration.py      ← conflict resolution
+│   │   ├── downside.py         ← compute_downside_target() ATR(14)/price (spec: Section 5.7b)
 │   │   └── weights.py          ← reads ACTIVE weights from DB
 │   ├── portfolio/
 │   │   ├── optimizer.py        ← path recommendations + Kelly sizing
@@ -146,7 +148,8 @@ alphaveda/                      ← new GitHub repo
 │   ├── accuracy/
 │   │   ├── ledger.py           ← 24-segment update logic
 │   │   ├── outcomes.py         ← prediction resolution
-│   │   └── proposals.py        ← weight proposal generation
+│   │   ├── proposals.py        ← weight proposal generation
+│   │   └── cycle_phase.py      ← derive_cycle_phase() PHASE_RULES (spec: Section 3)
 │   └── config.py               ← env loading, DB client, env switching
 ├── scripts/
 │   ├── ingest_bhavcopy.py
@@ -155,16 +158,21 @@ alphaveda/                      ← new GitHub repo
 │   ├── calculate_fundamentals.py
 │   ├── update_macro.py
 │   └── seed_historical.py
-├── migrations/
-│   ├── 0001_instruments.sql
-│   ├── 0002_ohlcv.sql
-│   ├── 0003_fundamentals.sql
-│   ├── 0004_macro_regime.sql
-│   ├── 0005_portfolio_buckets.sql
-│   ├── 0006_trade_outcomes.sql
-│   ├── 0007_accuracy_predictions.sql
-│   ├── 0008_accuracy_outcomes.sql
-│   └── 0009_signal_weights.sql
+├── supabase/
+│   └── migrations/             ← Supabase CLI expects this path (supabase db push)
+│       ├── 20260621100001_instruments.sql
+│       ├── 20260621100002_ohlcv.sql
+│       ├── 20260621100003_fundamentals.sql
+│       ├── 20260621100004_macro_regime.sql
+│       ├── 20260621100005_portfolio_buckets.sql
+│       ├── 20260621100006_trade_outcomes.sql
+│       ├── 20260621100007_accuracy_predictions.sql
+│       ├── 20260621100008_accuracy_outcomes.sql
+│       ├── 20260621100009_signal_weights.sql
+│       ├── 20260621100010_ingest_status.sql
+│       ├── 20260621100011_waitlist.sql
+│       ├── 20260622100012_downside_target.sql
+│       └── 20260622100013_schema_fixes.sql
 ├── app.py                      ← Streamlit entry point
 ├── pages/
 │   ├── data_viewer.py          ← charts, fundamentals, macro, buckets
@@ -588,6 +596,9 @@ SEBI_DISCLAIMER = (
     "This is NOT investment advice. Consult a SEBI-registered "
     "investment advisor before making any investment decision."
 )
+
+# Kelly sizing fraction — Quarter-Kelly defensive position sizing
+QUARTER_KELLY_FRACTION = 0.25  # use 25% of full Kelly to limit variance
 
 # EXIT trigger E2 — bucket-aware consecutive threshold + confidence floor
 E2_CONSECUTIVE_THRESHOLD: dict[str, int] = {
@@ -1025,7 +1036,7 @@ CREATE TABLE ingest_status (
 | path optimizer | 4 tests: all 4 EXIT conditions trigger, Kelly size within bounds | 100% |
 | Outcome resolution | 3 tests: correct/incorrect outcome, peak return logged, streak flag updated | 100% |
 
-G0 gate requires 6 smoke tests to pass. G1 gate requires full regression suite.
+G0 gate has 10 criteria (v0.5): 9 are runnable test functions; criterion 10 is the seed prerequisite (apply migrations + seed instruments) that must run before all others. G1 gate requires full regression suite.
 
 ### .claude/rules/ enforcement
 
@@ -1075,12 +1086,14 @@ Fail-closed: if Supabase is unreachable at startup, assume commercial=True (bloc
 
 #### What changes at commercial=True
 
-| Component | Personal (commercial=False) | Commercial (commercial=True) |
+| Component | Personal use (0 subscribers / commercial=False) | Commercial (≥1 subscriber / commercial=True) |
 |---|---|---|
 | Data source | yfinance + BSE + Bhavcopy | FMP ($14/mo) + BSE + Bhavcopy |
-| Layer 4 output | Rupee Kelly amounts | Direction + confidence only (no rupee) |
+| Layer 4 output | **Rupee Kelly amounts shown** (Tarun only, personal research) | Direction + confidence only — no rupee (SEBI: personalised sizing = advice) |
 | SEBI framing | "Signal X is BULLISH for Y" | Same — never imperative BUY |
-| CommercialLicenseError | Silently blocked in DataProvider | Raised if yfinance called |
+| CommercialLicenseError | Silently blocked in DataProvider (yfinance OK) | Raised if yfinance called — must route to FMP |
+
+*Framing note (BC-4):* rupee amounts are present BEFORE the first subscriber (personal use). They are suppressed AFTER the first subscriber converts (`converted_at` is set) — because at that point, showing a personalised rupee amount to another user would meet SEBI's definition of investment advice without a Research Analyst registration. The commercial gate removes rupee output as a compliance measure, not a degradation.
 
 #### SEBI substance test (required in CI)
 
@@ -1089,7 +1102,7 @@ The C9 test asserts SEBI disclaimer *presence*. Add C9b — substance test:
 - Assert Layer 4 labels read: "BULLISH signal" / "BEARISH signal" / "No signal" (never rupee amount when commercial=True)
 - Assert disclaimer text includes: "research purposes only" and "not investment advice"
 
-**Suppression-as-deliberate-state (Tanvi Rao UX note):** when the gate fires and rupee amounts are suppressed, the Path page transitions from "buy ₹72,500 of X" to "X is bullish." This must be presented as a designed, intentional state — not a degraded fallback — so the first paying subscriber's first impression is not a feature that vanished. The `licence_class` column (migration 0011) lets a query answer "is any commercially-served row from a personal-only provider," supporting the fail-closed check.
+**Suppression-as-deliberate-state (Tanvi Rao UX note):** when the gate fires and rupee amounts are suppressed, the Path page transitions from "buy ₹72,500 of X" to "X is bullish." This must be presented as a designed, intentional state — not a degraded fallback — so the first paying subscriber's first impression is not a feature that vanished. The `licence_class` column (migration 0013) lets a query answer "is any commercially-served row from a personal-only provider," supporting the fail-closed check.
 
 ---
 
@@ -1151,7 +1164,7 @@ This protocol replaces the current pattern of discovering gaps at each review st
 
 *Migrations are the single source of truth (MA-7 / GAP-008). Section 2's inline SQL above reflects the original 0001–0011 set; v0.4 adds two migrations. The live files use date-prefixed names so they sort after the existing `20260621*` set.*
 
-**0011 — `20260622100011_schema_fixes.sql`** (batched per MA-9):
+**0013 — `20260622100013_schema_fixes.sql`** (batched per MA-9; renamed from 0011 to avoid ordinal collision with `20260621100011_waitlist.sql`):
 - GAP-009: partial unique index `signal_weights_one_active_per_segment` on `(lynch_class, regime, signal_name) WHERE status='ACTIVE'`; `approve_signal_weight(p_id INT)` atomic demote-then-promote; `status` CHECK extended to include `'SUPERSEDED'`.
 - Imran idempotency: `accuracy_outcomes` gains `UNIQUE (prediction_id)`.
 - GAP-010 pre-work: `ohlcv.circuit_flag BOOLEAN DEFAULT FALSE`, `ohlcv.deliverable_volume BIGINT`.
@@ -1166,4 +1179,4 @@ This protocol replaces the current pattern of discovering gaps at each review st
 
 ---
 
-*Design doc version 0.4 — Sections 1–9 + G0 gate + commercial gate + migration addenda complete. Status: AMENDED POST-R1+R3-COUNCIL.*
+*Design doc v0.6 — R4 synthesis pass complete. BC-1..BC-8 applied. CONDITIONAL GO verdict. Block 6 build may start.*
