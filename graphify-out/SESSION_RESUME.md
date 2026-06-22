@@ -7,7 +7,7 @@
 
 ---
 
-## DO NOT REDO — Session 2026-06-22
+## DO NOT REDO — Session 2026-06-22 (updated post-council)
 
 ### 1. Council Review Gate — ALL 4 QUESTIONS VOTED
 
@@ -91,7 +91,25 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 | F5 | systems-reliability (Imran Sheikh) | GHA cron + Supabase free-tier both auto-pause on inactivity; missed ingest run = silent failure | P2 |
 | Q2-C2 | schema-design (Deepak Nair) | macro_regime referenced as FK when it is a time-series — structural misuse of FK semantics | FIXED |
 
-### 8. Session 2026-06-22 Commits (in order)
+### 8. Block 3 — R1 Red Team COMPLETE (commit a23eb6f)
+
+- Verdict: **REVISE** — 18 gaps (P0:4, P1:9, P2:5)
+- Report: `docs/reviews/R1-red-team.md`
+- Core finding: Kelly formula (`b = magnitude_target`) is dimensionally wrong — floors to "1% in everything" for all realistic inputs. Invalidates Layer 4.
+- 4 P0 gaps: GAP-001 (Kelly), GAP-002 (calibration), GAP-003 (arbitration void), GAP-006 (silent pipeline pause)
+- All 6 mandatory targets confirmed (F2, F3, F4, F5, E2, Shakuni)
+
+### 9. Block 4 — R3 Full Council COMPLETE (commit a23eb6f)
+
+- Council: 20 voices (7 investor + 4 doctrine + 9 expert)
+- Verdict: **CONDITIONAL GO**
+- Report: `docs/reviews/R3-council-strategic-assessment.md`
+- 14 missing actions identified — Block 3.1 was under-scoped
+- Synthesis Chair re-classified GAP-009 as P0 (live migration defect)
+- Soros and Druckenmiller **withdrew prior approvals** — GAP-004/005 promoted into Block 3.1
+- Block 3.1 re-scoped: "produce v0.4 + migrations 0011/0012 + commercial-gate binding, in dependency order, reconciled against live migrations"
+
+### 10. Session 2026-06-22 Commits (in order)
 
 | Commit | Description |
 |---|---|
@@ -99,30 +117,34 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 | 252b8ac | schema defect fix + R2a expert personas + supabase init |
 | 8ff0364 | 11 migration SQL files + SCHEMA.md + GSI-OVERLAP.md + DESIGN.md |
 | 69e943e | Supabase cloud live + credentials inventory + .env.example |
+| 402a06c | housekeeping checkpoint — SESSION_RESUME + graphify-out |
+| a23eb6f | R1 red team + R3 council strategic assessment |
 
 ---
 
-## EXACT RESUME POINT — UPDATED 2026-06-22
+## EXACT RESUME POINT — UPDATED 2026-06-22 (post-council)
 
-**NEXT ACTION: Block 3 — R1 Red Team (Opus)**
+**NEXT ACTION: Block 3.1 — Design doc v0.4 (re-scoped)**
 
-All inputs are available:
-- Design doc v0.3: `docs/superpowers/specs/2026-06-21-alphaveda-mvp-design.md`
-- 9 expert personas: `docs/experts/` (9 files)
-- 11 migration SQL files: `supabase/migrations/`
-- DESIGN.md at repo root
-- Supabase cloud live with all 11 tables
+Block 3.1 must be executed in this exact sequence (dependency order is mandatory):
 
-R1 mandate:
-- ≥ 12 adversarial gaps, each with severity P0/P1/P2 + affected section
-- **Mandatory challenge targets:** F2 (Kelly odds dimensionally wrong), F3 (streak discount timing), F4 (confidence calibration/arbitration.py unspecified), F5 (silent inactivity pause), Shakuni's macro_regime-as-context concern, E2 confidence floor edge cases
-- Output: `docs/reviews/R1-red-team.md`
+| Step | Action | What changes |
+|---|---|---|
+| 3.1-A | Reconcile doc vs live migrations (MA-7) | Migrations = source of truth; re-anchor inline SQL |
+| 3.1-B | Migration 0011: GAP-009 hotfix + batched schema additions (MA-1, MA-9) | partial UNIQUE WHERE status='ACTIVE', circuit_flag, licence_class, outcomes idempotency |
+| 3.1-C | Migration 0012: downside_target + source rule (MA-2, MA-3) | `ALTER TABLE accuracy_predictions ADD COLUMN downside_target` |
+| 3.1-D | Doc v0.4: P0s in dependency order: arbitration → confidence function → calibration → Kelly (MA-13) | GAP-003, GAP-002, GAP-001 |
+| 3.1-E | Doc v0.4: emit-time fixes (MA-4, MA-5, MA-6) | GAP-004 streak discount at emit, GAP-005 E2 redesign, GAP-007 regime join |
+| 3.1-F | Doc v0.4: commercial gate design (MA-8) | converted_at → suppress rupee + block yfinance, fail-closed, substance test |
+| 3.1-G | Doc v0.4: upgraded G0 gate spec (MA-12) | Add tests: single-ACTIVE-weight, missing-run, calibration sanity, SEBI substance |
 
-**Sequence after Block 3:**
-- Block 4: R3 Full Council (20 voices: 7 investor + 4 doctrine + 9 expert personas)
-- Block 5: R4 Synthesis — needs R3 complete AND T3 (≥1 pricing signal response from real contact)
-- Block 6: Pre-build implementation parallel (P1-P5) — starts only after R4 GO
-- Block 7: G0 gate (pytest 6/6 + 10 seed instruments + ingest_status populated)
+**Before R4 (Block 5):**
+- MA-10: Give T3 a deadline + fallback pricing assumption
+- MA-11: Seat Wealth & Revenue Strategist as 21st council voice
+
+**After Block 3.1:**
+- Block 5: R4 Synthesis (GO/HOLD/REVISE) — needs Wealth & Revenue Strategist + T3 deadline set
+- Block 6: Pre-build implementation — data layer can start in PARALLEL with v0.4 math amendments (Q4 approved by council)
 
 ---
 
@@ -183,11 +205,12 @@ R1 mandate:
 | Block 0 | Design doc v0.3 amendments | ✓ COMPLETE |
 | Block 1 | Tarun actions (T1-T4) | T1 ✓, T2/T3/T4 pending |
 | Block 2 | R2a + R2b + R2c parallel agents | ✓ COMPLETE |
-| Block 3 | R1 Red Team (Opus, ≥12 gaps) | ⏳ NEXT |
-| Block 4 | R3 Full Council (20 voices) | Waiting on Block 3 |
-| Block 5 | R4 Synthesis (GO/HOLD/REVISE) | Waiting on Block 4 + T3 |
-| Block 6 | Pre-build implementation (parallel) | Waiting on R4 GO |
-| Block 7 | G0 gate (pytest 6/6 + seeds) | Waiting on Block 6 + T2 |
+| Block 3 | R1 Red Team (REVISE, 18 gaps) | ✓ COMPLETE |
+| Block 4 | R3 Full Council (CONDITIONAL GO, 14 MAs) | ✓ COMPLETE |
+| Block 3.1 | v0.4 + migrations 0011/0012 + gates (7 steps) | ⏳ NEXT |
+| Block 5 | R4 Synthesis — needs 21st voice + T3 deadline | After 3.1 |
+| Block 6 | Pre-build: data layer in parallel, math after R4 | After 3.1 (partial) |
+| Block 7 | G0 gate (pytest 6/6 + seeds + upgraded tests) | After Block 6 + T2 |
 | Block 8 | Post-G0 (G1, auth, GHA cron) | Future sessions |
 
 ---
