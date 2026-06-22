@@ -124,7 +124,7 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 
 ## EXACT RESUME POINT — UPDATED 2026-06-22 (post-council)
 
-**NEXT ACTION: Block 3.1 — Design doc v0.4 (re-scoped)**
+**NEXT ACTION: Block 5 — R4 Synthesis with 21st voice**
 
 Block 3.1 must be executed in this exact sequence (dependency order is mandatory):
 
@@ -207,9 +207,9 @@ Block 3.1 must be executed in this exact sequence (dependency order is mandatory
 | Block 2 | R2a + R2b + R2c parallel agents | ✓ COMPLETE |
 | Block 3 | R1 Red Team (REVISE, 18 gaps) | ✓ COMPLETE |
 | Block 4 | R3 Full Council (CONDITIONAL GO, 14 MAs) | ✓ COMPLETE |
-| Block 3.1 | v0.4 + migrations 0011/0012 + gates (7 steps) | ⏳ NEXT |
-| Block 5 | R4 Synthesis — needs 21st voice + T3 deadline | After 3.1 |
-| Block 6 | Pre-build: data layer in parallel, math after R4 | After 3.1 (partial) |
+| Block 3.1 | v0.4 + migrations 0011/0012 + gates (7 steps) | ✓ COMPLETE (73c242f) |
+| Block 5 | R4 Synthesis — 21st voice seated + T3 deadline set | ⏳ NEXT |
+| Block 6 | Pre-build: data layer in parallel, math after R4 | After Block 5 GO |
 | Block 7 | G0 gate (pytest 6/6 + seeds + upgraded tests) | After Block 6 + T2 |
 | Block 8 | Post-G0 (G1, auth, GHA cron) | Future sessions |
 
