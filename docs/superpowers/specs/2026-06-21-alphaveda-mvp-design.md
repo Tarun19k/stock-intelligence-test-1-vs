@@ -1,6 +1,6 @@
 # AlphaVeda MVP Design
-**Date:** 2026-06-21  
-**Status:** v0.3 — AMENDED POST-COUNCIL — Review gate answered; 4 migration fixes + E2 revision applied  
+**Date:** 2026-06-22  
+**Status:** v0.4 — AMENDED POST-R1+R3-COUNCIL — R1 Red Team 18 gaps + R3 Council MA-1..MA-14 applied; migrations 0011/0012 added; P0 chain + emit-time guards + commercial gate + upgraded G0 gate  
 **Author:** CoS (Claude Sonnet 4.6) + Tarun Kochhar  
 **Brainstorming session:** 2026-06-21, chief-of-staff + panel-convene workflow
 
@@ -606,34 +606,33 @@ COLD_START_WEIGHTS: dict[str, dict[str, float]] = {
 # FUNDAMENTAL_WEIGHT_FLOOR applies: combined ROIC+FCF+pledge weight never drops below 0.30.
 ```
 
-### Regime-read timing (Gap 3 closed)
+### Regime-read timing (Gap 3 closed; as-of-prediction-time join added in v0.4 — closes GAP-007 / MA-6)
 
-Regime is read **once at startup**, then refreshed **once per 24-hour batch** (not per signal emit).
+*GAP-006 (missing-run detection) and GAP-007 (regime read race) share one root cause — a time-series read treated as point-in-time with no freshness assertion — and are specified together in this pass per MA-6.*
 
-`src/config.py`:
 ```python
-_supabase: Client | None = None
-_regime_cache: dict | None = None
-_regime_cache_date: date | None = None
+# get_current_regime in src/data/regime.py
+#
+# Returns the regime as-of a given prediction timestamp, not "the latest."
+# This prevents contaminating the accuracy ledger on transition days.
+#
+# Join rule: SELECT regime FROM macro_regime
+#            WHERE regime_date <= emitted_at::date
+#            ORDER BY regime_date DESC LIMIT 1
+#
+# Freshness guard: if latest regime_date < today - REGIME_STALENESS_DAYS (3),
+#   set regime_stale = True on the prediction and surface a staleness warning.
+#   Do NOT default to 'RISK_ON' when stale — fail visibly, not silently.
+#
+# Cache: singleton per calendar day, keyed by date. Re-fetch if emitted_at.date
+# differs from cache key (handles intra-day regime updates correctly).
 
-def get_supabase_client() -> Client:
-    global _supabase
-    if _supabase is None:
-        _supabase = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-    return _supabase
-
-def get_current_regime() -> str:
-    global _regime_cache, _regime_cache_date
-    today = date.today()
-    if _regime_cache is None or _regime_cache_date != today:
-        result = get_supabase_client().table('macro_regime') \
-            .select('regime').order('regime_date', desc=True).limit(1).execute()
-        _regime_cache = result.data[0]['regime'] if result.data else 'RISK_ON'
-        _regime_cache_date = today
-    return _regime_cache
+REGIME_STALENESS_DAYS = 3
 ```
 
-Rationale: macro regime does not change intraday. Per-emit reads add latency and burn Supabase free-tier request quota.
+The `get_supabase_client()` singleton (in `src/config.py`) is unchanged. The v0.4 change is to `get_current_regime()`: it now takes an `emitted_at` argument and joins the regime row whose `regime_date <= emitted_at::date` (DESC, LIMIT 1) — the as-of semantics — instead of always returning the newest row. The v0.3 silent fallback to `'RISK_ON'` when the table is empty/stale is **removed**: the prediction is flagged `regime_stale = True` and a staleness warning surfaces, failing visibly rather than tagging a prediction with a wrong default.
+
+Rationale: macro regime does not change intraday, so per-calendar-day caching still holds; but a prediction made on a regime-transition day (or before today's cron fires) must inherit the regime that was in force *at emit time*, not whatever the latest row happens to be — otherwise both regime segments get contaminated (Guard 1).
 
 ### Signal emit flow
 
@@ -641,9 +640,20 @@ Rationale: macro regime does not change intraday. Per-emit reads add latency and
 1. Read current regime via `get_current_regime()` (cached singleton)
 2. Derive `cycle_phase` via `cycle_phase.derive_cycle_phase()`
 3. Compute `accuracy_streak_flag` via `ledger.compute_streak_flag()`
+
+**Step 3b — Apply emit-time streak discount (Guard 2 — Soros) [added in v0.4, closes GAP-004 / MA-4]:**
+```
+    if compute_streak_flag(instrument_id, lynch_class, regime):
+        confidence = confidence * STREAK_DISCOUNT_FACTOR  # 0.7
+        # Note: discount applied BEFORE Kelly and BEFORE ledger write.
+        # The ledger SQL also applies the discount (secondary check), but
+        # the primary guard fires here at emit time.
+```
+*Rationale: in v0.3 the discount fired only at quarterly ledger aggregation, so at a reflexive cycle peak the engine sized UP exactly when Guard 2 was designed to size DOWN. The discount now fires at the live emit, before calibration and Kelly consume the confidence.*
+
 4. Load active weights: query `signal_weights` WHERE status='ACTIVE' AND lynch_class=X AND regime=Y — if no ACTIVE rows, fall back to `COLD_START_WEIGHTS[lynch_class]`
 5. Enforce `FUNDAMENTAL_WEIGHT_FLOOR` before scoring
-6. Emit signal with all context fields
+6. Emit signal with all context fields (confidence already streak-discounted per step 3b)
 7. Write to `accuracy_predictions` (every emit, no exceptions)
 
 ### Weight proposal review notification (Gap 2 closed)
@@ -689,6 +699,60 @@ Committed to repo root at G0. Content:
 
 ---
 
+### 5.7 Signal Arbitration (arbitration.py)
+
+*Added in v0.4 — closes GAP-003 (R1) / MA-13 dependency chain step 1. This is the FIRST link in the P0 dependency chain: arbitration → confidence → calibration → Kelly. Whatever arbitration emits determines what is logged to the accuracy ledger, which feeds calibration (5.8), which feeds Kelly (Section 6).*
+
+**File:** src/signals/arbitration.py
+
+**Purpose:** When the signal engine produces conflicting directional signals for the same instrument
+(e.g., a BULL from a momentum signal and a BEAR from a fundamental signal), arbitration
+determines what — if anything — is emitted and logged to the accuracy ledger.
+
+**Inputs:**
+- signals: List[SignalEmit] — all signals for this instrument this cycle
+- weights: Dict[str, float] — ACTIVE weight per signal_name for this segment
+
+**Rule:**
+1. Separate signals into BULL and BEAR buckets.
+2. Compute weighted_bull = sum(confidence_i * weight_i) for all BULL signals.
+3. Compute weighted_bear = sum(confidence_j * weight_j) for all BEAR signals.
+4. If |weighted_bull - weighted_bear| < ARBITRATION_MARGIN: suppress emission (no row logged).
+5. Else: emit the direction with the higher weighted score. Emitted confidence = winning side score normalised to [0,100].
+
+**Constants (constants.py):**
+ARBITRATION_MARGIN = 15.0  # suppress emission if weighted scores are within 15 points
+
+**Trace matrix:** C-ARB — test_arbitration_suppression + test_arbitration_bull_wins + test_arbitration_bear_wins
+
+### 5.8 Confidence Calibration
+
+*Added in v0.4 — closes GAP-002 (R1) / MA-13 dependency chain step 3. Sits between arbitration's emitted confidence (5.7) and Kelly's `p` consumption (Section 6).*
+
+**Why:** confidence is a composite score, not a calibrated probability. Feeding it directly to
+Kelly as p systematically overestimates win probability. The calibration map corrects this.
+
+**Method:** Per-segment empirical reliability binning.
+1. Group historical accuracy_predictions by (lynch_class, regime, confidence_decile).
+2. For each bin, compute empirical_p = count(is_correct=TRUE) / count(*).
+3. Map: p = empirical_p for the bin matching this prediction's confidence.
+
+**Cold-segment fallback:** If a segment has < OBSERVATION_THRESHOLD (30) observations,
+p = min(confidence / 100, measured_hit_rate_for_segment). This is fail-conservative:
+never assume p > measured hit rate.
+
+**Calibration update:** Run after each quarterly weight review. Store calibration bins in
+a new table (add at G1): calibration_bins(lynch_class, regime, confidence_lower, confidence_upper, empirical_p).
+At G0: cold-start fallback applies to all segments (< 30 obs by definition).
+
+**Cold-segment-forever note (MA-14 — Lynch/Marks minority view):** with 24 segments and a single
+low-volume user, most cells may never reach 30 observations. This is acceptable and intended:
+the cold-segment fallback above holds priors indefinitely for such cells. Build the calibration
+structure (the slot, the table, the binning) but do not assume the ledger fills. Pair with GAP-015
+shrinkage so the weight transition and the calibration transition do not both jump at observation 30.
+
+---
+
 ## Section 6 — Path Optimizer Design
 
 ### Kelly sizing
@@ -702,17 +766,41 @@ MIN_POSITION_PCT = 0.01    # ₹7,250
 SECTOR_CAP_PCT   = 0.35
 CASH_FLOOR_PCT   = 0.10
 
-def kelly_position_size(confidence: int, magnitude_target: float, portfolio_value: float) -> float:
-    """Quarter-Kelly: f = (p - q/b) × 0.25"""
-    p = confidence / 100
-    q = 1 - p
-    b = magnitude_target if magnitude_target > 0 else 0.05   # floor at 5%
-    full_kelly = (p - q / b)
-    quarter_kelly = max(0, full_kelly * 0.25)
-    raw = portfolio_value * quarter_kelly
-    return max(MIN_POSITION_PCT * portfolio_value,
-               min(MAX_POSITION_PCT * portfolio_value, raw))
+# kelly_position_size in src/path/optimizer.py
+#
+# Kelly criterion: f = p - q/b
+#   p = calibrated win probability (from calibration_bins, or cold fallback)
+#   q = 1 - p
+#   b = magnitude_target / downside_target  (true net odds = win leg / loss leg)
+#
+# CRITICAL: if downside_target is None (signal predates schema), return 0 — no position.
+# Path page shows direction+confidence only when position_size == 0.
+
+def kelly_position_size(p: float, magnitude_target: float,
+                        downside_target: float | None,
+                        portfolio_value: float) -> float:
+    if downside_target is None or downside_target <= 0:
+        return 0  # cannot compute without loss leg — show direction only
+
+    b = magnitude_target / downside_target  # true net odds
+    q = 1.0 - p
+    full_kelly = p - (q / b)
+
+    if full_kelly <= 0:
+        return 0  # negative or zero edge — no position
+
+    quarter_kelly = full_kelly * QUARTER_KELLY_FRACTION  # 0.25
+
+    raw = quarter_kelly * portfolio_value
+    return max(0, min(MAX_POSITION_PCT * portfolio_value, raw))
+    # Note: MIN_POSITION_PCT floor removed — zero-edge bets return 0, not MIN
 ```
+
+**v0.4 amendments to this function (closes GAP-001, GAP-002, GAP-013, R3 MA-3):**
+- `b` is now true net odds = `magnitude_target / downside_target`, not the dimensionally-wrong `b = magnitude_target` of v0.3. Requires migration 0012 (`downside_target` column).
+- **`downside_target` source rule (MA-3):** the signal emits a stop-loss fraction as its loss leg; if the signal does not emit one, default to `ATR(14) / price`. Stored on `accuracy_predictions.downside_target` (migration 0012). When NULL (signal predates the column), this function returns 0 and the Path page shows direction + confidence only — never a rupee amount.
+- `p` is the **calibrated** probability from Section 5.8, not raw `confidence / 100`. The caller passes the calibrated value; this function no longer divides confidence by 100 itself.
+- `MIN_POSITION_PCT` floor is **removed** from the return (GAP-013): zero/negative-edge bets now return 0 and drop from the recommendation list, rather than being forced into a 1% position. The `MIN_POSITION_PCT` constant remains in `constants.py` but is no longer applied as a floor inside `kelly_position_size` — it may only floor positions that have already cleared the edge test (full_kelly > 0).
 
 ### EXIT trigger conditions (Gap 4 closed)
 
@@ -736,7 +824,28 @@ E2_CONSECUTIVE_THRESHOLD = {
 E2_CONFIDENCE_FLOOR = 50  # low-confidence emits do not count toward E2 streak
 ```
 
-E2 requires N consecutive BEAR emits (confidence ≥ E2_CONFIDENCE_FLOOR) — not a single flip. This prevents noise-driven exits. A BULL emit or a below-floor BEAR emit resets the streak counter to zero.
+**EXIT Trigger E2 — Sustained Deterioration (redesigned in v0.4 — closes GAP-005 / MA-5):**
+
+```
+EXIT Trigger E2 — Sustained Deterioration (bucket-aware + uncertainty path):
+
+PRIMARY path (confident deterioration):
+  consecutive_bear_emits >= E2_CONSECUTIVE_THRESHOLD[bucket]  # {near_term:3, medium:5, long:7}
+  AND confidence >= E2_CONFIDENCE_FLOOR  # 50
+
+UNCERTAINTY path (uncertain deterioration — new):
+  consecutive_bear_emits >= E2_CONSECUTIVE_THRESHOLD[bucket] * 2  # double threshold
+  AND confidence < E2_CONFIDENCE_FLOOR
+  AND instrument.close < instrument.ma_200d  # only when below 200-day MA
+
+Rationale: low-confidence BEAR emits during a decline are signal, not noise.
+The original single-floor design suppressed the exit exactly when capital
+preservation matters most. The uncertainty path uses a higher streak bar
+(double threshold) as the noise filter, and adds the 200-day MA as a
+second confirming condition, so truly noisy signals below-floor don't trigger.
+```
+
+In v0.3 a below-floor BEAR emit always reset the streak — meaning the exit self-suppressed precisely when the model was most uncertain and the market was deteriorating fastest. The redesign splits the floor's two jobs: the PRIMARY path keeps the noise filter for confident reversals; the UNCERTAINTY path lets low-confidence bear runs feed a separate exit, gated by a doubled streak bar AND the 200-day MA, so genuine deterioration is no longer silenced.
 
 ### Bucket-aware ranking
 
@@ -876,6 +985,42 @@ All targets are set for Streamlit running on Mac local dev + Supabase free tier 
 | GHA cron job start-to-finish time (ingest + outcome resolution + ledger update) | ≤ 12 minutes total wall-clock time in GHA free-tier runner | GHA workflow `duration` field on the completed run; visible in Actions tab | If breaching: separate ingest and outcome resolution into two sequential jobs; add `continue-on-error: false` so partial runs surface immediately rather than silently completing |
 | Stale data warning latency (time from `ingested_at` threshold breach to amber badge visible in UI) | ≤ 1 page load (the staleness check runs on every `data_viewer.py` render, not cached) | Manual verification: set `ingested_at` to yesterday in test DB row, load data_viewer page, confirm amber STALE badge appears without a second reload | If badge not appearing: verify `ingest_status` query in `data_viewer.py` is reading `run_at` not a cached value; confirm Streamlit is not caching the staleness query via `@st.cache_data` |
 
+### 8.5 Commercial Gate (ALPHAVEDA_COMMERCIAL)
+
+*Added in v0.4 — closes GAP-011 + GAP-012 (R1) / MA-8. Enforcement code is pre-launch, but the gate DESIGN is specified now per the Constraint Enforcer / Sundaram / Varghese condition: retrofitting a fail-closed gate after the data layer is built is far more expensive.*
+
+#### Commercial State Detection
+
+NEVER derive commercial state from a manual env flag. Derive from data:
+
+```python
+# In app startup (app.py) and ingest script (ingest.py):
+from supabase import create_client
+def is_commercial() -> bool:
+    result = supabase.table('waitlist').select('id').not_.is_('converted_at', None).limit(1).execute()
+    return len(result.data) > 0
+```
+
+Fail-closed: if Supabase is unreachable at startup, assume commercial=True (block yfinance).
+
+#### What changes at commercial=True
+
+| Component | Personal (commercial=False) | Commercial (commercial=True) |
+|---|---|---|
+| Data source | yfinance + BSE + Bhavcopy | FMP ($14/mo) + BSE + Bhavcopy |
+| Layer 4 output | Rupee Kelly amounts | Direction + confidence only (no rupee) |
+| SEBI framing | "Signal X is BULLISH for Y" | Same — never imperative BUY |
+| CommercialLicenseError | Silently blocked in DataProvider | Raised if yfinance called |
+
+#### SEBI substance test (required in CI)
+
+The C9 test asserts SEBI disclaimer *presence*. Add C9b — substance test:
+- Assert no output contains imperative language: "BUY", "SELL", "invest in", "put money"
+- Assert Layer 4 labels read: "BULLISH signal" / "BEARISH signal" / "No signal" (never rupee amount when commercial=True)
+- Assert disclaimer text includes: "research purposes only" and "not investment advice"
+
+**Suppression-as-deliberate-state (Tanvi Rao UX note):** when the gate fires and rupee amounts are suppressed, the Path page transitions from "buy ₹72,500 of X" to "X is bullish." This must be presented as a designed, intentional state — not a degraded fallback — so the first paying subscriber's first impression is not a feature that vanished. The `licence_class` column (migration 0011) lets a query answer "is any commercially-served row from a personal-only provider," supporting the fail-closed check.
+
 ---
 
 ## Section 9 — Condition-to-Artifact Trace Matrix
@@ -911,4 +1056,44 @@ This protocol replaces the current pattern of discovering gaps at each review st
 
 ---
 
-*Design doc version 0.2 — Sections 1–9 complete. Status: READY FOR USER REVIEW.*
+## G0 Exit Gate — Updated (v0.4)
+
+*Upgraded in v0.4 — closes MA-12. The original gate ("6/6 + 10 seeds + ingest_status") could not catch the defects R1 found. The gate now tests the found defects directly.*
+
+Original: pytest 6/6 + 10 seed instruments + ingest_status populated
+
+Updated — ALL of the following must pass:
+
+1. pytest 6/6 (existing tests)
+2. test_signal_weights_single_active: assert no (lynch_class, regime, signal_name) tuple has 2+ ACTIVE rows
+3. test_missing_run_detection: stop ingest, advance mock clock, assert data_viewer renders staleness banner
+4. test_calibration_cold_start: assert p <= confidence/100 for all cold segments (p never inflated above raw confidence)
+5. test_sebi_substance: assert no UI text contains imperative buy/sell language
+6. test_kelly_no_rupee_without_downside: create a prediction with downside_target=NULL, assert Path page shows no rupee amount
+7. test_disclaimer_nonocculsion: assert last interactive element in Path page is not covered by .sebi-disclaimer bar (CSS padding-bottom check)
+8. 10 seed instruments loaded across ≥3 Lynch classifications
+9. ingest_status has ≥1 OK row
+10. All 2 new migrations (0011, 0012) applied without error
+
+---
+
+## v0.4 Migration Addenda (Section 2 supplement)
+
+*Migrations are the single source of truth (MA-7 / GAP-008). Section 2's inline SQL above reflects the original 0001–0011 set; v0.4 adds two migrations. The live files use date-prefixed names so they sort after the existing `20260621*` set.*
+
+**0011 — `20260622100011_schema_fixes.sql`** (batched per MA-9):
+- GAP-009: partial unique index `signal_weights_one_active_per_segment` on `(lynch_class, regime, signal_name) WHERE status='ACTIVE'`; `approve_signal_weight(p_id INT)` atomic demote-then-promote; `status` CHECK extended to include `'SUPERSEDED'`.
+- Imran idempotency: `accuracy_outcomes` gains `UNIQUE (prediction_id)`.
+- GAP-010 pre-work: `ohlcv.circuit_flag BOOLEAN DEFAULT FALSE`, `ohlcv.deliverable_volume BIGINT`.
+- GAP-012 pre-work: `ohlcv.licence_class TEXT CHECK (personal|commercial|open) DEFAULT 'personal'`.
+
+**0012 — `20260622100012_downside_target.sql`**:
+- GAP-001: `accuracy_predictions.downside_target NUMERIC(6,4) CHECK (>0 AND <=1.0)` — Kelly loss leg.
+
+**Reconciliation notes (MA-7):** the live `0009` UNIQUE includes `status` (the GAP-009 defect) — 0011's partial index is the fix; the live design-doc inline 0009 SQL above still shows the original UNIQUE and is retained for history with this note flagging it superseded. `signal_weights` has no `updated_at` column, so `approve_signal_weight` stamps `approved_at`; `signal_weights.id` is `SERIAL`, so the function takes `p_id INT` (not UUID).
+
+**GAP-010 is a HARD pre-G1 gate** (Buffett, Bhattacharya): circuit-locked / illiquid prints must be excluded from outcome scoring before the learning loop runs, or `peak_return_pct` corruption compounds quarterly. The 0011 columns are the schema pre-work; the `resolve_outcomes.py` exclusion logic is the G1 enforcement.
+
+---
+
+*Design doc version 0.4 — Sections 1–9 + G0 gate + commercial gate + migration addenda complete. Status: AMENDED POST-R1+R3-COUNCIL.*
