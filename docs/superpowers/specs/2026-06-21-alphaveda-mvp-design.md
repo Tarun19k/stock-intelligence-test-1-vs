@@ -1,6 +1,6 @@
 # AlphaVeda MVP Design
 **Date:** 2026-06-22  
-**Status:** v0.4 — AMENDED POST-R1+R3-COUNCIL — R1 Red Team 18 gaps + R3 Council MA-1..MA-14 applied; migrations 0011/0012 added; P0 chain + emit-time guards + commercial gate + upgraded G0 gate  
+**Status:** v0.5 — CORRECTIVE PASS (pre-R4 readiness council: C-1..C-4 closed)  
 **Author:** CoS (Claude Sonnet 4.6) + Tarun Kochhar  
 **Brainstorming session:** 2026-06-21, chief-of-staff + panel-convene workflow
 
@@ -440,7 +440,12 @@ SELECT
   COUNT(*)                          AS n_observations,
   AVG(o.is_correct::int)            AS hit_rate,
   AVG(o.peak_return_pct)            AS avg_peak_return,
-  AVG(o.actual_return * (CASE WHEN p.accuracy_streak_flag THEN 0.7 ELSE 1.0 END)) AS streak_adj_return
+  -- v0.5: streak discount removed from ledger SQL.
+  -- Discount now fires at emit time (step 3b), before confidence is written
+  -- to accuracy_predictions. Applying it again here compounded to 0.49 (×0.7×0.7),
+  -- overshooting the 0.7 design intent. The ledger measures post-discount outcomes
+  -- because the confidence stored on each prediction row is already discounted.
+  AVG(o.actual_return) AS streak_adj_return
 FROM accuracy_predictions p
 JOIN accuracy_outcomes o ON o.prediction_id = p.id
 GROUP BY p.lynch_class, p.regime_tag;
@@ -643,11 +648,16 @@ Rationale: macro regime does not change intraday, so per-calendar-day caching st
 
 **Step 3b — Apply emit-time streak discount (Guard 2 — Soros) [added in v0.4, closes GAP-004 / MA-4]:**
 ```
+Step 3b — Apply emit-time streak discount (Guard 2 — Soros):
     if compute_streak_flag(instrument_id, lynch_class, regime):
         confidence = confidence * STREAK_DISCOUNT_FACTOR  # 0.7
-        # Note: discount applied BEFORE Kelly and BEFORE ledger write.
-        # The ledger SQL also applies the discount (secondary check), but
-        # the primary guard fires here at emit time.
+        # PIPELINE CONTRACT (v0.5): discount fires HERE, before calibration.
+        # The calibration bins in Section 5.8 are learned from DISCOUNTED
+        # historical confidence values (predictions that were streaking have
+        # their stored confidence re-labeled with the 0.7 factor before
+        # bin-fitting). This ensures the reliability bin for confidence=70
+        # was learned from data where 70 already reflects the streak penalty.
+        # Do NOT calibrate first and discount second — that applies the wrong bin.
 ```
 *Rationale: in v0.3 the discount fired only at quarterly ledger aggregation, so at a reflexive cycle peak the engine sized UP exactly when Guard 2 was designed to size DOWN. The discount now fires at the live emit, before calibration and Kelly consume the confidence.*
 
@@ -724,6 +734,66 @@ determines what — if anything — is emitted and logged to the accuracy ledger
 ARBITRATION_MARGIN = 15.0  # suppress emission if weighted scores are within 15 points
 
 **Trace matrix:** C-ARB — test_arbitration_suppression + test_arbitration_bull_wins + test_arbitration_bear_wins
+
+### 5.7b Downside Target Producer (downside.py)
+
+*Added in v0.5 — closes C-2 (pre-R4 readiness). Without this module, `downside_target` is always NULL → Kelly returns 0 → Layer 4 rupee output never renders. MA-3 ("specify where downside_target comes from") is resolved here.*
+
+**File:** `src/signals/downside.py`
+
+**Purpose:** Produce the loss-leg fraction (`downside_target`) for every signal emit. Kelly requires `b = magnitude_target / downside_target`; this module ensures `downside_target` is never NULL on a live prediction.
+
+**Constant (constants.py):**
+```python
+ATR_PERIOD = 14          # lookback for Average True Range
+ATR_MULTIPLIER = 1.0     # downside_target = ATR(14) / price × ATR_MULTIPLIER
+```
+
+**Logic:**
+```python
+# src/signals/downside.py
+
+def compute_downside_target(
+    instrument_id: int,
+    signal_stop_loss_pct: float | None,
+    ohlcv_rows: list[dict],          # last ATR_PERIOD+1 rows, sorted oldest→newest
+) -> float:
+    """
+    Returns downside_target as a positive fraction (e.g. 0.07 = 7% downside).
+
+    Priority:
+      1. If the signal emits an explicit stop_loss_pct, use it directly.
+      2. Else compute ATR(14)/price as the default loss leg.
+
+    ATR(14) = average over last 14 days of:
+        True Range = max(high - low, |high - prev_close|, |low - prev_close|)
+    downside_target = ATR(14) / current_close
+
+    Floor: 0.01 (1%) — prevents division-by-zero in Kelly when ATR is negligible.
+    Cap:   0.30 (30%) — prevents Kelly from sizing down to zero on extreme vol.
+    """
+    if signal_stop_loss_pct is not None:
+        return max(0.01, min(0.30, signal_stop_loss_pct))
+
+    if len(ohlcv_rows) < 2:
+        return 0.05  # fallback: 5% if insufficient history
+
+    true_ranges = []
+    for i in range(1, len(ohlcv_rows)):
+        h  = ohlcv_rows[i]['high']
+        l  = ohlcv_rows[i]['low']
+        pc = ohlcv_rows[i-1]['close']
+        true_ranges.append(max(h - l, abs(h - pc), abs(l - pc)))
+
+    atr = sum(true_ranges[-ATR_PERIOD:]) / min(ATR_PERIOD, len(true_ranges))
+    current_close = ohlcv_rows[-1]['close']
+    raw = atr / current_close if current_close > 0 else 0.05
+    return max(0.01, min(0.30, raw))
+```
+
+**Integration:** Called in the signal emit flow (Section 5, step 6) immediately before writing to `accuracy_predictions`. Result stored in `accuracy_predictions.downside_target` (migration 0012).
+
+**Trace matrix:** C-DWN — `test_downside_atr_default`, `test_downside_signal_override`, `test_downside_floor_cap`
 
 ### 5.8 Confidence Calibration
 
@@ -1056,24 +1126,24 @@ This protocol replaces the current pattern of discovering gaps at each review st
 
 ---
 
-## G0 Exit Gate — Updated (v0.4)
+## G0 Exit Gate — Updated (v0.5)
 
-*Upgraded in v0.4 — closes MA-12. The original gate ("6/6 + 10 seeds + ingest_status") could not catch the defects R1 found. The gate now tests the found defects directly.*
+*Upgraded in v0.5 — closes C-4 (pre-R4 readiness): criterion ordering fixed (10 before 2), dup-ACTIVE fixture added, no-row missing-run criterion added.*
 
-Original: pytest 6/6 + 10 seed instruments + ingest_status populated
+**MANDATORY: criteria run in the order listed. Criterion 10 MUST complete before criterion 2.**
 
-Updated — ALL of the following must pass:
+1. **[LAST — must be confirmed before 2–9 run]** All migrations (0001–0013) applied without error on the target DB. This is criterion 1 in *execution order* even though listed last for numbering continuity.
+2. `test_signal_weights_single_active`: seed a duplicate ACTIVE row for one segment (fixture), run the uniqueness check, assert it is caught and rejected. **Requires criterion 1 (migrations applied) to be verified first — index does not exist on a fresh DB.**
+3. `test_missing_run_stale`: stop ingest, advance mock clock past cron window, assert data_viewer renders staleness banner.
+4. `test_missing_run_no_row`: clear ingest_status entirely (zero rows), assert watcher fires red banner on next data_viewer load. *(New — closes the "no row at all" gap.)*
+5. `test_calibration_cold_start`: assert calibrated p ≤ confidence/100 for all cold segments.
+6. `test_sebi_substance`: assert no UI text contains imperative BUY/SELL language.
+7. `test_kelly_no_rupee_without_downside`: create prediction with downside_target=NULL, assert Path page shows no rupee amount.
+8. `test_kelly_rupee_with_downside`: create prediction with downside_target=0.07 and magnitude_target=0.15, assert Path page renders a non-zero rupee amount (b=2.14, formula is live).
+9. `test_disclaimer_nonocculsion`: assert last interactive element in Path page clears the .sebi-disclaimer bar.
+10. 10 seed instruments loaded across ≥3 Lynch classifications; ingest_status has ≥1 OK row; migrations 0001–0013 applied.
 
-1. pytest 6/6 (existing tests)
-2. test_signal_weights_single_active: assert no (lynch_class, regime, signal_name) tuple has 2+ ACTIVE rows
-3. test_missing_run_detection: stop ingest, advance mock clock, assert data_viewer renders staleness banner
-4. test_calibration_cold_start: assert p <= confidence/100 for all cold segments (p never inflated above raw confidence)
-5. test_sebi_substance: assert no UI text contains imperative buy/sell language
-6. test_kelly_no_rupee_without_downside: create a prediction with downside_target=NULL, assert Path page shows no rupee amount
-7. test_disclaimer_nonocculsion: assert last interactive element in Path page is not covered by .sebi-disclaimer bar (CSS padding-bottom check)
-8. 10 seed instruments loaded across ≥3 Lynch classifications
-9. ingest_status has ≥1 OK row
-10. All 2 new migrations (0011, 0012) applied without error
+**Execution order:** Run criterion 10 first (apply + seed). Then 1→9. Criterion 2 fixture requires the partial index from migration 0013 to exist or it tests nothing.
 
 ---
 
