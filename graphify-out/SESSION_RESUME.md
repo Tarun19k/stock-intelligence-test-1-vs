@@ -124,27 +124,23 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 
 ## EXACT RESUME POINT — UPDATED 2026-06-22 (post-council)
 
-**NEXT ACTION: Block 5 — R4 Synthesis with 21st voice**
+**NEXT ACTION: Block 6 — Pre-build implementation (Phase 1–6)**
 
-Block 3.1 must be executed in this exact sequence (dependency order is mandatory):
+Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build sequence:
 
-| Step | Action | What changes |
+| Phase | Content | Day |
 |---|---|---|
-| 3.1-A | Reconcile doc vs live migrations (MA-7) | Migrations = source of truth; re-anchor inline SQL |
-| 3.1-B | Migration 0011: GAP-009 hotfix + batched schema additions (MA-1, MA-9) | partial UNIQUE WHERE status='ACTIVE', circuit_flag, licence_class, outcomes idempotency |
-| 3.1-C | Migration 0012: downside_target + source rule (MA-2, MA-3) | `ALTER TABLE accuracy_predictions ADD COLUMN downside_target` |
-| 3.1-D | Doc v0.4: P0s in dependency order: arbitration → confidence function → calibration → Kelly (MA-13) | GAP-003, GAP-002, GAP-001 |
-| 3.1-E | Doc v0.4: emit-time fixes (MA-4, MA-5, MA-6) | GAP-004 streak discount at emit, GAP-005 E2 redesign, GAP-007 regime join |
-| 3.1-F | Doc v0.4: commercial gate design (MA-8) | converted_at → suppress rupee + block yfinance, fail-closed, substance test |
-| 3.1-G | Doc v0.4: upgraded G0 gate spec (MA-12) | Add tests: single-ACTIVE-weight, missing-run, calibration sanity, SEBI substance |
+| Phase 1 (Foundation) | Create repo, apply 13 migrations, constants.py, .claude/rules/, seed 10 instruments | Day 1 |
+| Phase 2 (Data layer) | config.py, regime.py, provider.py, cycle_phase.py | Day 1–2 |
+| Phase 3 (Signal layer) | ledger.py, downside.py, arbitration.py, weights.py, engine.py | Day 2–3 |
+| Phase 4 (Portfolio layer) | buckets.py, optimizer.py with Kelly + E1-E4 | Day 3 |
+| Phase 5 (Presentation) | app.py + 4 pages (data_viewer, signals, path, accuracy) | Day 4 |
+| Phase 6 (GHA ingest) | 5 ingest scripts + resolve_outcomes.py + ingest.yml | Day 4–5 |
 
-**Before R4 (Block 5):**
-- MA-10: Give T3 a deadline + fallback pricing assumption
-- MA-11: Seat Wealth & Revenue Strategist as 21st council voice
-
-**After Block 3.1:**
-- Block 5: R4 Synthesis (GO/HOLD/REVISE) — needs Wealth & Revenue Strategist + T3 deadline set
-- Block 6: Pre-build implementation — data layer can start in PARALLEL with v0.4 math amendments (Q4 approved by council)
+**Pre-G1 tracked items (not blocking build):**
+- GAP-006: keepalive strategy for GHA + Supabase free tier (before first billing)
+- calibration.py interface spec (before G1 regression suite)
+- approve_signal_weight RLS caller-identity check (before G2)
 
 ---
 
@@ -210,9 +206,9 @@ Block 3.1 must be executed in this exact sequence (dependency order is mandatory
 | Block 3.1 | v0.4 + migrations 0011/0012 + gates (7 steps) | ✓ COMPLETE (73c242f) |
 | pre-R4 council | 21-voice readiness check → CONDITIONAL READY (82917e5) | ✓ COMPLETE |
 | v0.5 corrective | C-1..C-4 closed: 0013 migration + downside.py + pipeline order + G0 gate | ✓ COMPLETE (7c9ec93) |
-| Block 5 | R4 Synthesis — 21st voice seated, T3 fallback ₹999 locked | ⏳ NEXT — READY |
-| Block 6 | Pre-build: data layer in parallel, math after R4 | After Block 5 GO |
-| Block 7 | G0 gate (pytest 6/6 + seeds + upgraded tests) | After Block 6 + T2 |
+| Block 5 (R4) | 21-voice synthesis → CONDITIONAL GO, BC-1..BC-8 applied, design doc v0.6 | ✓ COMPLETE (b7baaa3) |
+| Block 6 | Pre-build implementation (Phase 1–6 per R4 build sequence) | ⏳ NEXT — READY |
+| Block 7 | G0 gate (10 criteria: 9 tests + 1 seed) | After Block 6 + T2 |
 | Block 8 | Post-G0 (G1, auth, GHA cron) | Future sessions |
 
 ---
