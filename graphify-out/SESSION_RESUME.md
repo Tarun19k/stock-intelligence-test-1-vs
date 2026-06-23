@@ -124,7 +124,10 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 
 ## EXACT RESUME POINT — UPDATED 2026-06-22 (post-council)
 
-**NEXT ACTION: Block 6 — Pre-build implementation (Phase 1–6)**
+**NEXT ACTION: G-MIG gate → Phase 2 Data Layer**
+
+Phase 1 is COMPLETE (1ae8e37). G-MIG gate is blocked on Supabase MCP auth.
+After Supabase auth completes: apply migrations 0012+0013, re-run G-MIG, then start Phase 2.
 
 Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build sequence:
 
@@ -207,7 +210,9 @@ Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build
 | pre-R4 council | 21-voice readiness check → CONDITIONAL READY (82917e5) | ✓ COMPLETE |
 | v0.5 corrective | C-1..C-4 closed: 0013 migration + downside.py + pipeline order + G0 gate | ✓ COMPLETE (7c9ec93) |
 | Block 5 (R4) | 21-voice synthesis → CONDITIONAL GO, BC-1..BC-8 applied, design doc v0.6 | ✓ COMPLETE (b7baaa3) |
-| Block 6 | Pre-build implementation (Phase 1–6 per R4 build sequence) | ⏳ NEXT — READY |
+| Block 6 Phase 1 | alphaveda/ scaffold: constants, rules, TDD suite, waitlist page | ✓ COMPLETE (1ae8e37) |
+| G-MIG gate | 11/13 tables PASS; migrations 0012+0013 NOT applied (400) | ⏳ BLOCKED: Supabase auth |
+| Block 6 Phase 2 | Data layer: config.py, regime.py, provider.py, cycle_phase.py | ⏳ AFTER G-MIG PASS |
 | Block 7 | G0 gate (10 criteria: 9 tests + 1 seed) | After Block 6 + T2 |
 | Block 8 | Post-G0 (G1, auth, GHA cron) | Future sessions |
 
