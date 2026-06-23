@@ -105,6 +105,8 @@ def test_c6_sebi_substance():
 
 def test_c7_kelly_no_rupee_without_downside():
     """Criterion 7: Kelly returns 0 when downside_target is None."""
+    pytest.importorskip("src.portfolio.optimizer",
+                        reason="Phase 4 — src/portfolio/optimizer.py not yet implemented")
     from src.portfolio.optimizer import kelly_position_size
     from constants import PORTFOLIO_VALUE
     result = kelly_position_size(p=0.65, magnitude_target=0.15,
@@ -115,6 +117,8 @@ def test_c7_kelly_no_rupee_without_downside():
 
 def test_c8_kelly_rupee_with_downside():
     """Criterion 8: Kelly returns non-zero rupee with valid downside_target."""
+    pytest.importorskip("src.portfolio.optimizer",
+                        reason="Phase 4 — src/portfolio/optimizer.py not yet implemented")
     from src.portfolio.optimizer import kelly_position_size
     from constants import PORTFOLIO_VALUE
     result = kelly_position_size(p=0.65, magnitude_target=0.15,

@@ -228,25 +228,25 @@ class TestShakaniConditions:
 
     @skip_no_db
     def test_no_duplicate_active_per_segment(self, supabase_client):
-        """Partial unique index on signal_weights WHERE status='ACTIVE' must enforce this."""
+        """Partial unique index on signal_weights(lynch_class, regime) WHERE status='ACTIVE'."""
         from uuid import uuid4
-        test_segment = f"test_seg_{uuid4().hex[:8]}"
+        unique_signal = f"_test_shakani_{uuid4().hex[:8]}"
         row1 = {
-            "segment": test_segment, "signal_name": "roic", "weight": 0.5,
-            "status": "ACTIVE", "approved_by": "tarun"
+            "lynch_class": "stalwart", "regime": "RISK_ON",
+            "signal_name": unique_signal, "weight": 0.5,
+            "status": "ACTIVE", "approved_by": "tarun",
         }
-        row2 = {
-            "segment": test_segment, "signal_name": "fcf", "weight": 0.5,
-            "status": "ACTIVE", "approved_by": "tarun"
-        }
+        inserted_id = None
         try:
-            supabase_client.table("signal_weights").insert(row1).execute()
-            supabase_client.table("signal_weights").insert(row2).execute()
-            pytest.fail("Should have raised on duplicate ACTIVE signal for same segment")
-        except Exception:
-            pass  # expected — unique index fires
+            r1 = supabase_client.table("signal_weights").insert(row1).execute()
+            assert len(r1.data) == 1, "First insert should succeed"
+            inserted_id = r1.data[0]["id"]
+            # Second insert with same lynch_class+regime+ACTIVE must violate unique index
+            with pytest.raises(Exception):
+                supabase_client.table("signal_weights").insert(row1).execute()
         finally:
-            supabase_client.table("signal_weights").delete().eq("segment", test_segment).execute()
+            if inserted_id:
+                supabase_client.table("signal_weights").delete().eq("id", inserted_id).execute()
 
 
 # ─────────────────────────────────────────────────────────────────────────────

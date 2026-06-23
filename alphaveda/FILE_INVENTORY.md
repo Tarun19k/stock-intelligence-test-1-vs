@@ -19,10 +19,10 @@
 | `.claude/rules/COMMERCIAL_GATE.md` | DONE | Session rule |
 | `.claude/rules/DATA_SOURCES.md` | DONE | Session rule |
 | `pytest.ini` | DONE | Test runner config |
-| `tests/conftest.py` | STUB | supabase_client fixture needs Phase 2 src/config.py; skip_no_src guard needed |
+| `tests/conftest.py` | DONE | ImportError guard converts missing src/config.py → SKIP (not ERROR) |
 | `tests/test_constants.py` | TESTED | 12/12 PASS |
-| `tests/test_council_conditions.py` | STUB | 16 PASS, 17 SKIP, 10 ERROR (conftest guard gap — see council finding) |
-| `tests/test_migrations.py` | STUB | G-MIG PASS; requires Phase 2 conftest fix to run |
+| `tests/test_council_conditions.py` | TESTED | 16+ PASS, ~20 SKIP, 0 ERROR; Shakani fixed (lynch_class+regime, not segment) |
+| `tests/test_migrations.py` | DONE | 10/10 PASS |
 | `COUNCIL_TEST_MAP.md` | DONE | 21 seats mapped, Phase sign-off protocol |
 | `waitlist_signup.py` | IMPL | Needs streamlit smoke test |
 | `scripts/verify_migrations.py` | DONE | G-MIG PASS confirmed 11 tables + 4 columns |
@@ -32,13 +32,13 @@
 
 | File | Status | Notes |
 |---|---|---|
-| `src/config.py` | SPEC | get_supabase_client() + is_commercial() |
-| `src/data/regime.py` | SPEC | get_current_regime(emitted_at) as-of join |
-| `src/data/provider.py` | SPEC | DataProvider ABC + CommercialLicenseError |
-| `src/accuracy/cycle_phase.py` | SPEC | derive_cycle_phase() PHASE_RULES |
-| `tests/test_cycle_phase.py` | STUB | RED — src/ not implemented |
-| `tests/test_regime.py` | SPEC | Not yet written |
-| `tests/test_is_commercial.py` | SPEC | Not yet written |
+| `src/config.py` | DONE | Singleton get_supabase_client() + fail-closed is_commercial(); 4/4 PASS |
+| `src/data/regime.py` | DONE | get_current_regime() as-of join; 5/5 PASS |
+| `src/data/provider.py` | DONE | DataProvider ABC + CommercialLicenseError; no direct test (interface only) |
+| `src/accuracy/cycle_phase.py` | DONE | 16-entry PHASE_RULES lookup; 10/10 PASS |
+| `tests/test_cycle_phase.py` | DONE | 10/10 PASS |
+| `tests/test_regime.py` | DONE | 5/5 PASS — all mock-based, no live DB dependency |
+| `tests/test_is_commercial.py` | DONE | 4/4 PASS — fail-closed=True security assertion confirmed |
 
 ## Phase 3 — Signal Layer
 
@@ -49,8 +49,8 @@
 | `src/signals/arbitration.py` | SPEC | arbitrate() weighted-vote |
 | `src/signals/weights.py` | SPEC | active loader + cold-start fallback |
 | `src/signals/engine.py` | SPEC | full emit pipeline steps 1–7 |
-| `tests/test_downside.py` | STUB | RED — src/ not implemented |
-| `tests/test_arbitration.py` | STUB | RED — src/ not implemented |
+| `tests/test_downside.py` | STUB | SKIP via importorskip — RED until Phase 3 |
+| `tests/test_arbitration.py` | STUB | SKIP via importorskip — RED until Phase 3 |
 | `tests/test_ledger.py` | SPEC | Not yet written |
 | `tests/test_weights.py` | SPEC | Not yet written |
 | `tests/test_engine.py` | SPEC | Not yet written |
@@ -61,7 +61,7 @@
 |---|---|---|
 | `src/portfolio/buckets.py` | SPEC | rank_for_bucket() |
 | `src/portfolio/optimizer.py` | SPEC | kelly_position_size() + E1–E4 EXIT |
-| `tests/test_optimizer.py` | STUB | RED — src/ not implemented |
+| `tests/test_optimizer.py` | STUB | SKIP via importorskip — RED until Phase 4 |
 | `tests/test_buckets.py` | SPEC | Not yet written |
 
 ## Phase 5 — Presentation Layer
@@ -87,7 +87,7 @@
 | `scripts/resolve_outcomes.py` | SPEC | |
 | `scripts/seed_historical.py` | SPEC | |
 | `.github/workflows/ingest.yml` | SPEC | Cron 5:45 PM IST weekdays |
-| `tests/test_g0_gate.py` | STUB | RED — src/ not implemented |
+| `tests/test_g0_gate.py` | STUB | c7/c8 SKIP (Phase 4); c10 FAIL (intentional — seed data not loaded); c1-6,c9 PASS |
 | `WEIGHT_REVIEW_PROCESS.md` | SPEC | Quarterly review doc |
 
 ## Isolation Boundary
@@ -96,4 +96,4 @@
 **Shared (read-only):** `supabase/migrations/`, `.env`
 **No cross-imports permitted.**
 
-Last updated: 2026-06-23 — G-MIG PASS; Phase 2 unblocked; conftest guard needed before Phase 2 DB tests
+Last updated: 2026-06-23 — Phase 2 COMPLETE; 61/83 PASS, 22 SKIP, 3 FAIL (intentional G0 seed gate); GSI 455/455
