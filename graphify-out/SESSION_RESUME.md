@@ -124,16 +124,23 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 
 ## EXACT RESUME POINT — UPDATED 2026-06-23 (council-in-test-suite complete)
 
-**NEXT ACTION: G-MIG gate → Phase 2 Data Layer**
+**NEXT ACTION: Phase 2 — Data Layer**
 
-Phase 1 is COMPLETE (1ae8e37). COUNCIL_TEST_MAP.md + test_council_conditions.py created (current session).
-G-MIG gate is blocked: apply migrations 0012+0013 via Supabase dashboard, then start Phase 2.
+G-MIG PASS (verified this session). supabase-py installed (pip3 install supabase>=2.4.0).
+Phase 2 is unblocked. Agent-builder can now start: src/config.py → src/data/regime.py → src/data/provider.py → src/accuracy/cycle_phase.py.
 
-**Fastest unblock path (Tarun):**
-1. Go to supabase.com/dashboard/project/kowlkczswaglbmabygtl/sql/new
-2. Paste + run: `supabase/migrations/20260622100012_add_downside_target.sql`
-3. Paste + run: `supabase/migrations/20260622100013_schema_fixes.sql`
-4. Confirm: `curl -H "apikey: $SERVICE_KEY" "$SUPABASE_URL/rest/v1/accuracy_predictions?select=downside_target&limit=1"` → expect 200
+Phase 2 file list (all SPEC → implement to GREEN):
+- `src/config.py`: get_supabase_client(), is_commercial() (fail-closed=True)
+- `src/data/regime.py`: get_current_regime(emitted_at) as-of join on macro_regime
+- `src/data/provider.py`: DataProvider ABC, CommercialLicenseError
+- `src/accuracy/cycle_phase.py`: derive_cycle_phase(), PHASE_RULES dict
+
+Phase 2 tests to write + turn GREEN:
+- test_cycle_phase.py (already stubbed RED)
+- test_regime.py (not yet written)
+- test_is_commercial.py (not yet written)
+
+Phase 2 council sign-off required: Dalio, Marks, Imran, Constraint Enforcer (Sonnet)
 
 Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build sequence:
 
@@ -217,8 +224,8 @@ Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build
 | v0.5 corrective | C-1..C-4 closed: 0013 migration + downside.py + pipeline order + G0 gate | ✓ COMPLETE (7c9ec93) |
 | Block 5 (R4) | 21-voice synthesis → CONDITIONAL GO, BC-1..BC-8 applied, design doc v0.6 | ✓ COMPLETE (b7baaa3) |
 | Block 6 Phase 1 | alphaveda/ scaffold: constants, rules, TDD suite, waitlist page | ✓ COMPLETE (1ae8e37) |
-| Council test suite | COUNCIL_TEST_MAP.md + tests/test_council_conditions.py (21 seats mapped) | ✓ COMPLETE (this session) |
-| G-MIG gate | 11/13 tables PASS; migrations 0012+0013 NOT applied (400) | ⏳ BLOCKED: Dashboard paste needed |
+| Council test suite | COUNCIL_TEST_MAP.md + tests/test_council_conditions.py (21 seats mapped) | ✓ COMPLETE (4517d80) |
+| G-MIG gate | 11 tables + 4 columns (downside_target, circuit_flag, deliverable_volume, licence_class) | ✓ PASS |
 | Block 6 Phase 2 | Data layer: config.py, regime.py, provider.py, cycle_phase.py | ⏳ AFTER G-MIG PASS |
 | Block 7 | G0 gate (10 criteria: 9 tests + 1 seed) | After Block 6 + T2 |
 | Block 8 | Post-G0 (G1, auth, GHA cron) | Future sessions |
