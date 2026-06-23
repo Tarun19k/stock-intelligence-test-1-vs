@@ -19,11 +19,13 @@
 | `.claude/rules/COMMERCIAL_GATE.md` | DONE | Session rule |
 | `.claude/rules/DATA_SOURCES.md` | DONE | Session rule |
 | `pytest.ini` | DONE | Test runner config |
-| `tests/conftest.py` | STUB | Requires src/config.py for supabase_client fixture |
-| `tests/test_constants.py` | IMPL | Needs pytest run to confirm TESTED |
-| `tests/test_migrations.py` | IMPL | Needs live DB + G-MIG gate run |
+| `tests/conftest.py` | STUB | supabase_client fixture needs Phase 2 src/config.py; skip_no_src guard needed |
+| `tests/test_constants.py` | TESTED | 12/12 PASS |
+| `tests/test_council_conditions.py` | STUB | 16 PASS, 17 SKIP, 10 ERROR (conftest guard gap — see council finding) |
+| `tests/test_migrations.py` | STUB | G-MIG PASS; requires Phase 2 conftest fix to run |
+| `COUNCIL_TEST_MAP.md` | DONE | 21 seats mapped, Phase sign-off protocol |
 | `waitlist_signup.py` | IMPL | Needs streamlit smoke test |
-| `scripts/verify_migrations.py` | IMPL | Needs G-MIG gate run |
+| `scripts/verify_migrations.py` | DONE | G-MIG PASS confirmed 11 tables + 4 columns |
 | `FILE_INVENTORY.md` | DONE | This file |
 
 ## Phase 2 — Data Layer
@@ -94,4 +96,4 @@
 **Shared (read-only):** `supabase/migrations/`, `.env`
 **No cross-imports permitted.**
 
-Last updated: 2026-06-23 — Phase 1 scaffold complete
+Last updated: 2026-06-23 — G-MIG PASS; Phase 2 unblocked; conftest guard needed before Phase 2 DB tests

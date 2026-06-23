@@ -14,8 +14,13 @@ load_dotenv(_env_path, override=False)
 
 @pytest.fixture(scope="session")
 def supabase_client():
-    """Live Supabase client — requires SUPABASE_URL + SUPABASE_SERVICE_KEY in .env."""
-    from src.config import get_supabase_client
+    """Live Supabase client — requires Phase 2 src/config.py + SUPABASE_URL in .env.
+    Skips cleanly when src/config.py is not yet implemented (Phase 1 state).
+    """
+    try:
+        from src.config import get_supabase_client
+    except ImportError:
+        pytest.skip("src/config.py not yet implemented — Phase 2 required")
     return get_supabase_client()
 
 
