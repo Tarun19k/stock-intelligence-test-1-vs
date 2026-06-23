@@ -259,12 +259,12 @@ class TestConstraintEnforcerConditions:
 
     @pytest.mark.skip(reason="src/config.py not yet implemented — Phase 2")
     def test_is_commercial_fail_closed(self):
-        """Any exception in DB check → is_commercial() returns False (fail-closed)."""
+        """Any exception in DB check → is_commercial() returns True (fail-closed: block yfinance when state unknown)."""
         from src.config import is_commercial
         import unittest.mock as mock
         with mock.patch("src.config.get_supabase_client", side_effect=Exception("DB unreachable")):
             result = is_commercial()
-        assert result is False  # fail-closed: default to non-commercial on error
+        assert result is True  # fail-closed for licensing: unknown state → treat as commercial, block yfinance
 
     @pytest.mark.skip(reason="src/config.py not yet implemented — Phase 2")
     def test_is_commercial_true_when_subscriber_exists(self, supabase_client):
