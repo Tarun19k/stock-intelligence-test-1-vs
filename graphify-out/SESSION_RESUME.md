@@ -122,25 +122,31 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 
 ---
 
-## EXACT RESUME POINT — UPDATED 2026-06-23 (council-in-test-suite complete)
+## EXACT RESUME POINT — UPDATED 2026-06-23 (Phase 2 COMPLETE, council signed off)
 
-**NEXT ACTION: Phase 2 — Data Layer**
+**NEXT ACTION: Phase 3 — Signal Layer**
 
-G-MIG PASS (verified this session). supabase-py installed (pip3 install supabase>=2.4.0).
-Phase 2 is unblocked. Agent-builder can now start: src/config.py → src/data/regime.py → src/data/provider.py → src/accuracy/cycle_phase.py.
+Phase 2 COMPLETE (commit ce9cba9). Test state: 61 PASS / 22 SKIP / 3 FAIL (intentional G0 gate — instruments/ingest_status not yet seeded).
+Phase 2 council sign-off: Dalio ✓ Marks ✓ Imran ✓ Constraint Enforcer ✓ (all PASS).
+GSI regression: 455/455 PASS.
 
-Phase 2 file list (all SPEC → implement to GREEN):
-- `src/config.py`: get_supabase_client(), is_commercial() (fail-closed=True)
-- `src/data/regime.py`: get_current_regime(emitted_at) as-of join on macro_regime
-- `src/data/provider.py`: DataProvider ABC, CommercialLicenseError
-- `src/accuracy/cycle_phase.py`: derive_cycle_phase(), PHASE_RULES dict
+Phase 3 file list (all SPEC → TDD: write test RED → implement → GREEN):
+- `src/accuracy/ledger.py`: compute_streak_flag() — consecutive correct streak counter
+- `src/signals/downside.py`: compute_downside_target() — ATR(14)/price with signal override + clamps
+- `src/signals/arbitration.py`: arbitrate() — weighted-vote, ARBITRATION_MARGIN suppression
+- `src/signals/weights.py`: active loader from signal_weights table + cold-start fallback
+- `src/signals/engine.py`: full emit pipeline steps 1–7
 
-Phase 2 tests to write + turn GREEN:
-- test_cycle_phase.py (already stubbed RED)
-- test_regime.py (not yet written)
-- test_is_commercial.py (not yet written)
+Phase 3 test stubs (already written, currently SKIP via importorskip):
+- test_downside.py (7 tests)
+- test_arbitration.py (6 tests)
+- tests to write: test_ledger.py, test_weights.py, test_engine.py
 
-Phase 2 council sign-off required: Dalio, Marks, Imran, Constraint Enforcer (Sonnet)
+Phase 3 council sign-off required: Soros, Druckenmiller, Shakuni, Constraint Enforcer (Sonnet)
+
+Additional bug fixes done this session (not in pre-compaction plan):
+- Shakani test: `segment` column → `lynch_class`+`regime` (correct partial-index columns)
+- test_g0_gate.py c7/c8: added importorskip guard (was failing with ModuleNotFoundError)
 
 Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build sequence:
 
@@ -226,7 +232,7 @@ Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build
 | Block 6 Phase 1 | alphaveda/ scaffold: constants, rules, TDD suite, waitlist page | ✓ COMPLETE (1ae8e37) |
 | Council test suite | COUNCIL_TEST_MAP.md + tests/test_council_conditions.py (21 seats mapped) | ✓ COMPLETE (4517d80) |
 | G-MIG gate | 11 tables + 4 columns (downside_target, circuit_flag, deliverable_volume, licence_class) | ✓ PASS |
-| Block 6 Phase 2 | Data layer: config.py, regime.py, provider.py, cycle_phase.py | ⏳ AFTER G-MIG PASS |
+| Block 6 Phase 2 | Data layer: config.py, regime.py, provider.py, cycle_phase.py | ✓ COMPLETE (ce9cba9) |
 | Block 7 | G0 gate (10 criteria: 9 tests + 1 seed) | After Block 6 + T2 |
 | Block 8 | Post-G0 (G1, auth, GHA cron) | Future sessions |
 
