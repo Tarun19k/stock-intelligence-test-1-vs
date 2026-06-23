@@ -122,12 +122,18 @@ Found while writing expert personas — not yet actioned, mandatory challenge ta
 
 ---
 
-## EXACT RESUME POINT — UPDATED 2026-06-22 (post-council)
+## EXACT RESUME POINT — UPDATED 2026-06-23 (council-in-test-suite complete)
 
 **NEXT ACTION: G-MIG gate → Phase 2 Data Layer**
 
-Phase 1 is COMPLETE (1ae8e37). G-MIG gate is blocked on Supabase MCP auth.
-After Supabase auth completes: apply migrations 0012+0013, re-run G-MIG, then start Phase 2.
+Phase 1 is COMPLETE (1ae8e37). COUNCIL_TEST_MAP.md + test_council_conditions.py created (current session).
+G-MIG gate is blocked: apply migrations 0012+0013 via Supabase dashboard, then start Phase 2.
+
+**Fastest unblock path (Tarun):**
+1. Go to supabase.com/dashboard/project/kowlkczswaglbmabygtl/sql/new
+2. Paste + run: `supabase/migrations/20260622100012_add_downside_target.sql`
+3. Paste + run: `supabase/migrations/20260622100013_schema_fixes.sql`
+4. Confirm: `curl -H "apikey: $SERVICE_KEY" "$SUPABASE_URL/rest/v1/accuracy_predictions?select=downside_target&limit=1"` → expect 200
 
 Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build sequence:
 
@@ -211,7 +217,8 @@ Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build
 | v0.5 corrective | C-1..C-4 closed: 0013 migration + downside.py + pipeline order + G0 gate | ✓ COMPLETE (7c9ec93) |
 | Block 5 (R4) | 21-voice synthesis → CONDITIONAL GO, BC-1..BC-8 applied, design doc v0.6 | ✓ COMPLETE (b7baaa3) |
 | Block 6 Phase 1 | alphaveda/ scaffold: constants, rules, TDD suite, waitlist page | ✓ COMPLETE (1ae8e37) |
-| G-MIG gate | 11/13 tables PASS; migrations 0012+0013 NOT applied (400) | ⏳ BLOCKED: Supabase auth |
+| Council test suite | COUNCIL_TEST_MAP.md + tests/test_council_conditions.py (21 seats mapped) | ✓ COMPLETE (this session) |
+| G-MIG gate | 11/13 tables PASS; migrations 0012+0013 NOT applied (400) | ⏳ BLOCKED: Dashboard paste needed |
 | Block 6 Phase 2 | Data layer: config.py, regime.py, provider.py, cycle_phase.py | ⏳ AFTER G-MIG PASS |
 | Block 7 | G0 gate (10 criteria: 9 tests + 1 seed) | After Block 6 + T2 |
 | Block 8 | Post-G0 (G1, auth, GHA cron) | Future sessions |
