@@ -111,13 +111,11 @@ class TestSorosConditions:
 class TestMarksConditions:
     """Marks: cycle_phase derivation must be deterministic and exhaustive."""
 
-    @pytest.mark.skip(reason="src/accuracy/cycle_phase.py not yet implemented — Phase 2")
     def test_risk_on_above_ma_low_vix_is_mid_bull(self):
         from src.accuracy.cycle_phase import derive_cycle_phase
         phase = derive_cycle_phase("RISK_ON", nifty_close=22000, nifty_200ma=20000, vix=15.0)
         assert phase == "mid_bull"
 
-    @pytest.mark.skip(reason="src/accuracy/cycle_phase.py not yet implemented — Phase 2")
     def test_all_results_are_valid_phases(self):
         from src.accuracy.cycle_phase import derive_cycle_phase, PHASE_RULES
         VALID_PHASES = {"early_bull", "mid_bull", "late_bull", "early_bear", "mid_bear", "late_bear"}
@@ -130,7 +128,6 @@ class TestMarksConditions:
             )
             assert result in VALID_PHASES, f"PHASE_RULES entry produced invalid phase: {result}"
 
-    @pytest.mark.skip(reason="src/accuracy/cycle_phase.py not yet implemented — Phase 2")
     def test_never_returns_none(self):
         from src.accuracy.cycle_phase import derive_cycle_phase
         result = derive_cycle_phase("RISK_OFF", nifty_close=18000, nifty_200ma=20000, vix=30.0)
@@ -223,7 +220,7 @@ class TestBhattacharyaConditions:
         assert result.data is not None
 
 
-class TestShakaniConditions:
+class TestShakuniConditions:
     """Shakuni: Duplicate ACTIVE signal_weights per segment must be impossible."""
 
     @skip_no_db
@@ -257,7 +254,6 @@ class TestShakaniConditions:
 class TestConstraintEnforcerConditions:
     """Constraint Enforcer: commercial gate is fail-closed; SEBI rules are non-negotiable."""
 
-    @pytest.mark.skip(reason="src/config.py not yet implemented — Phase 2")
     def test_is_commercial_fail_closed(self):
         """Any exception in DB check → is_commercial() returns True (fail-closed: block yfinance when state unknown)."""
         from src.config import is_commercial
@@ -266,12 +262,16 @@ class TestConstraintEnforcerConditions:
             result = is_commercial()
         assert result is True  # fail-closed for licensing: unknown state → treat as commercial, block yfinance
 
-    @pytest.mark.skip(reason="src/config.py not yet implemented — Phase 2")
-    def test_is_commercial_true_when_subscriber_exists(self, supabase_client):
+    def test_is_commercial_true_when_subscriber_exists(self):
         """If any waitlist row has converted_at set → commercial=True."""
+        import unittest.mock as mock
         from src.config import is_commercial
-        # test state: requires a seeded waitlist row with converted_at not null
-        pass
+        m = mock.MagicMock()
+        (m.table.return_value.select.return_value
+         .not_.is_.return_value.limit.return_value
+         .execute.return_value.data) = [{"id": 1}]
+        with mock.patch("src.config.get_supabase_client", return_value=m):
+            assert is_commercial() is True
 
 
 # ─────────────────────────────────────────────────────────────────────────────

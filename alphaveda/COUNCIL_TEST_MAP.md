@@ -20,13 +20,13 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Munger** | Weight proposal banner on path page | test_app.py | test_review_banner_on_path_page | 5 | SPEC |
 | **Munger** | Accuracy tab shows PROPOSED rows | test_app.py | test_accuracy_tab_review_ui | 5 | SPEC |
 | **Munger** | Staleness backstop: 90-day overdue warning | test_app.py | test_staleness_backstop_banner | 5 | SPEC |
-| **Dalio** | Regime as-of join (not latest row) | test_regime.py | test_regime_as_of_join | 2 | SPEC |
-| **Dalio** | Regime cached per calendar day | test_regime.py | test_regime_cached | 2 | SPEC |
-| **Dalio** | Stale regime → visible warning (not silent default) | test_regime.py | test_stale_regime_fails_visibly | 2 | SPEC |
-| **Dalio** | regime_tag on every prediction row | test_migrations.py | test_prediction_without_regime_rejected | 1 | RED |
-| **Marks** | cycle_phase derivation — all PHASE_RULES | test_cycle_phase.py | test_all_phase_rules | 2 | RED |
-| **Marks** | cycle_phase never returns None | test_cycle_phase.py | test_never_returns_none | 2 | RED |
-| **Marks** | Invalid phase rejected by DB | test_migrations.py | test_invalid_phase_rejected | 1 | SPEC |
+| **Dalio** | Regime as-of join (not latest row) | test_regime.py | test_regime_as_of_join | 2 | GREEN ✓ |
+| **Dalio** | Regime cached per calendar day | test_regime.py | test_regime_cached | 3 | SPEC |
+| **Dalio** | Stale regime → visible warning (not silent default) | test_regime.py | test_stale_regime_fails_visibly | 3 | SPEC |
+| **Dalio** | regime_tag on every prediction row | test_migrations.py | test_prediction_without_regime_rejected | G1 | SPEC |
+| **Marks** | cycle_phase derivation — all PHASE_RULES | test_cycle_phase.py | test_all_results_are_valid_phases | 2 | GREEN ✓ |
+| **Marks** | cycle_phase never returns None | test_cycle_phase.py | test_never_returns_none | 2 | GREEN ✓ |
+| **Marks** | Invalid phase rejected by DB | test_migrations.py | test_invalid_phase_rejected | G1 | SPEC |
 | **Soros** | Streak discount fires at emit (step 3b), not ledger | test_engine.py | test_streak_discount_at_emit | 3 | SPEC |
 | **Soros** | PIPELINE CONTRACT: bins built from post-discount confidence | test_engine.py | test_pipeline_contract_ordering | 3 | SPEC |
 | **Soros** | Streak flag triggers correctly at STREAK_WINDOW | test_ledger.py | test_streak_flag_fires_at_n | 3 | SPEC |
@@ -39,14 +39,14 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Druckenmiller** | EXIT E2: UNCERTAINTY path (double threshold + MA) | test_optimizer.py | test_exit_e2_uncertainty_path | 4 | SPEC |
 | **Druckenmiller** | EXIT E3: magnitude_target < 3% | test_optimizer.py | test_exit_e3 | 4 | SPEC |
 | **Druckenmiller** | EXIT E4: sector cap breach | test_optimizer.py | test_exit_e4 | 4 | SPEC |
-| **Lynch** | instruments.classification CHECK — 6 values | test_migrations.py | test_instruments_table | 1 | RED |
-| **Lynch** | Invalid Lynch class rejected | test_migrations.py | test_invalid_class_rejected | 1 | SPEC |
-| **Lynch** | lynch_class on every prediction row | test_migrations.py | test_prediction_without_lynch_rejected | 1 | SPEC |
-| **Jhunjhunwala** | ohlcv.circuit_flag column exists | test_migrations.py | test_ohlcv_has_circuit_flag | 1 | RED |
+| **Lynch** | instruments.classification CHECK — 6 values | test_migrations.py | test_instruments_table | 1 | GREEN ✓ |
+| **Lynch** | Invalid Lynch class rejected | test_migrations.py | test_invalid_class_rejected | G1 | SPEC |
+| **Lynch** | lynch_class on every prediction row | test_migrations.py | test_prediction_without_lynch_rejected | G1 | SPEC |
+| **Jhunjhunwala** | ohlcv.circuit_flag column exists | test_migrations.py | test_ohlcv_has_circuit_flag | 1 | GREEN ✓ |
 | **Jhunjhunwala** | circuit_flag backfill rule documented | DATA_SOURCES.md | (rule, not test) | 1 | GREEN ✓ |
-| **Wealth & Revenue** | waitlist.price_feedback column | test_migrations.py | test_waitlist_table | 1 | RED |
-| **Wealth & Revenue** | is_commercial() derived from converted_at | test_is_commercial.py | test_is_commercial_from_db | 2 | SPEC |
-| **Wealth & Revenue** | is_commercial() fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | SPEC |
+| **Wealth & Revenue** | waitlist.price_feedback column | test_migrations.py | test_waitlist_table | 1 | GREEN ✓ |
+| **Wealth & Revenue** | is_commercial() derived from converted_at | test_is_commercial.py | test_is_commercial_false_when_no_subscribers | 2 | GREEN ✓ |
+| **Wealth & Revenue** | is_commercial() fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
 | **Wealth & Revenue** | Waitlist form writes to DB | test_waitlist.py | test_waitlist_form_submits | 1 ext | SPEC |
 
 ---
@@ -59,10 +59,10 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Imran (SRA)** | Zero ingest_status rows → red banner | test_g0_gate.py | test_c4_missing_run_no_row | 6 | RED |
 | **Imran (SRA)** | Signal emit latency ≤ 800ms | test_engine.py | test_emit_latency | 3 | SPEC |
 | **Constraint Enforcer** | No imperative BUY/SELL in output | test_g0_gate.py | test_c6_sebi_substance | 6 | RED |
-| **Constraint Enforcer** | Commercial gate fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | SPEC |
+| **Constraint Enforcer** | Commercial gate fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
 | **Constraint Enforcer** | Rupee suppressed when commercial=True | test_app.py | test_no_rupee_when_commercial | 5 | SPEC |
-| **Bhattacharya** | ohlcv.licence_class column | test_migrations.py | test_ohlcv_has_licence_class | 1 | RED |
-| **Bhattacharya** | ohlcv.deliverable_volume column | test_migrations.py | test_ohlcv_has_circuit_flag | 1 | RED |
+| **Bhattacharya** | ohlcv.licence_class column | test_migrations.py | test_ohlcv_has_licence_class | 1 | GREEN ✓ |
+| **Bhattacharya** | ohlcv.deliverable_volume column | test_migrations.py | test_ohlcv_has_circuit_flag | 1 | GREEN ✓ |
 | **Varghese** | SEBI disclaimer on every page | test_app.py | test_disclaimer_in_every_page | 5 | SPEC |
 | **Varghese** | Disclaimer not conditionalised | test_app.py | test_disclaimer_non_dismissable | 5 | SPEC |
 | **Varghese** | SEBI substance (no advice language) | test_g0_gate.py | test_c6_sebi_substance | 6 | RED |
@@ -87,6 +87,13 @@ Each Phase is NOT done until:
 2. Relevant council seats have reviewed test quality (not just count)
 3. GSI `regression.py` is 455/455 PASS
 4. FILE_INVENTORY.md updated to DONE for all Phase files
+5. `test_governance_integrity.py` runs with 0 warnings (warn mode) for this Phase
+6. Council seats dispatched as **independent subagents** (not same-context simulation) — each receives only pytest output + map column, not other seats' verdicts
+7. Commit includes `[council:subagent]` tag to audit that independent review occurred
+
+**Drift check:** Before Phase sign-off, verify COUNCIL_TEST_MAP function names match actual test files (`test_green_tests_are_collectable` enforces this automatically).
+
+**Subagent rule:** Same-context seat simulation suppresses genuine disagreement. Each seat's `[council:subagent]` verdict must come from a fresh agent invocation with no prior seat outputs in context.
 
 | Phase | Required council reviewers | Model |
 |---|---|---|
@@ -97,4 +104,11 @@ Each Phase is NOT done until:
 | Phase 5 | Varghese, Munger, Tanvi Rao, Constraint Enforcer | Sonnet |
 | Phase 6 (G0) | All 21 council seats | **Opus** |
 
-Last updated: 2026-06-23 (Phase 1)
+Last updated: 2026-06-24 (Phase 2 audit)
+
+---
+
+## Completed Phases
+
+- Phase 1 (Foundation) — signed off 2026-06-23
+- Phase 2 (Data Layer) — signed off 2026-06-23
