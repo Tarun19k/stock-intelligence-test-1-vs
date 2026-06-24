@@ -72,7 +72,7 @@
       "source_file": "forecast.py",
       "source_location": "L1",
       "id": "forecast_py",
-      "community": 29,
+      "community": 30,
       "norm_label": "forecast.py"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "forecast.py",
       "source_location": "L36",
       "id": "stock_intelligence_test_1_vs_forecast_load_forecast_history",
-      "community": 29,
+      "community": 30,
       "norm_label": "load_forecast_history()"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "forecast.py",
       "source_location": "L54",
       "id": "stock_intelligence_test_1_vs_forecast_save_forecast_history",
-      "community": 29,
+      "community": 30,
       "norm_label": "save_forecast_history()"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "forecast.py",
       "source_location": "L70",
       "id": "stock_intelligence_test_1_vs_forecast_store_forecast",
-      "community": 29,
+      "community": 30,
       "norm_label": "store_forecast()"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "forecast.py",
       "source_location": "L119",
       "id": "stock_intelligence_test_1_vs_forecast_resolve_forecasts",
-      "community": 29,
+      "community": 30,
       "norm_label": "resolve_forecasts()"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "forecast.py",
       "source_location": "L168",
       "id": "stock_intelligence_test_1_vs_forecast_compute_correction_factor",
-      "community": 29,
+      "community": 30,
       "norm_label": "compute_correction_factor()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "forecast.py",
       "source_location": "L200",
       "id": "stock_intelligence_test_1_vs_forecast_get_accuracy_summary",
-      "community": 29,
+      "community": 30,
       "norm_label": "get_accuracy_summary()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "forecast.py",
       "source_location": "L229",
       "id": "stock_intelligence_test_1_vs_forecast_render_forecast_accuracy",
-      "community": 29,
+      "community": 30,
       "norm_label": "render_forecast_accuracy()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "forecast.py",
       "source_location": "L344",
       "id": "stock_intelligence_test_1_vs_forecast_get_pending_forecast_summary",
-      "community": 29,
+      "community": 30,
       "norm_label": "get_pending_forecast_summary()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "forecast.py",
       "source_location": "L396",
       "id": "stock_intelligence_test_1_vs_forecast_get_weekly_accuracy_report",
-      "community": 29,
+      "community": 30,
       "norm_label": "get_weekly_accuracy_report()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "forecast.py",
       "source_location": "L37",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_37",
-      "community": 29,
+      "community": 30,
       "norm_label": "return the forecast history dict.     primary store: st.session_state[_ss_key]."
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "forecast.py",
       "source_location": "L55",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_55",
-      "community": 29,
+      "community": 30,
       "norm_label": "persist the forecast history dict.     always writes to session_state (works on"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "forecast.py",
       "source_location": "L73",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_73",
-      "community": 29,
+      "community": 30,
       "norm_label": "record a new forecast entry (one per ticker per day).     simulation: optional d"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "forecast.py",
       "source_location": "L120",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_120",
-      "community": 29,
+      "community": 30,
       "norm_label": "check all pending forecasts whose due date has passed and mark them     resolved"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "forecast.py",
       "source_location": "L169",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_169",
-      "community": 29,
+      "community": 30,
       "norm_label": "auto-correction factor.     if mean accuracy < 95 %, return the mean of actual/f"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "forecast.py",
       "source_location": "L201",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_201",
-      "community": 29,
+      "community": 30,
       "norm_label": "return accuracy stats dict for display in the forecast tab."
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "forecast.py",
       "source_location": "L230",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_230",
-      "community": 29,
+      "community": 30,
       "norm_label": "render the forecast accuracy tracker panel.     shows pending forecasts with due"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "forecast.py",
       "source_location": "L345",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_345",
-      "community": 29,
+      "community": 30,
       "norm_label": "returns a summary of forecasts that have been stored but not yet resolved.     u"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "forecast.py",
       "source_location": "L397",
       "id": "stock_intelligence_test_1_vs_forecast_rationale_397",
-      "community": 29,
+      "community": 30,
       "norm_label": "aggregate all resolved forecasts across all tickers.     returns calibration sta"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "utils.py",
       "source_location": "L1",
       "id": "utils_py",
-      "community": 26,
+      "community": 27,
       "norm_label": "utils.py"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "utils.py",
       "source_location": "L10",
       "id": "stock_intelligence_test_1_vs_utils_log_error",
-      "community": 26,
+      "community": 27,
       "norm_label": "log_error()"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "utils.py",
       "source_location": "L22",
       "id": "stock_intelligence_test_1_vs_utils_safe_run",
-      "community": 26,
+      "community": 27,
       "norm_label": "safe_run()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "utils.py",
       "source_location": "L30",
       "id": "stock_intelligence_test_1_vs_utils_calc_5d_change",
-      "community": 26,
+      "community": 27,
       "norm_label": "calc_5d_change()"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "utils.py",
       "source_location": "L54",
       "id": "stock_intelligence_test_1_vs_utils_safe_float",
-      "community": 26,
+      "community": 27,
       "norm_label": "safe_float()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "utils.py",
       "source_location": "L61",
       "id": "stock_intelligence_test_1_vs_utils_sanitise",
-      "community": 26,
+      "community": 27,
       "norm_label": "sanitise()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "utils.py",
       "source_location": "L70",
       "id": "stock_intelligence_test_1_vs_utils_sanitise_bold",
-      "community": 26,
+      "community": 27,
       "norm_label": "sanitise_bold()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "utils.py",
       "source_location": "L83",
       "id": "stock_intelligence_test_1_vs_utils_safe_ticker_key",
-      "community": 26,
+      "community": 27,
       "norm_label": "safe_ticker_key()"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "utils.py",
       "source_location": "L88",
       "id": "stock_intelligence_test_1_vs_utils_safe_url",
-      "community": 26,
+      "community": 27,
       "norm_label": "safe_url()"
     },
     {
@@ -999,7 +999,7 @@
       "source_file": "utils.py",
       "source_location": "L102",
       "id": "stock_intelligence_test_1_vs_utils_init_session_state",
-      "community": 26,
+      "community": 27,
       "norm_label": "init_session_state()"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_file": "utils.py",
       "source_location": "L115",
       "id": "stock_intelligence_test_1_vs_utils_render_error_log",
-      "community": 26,
+      "community": 27,
       "norm_label": "render_error_log()"
     },
     {
@@ -1017,7 +1017,7 @@
       "source_file": "utils.py",
       "source_location": "L131",
       "id": "stock_intelligence_test_1_vs_utils_responsive_cols",
-      "community": 26,
+      "community": 27,
       "norm_label": "responsive_cols()"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "utils.py",
       "source_location": "L136",
       "id": "stock_intelligence_test_1_vs_utils_info_tip",
-      "community": 26,
+      "community": 27,
       "norm_label": "info_tip()"
     },
     {
@@ -1035,7 +1035,7 @@
       "source_file": "utils.py",
       "source_location": "L151",
       "id": "stock_intelligence_test_1_vs_utils_section_title_with_tip",
-      "community": 26,
+      "community": 27,
       "norm_label": "section_title_with_tip()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "utils.py",
       "source_location": "L31",
       "id": "stock_intelligence_test_1_vs_utils_rationale_31",
-      "community": 26,
+      "community": 27,
       "norm_label": "shared 5-day percentage change utility \u2014 call this everywhere a 5-day     or wee"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "utils.py",
       "source_location": "L62",
       "id": "stock_intelligence_test_1_vs_utils_rationale_62",
-      "community": 26,
+      "community": 27,
       "norm_label": "escape html special chars before injecting into unsafe_allow_html blocks."
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "utils.py",
       "source_location": "L71",
       "id": "stock_intelligence_test_1_vs_utils_rationale_71",
-      "community": 26,
+      "community": 27,
       "norm_label": "like sanitise() but preserves <b> and </b> for emphasis in insight cards.     pr"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "utils.py",
       "source_location": "L84",
       "id": "stock_intelligence_test_1_vs_utils_rationale_84",
-      "community": 26,
+      "community": 27,
       "norm_label": "sanitise ticker before use as dict/json key. allows a-za-z0-9.-^=& only."
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "utils.py",
       "source_location": "L89",
       "id": "stock_intelligence_test_1_vs_utils_rationale_89",
-      "community": 26,
+      "community": 27,
       "norm_label": "validate url is http/https and not pointing at internal/local network."
     },
     {
@@ -1089,7 +1089,7 @@
       "source_file": "utils.py",
       "source_location": "L137",
       "id": "stock_intelligence_test_1_vs_utils_rationale_137",
-      "community": 26,
+      "community": 27,
       "norm_label": "label + i\ufe0f icon with native html title= tooltip (no js, xss-safe).     use insid"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "utils.py",
       "source_location": "L152",
       "id": "stock_intelligence_test_1_vs_utils_rationale_152",
-      "community": 26,
+      "community": 27,
       "norm_label": "<p class=section-title> with inline i\ufe0f tooltip. drop-in for bare section titles."
     },
     {
@@ -1548,7 +1548,7 @@
       "source_file": "data_manager.py",
       "source_location": "L1",
       "id": "data_manager_py",
-      "community": 32,
+      "community": 40,
       "norm_label": "data_manager.py"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "data_manager.py",
       "source_location": "L44",
       "id": "stock_intelligence_test_1_vs_data_manager_priority",
-      "community": 32,
+      "community": 40,
       "norm_label": "priority"
     },
     {
@@ -1566,7 +1566,7 @@
       "source_file": "data_manager.py",
       "source_location": "",
       "id": "enum",
-      "community": 32,
+      "community": 40,
       "norm_label": "enum"
     },
     {
@@ -1575,7 +1575,7 @@
       "source_file": "data_manager.py",
       "source_location": "L50",
       "id": "stock_intelligence_test_1_vs_data_manager_datatype",
-      "community": 32,
+      "community": 22,
       "norm_label": "datatype"
     },
     {
@@ -1584,7 +1584,7 @@
       "source_file": "data_manager.py",
       "source_location": "L58",
       "id": "stock_intelligence_test_1_vs_data_manager_resultstatus",
-      "community": 44,
+      "community": 22,
       "norm_label": "resultstatus"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "data_manager.py",
       "source_location": "L65",
       "id": "stock_intelligence_test_1_vs_data_manager_sourcetag",
-      "community": 32,
+      "community": 22,
       "norm_label": "sourcetag"
     },
     {
@@ -1602,7 +1602,7 @@
       "source_file": "data_manager.py",
       "source_location": "L72",
       "id": "stock_intelligence_test_1_vs_data_manager_circuitstate",
-      "community": 32,
+      "community": 40,
       "norm_label": "circuitstate"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "data_manager.py",
       "source_location": "L83",
       "id": "stock_intelligence_test_1_vs_data_manager_dataresult",
-      "community": 15,
+      "community": 22,
       "norm_label": "dataresult"
     },
     {
@@ -1620,7 +1620,7 @@
       "source_file": "data_manager.py",
       "source_location": "L102",
       "id": "stock_intelligence_test_1_vs_data_manager_ok",
-      "community": 32,
+      "community": 40,
       "norm_label": "ok()"
     },
     {
@@ -1629,7 +1629,7 @@
       "source_file": "data_manager.py",
       "source_location": "L111",
       "id": "stock_intelligence_test_1_vs_data_manager_is_stale",
-      "community": 32,
+      "community": 40,
       "norm_label": "is_stale()"
     },
     {
@@ -1638,7 +1638,7 @@
       "source_file": "data_manager.py",
       "source_location": "L116",
       "id": "stock_intelligence_test_1_vs_data_manager_unavailable",
-      "community": 23,
+      "community": 24,
       "norm_label": "unavailable()"
     },
     {
@@ -1647,7 +1647,7 @@
       "source_file": "data_manager.py",
       "source_location": "L141",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager",
-      "community": 15,
+      "community": 19,
       "norm_label": "cachemanager"
     },
     {
@@ -1656,7 +1656,7 @@
       "source_file": "data_manager.py",
       "source_location": "L177",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_init",
-      "community": 15,
+      "community": 19,
       "norm_label": ".__init__()"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "data_manager.py",
       "source_location": "L184",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_get",
-      "community": 15,
+      "community": 19,
       "norm_label": ".get()"
     },
     {
@@ -1674,7 +1674,7 @@
       "source_file": "data_manager.py",
       "source_location": "L215",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_put",
-      "community": 15,
+      "community": 19,
       "norm_label": ".put()"
     },
     {
@@ -1683,7 +1683,7 @@
       "source_file": "data_manager.py",
       "source_location": "L230",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_invalidate",
-      "community": 15,
+      "community": 19,
       "norm_label": ".invalidate()"
     },
     {
@@ -1692,7 +1692,7 @@
       "source_file": "data_manager.py",
       "source_location": "L237",
       "id": "stock_intelligence_test_1_vs_data_manager_cachemanager_invalidate_all",
-      "community": 15,
+      "community": 19,
       "norm_label": ".invalidate_all()"
     },
     {
@@ -1701,7 +1701,7 @@
       "source_file": "data_manager.py",
       "source_location": "L243",
       "id": "stock_intelligence_test_1_vs_data_manager_size",
-      "community": 32,
+      "community": 40,
       "norm_label": "size()"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_file": "data_manager.py",
       "source_location": "L249",
       "id": "stock_intelligence_test_1_vs_data_manager_datacontract",
-      "community": 44,
+      "community": 22,
       "norm_label": "datacontract"
     },
     {
@@ -1719,7 +1719,7 @@
       "source_file": "data_manager.py",
       "source_location": "L268",
       "id": "stock_intelligence_test_1_vs_data_manager_validate",
-      "community": 32,
+      "community": 40,
       "norm_label": "validate()"
     },
     {
@@ -1728,7 +1728,7 @@
       "source_file": "data_manager.py",
       "source_location": "L290",
       "id": "stock_intelligence_test_1_vs_data_manager_validate_ohlcv",
-      "community": 32,
+      "community": 40,
       "norm_label": "_validate_ohlcv()"
     },
     {
@@ -1737,7 +1737,7 @@
       "source_file": "data_manager.py",
       "source_location": "L306",
       "id": "stock_intelligence_test_1_vs_data_manager_validate_info",
-      "community": 32,
+      "community": 40,
       "norm_label": "_validate_info()"
     },
     {
@@ -1746,7 +1746,7 @@
       "source_file": "data_manager.py",
       "source_location": "L314",
       "id": "stock_intelligence_test_1_vs_data_manager_validate_live",
-      "community": 32,
+      "community": 40,
       "norm_label": "_validate_live()"
     },
     {
@@ -1755,7 +1755,7 @@
       "source_file": "data_manager.py",
       "source_location": "L322",
       "id": "stock_intelligence_test_1_vs_data_manager_validate_batch",
-      "community": 32,
+      "community": 40,
       "norm_label": "_validate_batch()"
     },
     {
@@ -1764,7 +1764,7 @@
       "source_file": "data_manager.py",
       "source_location": "L334",
       "id": "stock_intelligence_test_1_vs_data_manager_healthsnapshot",
-      "community": 23,
+      "community": 24,
       "norm_label": "healthsnapshot"
     },
     {
@@ -1791,7 +1791,7 @@
       "source_file": "data_manager.py",
       "source_location": "L393",
       "id": "stock_intelligence_test_1_vs_data_manager_state",
-      "community": 32,
+      "community": 40,
       "norm_label": "state()"
     },
     {
@@ -1827,7 +1827,7 @@
       "source_file": "data_manager.py",
       "source_location": "L474",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager",
-      "community": 23,
+      "community": 24,
       "norm_label": "datamanager"
     },
     {
@@ -1845,7 +1845,7 @@
       "source_file": "data_manager.py",
       "source_location": "L539",
       "id": "stock_intelligence_test_1_vs_data_manager_bypass_mode",
-      "community": 32,
+      "community": 40,
       "norm_label": "bypass_mode()"
     },
     {
@@ -1854,7 +1854,7 @@
       "source_file": "data_manager.py",
       "source_location": "L547",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_is_healthy",
-      "community": 23,
+      "community": 24,
       "norm_label": ".is_healthy()"
     },
     {
@@ -1863,7 +1863,7 @@
       "source_file": "data_manager.py",
       "source_location": "L562",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_get_health",
-      "community": 23,
+      "community": 24,
       "norm_label": ".get_health()"
     },
     {
@@ -1872,7 +1872,7 @@
       "source_file": "data_manager.py",
       "source_location": "L584",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_get_breaker",
-      "community": 23,
+      "community": 24,
       "norm_label": ".get_breaker()"
     },
     {
@@ -1881,7 +1881,7 @@
       "source_file": "data_manager.py",
       "source_location": "L591",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_fetch",
-      "community": 23,
+      "community": 24,
       "norm_label": ".fetch()"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_file": "data_manager.py",
       "source_location": "L606",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_fetch_batch",
-      "community": 23,
+      "community": 24,
       "norm_label": ".fetch_batch()"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "data_manager.py",
       "source_location": "L623",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_invalidate",
-      "community": 23,
+      "community": 24,
       "norm_label": ".invalidate()"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_file": "data_manager.py",
       "source_location": "L632",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_invalidate_all",
-      "community": 23,
+      "community": 24,
       "norm_label": ".invalidate_all()"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "data_manager.py",
       "source_location": "L640",
       "id": "stock_intelligence_test_1_vs_data_manager_datamanager_prefetch",
-      "community": 23,
+      "community": 24,
       "norm_label": ".prefetch()"
     },
     {
@@ -1935,7 +1935,7 @@
       "source_file": "data_manager.py",
       "source_location": "L1",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_1",
-      "community": 32,
+      "community": 40,
       "norm_label": "data_manager.py \u2014 global stock intelligence dashboard datamanager: resilient dat"
     },
     {
@@ -1944,7 +1944,7 @@
       "source_file": "data_manager.py",
       "source_location": "L84",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_84",
-      "community": 15,
+      "community": 22,
       "norm_label": "every datamanager response is a dataresult.     data is none if and only if stat"
     },
     {
@@ -1971,7 +1971,7 @@
       "source_file": "data_manager.py",
       "source_location": "L117",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_117",
-      "community": 23,
+      "community": 24,
       "norm_label": "factory for unavailable dataresult.     use this everywhere \u2014 never construct da"
     },
     {
@@ -1980,7 +1980,7 @@
       "source_file": "data_manager.py",
       "source_location": "L142",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_142",
-      "community": 15,
+      "community": 19,
       "norm_label": "bounded lru in-memory cache (l2).      deployment note: streamlit-specific.  sin"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "data_manager.py",
       "source_location": "L185",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_185",
-      "community": 15,
+      "community": 19,
       "norm_label": "returns dataresult if the entry exists (fresh or stale), none if not found."
     },
     {
@@ -1998,7 +1998,7 @@
       "source_file": "data_manager.py",
       "source_location": "L216",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_216",
-      "community": 15,
+      "community": 19,
       "norm_label": "store result.  no-op if status == unavailable.         evicts the lru entry if a"
     },
     {
@@ -2007,7 +2007,7 @@
       "source_file": "data_manager.py",
       "source_location": "L231",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_231",
-      "community": 15,
+      "community": 19,
       "norm_label": "remove all cache entries for this ticker across all datatypes."
     },
     {
@@ -2025,7 +2025,7 @@
       "source_file": "data_manager.py",
       "source_location": "L250",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_250",
-      "community": 44,
+      "community": 22,
       "norm_label": "wire-level shape validator for each datatype.      validates that data received"
     },
     {
@@ -2043,7 +2043,7 @@
       "source_file": "data_manager.py",
       "source_location": "L335",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_335",
-      "community": 23,
+      "community": 24,
       "norm_label": "point-in-time health state.  consumed by sidebar observability panel (m6).     r"
     },
     {
@@ -2088,7 +2088,7 @@
       "source_file": "data_manager.py",
       "source_location": "L475",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_475",
-      "community": 23,
+      "community": 24,
       "norm_label": "singleton resilient data access layer.      obtain via:   dm = get_datamanager()"
     },
     {
@@ -2106,7 +2106,7 @@
       "source_file": "data_manager.py",
       "source_location": "L548",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_548",
-      "community": 23,
+      "community": 24,
       "norm_label": "true if at least one source breaker is closed and datamanager is not in bypass."
     },
     {
@@ -2115,7 +2115,7 @@
       "source_file": "data_manager.py",
       "source_location": "L563",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_563",
-      "community": 23,
+      "community": 24,
       "norm_label": "always safe to call \u2014 never raises.         returns a snapshot of current health"
     },
     {
@@ -2124,7 +2124,7 @@
       "source_file": "data_manager.py",
       "source_location": "L585",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_585",
-      "community": 23,
+      "community": 24,
       "norm_label": "direct access to a source's circuit breaker. used by source adapters (m4/m5)."
     },
     {
@@ -2133,7 +2133,7 @@
       "source_file": "data_manager.py",
       "source_location": "L599",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_599",
-      "community": 23,
+      "community": 24,
       "norm_label": "synchronous data fetch.  returns dataresult \u2014 never raises.         m1: always r"
     },
     {
@@ -2142,7 +2142,7 @@
       "source_file": "data_manager.py",
       "source_location": "L614",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_614",
-      "community": 23,
+      "community": 24,
       "norm_label": "batch fetch.  returns partial results \u2014 callers handle missing keys.         m1:"
     },
     {
@@ -2151,7 +2151,7 @@
       "source_file": "data_manager.py",
       "source_location": "L624",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_624",
-      "community": 23,
+      "community": 24,
       "norm_label": "atomically clears all cache layers for this ticker.         called on stock swit"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_file": "data_manager.py",
       "source_location": "L633",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_633",
-      "community": 23,
+      "community": 24,
       "norm_label": "full cache wipe.  called on global refresh button.         m2: clears l2 cachema"
     },
     {
@@ -2169,7 +2169,7 @@
       "source_file": "data_manager.py",
       "source_location": "L641",
       "id": "stock_intelligence_test_1_vs_data_manager_rationale_641",
-      "community": 23,
+      "community": 24,
       "norm_label": "fire-and-forget p2 enqueue for background warm-up.         m1: no-op."
     },
     {
@@ -2358,7 +2358,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L1",
       "id": "litellm_proxy_review_gate_py",
-      "community": 40,
+      "community": 41,
       "norm_label": "review_gate.py"
     },
     {
@@ -2367,7 +2367,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L66",
       "id": "litellm_proxy_review_gate_git",
-      "community": 40,
+      "community": 41,
       "norm_label": "_git()"
     },
     {
@@ -2376,7 +2376,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L83",
       "id": "litellm_proxy_review_gate_unpushed_commits",
-      "community": 40,
+      "community": 41,
       "norm_label": "_unpushed_commits()"
     },
     {
@@ -2385,7 +2385,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L96",
       "id": "litellm_proxy_review_gate_all_commits",
-      "community": 40,
+      "community": 41,
       "norm_label": "_all_commits()"
     },
     {
@@ -2394,7 +2394,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L107",
       "id": "litellm_proxy_review_gate_full_message",
-      "community": 40,
+      "community": 41,
       "norm_label": "_full_message()"
     },
     {
@@ -2403,7 +2403,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L116",
       "id": "litellm_proxy_review_gate_mark_reviewed",
-      "community": 40,
+      "community": 41,
       "norm_label": "_mark_reviewed()"
     },
     {
@@ -2412,7 +2412,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L129",
       "id": "litellm_proxy_review_gate_get_note",
-      "community": 40,
+      "community": 41,
       "norm_label": "_get_note()"
     },
     {
@@ -2421,7 +2421,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L137",
       "id": "litellm_proxy_review_gate_check_commits",
-      "community": 40,
+      "community": 41,
       "norm_label": "check_commits()"
     },
     {
@@ -2430,7 +2430,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L197",
       "id": "litellm_proxy_review_gate_main",
-      "community": 40,
+      "community": 41,
       "norm_label": "main()"
     },
     {
@@ -2439,7 +2439,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L67",
       "id": "litellm_proxy_review_gate_rationale_67",
-      "community": 40,
+      "community": 41,
       "norm_label": "run a git command and return stdout. raises on non-zero exit if check=true."
     },
     {
@@ -2448,7 +2448,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L84",
       "id": "litellm_proxy_review_gate_rationale_84",
-      "community": 40,
+      "community": 41,
       "norm_label": "return [(sha, subject), ...] for commits not yet on the remote."
     },
     {
@@ -2457,7 +2457,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L97",
       "id": "litellm_proxy_review_gate_rationale_97",
-      "community": 40,
+      "community": 41,
       "norm_label": "return [(sha, subject), ...] for the last n commits."
     },
     {
@@ -2466,7 +2466,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L108",
       "id": "litellm_proxy_review_gate_rationale_108",
-      "community": 40,
+      "community": 41,
       "norm_label": "return the full commit message for a given sha."
     },
     {
@@ -2475,7 +2475,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L117",
       "id": "litellm_proxy_review_gate_rationale_117",
-      "community": 40,
+      "community": 41,
       "norm_label": "append [reviewed] to the commit message of a given sha via git notes.     we use"
     },
     {
@@ -2484,7 +2484,7 @@
       "source_file": "litellm-proxy/review_gate.py",
       "source_location": "L138",
       "id": "litellm_proxy_review_gate_rationale_138",
-      "community": 40,
+      "community": 41,
       "norm_label": "print a report of proxy-tagged commits and their review status.     returns the"
     },
     {
@@ -2745,7 +2745,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L1",
       "id": "litellm_proxy_approval_hook_py",
-      "community": 39,
+      "community": 38,
       "norm_label": "approval_hook.py"
     },
     {
@@ -2754,7 +2754,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L65",
       "id": "litellm_proxy_approval_hook_classify",
-      "community": 39,
+      "community": 38,
       "norm_label": "_classify()"
     },
     {
@@ -2763,7 +2763,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L100",
       "id": "litellm_proxy_approval_hook_osascript",
-      "community": 39,
+      "community": 38,
       "norm_label": "_osascript()"
     },
     {
@@ -2772,7 +2772,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L109",
       "id": "litellm_proxy_approval_hook_macos_approve",
-      "community": 39,
+      "community": 38,
       "norm_label": "_macos_approve()"
     },
     {
@@ -2781,7 +2781,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L151",
       "id": "litellm_proxy_approval_hook_terminal_approve",
-      "community": 39,
+      "community": 38,
       "norm_label": "_terminal_approve()"
     },
     {
@@ -2790,7 +2790,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L191",
       "id": "litellm_proxy_approval_hook_approvallayer",
-      "community": 39,
+      "community": 38,
       "norm_label": "approvallayer"
     },
     {
@@ -2799,7 +2799,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "",
       "id": "customlogger",
-      "community": 39,
+      "community": 38,
       "norm_label": "customlogger"
     },
     {
@@ -2808,7 +2808,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L206",
       "id": "litellm_proxy_approval_hook_approvallayer_async_pre_call_hook",
-      "community": 39,
+      "community": 38,
       "norm_label": ".async_pre_call_hook()"
     },
     {
@@ -2817,7 +2817,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L276",
       "id": "litellm_proxy_approval_hook_approvallayer_async_success_callback",
-      "community": 39,
+      "community": 38,
       "norm_label": ".async_success_callback()"
     },
     {
@@ -2826,7 +2826,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L66",
       "id": "litellm_proxy_approval_hook_rationale_66",
-      "community": 39,
+      "community": 38,
       "norm_label": "classify a prompt into one of five task types.     priority: quickqa \u2192 research"
     },
     {
@@ -2835,7 +2835,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L101",
       "id": "litellm_proxy_approval_hook_rationale_101",
-      "community": 39,
+      "community": 38,
       "norm_label": "run an applescript snippet and return (stdout, returncode)."
     },
     {
@@ -2844,7 +2844,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L110",
       "id": "litellm_proxy_approval_hook_rationale_110",
-      "community": 39,
+      "community": 38,
       "norm_label": "show a native macos dialog. returns (choice, alt_model).     choice: \"approve\" |"
     },
     {
@@ -2853,7 +2853,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L152",
       "id": "litellm_proxy_approval_hook_rationale_152",
-      "community": 39,
+      "community": 38,
       "norm_label": "interactive terminal approval with timeout.     returns (choice, alt_model)."
     },
     {
@@ -2862,7 +2862,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L192",
       "id": "litellm_proxy_approval_hook_rationale_192",
-      "community": 39,
+      "community": 38,
       "norm_label": "pre-call hook: classifies the task, estimates token cost, then asks     for huma"
     },
     {
@@ -2871,7 +2871,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L213",
       "id": "litellm_proxy_approval_hook_rationale_213",
-      "community": 39,
+      "community": 38,
       "norm_label": "litellm calls this before every request. mutate data[\"model\"] to reroute."
     },
     {
@@ -2880,7 +2880,7 @@
       "source_file": "litellm-proxy/approval_hook.py",
       "source_location": "L283",
       "id": "litellm_proxy_approval_hook_rationale_283",
-      "community": 39,
+      "community": 38,
       "norm_label": "proxy-02: fallback transparency \u2014 log when the model that actually served"
     },
     {
@@ -2889,7 +2889,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L1",
       "id": "archive_dashboard_old_py",
-      "community": 34,
+      "community": 33,
       "norm_label": "dashboard_old.py"
     },
     {
@@ -2898,7 +2898,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L23",
       "id": "archive_dashboard_old_has_ohlcv",
-      "community": 34,
+      "community": 33,
       "norm_label": "_has_ohlcv()"
     },
     {
@@ -2907,7 +2907,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L36",
       "id": "archive_dashboard_old_safe_close",
-      "community": 34,
+      "community": 33,
       "norm_label": "_safe_close()"
     },
     {
@@ -2916,7 +2916,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L47",
       "id": "archive_dashboard_old_kpi",
-      "community": 34,
+      "community": 33,
       "norm_label": "_kpi()"
     },
     {
@@ -2925,7 +2925,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L60",
       "id": "archive_dashboard_old_graph_help",
-      "community": 34,
+      "community": 33,
       "norm_label": "_graph_help()"
     },
     {
@@ -2934,7 +2934,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L71",
       "id": "archive_dashboard_old_render_header",
-      "community": 34,
+      "community": 33,
       "norm_label": "_render_header()"
     },
     {
@@ -2943,7 +2943,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L119",
       "id": "archive_dashboard_old_render_kpi_panel",
-      "community": 34,
+      "community": 33,
       "norm_label": "_render_kpi_panel()"
     },
     {
@@ -2952,7 +2952,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L159",
       "id": "archive_dashboard_old_live_kpi_panel",
-      "community": 34,
+      "community": 33,
       "norm_label": "_live_kpi_panel()"
     },
     {
@@ -2961,7 +2961,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L164",
       "id": "archive_dashboard_old_tab_charts",
-      "community": 34,
+      "community": 33,
       "norm_label": "_tab_charts()"
     },
     {
@@ -2970,7 +2970,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L261",
       "id": "archive_dashboard_old_tab_forecast",
-      "community": 34,
+      "community": 33,
       "norm_label": "_tab_forecast()"
     },
     {
@@ -2979,7 +2979,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L406",
       "id": "archive_dashboard_old_tab_compare",
-      "community": 34,
+      "community": 33,
       "norm_label": "_tab_compare()"
     },
     {
@@ -2988,7 +2988,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L496",
       "id": "archive_dashboard_old_tab_insights",
-      "community": 34,
+      "community": 33,
       "norm_label": "_tab_insights()"
     },
     {
@@ -2997,7 +2997,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L614",
       "id": "archive_dashboard_old_render_dashboard",
-      "community": 34,
+      "community": 33,
       "norm_label": "render_dashboard()"
     },
     {
@@ -3006,7 +3006,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L24",
       "id": "archive_dashboard_old_rationale_24",
-      "community": 34,
+      "community": 33,
       "norm_label": "return true only if df has all required ohlcv columns as proper series."
     },
     {
@@ -3015,7 +3015,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L37",
       "id": "archive_dashboard_old_rationale_37",
-      "community": 34,
+      "community": 33,
       "norm_label": "safely return df['close'] as a series, or default."
     },
     {
@@ -3024,7 +3024,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L48",
       "id": "archive_dashboard_old_rationale_48",
-      "community": 34,
+      "community": 33,
       "norm_label": "kpi tile \u2014 tip= adds hover tooltip on card and i\ufe0f icon on label."
     },
     {
@@ -3033,7 +3033,7 @@
       "source_file": "archive/dashboard_OLD.py",
       "source_location": "L160",
       "id": "archive_dashboard_old_rationale_160",
-      "community": 34,
+      "community": 33,
       "norm_label": "fragment: re-renders live price kpis every 60 s.     charts and analysis section"
     },
     {
@@ -3879,7 +3879,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L1",
       "id": "archive_home_old_py",
-      "community": 41,
+      "community": 42,
       "norm_label": "home_old.py"
     },
     {
@@ -3888,7 +3888,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L36",
       "id": "archive_home_old_render_ticker_bar",
-      "community": 41,
+      "community": 42,
       "norm_label": "render_ticker_bar()"
     },
     {
@@ -3897,7 +3897,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L163",
       "id": "archive_home_old_market_status",
-      "community": 41,
+      "community": 42,
       "norm_label": "_market_status()"
     },
     {
@@ -3906,7 +3906,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L177",
       "id": "archive_home_old_next_open",
-      "community": 41,
+      "community": 42,
       "norm_label": "_next_open()"
     },
     {
@@ -3915,7 +3915,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L188",
       "id": "archive_home_old_render_market_status_row",
-      "community": 41,
+      "community": 42,
       "norm_label": "_render_market_status_row()"
     },
     {
@@ -3924,7 +3924,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L210",
       "id": "archive_home_old_render_morning_brief",
-      "community": 41,
+      "community": 42,
       "norm_label": "_render_morning_brief()"
     },
     {
@@ -3933,7 +3933,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L243",
       "id": "archive_home_old_render_top_movers",
-      "community": 41,
+      "community": 42,
       "norm_label": "_render_top_movers()"
     },
     {
@@ -3942,7 +3942,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L281",
       "id": "archive_home_old_render_news_feed",
-      "community": 41,
+      "community": 42,
       "norm_label": "_render_news_feed()"
     },
     {
@@ -3951,7 +3951,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L307",
       "id": "archive_home_old_render_version_log",
-      "community": 41,
+      "community": 42,
       "norm_label": "_render_version_log()"
     },
     {
@@ -3960,7 +3960,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L318",
       "id": "archive_home_old_s",
-      "community": 41,
+      "community": 42,
       "norm_label": "_s()"
     },
     {
@@ -3969,7 +3969,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L321",
       "id": "archive_home_old_render_live_section",
-      "community": 41,
+      "community": 42,
       "norm_label": "_render_live_section()"
     },
     {
@@ -3978,7 +3978,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L332",
       "id": "archive_home_old_render_homepage",
-      "community": 41,
+      "community": 42,
       "norm_label": "render_homepage()"
     },
     {
@@ -3987,7 +3987,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L37",
       "id": "archive_home_old_rationale_37",
-      "community": 41,
+      "community": 42,
       "norm_label": "renders a fixed 36px ticker strip pinned to the very top of the page.      strat"
     },
     {
@@ -3996,7 +3996,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L322",
       "id": "archive_home_old_rationale_322",
-      "community": 41,
+      "community": 42,
       "norm_label": "fragment wrapping all dynamic home-page sections:     morning brief status, mark"
     },
     {
@@ -4005,7 +4005,7 @@
       "source_file": "archive/home_OLD.py",
       "source_location": "L333",
       "id": "archive_home_old_rationale_333",
-      "community": 41,
+      "community": 42,
       "norm_label": "called from app.py routing \u2014 renders the home page body."
     },
     {
@@ -4671,7 +4671,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L1",
       "id": "archive_utils_py",
-      "community": 30,
+      "community": 31,
       "norm_label": "utils.py"
     },
     {
@@ -4680,7 +4680,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L10",
       "id": "archive_utils_log_error",
-      "community": 30,
+      "community": 31,
       "norm_label": "log_error()"
     },
     {
@@ -4689,7 +4689,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L22",
       "id": "archive_utils_safe_run",
-      "community": 30,
+      "community": 31,
       "norm_label": "safe_run()"
     },
     {
@@ -4698,7 +4698,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L30",
       "id": "archive_utils_safe_float",
-      "community": 30,
+      "community": 31,
       "norm_label": "safe_float()"
     },
     {
@@ -4707,7 +4707,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L37",
       "id": "archive_utils_sanitise",
-      "community": 30,
+      "community": 31,
       "norm_label": "sanitise()"
     },
     {
@@ -4716,7 +4716,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L46",
       "id": "archive_utils_sanitise_bold",
-      "community": 30,
+      "community": 31,
       "norm_label": "sanitise_bold()"
     },
     {
@@ -4725,7 +4725,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L59",
       "id": "archive_utils_safe_ticker_key",
-      "community": 30,
+      "community": 31,
       "norm_label": "safe_ticker_key()"
     },
     {
@@ -4734,7 +4734,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L64",
       "id": "archive_utils_safe_url",
-      "community": 30,
+      "community": 31,
       "norm_label": "safe_url()"
     },
     {
@@ -4743,7 +4743,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L78",
       "id": "archive_utils_init_session_state",
-      "community": 30,
+      "community": 31,
       "norm_label": "init_session_state()"
     },
     {
@@ -4752,7 +4752,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L91",
       "id": "archive_utils_render_error_log",
-      "community": 30,
+      "community": 31,
       "norm_label": "render_error_log()"
     },
     {
@@ -4761,7 +4761,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L107",
       "id": "archive_utils_responsive_cols",
-      "community": 30,
+      "community": 31,
       "norm_label": "responsive_cols()"
     },
     {
@@ -4770,7 +4770,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L111",
       "id": "archive_utils_info_tip",
-      "community": 30,
+      "community": 31,
       "norm_label": "info_tip()"
     },
     {
@@ -4779,7 +4779,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L126",
       "id": "archive_utils_section_title_with_tip",
-      "community": 30,
+      "community": 31,
       "norm_label": "section_title_with_tip()"
     },
     {
@@ -4788,7 +4788,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L38",
       "id": "archive_utils_rationale_38",
-      "community": 30,
+      "community": 31,
       "norm_label": "escape html special chars before injecting into unsafe_allow_html blocks."
     },
     {
@@ -4797,7 +4797,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L47",
       "id": "archive_utils_rationale_47",
-      "community": 30,
+      "community": 31,
       "norm_label": "like sanitise() but preserves <b> and </b> for emphasis in insight cards.     pr"
     },
     {
@@ -4806,7 +4806,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L60",
       "id": "archive_utils_rationale_60",
-      "community": 30,
+      "community": 31,
       "norm_label": "sanitise ticker before use as dict/json key. allows a-za-z0-9.-^= only."
     },
     {
@@ -4815,7 +4815,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L65",
       "id": "archive_utils_rationale_65",
-      "community": 30,
+      "community": 31,
       "norm_label": "validate url is http/https and not pointing at internal/local network."
     },
     {
@@ -4824,7 +4824,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L112",
       "id": "archive_utils_rationale_112",
-      "community": 30,
+      "community": 31,
       "norm_label": "label + i\ufe0f icon with native html title= tooltip (no js, xss-safe).     use insid"
     },
     {
@@ -4833,7 +4833,7 @@
       "source_file": "archive/utils.py",
       "source_location": "L127",
       "id": "archive_utils_rationale_127",
-      "community": 30,
+      "community": 31,
       "norm_label": "<p class=section-title> with inline i\ufe0f tooltip. drop-in for bare section titles."
     },
     {
@@ -4995,7 +4995,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L1",
       "id": "alphaveda_tests_test_optimizer_py",
-      "community": 31,
+      "community": 32,
       "norm_label": "test_optimizer.py"
     },
     {
@@ -5004,7 +5004,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L8",
       "id": "tests_test_optimizer_test_kelly_no_rupee_without_downside",
-      "community": 31,
+      "community": 32,
       "norm_label": "test_kelly_no_rupee_without_downside()"
     },
     {
@@ -5013,7 +5013,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L16",
       "id": "tests_test_optimizer_test_kelly_no_rupee_with_zero_downside",
-      "community": 31,
+      "community": 32,
       "norm_label": "test_kelly_no_rupee_with_zero_downside()"
     },
     {
@@ -5022,7 +5022,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L23",
       "id": "tests_test_optimizer_test_kelly_rupee_with_downside",
-      "community": 31,
+      "community": 32,
       "norm_label": "test_kelly_rupee_with_downside()"
     },
     {
@@ -5031,7 +5031,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L31",
       "id": "tests_test_optimizer_test_kelly_capped_at_max_position",
-      "community": 31,
+      "community": 32,
       "norm_label": "test_kelly_capped_at_max_position()"
     },
     {
@@ -5040,7 +5040,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L39",
       "id": "tests_test_optimizer_test_kelly_zero_on_negative_edge",
-      "community": 31,
+      "community": 32,
       "norm_label": "test_kelly_zero_on_negative_edge()"
     },
     {
@@ -5049,7 +5049,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L48",
       "id": "tests_test_optimizer_test_kelly_no_min_position_floor",
-      "community": 31,
+      "community": 32,
       "norm_label": "test_kelly_no_min_position_floor()"
     },
     {
@@ -5058,7 +5058,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L1",
       "id": "tests_test_optimizer_rationale_1",
-      "community": 31,
+      "community": 32,
       "norm_label": "phase 4 \u2014 optimizer.py tests. skipped until src/portfolio/optimizer.py is implem"
     },
     {
@@ -5067,7 +5067,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L9",
       "id": "tests_test_optimizer_rationale_9",
-      "community": 31,
+      "community": 32,
       "norm_label": "if downside_target is none, return 0 \u2014 no rupee amount on path page."
     },
     {
@@ -5076,7 +5076,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L24",
       "id": "tests_test_optimizer_rationale_24",
-      "community": 31,
+      "community": 32,
       "norm_label": "b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, \u00d70.25 = 0.12"
     },
     {
@@ -5085,7 +5085,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L32",
       "id": "tests_test_optimizer_rationale_32",
-      "community": 31,
+      "community": 32,
       "norm_label": "even with extreme edge, result must not exceed max_position_pct \u00d7 portfolio."
     },
     {
@@ -5094,7 +5094,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L40",
       "id": "tests_test_optimizer_rationale_40",
-      "community": 31,
+      "community": 32,
       "norm_label": "negative full kelly (no edge) must return 0, not a floor."
     },
     {
@@ -5103,7 +5103,7 @@
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L49",
       "id": "tests_test_optimizer_rationale_49",
-      "community": 31,
+      "community": 32,
       "norm_label": "min_position_pct must not be applied as a floor \u2014 zero-edge = 0, not 1%."
     },
     {
@@ -5175,7 +5175,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L1",
       "id": "alphaveda_tests_test_cycle_phase_py",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_cycle_phase.py"
     },
     {
@@ -5184,7 +5184,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L11",
       "id": "tests_test_cycle_phase_test_risk_on_above_ma_low_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_risk_on_above_ma_low_vix()"
     },
     {
@@ -5193,7 +5193,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L16",
       "id": "tests_test_cycle_phase_test_risk_on_above_ma_high_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_risk_on_above_ma_high_vix()"
     },
     {
@@ -5202,7 +5202,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L21",
       "id": "tests_test_cycle_phase_test_risk_on_below_ma_low_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_risk_on_below_ma_low_vix()"
     },
     {
@@ -5211,7 +5211,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L26",
       "id": "tests_test_cycle_phase_test_risk_off_below_ma_high_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_risk_off_below_ma_high_vix()"
     },
     {
@@ -5220,7 +5220,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L31",
       "id": "tests_test_cycle_phase_test_risk_off_below_ma_low_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_risk_off_below_ma_low_vix()"
     },
     {
@@ -5229,7 +5229,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L36",
       "id": "tests_test_cycle_phase_test_risk_off_above_ma_high_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_risk_off_above_ma_high_vix()"
     },
     {
@@ -5238,7 +5238,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L41",
       "id": "tests_test_cycle_phase_test_stagflation_below_ma_high_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_stagflation_below_ma_high_vix()"
     },
     {
@@ -5247,7 +5247,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L46",
       "id": "tests_test_cycle_phase_test_deflation_below_ma_low_vix",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_deflation_below_ma_low_vix()"
     },
     {
@@ -5256,7 +5256,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L51",
       "id": "tests_test_cycle_phase_test_all_results_are_valid_phases",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_all_results_are_valid_phases()"
     },
     {
@@ -5265,7 +5265,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L63",
       "id": "tests_test_cycle_phase_test_never_returns_none",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_never_returns_none()"
     },
     {
@@ -5274,7 +5274,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L1",
       "id": "tests_test_cycle_phase_rationale_1",
-      "community": 27,
+      "community": 28,
       "norm_label": "phase 2 \u2014 cycle_phase.py tests. red until src/accuracy/cycle_phase.py is impleme"
     },
     {
@@ -5283,7 +5283,7 @@
       "source_file": "alphaveda/tests/test_cycle_phase.py",
       "source_location": "L52",
       "id": "tests_test_cycle_phase_rationale_52",
-      "community": 27,
+      "community": 28,
       "norm_label": "exhaustive check: every phase_rules entry returns a valid phase label."
     },
     {
@@ -5292,7 +5292,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L1",
       "id": "alphaveda_tests_test_arbitration_py",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_arbitration.py"
     },
     {
@@ -5301,7 +5301,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L7",
       "id": "tests_test_arbitration_make_signal",
-      "community": 35,
+      "community": 34,
       "norm_label": "_make_signal()"
     },
     {
@@ -5310,7 +5310,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L12",
       "id": "tests_test_arbitration_test_arbitration_suppression_when_within_margin",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_arbitration_suppression_when_within_margin()"
     },
     {
@@ -5319,7 +5319,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L22",
       "id": "tests_test_arbitration_test_arbitration_bull_wins",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_arbitration_bull_wins()"
     },
     {
@@ -5328,7 +5328,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L32",
       "id": "tests_test_arbitration_test_arbitration_bear_wins",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_arbitration_bear_wins()"
     },
     {
@@ -5337,7 +5337,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L42",
       "id": "tests_test_arbitration_test_arbitration_confidence_is_normalised",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_arbitration_confidence_is_normalised()"
     },
     {
@@ -5346,7 +5346,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L53",
       "id": "tests_test_arbitration_test_arbitration_all_bull_emits",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_arbitration_all_bull_emits()"
     },
     {
@@ -5355,7 +5355,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L64",
       "id": "tests_test_arbitration_test_arbitration_empty_signals",
-      "community": 35,
+      "community": 34,
       "norm_label": "test_arbitration_empty_signals()"
     },
     {
@@ -5364,7 +5364,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L1",
       "id": "tests_test_arbitration_rationale_1",
-      "community": 35,
+      "community": 34,
       "norm_label": "phase 3 \u2014 arbitration.py tests. skipped until src/signals/arbitration.py is impl"
     },
     {
@@ -5373,7 +5373,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L13",
       "id": "tests_test_arbitration_rationale_13",
-      "community": 35,
+      "community": 34,
       "norm_label": "if weighted scores are within arbitration_margin, suppress emission."
     },
     {
@@ -5382,7 +5382,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L43",
       "id": "tests_test_arbitration_rationale_43",
-      "community": 35,
+      "community": 34,
       "norm_label": "emitted confidence is in [0, 100]."
     },
     {
@@ -5391,7 +5391,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L54",
       "id": "tests_test_arbitration_rationale_54",
-      "community": 35,
+      "community": 34,
       "norm_label": "all signals agree \u2014 must emit."
     },
     {
@@ -5400,7 +5400,7 @@
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L65",
       "id": "tests_test_arbitration_rationale_65",
-      "community": 35,
+      "community": 34,
       "norm_label": "no signals \u2014 must suppress."
     },
     {
@@ -5625,7 +5625,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L1",
       "id": "alphaveda_tests_test_migrations_py",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_migrations.py"
     },
     {
@@ -5634,7 +5634,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L34",
       "id": "tests_test_migrations_test_all_tables_exist",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_all_tables_exist()"
     },
     {
@@ -5643,7 +5643,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L46",
       "id": "tests_test_migrations_test_instruments_table",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_instruments_table()"
     },
     {
@@ -5652,7 +5652,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L51",
       "id": "tests_test_migrations_test_ohlcv_table",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_ohlcv_table()"
     },
     {
@@ -5661,7 +5661,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L56",
       "id": "tests_test_migrations_test_accuracy_predictions_has_downside_target",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_accuracy_predictions_has_downside_target()"
     },
     {
@@ -5670,7 +5670,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L63",
       "id": "tests_test_migrations_test_ohlcv_has_circuit_flag",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_ohlcv_has_circuit_flag()"
     },
     {
@@ -5679,7 +5679,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L69",
       "id": "tests_test_migrations_test_ohlcv_has_licence_class",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_ohlcv_has_licence_class()"
     },
     {
@@ -5688,7 +5688,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L75",
       "id": "tests_test_migrations_test_signal_weights_table",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_signal_weights_table()"
     },
     {
@@ -5697,7 +5697,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L80",
       "id": "tests_test_migrations_test_waitlist_table",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_waitlist_table()"
     },
     {
@@ -5706,7 +5706,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L85",
       "id": "tests_test_migrations_test_ingest_status_table",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_ingest_status_table()"
     },
     {
@@ -5715,7 +5715,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L90",
       "id": "tests_test_migrations_test_portfolio_buckets_seeded",
-      "community": 38,
+      "community": 37,
       "norm_label": "test_portfolio_buckets_seeded()"
     },
     {
@@ -5724,7 +5724,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L1",
       "id": "tests_test_migrations_rationale_1",
-      "community": 38,
+      "community": 37,
       "norm_label": "phase 1 \u2014 g-mig gate: verify all 13 alphaveda tables exist on live supabase. req"
     },
     {
@@ -5733,7 +5733,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L57",
       "id": "tests_test_migrations_rationale_57",
-      "community": 38,
+      "community": 37,
       "norm_label": "migration 0012 \u2014 downside_target column must exist."
     },
     {
@@ -5742,7 +5742,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L64",
       "id": "tests_test_migrations_rationale_64",
-      "community": 38,
+      "community": 37,
       "norm_label": "migration 0013 \u2014 circuit_flag column must exist."
     },
     {
@@ -5751,7 +5751,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L70",
       "id": "tests_test_migrations_rationale_70",
-      "community": 38,
+      "community": 37,
       "norm_label": "migration 0013 \u2014 licence_class column must exist."
     },
     {
@@ -5760,7 +5760,7 @@
       "source_file": "alphaveda/tests/test_migrations.py",
       "source_location": "L91",
       "id": "tests_test_migrations_rationale_91",
-      "community": 38,
+      "community": 37,
       "norm_label": "portfolio_buckets must have the 4 seed rows from migration 0005."
     },
     {
@@ -5769,7 +5769,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L1",
       "id": "alphaveda_tests_test_downside_py",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside.py"
     },
     {
@@ -5778,7 +5778,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L8",
       "id": "tests_test_downside_test_downside_signal_override",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside_signal_override()"
     },
     {
@@ -5787,7 +5787,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L18",
       "id": "tests_test_downside_test_downside_signal_override_clamps_to_floor",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside_signal_override_clamps_to_floor()"
     },
     {
@@ -5796,7 +5796,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L23",
       "id": "tests_test_downside_test_downside_signal_override_clamps_to_cap",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside_signal_override_clamps_to_cap()"
     },
     {
@@ -5805,7 +5805,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L28",
       "id": "tests_test_downside_test_downside_atr_default",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside_atr_default()"
     },
     {
@@ -5814,7 +5814,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L34",
       "id": "tests_test_downside_test_downside_atr_floor",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside_atr_floor()"
     },
     {
@@ -5823,7 +5823,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L40",
       "id": "tests_test_downside_test_downside_never_zero",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside_never_zero()"
     },
     {
@@ -5832,7 +5832,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L45",
       "id": "tests_test_downside_test_downside_single_row_fallback",
-      "community": 36,
+      "community": 35,
       "norm_label": "test_downside_single_row_fallback()"
     },
     {
@@ -5841,7 +5841,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L1",
       "id": "tests_test_downside_rationale_1",
-      "community": 36,
+      "community": 35,
       "norm_label": "phase 3 \u2014 downside.py tests. skipped until src/signals/downside.py is implemente"
     },
     {
@@ -5850,7 +5850,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L9",
       "id": "tests_test_downside_rationale_9",
-      "community": 36,
+      "community": 35,
       "norm_label": "if signal provides stop_loss_pct, use it directly."
     },
     {
@@ -5859,7 +5859,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L29",
       "id": "tests_test_downside_rationale_29",
-      "community": 36,
+      "community": 35,
       "norm_label": "atr(14)/price default when no signal stop-loss is provided."
     },
     {
@@ -5868,7 +5868,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L35",
       "id": "tests_test_downside_rationale_35",
-      "community": 36,
+      "community": 35,
       "norm_label": "insufficient history: fallback to 5%."
     },
     {
@@ -5877,7 +5877,7 @@
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L46",
       "id": "tests_test_downside_rationale_46",
-      "community": 36,
+      "community": 35,
       "norm_label": "only 1 row \u2014 cannot compute true range \u2014 fallback to 5%."
     },
     {
@@ -6102,7 +6102,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L1",
       "id": "alphaveda_tests_test_constants_py",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_constants.py"
     },
     {
@@ -6111,7 +6111,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L24",
       "id": "tests_test_constants_test_fundamental_floor_value",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_fundamental_floor_value()"
     },
     {
@@ -6120,7 +6120,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L28",
       "id": "tests_test_constants_test_streak_constants",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_streak_constants()"
     },
     {
@@ -6129,7 +6129,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L33",
       "id": "tests_test_constants_test_kelly_fraction",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_kelly_fraction()"
     },
     {
@@ -6138,7 +6138,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L37",
       "id": "tests_test_constants_test_position_bounds",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_position_bounds()"
     },
     {
@@ -6147,7 +6147,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L43",
       "id": "tests_test_constants_test_atr_period",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_atr_period()"
     },
     {
@@ -6156,7 +6156,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L47",
       "id": "tests_test_constants_test_e2_bucket_thresholds",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_e2_bucket_thresholds()"
     },
     {
@@ -6165,7 +6165,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L53",
       "id": "tests_test_constants_test_e2_confidence_floor",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_e2_confidence_floor()"
     },
     {
@@ -6174,7 +6174,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L57",
       "id": "tests_test_constants_test_cold_start_weights_sum_to_1",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_cold_start_weights_sum_to_1()"
     },
     {
@@ -6183,7 +6183,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L63",
       "id": "tests_test_constants_test_fundamental_floor_applies_to_all_cold_starts",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_fundamental_floor_applies_to_all_cold_starts()"
     },
     {
@@ -6192,7 +6192,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L73",
       "id": "tests_test_constants_test_sebi_disclaimer_non_empty",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_sebi_disclaimer_non_empty()"
     },
     {
@@ -6201,7 +6201,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L79",
       "id": "tests_test_constants_test_arbitration_margin_positive",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_arbitration_margin_positive()"
     },
     {
@@ -6210,7 +6210,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L83",
       "id": "tests_test_constants_test_regime_staleness_days",
-      "community": 42,
+      "community": 43,
       "norm_label": "test_regime_staleness_days()"
     },
     {
@@ -6219,7 +6219,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L1",
       "id": "tests_test_constants_rationale_1",
-      "community": 42,
+      "community": 43,
       "norm_label": "phase 1 \u2014 constants.py tests. these pass immediately (constants.py is implemente"
     },
     {
@@ -6228,7 +6228,7 @@
       "source_file": "alphaveda/tests/test_constants.py",
       "source_location": "L64",
       "id": "tests_test_constants_rationale_64",
-      "community": 42,
+      "community": 43,
       "norm_label": "roic + fcf + pledge combined must be >= fundamental_weight_floor for every class"
     },
     {
@@ -6273,7 +6273,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L41",
       "id": "tests_test_council_conditions_testdruckenmillerconditions",
-      "community": 75,
+      "community": 74,
       "norm_label": "testdruckenmillerconditions"
     },
     {
@@ -6282,7 +6282,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L44",
       "id": "tests_test_council_conditions_testdruckenmillerconditions_test_quarter_kelly_fraction_is_25_percent",
-      "community": 75,
+      "community": 74,
       "norm_label": ".test_quarter_kelly_fraction_is_25_percent()"
     },
     {
@@ -6327,7 +6327,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L86",
       "id": "tests_test_council_conditions_testsorosconditions",
-      "community": 74,
+      "community": 75,
       "norm_label": "testsorosconditions"
     },
     {
@@ -6336,7 +6336,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L89",
       "id": "tests_test_council_conditions_testsorosconditions_test_streak_window_constant",
-      "community": 74,
+      "community": 75,
       "norm_label": ".test_streak_window_constant()"
     },
     {
@@ -6363,7 +6363,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L111",
       "id": "tests_test_council_conditions_testmarksconditions",
-      "community": 86,
+      "community": 81,
       "norm_label": "testmarksconditions"
     },
     {
@@ -6372,7 +6372,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L115",
       "id": "tests_test_council_conditions_test_risk_on_above_ma_low_vix_is_mid_bull",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_risk_on_above_ma_low_vix_is_mid_bull()"
     },
     {
@@ -6381,7 +6381,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L121",
       "id": "tests_test_council_conditions_test_all_results_are_valid_phases",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_all_results_are_valid_phases()"
     },
     {
@@ -6390,7 +6390,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L134",
       "id": "tests_test_council_conditions_test_never_returns_none",
-      "community": 27,
+      "community": 28,
       "norm_label": "test_never_returns_none()"
     },
     {
@@ -6399,7 +6399,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L140",
       "id": "tests_test_council_conditions_testarbitrationconditions",
-      "community": 84,
+      "community": 87,
       "norm_label": "testarbitrationconditions"
     },
     {
@@ -6426,7 +6426,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L175",
       "id": "tests_test_council_conditions_testrashidaconditions",
-      "community": 85,
+      "community": 82,
       "norm_label": "testrashidaconditions"
     },
     {
@@ -6471,7 +6471,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L201",
       "id": "tests_test_council_conditions_testjhunjhunwalaconditions",
-      "community": 82,
+      "community": 85,
       "norm_label": "testjhunjhunwalaconditions"
     },
     {
@@ -6489,7 +6489,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L211",
       "id": "tests_test_council_conditions_testbhattacharyaconditions",
-      "community": 88,
+      "community": 80,
       "norm_label": "testbhattacharyaconditions"
     },
     {
@@ -6516,7 +6516,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L226",
       "id": "tests_test_council_conditions_testshakaniconditions",
-      "community": 81,
+      "community": 83,
       "norm_label": "testshakaniconditions"
     },
     {
@@ -6534,7 +6534,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L257",
       "id": "tests_test_council_conditions_testconstraintenforcerconditions",
-      "community": 83,
+      "community": 88,
       "norm_label": "testconstraintenforcerconditions"
     },
     {
@@ -6561,7 +6561,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L282",
       "id": "tests_test_council_conditions_testsynthesischairconditions",
-      "community": 80,
+      "community": 84,
       "norm_label": "testsynthesischairconditions"
     },
     {
@@ -6606,7 +6606,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L316",
       "id": "tests_test_council_conditions_testimranconditions",
-      "community": 87,
+      "community": 86,
       "norm_label": "testimranconditions"
     },
     {
@@ -6669,7 +6669,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L42",
       "id": "tests_test_council_conditions_rationale_42",
-      "community": 75,
+      "community": 74,
       "norm_label": "druckenmiller: quarter-kelly formula must produce correct position sizes."
     },
     {
@@ -6714,7 +6714,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L87",
       "id": "tests_test_council_conditions_rationale_87",
-      "community": 74,
+      "community": 75,
       "norm_label": "soros: streak discount fires at emit (step 3b), not in the ledger sql."
     },
     {
@@ -6741,7 +6741,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L112",
       "id": "tests_test_council_conditions_rationale_112",
-      "community": 86,
+      "community": 81,
       "norm_label": "marks: cycle_phase derivation must be deterministic and exhaustive."
     },
     {
@@ -6750,7 +6750,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L141",
       "id": "tests_test_council_conditions_rationale_141",
-      "community": 84,
+      "community": 87,
       "norm_label": "soros + buffett: arbitration suppresses when bull/bear confidence within arbitra"
     },
     {
@@ -6759,7 +6759,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L176",
       "id": "tests_test_council_conditions_rationale_176",
-      "community": 85,
+      "community": 82,
       "norm_label": "rashida (db integrity): all critical tables and columns must exist."
     },
     {
@@ -6777,7 +6777,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L202",
       "id": "tests_test_council_conditions_rationale_202",
-      "community": 82,
+      "community": 85,
       "norm_label": "jhunjhunwala: circuit_flag on ohlcv \u2014 hard pre-g1 gate for data quality."
     },
     {
@@ -6795,7 +6795,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L212",
       "id": "tests_test_council_conditions_rationale_212",
-      "community": 88,
+      "community": 80,
       "norm_label": "bhattacharya (data licensing): licence_class and deliverable_volume must exist."
     },
     {
@@ -6813,7 +6813,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L227",
       "id": "tests_test_council_conditions_rationale_227",
-      "community": 81,
+      "community": 83,
       "norm_label": "shakuni: duplicate active signal_weights per segment must be impossible."
     },
     {
@@ -6831,7 +6831,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L258",
       "id": "tests_test_council_conditions_rationale_258",
-      "community": 83,
+      "community": 88,
       "norm_label": "constraint enforcer: commercial gate is fail-closed; sebi rules are non-negotiab"
     },
     {
@@ -6858,7 +6858,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L283",
       "id": "tests_test_council_conditions_rationale_283",
-      "community": 80,
+      "community": 84,
       "norm_label": "synthesis chair: g0 criterion 10 must run first; kelly must produce rupee output"
     },
     {
@@ -6894,7 +6894,7 @@
       "source_file": "alphaveda/tests/test_council_conditions.py",
       "source_location": "L317",
       "id": "tests_test_council_conditions_rationale_317",
-      "community": 87,
+      "community": 86,
       "norm_label": "imran (sra): stale or missing ingest_status rows must surface as visible warning"
     },
     {
@@ -7002,7 +7002,7 @@
       "source_file": "alphaveda/src/accuracy/cycle_phase.py",
       "source_location": "L1",
       "id": "alphaveda_src_accuracy_cycle_phase_py",
-      "community": 27,
+      "community": 28,
       "norm_label": "cycle_phase.py"
     },
     {
@@ -7011,7 +7011,7 @@
       "source_file": "alphaveda/src/accuracy/cycle_phase.py",
       "source_location": "L51",
       "id": "accuracy_cycle_phase_derive_cycle_phase",
-      "community": 27,
+      "community": 28,
       "norm_label": "derive_cycle_phase()"
     },
     {
@@ -7020,7 +7020,7 @@
       "source_file": "alphaveda/src/accuracy/cycle_phase.py",
       "source_location": "L1",
       "id": "accuracy_cycle_phase_rationale_1",
-      "community": 27,
+      "community": 28,
       "norm_label": "cycle phase derivation \u2014 maps macro regime + technical position to one of 6 mark"
     },
     {
@@ -7029,7 +7029,7 @@
       "source_file": "alphaveda/src/accuracy/cycle_phase.py",
       "source_location": "L57",
       "id": "accuracy_cycle_phase_rationale_57",
-      "community": 27,
+      "community": 28,
       "norm_label": "return one of 6 cycle phases based on macro regime + price vs 200ma + vix level."
     },
     {
@@ -7173,7 +7173,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L1",
       "id": "tests_test_data_manager_m2_py",
-      "community": 33,
+      "community": 22,
       "norm_label": "test_data_manager_m2.py"
     },
     {
@@ -7182,7 +7182,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L25",
       "id": "tests_test_data_manager_m2_make_ohlcv",
-      "community": 33,
+      "community": 39,
       "norm_label": "_make_ohlcv()"
     },
     {
@@ -7191,7 +7191,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L33",
       "id": "tests_test_data_manager_m2_make_result",
-      "community": 15,
+      "community": 19,
       "norm_label": "_make_result()"
     },
     {
@@ -7200,7 +7200,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L52",
       "id": "tests_test_data_manager_m2_testcachemanagermiss",
-      "community": 15,
+      "community": 22,
       "norm_label": "testcachemanagermiss"
     },
     {
@@ -7209,7 +7209,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L53",
       "id": "tests_test_data_manager_m2_testcachemanagermiss_test_get_returns_none_on_empty_cache",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_get_returns_none_on_empty_cache()"
     },
     {
@@ -7218,7 +7218,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L57",
       "id": "tests_test_data_manager_m2_testcachemanagermiss_test_get_returns_none_for_different_ticker",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_get_returns_none_for_different_ticker()"
     },
     {
@@ -7227,7 +7227,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L62",
       "id": "tests_test_data_manager_m2_testcachemanagermiss_test_get_returns_none_for_different_data_type",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_get_returns_none_for_different_data_type()"
     },
     {
@@ -7236,7 +7236,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L68",
       "id": "tests_test_data_manager_m2_testcachemanagerhit",
-      "community": 15,
+      "community": 22,
       "norm_label": "testcachemanagerhit"
     },
     {
@@ -7245,7 +7245,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L69",
       "id": "tests_test_data_manager_m2_testcachemanagerhit_test_put_and_get_returns_fresh_result",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_put_and_get_returns_fresh_result()"
     },
     {
@@ -7254,7 +7254,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L78",
       "id": "tests_test_data_manager_m2_testcachemanagerhit_test_size_increments_on_put",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_size_increments_on_put()"
     },
     {
@@ -7263,7 +7263,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L86",
       "id": "tests_test_data_manager_m2_testcachemanagerhit_test_unavailable_not_stored",
-      "community": 23,
+      "community": 24,
       "norm_label": ".test_unavailable_not_stored()"
     },
     {
@@ -7272,7 +7272,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L92",
       "id": "tests_test_data_manager_m2_testcachemanagerhit_test_duplicate_put_does_not_grow_cache",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_duplicate_put_does_not_grow_cache()"
     },
     {
@@ -7281,7 +7281,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L99",
       "id": "tests_test_data_manager_m2_testcachemanagerttl",
-      "community": 15,
+      "community": 19,
       "norm_label": "testcachemanagerttl"
     },
     {
@@ -7290,7 +7290,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L100",
       "id": "tests_test_data_manager_m2_testcachemanagerttl_test_fresh_within_ttl",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_fresh_within_ttl()"
     },
     {
@@ -7299,7 +7299,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L107",
       "id": "tests_test_data_manager_m2_testcachemanagerttl_test_stale_past_ohlcv_ttl",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_stale_past_ohlcv_ttl()"
     },
     {
@@ -7308,7 +7308,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L114",
       "id": "tests_test_data_manager_m2_testcachemanagerttl_test_stale_past_live_ttl",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_stale_past_live_ttl()"
     },
     {
@@ -7317,7 +7317,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L121",
       "id": "tests_test_data_manager_m2_testcachemanagerttl_test_stale_entry_data_is_preserved",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_stale_entry_data_is_preserved()"
     },
     {
@@ -7326,7 +7326,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L128",
       "id": "tests_test_data_manager_m2_testcachemanagerlru",
-      "community": 15,
+      "community": 22,
       "norm_label": "testcachemanagerlru"
     },
     {
@@ -7335,7 +7335,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L129",
       "id": "tests_test_data_manager_m2_testcachemanagerlru_test_lru_evicts_oldest_at_cap",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_lru_evicts_oldest_at_cap()"
     },
     {
@@ -7344,7 +7344,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L141",
       "id": "tests_test_data_manager_m2_testcachemanagerlru_test_recently_accessed_not_evicted",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_recently_accessed_not_evicted()"
     },
     {
@@ -7353,7 +7353,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L153",
       "id": "tests_test_data_manager_m2_testcachemanagerinvalidate",
-      "community": 15,
+      "community": 22,
       "norm_label": "testcachemanagerinvalidate"
     },
     {
@@ -7362,7 +7362,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L154",
       "id": "tests_test_data_manager_m2_testcachemanagerinvalidate_test_invalidate_removes_all_types_for_ticker",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_invalidate_removes_all_types_for_ticker()"
     },
     {
@@ -7371,7 +7371,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L164",
       "id": "tests_test_data_manager_m2_testcachemanagerinvalidate_test_invalidate_all_clears_everything",
-      "community": 15,
+      "community": 19,
       "norm_label": ".test_invalidate_all_clears_everything()"
     },
     {
@@ -7380,7 +7380,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L174",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv",
-      "community": 33,
+      "community": 39,
       "norm_label": "testdatacontractohlcv"
     },
     {
@@ -7389,7 +7389,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L175",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_valid_ohlcv",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_valid_ohlcv()"
     },
     {
@@ -7398,7 +7398,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L178",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_not_dataframe",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_not_dataframe()"
     },
     {
@@ -7407,7 +7407,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L181",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_empty_dataframe",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_empty_dataframe()"
     },
     {
@@ -7416,7 +7416,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L184",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_missing_close_column",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_missing_close_column()"
     },
     {
@@ -7425,7 +7425,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L188",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_missing_volume_column",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_missing_volume_column()"
     },
     {
@@ -7434,7 +7434,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L192",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_non_datetime_index",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_non_datetime_index()"
     },
     {
@@ -7443,7 +7443,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L196",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_non_numeric_close",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_non_numeric_close()"
     },
     {
@@ -7452,7 +7452,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L201",
       "id": "tests_test_data_manager_m2_testdatacontractohlcv_test_intraday_same_as_ohlcv",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_intraday_same_as_ohlcv()"
     },
     {
@@ -7461,7 +7461,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L206",
       "id": "tests_test_data_manager_m2_testdatacontractinfo",
-      "community": 44,
+      "community": 22,
       "norm_label": "testdatacontractinfo"
     },
     {
@@ -7470,7 +7470,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L207",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_valid_dict",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_valid_dict()"
     },
     {
@@ -7479,7 +7479,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L210",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_not_dict",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_not_dict()"
     },
     {
@@ -7488,7 +7488,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L213",
       "id": "tests_test_data_manager_m2_testdatacontractinfo_test_empty_dict",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_empty_dict()"
     },
     {
@@ -7497,7 +7497,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L217",
       "id": "tests_test_data_manager_m2_testdatacontractlive",
-      "community": 44,
+      "community": 22,
       "norm_label": "testdatacontractlive"
     },
     {
@@ -7506,7 +7506,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L218",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_valid_positive_float",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_valid_positive_float()"
     },
     {
@@ -7515,7 +7515,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L221",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_valid_positive_int",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_valid_positive_int()"
     },
     {
@@ -7524,7 +7524,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L224",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_zero",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_zero()"
     },
     {
@@ -7533,7 +7533,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L227",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_negative",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_negative()"
     },
     {
@@ -7542,7 +7542,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L230",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_string",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_string()"
     },
     {
@@ -7551,7 +7551,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L233",
       "id": "tests_test_data_manager_m2_testdatacontractlive_test_none",
-      "community": 44,
+      "community": 22,
       "norm_label": ".test_none()"
     },
     {
@@ -7560,7 +7560,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L237",
       "id": "tests_test_data_manager_m2_testdatacontractbatch",
-      "community": 33,
+      "community": 39,
       "norm_label": "testdatacontractbatch"
     },
     {
@@ -7569,7 +7569,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L238",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_valid_batch",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_valid_batch()"
     },
     {
@@ -7578,7 +7578,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L242",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_not_dict",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_not_dict()"
     },
     {
@@ -7587,7 +7587,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L245",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_empty_batch_is_valid",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_empty_batch_is_valid()"
     },
     {
@@ -7596,7 +7596,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L249",
       "id": "tests_test_data_manager_m2_testdatacontractbatch_test_inner_value_fails_ohlcv",
-      "community": 33,
+      "community": 39,
       "norm_label": ".test_inner_value_fails_ohlcv()"
     },
     {
@@ -7605,7 +7605,7 @@
       "source_file": "tests/test_data_manager_m2.py",
       "source_location": "L1",
       "id": "tests_test_data_manager_m2_rationale_1",
-      "community": 33,
+      "community": 22,
       "norm_label": "unit tests for datamanager m2 \u2014 cachemanager and datacontract.  run: pytest test"
     },
     {
@@ -7614,7 +7614,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L1",
       "id": "docs_build_pitch_deck_py",
-      "community": 24,
+      "community": 25,
       "norm_label": "build_pitch_deck.py"
     },
     {
@@ -7623,7 +7623,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L29",
       "id": "docs_build_pitch_deck_new_prs",
-      "community": 24,
+      "community": 25,
       "norm_label": "new_prs()"
     },
     {
@@ -7632,7 +7632,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L35",
       "id": "docs_build_pitch_deck_blank_slide",
-      "community": 24,
+      "community": 25,
       "norm_label": "blank_slide()"
     },
     {
@@ -7641,7 +7641,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L39",
       "id": "docs_build_pitch_deck_bg",
-      "community": 24,
+      "community": 25,
       "norm_label": "bg()"
     },
     {
@@ -7650,7 +7650,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L44",
       "id": "docs_build_pitch_deck_box",
-      "community": 24,
+      "community": 25,
       "norm_label": "box()"
     },
     {
@@ -7659,7 +7659,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L51",
       "id": "docs_build_pitch_deck_txt",
-      "community": 24,
+      "community": 25,
       "norm_label": "txt()"
     },
     {
@@ -7668,7 +7668,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L67",
       "id": "docs_build_pitch_deck_label",
-      "community": 24,
+      "community": 25,
       "norm_label": "label()"
     },
     {
@@ -7677,7 +7677,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L72",
       "id": "docs_build_pitch_deck_divider",
-      "community": 24,
+      "community": 25,
       "norm_label": "divider()"
     },
     {
@@ -7686,7 +7686,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L79",
       "id": "docs_build_pitch_deck_pill",
-      "community": 24,
+      "community": 25,
       "norm_label": "pill()"
     },
     {
@@ -7695,7 +7695,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L84",
       "id": "docs_build_pitch_deck_slide_number",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_number()"
     },
     {
@@ -7704,7 +7704,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L90",
       "id": "docs_build_pitch_deck_slide_01_title",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_01_title()"
     },
     {
@@ -7713,7 +7713,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L126",
       "id": "docs_build_pitch_deck_slide_02_problem",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_02_problem()"
     },
     {
@@ -7722,7 +7722,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L154",
       "id": "docs_build_pitch_deck_slide_03_solution",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_03_solution()"
     },
     {
@@ -7731,7 +7731,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L185",
       "id": "docs_build_pitch_deck_slide_04_markets",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_04_markets()"
     },
     {
@@ -7740,7 +7740,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L219",
       "id": "docs_build_pitch_deck_slide_05_signal_engine",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_05_signal_engine()"
     },
     {
@@ -7749,7 +7749,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L255",
       "id": "docs_build_pitch_deck_slide_06_comparison",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_06_comparison()"
     },
     {
@@ -7758,7 +7758,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L304",
       "id": "docs_build_pitch_deck_slide_07_personas",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_07_personas()"
     },
     {
@@ -7767,7 +7767,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L342",
       "id": "docs_build_pitch_deck_slide_08_cta",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_08_cta()"
     },
     {
@@ -7776,7 +7776,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L369",
       "id": "docs_build_pitch_deck_slide_09_legal",
-      "community": 24,
+      "community": 25,
       "norm_label": "slide_09_legal()"
     },
     {
@@ -7785,7 +7785,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L1",
       "id": "docs_build_pitch_deck_rationale_1",
-      "community": 24,
+      "community": 25,
       "norm_label": "gsi dashboard \u2014 community launch pitch deck run: python3 docs/build_pitch_deck.p"
     },
     {
@@ -7794,7 +7794,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L68",
       "id": "docs_build_pitch_deck_rationale_68",
-      "community": 24,
+      "community": 25,
       "norm_label": "small all-caps label / eyebrow"
     },
     {
@@ -7803,7 +7803,7 @@
       "source_file": "docs/build_pitch_deck.py",
       "source_location": "L370",
       "id": "docs_build_pitch_deck_rationale_370",
-      "community": 24,
+      "community": 25,
       "norm_label": "legal / disclaimer \u2014 required on all decks"
     },
     {
@@ -8927,7 +8927,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L8",
-      "community": 31,
+      "community": 32,
       "norm_label": "if downside_target is none, return 0 \u2014 no rupee amount on path page.",
       "id": "tests_test_optimizer_rationale_8"
     },
@@ -8936,7 +8936,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L23",
-      "community": 31,
+      "community": 32,
       "norm_label": "b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, \u00d70.25 = 0.12",
       "id": "tests_test_optimizer_rationale_23"
     },
@@ -8945,7 +8945,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L31",
-      "community": 31,
+      "community": 32,
       "norm_label": "even with extreme edge, result must not exceed max_position_pct \u00d7 portfolio.",
       "id": "tests_test_optimizer_rationale_31"
     },
@@ -8954,7 +8954,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L39",
-      "community": 31,
+      "community": 32,
       "norm_label": "negative full kelly (no edge) must return 0, not a floor.",
       "id": "tests_test_optimizer_rationale_39"
     },
@@ -8963,7 +8963,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_optimizer.py",
       "source_location": "L48",
-      "community": 31,
+      "community": 32,
       "norm_label": "min_position_pct must not be applied as a floor \u2014 zero-edge = 0, not 1%.",
       "id": "tests_test_optimizer_rationale_48"
     },
@@ -8972,7 +8972,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L12",
-      "community": 35,
+      "community": 34,
       "norm_label": "if weighted scores are within arbitration_margin, suppress emission.",
       "id": "tests_test_arbitration_rationale_12"
     },
@@ -8981,7 +8981,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L42",
-      "community": 35,
+      "community": 34,
       "norm_label": "emitted confidence is in [0, 100].",
       "id": "tests_test_arbitration_rationale_42"
     },
@@ -8990,7 +8990,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L53",
-      "community": 35,
+      "community": 34,
       "norm_label": "all signals agree \u2014 must emit.",
       "id": "tests_test_arbitration_rationale_53"
     },
@@ -8999,7 +8999,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_arbitration.py",
       "source_location": "L64",
-      "community": 35,
+      "community": 34,
       "norm_label": "no signals \u2014 must suppress.",
       "id": "tests_test_arbitration_rationale_64"
     },
@@ -9026,7 +9026,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L8",
-      "community": 36,
+      "community": 35,
       "norm_label": "if signal provides stop_loss_pct, use it directly.",
       "id": "tests_test_downside_rationale_8"
     },
@@ -9035,7 +9035,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L28",
-      "community": 36,
+      "community": 35,
       "norm_label": "atr(14)/price default when no signal stop-loss is provided.",
       "id": "tests_test_downside_rationale_28"
     },
@@ -9044,7 +9044,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L34",
-      "community": 36,
+      "community": 35,
       "norm_label": "insufficient history: fallback to 5%.",
       "id": "tests_test_downside_rationale_34"
     },
@@ -9053,7 +9053,7 @@
       "file_type": "rationale",
       "source_file": "alphaveda/tests/test_downside.py",
       "source_location": "L45",
-      "community": 36,
+      "community": 35,
       "norm_label": "only 1 row \u2014 cannot compute true range \u2014 fallback to 5%.",
       "id": "tests_test_downside_rationale_45"
     },
@@ -10043,7 +10043,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "app internals page",
       "id": "page_app_internals"
     },
@@ -10056,7 +10056,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "observability navigation item",
       "id": "nav_observability"
     },
@@ -10069,7 +10069,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "app navigation item",
       "id": "nav_app"
     },
@@ -10082,7 +10082,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "dashboard navigation item",
       "id": "nav_dashboard"
     },
@@ -10095,7 +10095,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "global intelligence navigation item",
       "id": "nav_global_intelligence"
     },
@@ -10108,7 +10108,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "home navigation item",
       "id": "nav_home"
     },
@@ -10121,7 +10121,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "week summary navigation item",
       "id": "nav_week_summary"
     },
@@ -10394,7 +10394,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "deploy button",
       "id": "btn_deploy"
     },
@@ -10433,7 +10433,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "left sidebar navigation",
       "id": "ui_sidebar"
     },
@@ -10459,7 +10459,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "stock search bar",
       "id": "ui_search_bar"
     },
@@ -10589,7 +10589,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "market closed indicator",
       "id": "ui_market_status"
     },
@@ -10602,7 +10602,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "refresh data button",
       "id": "ui_refresh_button"
     },
@@ -11304,7 +11304,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "stock selector (choose an option)",
       "id": "ui_stock_selector"
     },
@@ -11317,7 +11317,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "nav: home",
       "id": "ui_nav_home"
     },
@@ -11330,7 +11330,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "nav: dashboard",
       "id": "ui_nav_dashboard"
     },
@@ -11343,7 +11343,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "nav: global intelligence",
       "id": "ui_nav_global_intelligence"
     },
@@ -11356,7 +11356,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "market closed badge",
       "id": "ui_market_closed_badge"
     },
@@ -11369,7 +11369,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "refresh data button",
       "id": "ui_refresh_data_button"
     },
@@ -11421,7 +11421,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "week summary bottom section",
       "id": "week_summary_bottom_view"
     },
@@ -11434,7 +11434,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast engine \u2014 weekly accuracy report",
       "id": "forecast_engine_weekly_accuracy_report"
     },
@@ -11447,7 +11447,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "24 forecasts being tracked banner",
       "id": "forecast_tracking_banner"
     },
@@ -11460,7 +11460,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast table (ticker / made on / due on / horizon / p(gain) / status)",
       "id": "forecast_table"
     },
@@ -11473,7 +11473,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "acn (ticker)",
       "id": "ticker_acn"
     },
@@ -11486,7 +11486,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "sbin.ns (ticker)",
       "id": "ticker_sbin_ns"
     },
@@ -11499,7 +11499,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "^tnx (ticker)",
       "id": "ticker_tnx"
     },
@@ -11512,7 +11512,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "gc=f (ticker \u2014 gold futures)",
       "id": "ticker_gcf"
     },
@@ -11525,7 +11525,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "atgl.ns (ticker)",
       "id": "ticker_atgl_ns"
     },
@@ -11538,7 +11538,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "aapl (ticker)",
       "id": "ticker_aapl"
     },
@@ -11551,7 +11551,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "wipro.ns (ticker)",
       "id": "ticker_wipro_ns"
     },
@@ -11564,7 +11564,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "infy.ns (ticker)",
       "id": "ticker_infy_ns"
     },
@@ -11577,7 +11577,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast horizon 21 days (1m)",
       "id": "forecast_horizon_21d"
     },
@@ -11590,7 +11590,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast horizon 63 days (3m)",
       "id": "forecast_horizon_63d"
     },
@@ -11603,7 +11603,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast status: pending",
       "id": "forecast_status_pending"
     },
@@ -11616,7 +11616,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "p(gain) field \u2014 probability of gain",
       "id": "forecast_pgain_field"
     },
@@ -11629,7 +11629,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "first resolution date: 2026-04-13",
       "id": "first_resolution_date"
     },
@@ -11642,7 +11642,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "tracked stocks: aapl, acn, adanigreen.ns, atgl.ns, gc=f, hdfcbank.ns, indusindbk.ns, infy.ns",
       "id": "tracked_stocks_list"
     },
@@ -11655,7 +11655,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "gsi dashboard sidebar (v5.36)",
       "id": "gsi_sidebar"
     },
@@ -11668,7 +11668,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "market filter: india",
       "id": "market_filter_india"
     },
@@ -11694,7 +11694,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "no stock selected \u2014 showing weekly summary state",
       "id": "no_stock_selected_state"
     },
@@ -11707,7 +11707,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast table column: ticker",
       "id": "ticker_column"
     },
@@ -11720,7 +11720,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast table column: made on",
       "id": "made_on_column"
     },
@@ -11733,7 +11733,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast table column: due on",
       "id": "due_on_column"
     },
@@ -11746,7 +11746,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast table column: horizon",
       "id": "horizon_column"
     },
@@ -11759,7 +11759,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "forecast table column: status",
       "id": "status_column"
     },
@@ -11772,7 +11772,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 17,
+      "community": 16,
       "norm_label": "accuracy metrics auto-populate note (after due dates pass)",
       "id": "accuracy_metrics_note"
     },
@@ -11785,7 +11785,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "reliance.ns",
       "id": "reliance_ns"
     },
@@ -11798,7 +11798,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "reliance industries",
       "id": "reliance_industries"
     },
@@ -11811,7 +11811,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "price chart with bollinger bands",
       "id": "chart_price_bollinger"
     },
@@ -11824,7 +11824,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "macd (daily)",
       "id": "indicator_macd_daily"
     },
@@ -11837,7 +11837,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "rsi (14)",
       "id": "indicator_rsi_14"
     },
@@ -11850,7 +11850,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "volume",
       "id": "indicator_volume"
     },
@@ -11915,7 +11915,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "search box",
       "id": "ui_search_box"
     },
@@ -11941,7 +11941,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "time range nov 2025 \u2013 apr 2026",
       "id": "timerange_nov2025_apr2026"
     },
@@ -11954,7 +11954,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "candlestick chart",
       "id": "candlestick_chart"
     },
@@ -13280,7 +13280,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "gsi home screen",
       "id": "gsi_home_screen"
     },
@@ -13293,7 +13293,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "global market overview",
       "id": "gsi_global_market_overview"
     },
@@ -13306,7 +13306,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "ticker bar",
       "id": "gsi_ticker_bar"
     },
@@ -13319,7 +13319,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "app version v5.36",
       "id": "gsi_version_v536"
     },
@@ -13332,7 +13332,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "live signals feature",
       "id": "gsi_live_signals"
     },
@@ -13358,7 +13358,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "usa market region",
       "id": "market_region_usa"
     },
@@ -13371,7 +13371,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "europe market region",
       "id": "market_region_europe"
     },
@@ -13384,7 +13384,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "asia market region",
       "id": "market_region_asia"
     },
@@ -13397,7 +13397,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "commodities market region",
       "id": "market_region_commodities"
     },
@@ -13410,7 +13410,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "global market status panel",
       "id": "gsi_market_status_panel"
     },
@@ -13423,7 +13423,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "india market closed status",
       "id": "status_india_closed"
     },
@@ -13436,7 +13436,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "usa market open status",
       "id": "status_usa_open"
     },
@@ -13449,7 +13449,7 @@
       "captured_at": "2026-04-07T21:48:00+05:30",
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "market closed contextual banner",
       "id": "gsi_market_closed_banner"
     },
@@ -13462,7 +13462,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "f&o data feature",
       "id": "gsi_fno_data"
     },
@@ -13475,7 +13475,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "global cues context",
       "id": "gsi_global_cues"
     },
@@ -13488,7 +13488,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "macd (daily) chart",
       "id": "chart_macd_daily"
     },
@@ -13501,7 +13501,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "rsi (14) chart",
       "id": "chart_rsi_14"
     },
@@ -13514,7 +13514,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "volume chart",
       "id": "chart_volume"
     },
@@ -13527,7 +13527,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "nifty 52,716 +8.28%",
       "id": "ticker_nifty"
     },
@@ -13631,7 +13631,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "search: reliance (1 result found)",
       "id": "sidebar_search"
     },
@@ -13644,7 +13644,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "chart date range: nov 2025 to apr 2026",
       "id": "date_range_nov2025_apr2026"
     },
@@ -13657,7 +13657,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "bollinger bands indicator",
       "id": "indicator_bollinger_bands"
     },
@@ -13670,7 +13670,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "moving averages (mas)",
       "id": "indicator_moving_averages"
     },
@@ -13917,7 +13917,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "reliance.ns \u2014 reliance industries",
       "id": "ticker_reliance_ns"
     },
@@ -13995,7 +13995,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "search filter (company name or symbol)",
       "id": "filter_search"
     },
@@ -14437,7 +14437,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "search result: reliance industries (1 result found)",
       "id": "sidebar_search_result"
     },
@@ -14450,7 +14450,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "refresh data button",
       "id": "button_refresh_data"
     },
@@ -14827,7 +14827,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "portfolio allocator view",
       "id": "view_portfolio_allocator"
     },
@@ -14840,7 +14840,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "week summary tab",
       "id": "tab_week_summary"
     },
@@ -14853,7 +14853,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "portfolio allocation sub-tab",
       "id": "subtab_portfolio_allocation"
     },
@@ -14866,7 +14866,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "signal summary sub-tab",
       "id": "subtab_signal_summary"
     },
@@ -14879,7 +14879,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "weekly returns sub-tab",
       "id": "subtab_weekly_returns"
     },
@@ -14892,7 +14892,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "portfolio size input (10000)",
       "id": "input_portfolio_size"
     },
@@ -14905,7 +14905,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "risk profile selector (conservative / balanced / aggressive)",
       "id": "control_risk_profile"
     },
@@ -14918,7 +14918,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "expected annual return (+7.8%)",
       "id": "metric_expected_annual_return"
     },
@@ -14931,7 +14931,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "sharpe ratio (0.65)",
       "id": "metric_sharpe_ratio"
     },
@@ -14944,7 +14944,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "max drawdown (-1.2%)",
       "id": "metric_max_drawdown"
     },
@@ -14957,7 +14957,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "total stocks count (45.2%)",
       "id": "metric_total_stocks"
     },
@@ -14970,7 +14970,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "allocation stability indicator (stable)",
       "id": "indicator_allocation_stability"
     },
@@ -14983,7 +14983,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "per-stock weight horizontal bar chart",
       "id": "section_stock_weight_chart"
     },
@@ -14996,7 +14996,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "show per-stock weight sensitivity toggle",
       "id": "toggle_stock_weight_sensitivity"
     },
@@ -15009,7 +15009,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "sector allocation section",
       "id": "section_sector_allocation"
     },
@@ -15022,7 +15022,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "fmcg sector bar",
       "id": "sector_fmcg"
     },
@@ -15035,7 +15035,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "financial services sector bar",
       "id": "sector_financial_services"
     },
@@ -15048,7 +15048,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "oil & gas sector bar",
       "id": "sector_oil_gas"
     },
@@ -15061,7 +15061,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "it sector bar",
       "id": "sector_it"
     },
@@ -15074,7 +15074,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "tech hardware sector bar",
       "id": "sector_tech_hardware"
     },
@@ -15087,7 +15087,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "efficient frontier scatter plot",
       "id": "section_efficient_frontier"
     },
@@ -15100,7 +15100,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "daily volatility axis (x-axis)",
       "id": "axis_daily_volatility"
     },
@@ -15113,7 +15113,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "daily return axis (y-axis)",
       "id": "axis_daily_return"
     },
@@ -15126,7 +15126,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "stress regime detected alert banner",
       "id": "alert_stress_regime_detected"
     },
@@ -15139,7 +15139,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "gsi dashboard sidebar navigation",
       "id": "nav_sidebar_gsi"
     },
@@ -15152,7 +15152,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "live ticker price bar (top)",
       "id": "ticker_bar_live"
     },
@@ -15165,7 +15165,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 17,
       "norm_label": "portfolio allocator feature",
       "id": "feature_portfolio_allocator"
     },
@@ -15178,7 +15178,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 26,
       "norm_label": "navigation sidebar",
       "id": "nav_sidebar"
     },
@@ -15243,7 +15243,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "streamlit application",
       "id": "streamlit_app"
     },
@@ -15256,7 +15256,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "stock search widget",
       "id": "search_widget"
     },
@@ -15386,7 +15386,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "india market coverage",
       "id": "gsi_market_india"
     },
@@ -15399,7 +15399,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "usa market coverage",
       "id": "gsi_market_usa"
     },
@@ -15412,7 +15412,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "europe market coverage",
       "id": "gsi_market_europe"
     },
@@ -15425,7 +15425,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "asia market coverage",
       "id": "gsi_market_asia"
     },
@@ -15438,7 +15438,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "commodities market coverage",
       "id": "gsi_market_commodities"
     },
@@ -15451,7 +15451,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "india market status (closed)",
       "id": "gsi_india_market_status"
     },
@@ -15464,7 +15464,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "usa market status (open)",
       "id": "gsi_usa_market_status"
     },
@@ -15477,7 +15477,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "nasdaq index ticker (23,995 -0.82%)",
       "id": "gsi_ticker_nasdaq"
     },
@@ -15490,7 +15490,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "dow jones index ticker (46,419 -0.54%)",
       "id": "gsi_ticker_dow_jones"
     },
@@ -15503,7 +15503,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "hang seng index ticker (25,117 -0.70%)",
       "id": "gsi_ticker_hang_seng"
     },
@@ -15516,7 +15516,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "market context banner (global cues, f&o data)",
       "id": "gsi_market_context_banner"
     },
@@ -15529,7 +15529,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 19,
+      "community": 18,
       "norm_label": "asian overnight market data",
       "id": "gsi_asian_overnight_data"
     },
@@ -16023,7 +16023,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "9 markets covered stat",
       "id": "stat_markets_covered"
     },
@@ -16062,7 +16062,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "4 dashboard tabs stat",
       "id": "stat_dashboard_tabs"
     },
@@ -16166,7 +16166,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "everything in one place features section",
       "id": "features_section"
     },
@@ -16179,7 +16179,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "4-tab stock dashboard feature",
       "id": "feature_4tab_dashboard"
     },
@@ -16192,7 +16192,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "global intelligence feature",
       "id": "feature_global_intelligence"
     },
@@ -16205,7 +16205,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "week summary feature",
       "id": "feature_week_summary"
     },
@@ -16218,7 +16218,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "forecast tracker feature",
       "id": "feature_forecast_tracker"
     },
@@ -16231,7 +16231,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "live ticker bar feature",
       "id": "feature_live_ticker_bar"
     },
@@ -16244,7 +16244,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "9 markets one dashboard section",
       "id": "markets_section"
     },
@@ -16257,7 +16257,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "usa market",
       "id": "market_usa"
     },
@@ -16270,7 +16270,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "europe market",
       "id": "market_europe"
     },
@@ -16283,7 +16283,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "china market",
       "id": "market_china"
     },
@@ -16296,7 +16296,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "asia-pacific market",
       "id": "market_asia_pacific"
     },
@@ -16309,7 +16309,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "west asia market",
       "id": "market_west_asia"
     },
@@ -16322,7 +16322,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "commodities market",
       "id": "market_commodities"
     },
@@ -16335,7 +16335,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "forex market",
       "id": "market_forex"
     },
@@ -16348,7 +16348,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 37,
+      "community": 36,
       "norm_label": "rates and bonds market",
       "id": "market_rates_bonds"
     },
@@ -16439,7 +16439,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 28,
+      "community": 29,
       "norm_label": "reliance.ns ticker symbol",
       "id": "reliance_ticker"
     },
@@ -16478,7 +16478,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "algorithmic signal panel",
       "id": "algorithmic_signal_panel"
     },
@@ -16491,7 +16491,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "rsi metric (33.3)",
       "id": "rsi_metric"
     },
@@ -16504,7 +16504,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "macd metric (-6.775)",
       "id": "macd_metric"
     },
@@ -16517,7 +16517,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "bollinger width metric (8.7%)",
       "id": "bollinger_width_metric"
     },
@@ -16530,7 +16530,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "atr volatility metric (\u20b934.76)",
       "id": "atr_volatility_metric"
     },
@@ -16543,7 +16543,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "adx trend metric (31.0)",
       "id": "adx_trend_metric"
     },
@@ -16556,7 +16556,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "williams %r metric (10.5)",
       "id": "williams_r_metric"
     },
@@ -16569,7 +16569,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "stochastic %d metric (n/a - 0.0x)",
       "id": "sto_d_metric"
     },
@@ -16582,7 +16582,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "stochastic %k metric (n/a - 0.0%)",
       "id": "sto_k_metric"
     },
@@ -16595,7 +16595,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "volume metrics (43.6m / 29.3m)",
       "id": "volume_metrics"
     },
@@ -16608,7 +16608,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "technical charts tab",
       "id": "technical_charts_tab"
     },
@@ -16660,7 +16660,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "price bollinger bands chart",
       "id": "price_bollinger_chart"
     },
@@ -16673,7 +16673,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "macd daily chart",
       "id": "macd_daily_chart"
     },
@@ -16686,7 +16686,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "rsi (14) chart",
       "id": "rsi14_chart"
     },
@@ -16699,7 +16699,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 43,
+      "community": 44,
       "norm_label": "volume bar chart",
       "id": "volume_chart"
     },
@@ -16790,7 +16790,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "week summary feature",
       "id": "weeksum_week_summary_feature"
     },
@@ -16803,7 +16803,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "the week that was section",
       "id": "weeksum_the_week_that_was"
     },
@@ -16816,7 +16816,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "index performance this week",
       "id": "weeksum_index_performance_this_week"
     },
@@ -16829,7 +16829,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty 50 metric card",
       "id": "weeksum_nifty50_metric_card"
     },
@@ -16842,7 +16842,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "sensex metric card",
       "id": "weeksum_sensex_metric_card"
     },
@@ -16855,7 +16855,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "bank nifty metric card",
       "id": "weeksum_bank_nifty_metric_card"
     },
@@ -16868,7 +16868,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty it metric card",
       "id": "weeksum_nifty_it_metric_card"
     },
@@ -16881,7 +16881,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "sensex 30 metric card",
       "id": "weeksum_sensex30_metric_card"
     },
@@ -16894,7 +16894,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "midcap metric card",
       "id": "weeksum_midcap_metric_card"
     },
@@ -16907,7 +16907,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "gold metric card",
       "id": "weeksum_gold_metric_card"
     },
@@ -16920,7 +16920,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "dollar (usd/inr) metric card",
       "id": "weeksum_dollar_metric_card"
     },
@@ -16933,7 +16933,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "multi-asset this week performance chart",
       "id": "weeksum_multi_asset_performance"
     },
@@ -16946,7 +16946,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "indian market weekly breakdown section",
       "id": "weeksum_indian_market_weekly_breakdown"
     },
@@ -16959,7 +16959,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "sector heatmap",
       "id": "weeksum_sector_heatmap"
     },
@@ -16972,7 +16972,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty 50 this week in charts section",
       "id": "weeksum_nifty50_chart_section"
     },
@@ -16985,7 +16985,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty 50 weekly line chart",
       "id": "weeksum_nifty50_line_chart"
     },
@@ -16998,7 +16998,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty 50 this week returns heatmap",
       "id": "weeksum_nifty50_returns_heatmap"
     },
@@ -17011,7 +17011,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "weekly forecast accuracy report",
       "id": "weeksum_forecast_accuracy_report"
     },
@@ -17024,7 +17024,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "reliance.ns forecast row",
       "id": "weeksum_reliance_forecast_row"
     },
@@ -17037,7 +17037,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "market selector (india)",
       "id": "weeksum_market_selector"
     },
@@ -17050,7 +17050,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "group selector",
       "id": "weeksum_group_selector"
     },
@@ -17063,7 +17063,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "stock selector",
       "id": "weeksum_stock_selector"
     },
@@ -17076,7 +17076,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "global intelligence navigation item",
       "id": "weeksum_global_intelligence_nav"
     },
@@ -17089,7 +17089,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "market closed badge",
       "id": "weeksum_market_closed_badge"
     },
@@ -17102,7 +17102,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "bar chart global indices (nifty/s&p/nasdaq/ftse/hang seng/crude oil/10y ust)",
       "id": "weeksum_bar_chart_global_indices"
     },
@@ -17115,7 +17115,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty auto sector tag",
       "id": "weeksum_nifty_auto_sector_tag"
     },
@@ -17128,7 +17128,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty bank sector tag",
       "id": "weeksum_nifty_bank_sector_tag"
     },
@@ -17141,7 +17141,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty fmcg sector tag",
       "id": "weeksum_nifty_fmcg_sector_tag"
     },
@@ -17154,7 +17154,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty pharma sector tag",
       "id": "weeksum_nifty_pharma_sector_tag"
     },
@@ -17167,7 +17167,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty realty sector tag",
       "id": "weeksum_nifty_realty_sector_tag"
     },
@@ -17180,7 +17180,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "nifty it sector tag",
       "id": "weeksum_nifty_it_sector_tag"
     },
@@ -17193,7 +17193,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 15,
       "norm_label": "pending forecast status",
       "id": "weeksum_pending_forecast_status"
     },
@@ -17336,7 +17336,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "gsi qa audit report v5.36",
       "id": "gsi_qa_audit_report"
     },
@@ -17349,7 +17349,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "gsi version 5.36",
       "id": "gsi_version_536"
     },
@@ -17362,7 +17362,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "qa test suite",
       "id": "qa_test_suite"
     },
@@ -17375,7 +17375,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "qa pass status",
       "id": "qa_pass_status"
     },
@@ -17388,7 +17388,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "qa fail status",
       "id": "qa_fail_status"
     },
@@ -17401,7 +17401,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "regression tests",
       "id": "regression_tests"
     },
@@ -17414,7 +17414,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "dashboard tabs",
       "id": "dashboard_tabs"
     },
@@ -17427,7 +17427,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "market data checks",
       "id": "market_data_checks"
     },
@@ -17440,7 +17440,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "compliance checks",
       "id": "compliance_checks"
     },
@@ -17453,7 +17453,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "ui validation",
       "id": "ui_validation"
     },
@@ -17466,7 +17466,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "sector and group tests",
       "id": "sector_group_tests"
     },
@@ -17479,7 +17479,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "ticker validation",
       "id": "ticker_validation"
     },
@@ -17492,7 +17492,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "error log section",
       "id": "error_log_section"
     },
@@ -17505,7 +17505,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "performance metrics",
       "id": "performance_metrics"
     },
@@ -17518,7 +17518,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "summary scorecard",
       "id": "summary_scorecard"
     },
@@ -17531,7 +17531,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "indian equities market",
       "id": "indian_equities_market"
     },
@@ -17544,7 +17544,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "top movers section",
       "id": "top_movers_section"
     },
@@ -17557,7 +17557,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "macro cards",
       "id": "macro_cards"
     },
@@ -17570,7 +17570,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "sebi compliance",
       "id": "sebi_compliance"
     },
@@ -17583,7 +17583,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "data-as-of disclosure",
       "id": "data_disclosure"
     },
@@ -17596,7 +17596,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "green pass indicators",
       "id": "green_pass_indicators"
     },
@@ -17609,7 +17609,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "red fail indicators",
       "id": "red_fail_indicators"
     },
@@ -17622,7 +17622,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 23,
       "norm_label": "yellow warning indicators",
       "id": "yellow_warning_indicators"
     },
@@ -43792,5 +43792,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f27dd21a5153cc071a7c7f534e189af690849863"
+  "built_at_commit": "00168c74208ed5c1d375b524457a0aa9156eecab"
 }

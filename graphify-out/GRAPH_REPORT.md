@@ -1,4 +1,4 @@
-# Graph Report - stock-intelligence-test-1-vs  (2026-06-23)
+# Graph Report - stock-intelligence-test-1-vs  (2026-06-24)
 
 ## Corpus Check
 - 83 files · ~1,339,013 words
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f27dd21a`
+- Built from commit: `00168c74`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -148,9 +148,9 @@
   market_data.py → alphaveda/src/data/provider.py
 - `get_batch_data()` --calls--> `render_group_overview()`  [INFERRED]
   market_data.py → pages/week_summary.py
-- `DataType` --uses--> `TestCacheManagerMiss`  [INFERRED]
+- `DataType` --uses--> `TestCacheManagerTTL`  [INFERRED]
   data_manager.py → tests/test_data_manager_m2.py
-- `DataType` --uses--> `TestCacheManagerHit`  [INFERRED]
+- `DataType` --uses--> `TestDataContractOHLCV`  [INFERRED]
   data_manager.py → tests/test_data_manager_m2.py
 
 ## Communities (121 total, 43 thin omitted)
@@ -216,120 +216,120 @@ Cohesion: 0.08
 Nodes (33): All Mitigated Success Banner, App Internals Page, App Internals Tab Bar, Cache Hits/Misses Detail (13 hits / 77 misses), Compliance Gates Section, Deploy Button, Fetch Latency Chart (last 20 samples), Metric: Avg Fetch Time (690.3 ms) (+25 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.13
-Nodes (13): CacheManager, DataResult, Bounded LRU in-memory cache (L2).      Deployment note: Streamlit-specific.  Sin, Returns DataResult if the entry exists (FRESH or STALE), None if not found., Store result.  No-op if status == UNAVAILABLE.         Evicts the LRU entry if a, Remove all cache entries for this ticker across all DataTypes., Every DataManager response is a DataResult.     data is None if and only if stat, _make_result() (+5 more)
-
-### Community 16 - "Community 16"
 Cohesion: 0.07
 Nodes (32): Bank Nifty Metric Card, Bar Chart Global Indices (Nifty/S&P/Nasdaq/FTSE/Hang Seng/Crude Oil/10Y UST), Dollar (USD/INR) Metric Card, Weekly Forecast Accuracy Report, Global Intelligence Navigation Item, Gold Metric Card, Group Selector, Index Performance This Week (+24 more)
 
-### Community 17 - "Community 17"
+### Community 16 - "Community 16"
 Cohesion: 0.09
 Nodes (27): Accuracy Metrics Auto-Populate Note (after due dates pass), Forecast Table Column: Due On, First Resolution Date: 2026-04-13, Forecast Engine — Weekly Accuracy Report, Forecast Horizon 21 Days (1M), Forecast Horizon 63 Days (3M), P(Gain) Field — Probability of Gain, Forecast Status: Pending (+19 more)
 
-### Community 18 - "Community 18"
+### Community 17 - "Community 17"
 Cohesion: 0.09
 Nodes (27): Stress Regime Detected Alert Banner, Daily Return Axis (y-axis), Daily Volatility Axis (x-axis), Risk Profile Selector (Conservative / Balanced / Aggressive), Portfolio Allocator Feature, Allocation Stability Indicator (STABLE), Portfolio Size Input (10000), Expected Annual Return (+7.8%) (+19 more)
 
-### Community 19 - "Community 19"
+### Community 18 - "Community 18"
 Cohesion: 0.11
 Nodes (27): Asian Overnight Market Data, F&O Data Feature, Global Cues Context, Global Market Overview, GSI Home Screen, India Market Status (CLOSED), Live Signals Feature, Asia Market Coverage (+19 more)
+
+### Community 19 - "Community 19"
+Cohesion: 0.13
+Nodes (7): CacheManager, Bounded LRU in-memory cache (L2).      Deployment note: Streamlit-specific.  Sin, Returns DataResult if the entry exists (FRESH or STALE), None if not found., Store result.  No-op if status == UNAVAILABLE.         Evicts the LRU entry if a, Remove all cache entries for this ticker across all DataTypes., _make_result(), TestCacheManagerTTL
 
 ### Community 20 - "Community 20"
 Cohesion: 0.08
 Nodes (25): Phase 6 — G0 gate. All 10 criteria. Run criterion 10 (seed) first. Requires live, Criterion 7: Kelly returns 0 when downside_target is None., Criterion 8: Kelly returns non-zero rupee with valid downside_target., Criterion 8: Kelly returns non-zero rupee with valid downside_target., Criterion 9: disclaimer text passes substance check — non-occlusion is manual., Criterion 9: disclaimer text passes substance check — non-occlusion is manual., Criterion 10: ≥10 seed instruments across ≥3 Lynch classifications., Criterion 10: ingest_status must have ≥1 OK row. (+17 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.09
-Nodes (24): Compliance Checks, Dashboard Tabs, Data-as-of Disclosure, Error Log Section, Green Pass Indicators, GSI QA Audit Report v5.36, GSI Version 5.36, Indian Equities Market (+16 more)
+Cohesion: 0.17
+Nodes (14): DataContract, DataResult, DataType, Wire-level shape validator for each DataType.      Validates that data received, Every DataManager response is a DataResult.     data is None if and only if stat, ResultStatus, SourceTag, Unit tests for DataManager M2 — CacheManager and DataContract.  Run: pytest test (+6 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.09
-Nodes (13): DataManager, HealthSnapshot, Factory for UNAVAILABLE DataResult.     Use this everywhere — never construct Da, Point-in-time health state.  Consumed by sidebar observability panel (M6).     R, True if at least one source breaker is CLOSED and DataManager is not in bypass., Always safe to call — never raises.         Returns a snapshot of current health, Direct access to a source's circuit breaker. Used by source adapters (M4/M5)., Synchronous data fetch.  Returns DataResult — never raises.         M1: always r (+5 more)
+Nodes (24): Compliance Checks, Dashboard Tabs, Data-as-of Disclosure, Error Log Section, Green Pass Indicators, GSI QA Audit Report v5.36, GSI Version 5.36, Indian Equities Market (+16 more)
 
 ### Community 24 - "Community 24"
+Cohesion: 0.09
+Nodes (13): DataManager, HealthSnapshot, Factory for UNAVAILABLE DataResult.     Use this everywhere — never construct Da, Point-in-time health state.  Consumed by sidebar observability panel (M6).     R, True if at least one source breaker is CLOSED and DataManager is not in bypass., Always safe to call — never raises.         Returns a snapshot of current health, Direct access to a source's circuit breaker. Used by source adapters (M4/M5)., Synchronous data fetch.  Returns DataResult — never raises.         M1: always r (+5 more)
+
+### Community 25 - "Community 25"
 Cohesion: 0.38
 Nodes (20): bg(), blank_slide(), box(), divider(), label(), pill(), GSI Dashboard — Community Launch Pitch Deck Run: python3 docs/build_pitch_deck.p, Legal / disclaimer — required on all decks (+12 more)
 
-### Community 25 - "Community 25"
+### Community 26 - "Community 26"
 Cohesion: 0.13
 Nodes (22): Deploy Button, Refresh Data Button, Search Filter (Company Name or Symbol), App Navigation Item, Dashboard Navigation Item, Global Intelligence Navigation Item, Home Navigation Item, Observability Navigation Item (+14 more)
 
-### Community 26 - "Community 26"
+### Community 27 - "Community 27"
 Cohesion: 0.1
 Nodes (17): calc_5d_change(), info_tip(), log_error(), Label + ℹ️ icon with native HTML title= tooltip (no JS, XSS-safe).     Use insid, <p class=section-title> with inline ℹ️ tooltip. Drop-in for bare section titles., Shared 5-day percentage change utility — call this EVERYWHERE a 5-day     or wee, Escape HTML special chars before injecting into unsafe_allow_html blocks., Like sanitise() but preserves <b> and </b> for emphasis in insight cards.     Pr (+9 more)
 
-### Community 27 - "Community 27"
+### Community 28 - "Community 28"
 Cohesion: 0.15
 Nodes (18): derive_cycle_phase(), Cycle phase derivation — maps macro regime + technical position to one of 6 mark, Return one of 6 cycle phases based on macro regime + price vs 200MA + VIX level., test_all_results_are_valid_phases(), test_never_returns_none(), test_risk_on_above_ma_low_vix_is_mid_bull(), Phase 2 — cycle_phase.py tests. RED until src/accuracy/cycle_phase.py is impleme, Exhaustive check: every PHASE_RULES entry returns a valid phase label. (+10 more)
 
-### Community 28 - "Community 28"
+### Community 29 - "Community 29"
 Cohesion: 0.16
 Nodes (20): Candlestick Chart, MACD (Daily) Chart, Price Chart with Bollinger Bands, RSI (14) Chart, Volume Chart, Chart Date Range: Nov 2025 to Apr 2026, Bollinger Bands Indicator, MACD (Daily) (+12 more)
 
-### Community 29 - "Community 29"
+### Community 30 - "Community 30"
 Cohesion: 0.17
 Nodes (18): compute_correction_factor(), get_accuracy_summary(), get_pending_forecast_summary(), get_weekly_accuracy_report(), load_forecast_history(), Check all pending forecasts whose due date has passed and mark them     resolved, Auto-correction factor.     If mean accuracy < 95 %, return the mean of actual/f, Return accuracy stats dict for display in the Forecast tab. (+10 more)
 
-### Community 30 - "Community 30"
+### Community 31 - "Community 31"
 Cohesion: 0.12
 Nodes (15): info_tip(), log_error(), Label + ℹ️ icon with native HTML title= tooltip (no JS, XSS-safe).     Use insid, <p class=section-title> with inline ℹ️ tooltip. Drop-in for bare section titles., Escape HTML special chars before injecting into unsafe_allow_html blocks., Like sanitise() but preserves <b> and </b> for emphasis in insight cards.     Pr, Sanitise ticker before use as dict/JSON key. Allows A-Za-z0-9.-^= only., Validate URL is http/https and not pointing at internal/local network. (+7 more)
 
-### Community 31 - "Community 31"
+### Community 32 - "Community 32"
 Cohesion: 0.11
 Nodes (16): Phase 4 — optimizer.py tests. Skipped until src/portfolio/optimizer.py is implem, b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12, b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12, Even with extreme edge, result must not exceed MAX_POSITION_PCT × portfolio., Even with extreme edge, result must not exceed MAX_POSITION_PCT × portfolio., Negative full Kelly (no edge) must return 0, not a floor., Negative full Kelly (no edge) must return 0, not a floor., MIN_POSITION_PCT must NOT be applied as a floor — zero-edge = 0, not 1%. (+8 more)
 
-### Community 32 - "Community 32"
-Cohesion: 0.18
-Nodes (11): Enum, CircuitState, DataType, Priority, data_manager.py — Global Stock Intelligence Dashboard DataManager: resilient dat, SourceTag, validate(), _validate_batch() (+3 more)
-
 ### Community 33 - "Community 33"
-Cohesion: 0.18
-Nodes (4): _make_ohlcv(), Unit tests for DataManager M2 — CacheManager and DataContract.  Run: pytest test, TestDataContractBATCH, TestDataContractOHLCV
-
-### Community 34 - "Community 34"
 Cohesion: 0.24
 Nodes (16): _graph_help(), _has_ohlcv(), _kpi(), _live_kpi_panel(), Fragment: re-renders live price KPIs every 60 s.     Charts and analysis section, Return True only if df has all required OHLCV columns as proper Series., Safely return df['Close'] as a Series, or default., KPI tile — tip= adds hover tooltip on card and ℹ️ icon on label. (+8 more)
 
-### Community 35 - "Community 35"
+### Community 34 - "Community 34"
 Cohesion: 0.15
 Nodes (16): _make_signal(), Phase 3 — arbitration.py tests. Skipped until src/signals/arbitration.py is impl, If weighted scores are within ARBITRATION_MARGIN, suppress emission., If weighted scores are within ARBITRATION_MARGIN, suppress emission., Emitted confidence is in [0, 100]., Emitted confidence is in [0, 100]., All signals agree — must emit., All signals agree — must emit. (+8 more)
 
-### Community 36 - "Community 36"
+### Community 35 - "Community 35"
 Cohesion: 0.12
 Nodes (13): Phase 3 — downside.py tests. Skipped until src/signals/downside.py is implemente, ATR(14)/price default when no signal stop-loss is provided., ATR(14)/price default when no signal stop-loss is provided., Insufficient history: fallback to 5%., Insufficient history: fallback to 5%., Only 1 row — cannot compute true range — fallback to 5%., Only 1 row — cannot compute true range — fallback to 5%., If signal provides stop_loss_pct, use it directly. (+5 more)
 
-### Community 37 - "Community 37"
+### Community 36 - "Community 36"
 Cohesion: 0.12
 Nodes (17): 4-Tab Stock Dashboard Feature, Forecast Tracker Feature, Global Intelligence Feature, Live Ticker Bar Feature, Week Summary Feature, Everything in One Place Features Section, Asia-Pacific Market, China Market (+9 more)
 
-### Community 38 - "Community 38"
+### Community 37 - "Community 37"
 Cohesion: 0.12
 Nodes (9): Phase 1 — G-MIG gate: verify all 13 AlphaVeda tables exist on live Supabase. Req, Migration 0012 — downside_target column must exist., Migration 0013 — circuit_flag column must exist., Migration 0013 — licence_class column must exist., portfolio_buckets must have the 4 seed rows from migration 0005., test_accuracy_predictions_has_downside_target(), test_ohlcv_has_circuit_flag(), test_ohlcv_has_licence_class() (+1 more)
 
-### Community 39 - "Community 39"
+### Community 38 - "Community 38"
 Cohesion: 0.16
 Nodes (13): CustomLogger, ApprovalLayer, _classify(), _macos_approve(), _osascript(), Run an AppleScript snippet and return (stdout, returncode)., Show a native macOS dialog. Returns (choice, alt_model).     choice: "approve" |, Interactive terminal approval with timeout.     Returns (choice, alt_model). (+5 more)
 
+### Community 39 - "Community 39"
+Cohesion: 0.2
+Nodes (3): _make_ohlcv(), TestDataContractBATCH, TestDataContractOHLCV
+
 ### Community 40 - "Community 40"
+Cohesion: 0.2
+Nodes (9): Enum, CircuitState, Priority, data_manager.py — Global Stock Intelligence Dashboard DataManager: resilient dat, validate(), _validate_batch(), _validate_info(), _validate_live() (+1 more)
+
+### Community 41 - "Community 41"
 Cohesion: 0.24
 Nodes (14): _all_commits(), check_commits(), _full_message(), _get_note(), _git(), main(), _mark_reviewed(), Return the full commit message for a given SHA. (+6 more)
 
-### Community 41 - "Community 41"
+### Community 42 - "Community 42"
 Cohesion: 0.2
 Nodes (13): _market_status(), _next_open(), Fragment wrapping all DYNAMIC home-page sections:     morning brief status, mark, Called from app.py routing — renders the Home page body., Renders a fixed 36px ticker strip pinned to the very top of the page.      Strat, render_homepage(), _render_live_section(), _render_market_status_row() (+5 more)
 
-### Community 42 - "Community 42"
+### Community 43 - "Community 43"
 Cohesion: 0.13
 Nodes (3): Phase 1 — constants.py tests. These pass immediately (constants.py is implemente, ROIC + FCF + pledge combined must be >= FUNDAMENTAL_WEIGHT_FLOOR for every class, test_fundamental_floor_applies_to_all_cold_starts()
 
-### Community 43 - "Community 43"
+### Community 44 - "Community 44"
 Cohesion: 0.16
 Nodes (15): ADX Trend Metric (31.0), Algorithmic Signal Panel, ATR Volatility Metric (₹34.76), Bollinger Width Metric (8.7%), MACD Daily Chart, MACD Metric (-6.775), Price Bollinger Bands Chart, RSI (14) Chart (+7 more)
-
-### Community 44 - "Community 44"
-Cohesion: 0.15
-Nodes (5): DataContract, Wire-level shape validator for each DataType.      Validates that data received, ResultStatus, TestDataContractINFO, TestDataContractLIVE
 
 ### Community 45 - "Community 45"
 Cohesion: 0.22
@@ -443,9 +443,9 @@ Nodes (3): Deploy Button, Overflow Menu (Three Dots), Top Bar
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GSI Dashboard` connect `Community 5` to `Community 0`, `Community 6`, `Community 7`, `Community 13`, `Community 22`, `Community 25`, `Community 28`, `Community 37`, `Community 43`, `Community 47`, `Community 48`, `Community 49`, `Community 53`, `Community 56`, `Community 60`, `Community 61`, `Community 62`, `Community 66`, `Community 76`?**
+- **Why does `GSI Dashboard` connect `Community 5` to `Community 0`, `Community 6`, `Community 7`, `Community 13`, `Community 23`, `Community 26`, `Community 29`, `Community 36`, `Community 44`, `Community 47`, `Community 48`, `Community 49`, `Community 53`, `Community 56`, `Community 60`, `Community 61`, `Community 62`, `Community 66`, `Community 76`?**
   _High betweenness centrality (0.116) - this node is a cross-community bridge._
-- **Why does `Exception` connect `Community 4` to `Community 3`, `Community 39`?**
+- **Why does `Exception` connect `Community 4` to `Community 3`, `Community 38`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Why does `_set_rate_limited()` connect `Community 3` to `Community 4`?**
   _High betweenness centrality (0.020) - this node is a cross-community bridge._

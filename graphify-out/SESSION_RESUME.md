@@ -146,38 +146,103 @@ After Phase 3 complete + signed off → promote governance test from `--warn` to
 
 ---
 
-## EXACT RESUME POINT — UPDATED 2026-06-23 (governance plan approved, execute 10 steps then Phase 3)
+## EXACT RESUME POINT — UPDATED 2026-06-24 (full action plan with skills mapped)
 
-**NEXT ACTION: 10-step governance housekeeping plan**
+**NEXT ACTION: GROUP A — Step 1 (COUNCIL_TEST_MAP.md: move Dalio's 2 entries to Phase 3)**
 
-Phase 2 COMPLETE (commit ce9cba9). Test state: 61 PASS / 22 SKIP / 3 FAIL (intentional G0 gate — instruments/ingest_status not yet seeded).
-Phase 2 council sign-off: Dalio ✓ Marks ✓ Imran ✓ Constraint Enforcer ✓ (all PASS).
-GSI regression: 455/455 PASS.
+Phase 2 COMPLETE (commit ce9cba9). Test state: 61 PASS / 22 SKIP / 3 FAIL (intentional G0 gate).
+GSI regression: 455/455 PASS. Governance fix plan: council-approved, 96/100 premortem (Section 11).
 
-**Before Phase 3:** Complete 10-step governance housekeeping plan (council-approved, 96/100 premortem). Steps 1–3 are 4 quick code fixes (< 15 min). Steps 4–10 build the permanent governance system. See Section 11 above for the full plan.
+---
 
-**Governance FM summary for next session:**
-- FM-01→14 all addressed in the plan
-- Two accepted residual risks: subagent protocol not mechanically enforced (advisory + soft marker check); test suite can be partially run without CI (documentation mitigation)
-- Dalio caching: move `test_regime_cached` + `test_stale_regime_fails_visibly` to Phase 3 (Step 1 of governance plan) — this is the recommended resolution, not a blocker requiring Tarun's explicit approval
+### GROUP A — Quick code fixes (Steps 1–3 · ~20 min · no council gate)
 
-Phase 3 file list (all SPEC → TDD: write test RED → implement → GREEN):
-- `src/accuracy/ledger.py`: compute_streak_flag() — consecutive correct streak counter
-- `src/signals/downside.py`: compute_downside_target() — ATR(14)/price with signal override + clamps
-- `src/signals/arbitration.py`: arbitrate() — weighted-vote, ARBITRATION_MARGIN suppression
-- `src/signals/weights.py`: active loader from signal_weights table + cold-start fallback
-- `src/signals/engine.py`: full emit pipeline steps 1–7
+| Step | Action | File | Line(s) | Skill / Model |
+|---|---|---|---|---|
+| 1 | COUNCIL_TEST_MAP.md: move `test_regime_cached` + `test_stale_regime_fails_visibly` Phase 2→3 with note: *"caching scoped to Phase 3 — engine.py is the primary caller"* | `COUNCIL_TEST_MAP.md` | Lines 24–25 | Direct Edit · T2 Sonnet |
+| 2 | Remove 4 stale skip decorators: Marks × 3 + CE `test_is_commercial_fail_closed` | `tests/test_council_conditions.py` | Lines 114, 120, 133, 260 | Direct Edit · T2 Sonnet |
+| 3a | Remove stale skip from `test_is_commercial_true_when_subscriber_exists` | `tests/test_council_conditions.py` | Line 269 | Direct Edit · T2 Sonnet |
+| 3b | Implement ghost test body using mock pattern from `test_is_commercial.py` (mock chain: `mock.table...not_.is_...execute.return_value.data = [{"id":1}]`) | `tests/test_council_conditions.py` | Line 270–274 | Direct Edit · T2 Sonnet (read `test_is_commercial.py` first) |
 
-Phase 3 test stubs (already written, currently SKIP via importorskip):
-- test_downside.py (7 tests)
-- test_arbitration.py (6 tests)
-- tests to write: test_ledger.py, test_weights.py, test_engine.py
+**After Group A:** ~65 PASS / ~18 SKIP / 3 FAIL
 
-Phase 3 council sign-off required: Soros, Druckenmiller, Shakuni, Constraint Enforcer (Sonnet)
+---
 
-Additional bug fixes done this session (not in pre-compaction plan):
-- Shakani test: `segment` column → `lynch_class`+`regime` (correct partial-index columns)
-- test_g0_gate.py c7/c8: added importorskip guard (was failing with ModuleNotFoundError)
+### GROUP B — Governance document updates (Steps 4–6 · ~20 min)
+
+| Step | Action | File | Skill / Model |
+|---|---|---|---|
+| 4 | Add `## Completed Phases` section to COUNCIL_TEST_MAP.md: `- Phase 1 (Foundation) — 2026-06-23` + `- Phase 2 (Data Layer) — 2026-06-23` | `COUNCIL_TEST_MAP.md` | Direct Edit · T2 Sonnet |
+| 5 | One-time map audit — correct drifted statuses: `test_regime_as_of_join` SPEC→GREEN; Marks `test_all_phase_rules`+`test_never_returns_none` RED→GREEN; rename `test_is_commercial_from_db` → `test_is_commercial_false_when_no_subscribers`; Phase 1 migration entries RED→GREEN | `COUNCIL_TEST_MAP.md` | T1 Haiku (grep sweep) + T2 Sonnet (edits) |
+| 6 | Add to CONTRIBUTING.md: (a) Quality Rule 4 — skip format contract `"<path/module.py> not yet implemented — Phase N"`; (b) Council independence rule — Phase sign-off via subagent only | `CONTRIBUTING.md` | Direct Edit · T2 Sonnet |
+
+---
+
+### GROUP C — Build governance test (Steps 7–10 · ~45 min)
+
+| Step | Action | File | Skill / Model | Key notes |
+|---|---|---|---|---|
+| 7 | Write `tests/test_governance_integrity.py` in `--warn` mode | New file | Direct Write · T2 Sonnet | 7 test functions (see spec below) |
+| 8 | Run `python3 -m pytest alphaveda/tests/ --tb=short` — must show 0 governance warnings | bash | T1 Haiku | Full suite, not subset |
+| 9 | Amend COUNCIL_TEST_MAP.md sign-off protocol (4 steps → 7); rename `TestShakaniConditions` → `TestShakuniConditions` | `COUNCIL_TEST_MAP.md`, `tests/test_council_conditions.py` | Direct Edit · T2 Sonnet | Protocol step 7: `[council:subagent]` marker |
+| 10 | Commit: `chore(alphaveda): governance housekeeping — test_governance_integrity + map + protocol` | git | T1 Haiku bash | No [council:subagent] needed (housekeeping, not Phase sign-off) |
+
+**`tests/test_governance_integrity.py` — 7 test functions:**
+```
+TestGovernanceMap:
+  test_parser_reads_minimum_rows()       # sentinel: assert len(rows) >= 30 (FM-05)
+  test_no_spec_in_complete_phases()      # SPEC in Completed Phase → warn (FM-04)
+  test_green_tests_are_collectable()     # subprocess --collect-only per GREEN row (FM-06)
+  test_no_ghost_tests()                  # un-skipped + pass-only body → warn (FM-08)
+
+TestSkipReason:
+  test_no_stale_phase_skips()            # "not yet implemented — Phase N" + N complete → warn (FM-07)
+  test_environmental_skips_exempt()      # "SUPABASE_URL not set" → never flagged (FM-07)
+
+TestGovernanceMeta:
+  test_governance_test_is_self_checking()  # asserts parser returned ≥30 rows (FM-05 guard)
+```
+Resources: `COUNCIL_TEST_MAP.md`, `tests/test_council_conditions.py`, `subprocess` (pytest --collect-only), `re`, `ast`
+
+**After Groups A–C:** ~65 PASS / ~18 SKIP / 3 FAIL + governance test GREEN (0 warnings)
+
+---
+
+### PHASE 3 — Signal Layer (after Step 10 committed and green)
+
+| Order | Module | Test file | State | TDD sequence | Resources | Skill / Model |
+|---|---|---|---|---|---|---|
+| 1 | `src/accuracy/ledger.py` — `compute_streak_flag()` | `tests/test_ledger.py` | SPEC → write first | Write RED → implement → GREEN | `constants.py` (STREAK_WINDOW), design doc §3.1 | Direct TDD · T2 Sonnet |
+| 2 | `src/signals/downside.py` — `compute_downside_target()` | `tests/test_downside.py` | STUB/importorskip → un-stub | Remove importorskip → RED → implement → GREEN | existing 7 stubs, `constants.py` (DOWNSIDE_ATR_PERIOD=14) | Direct TDD · T2 Sonnet |
+| 3 | `src/signals/arbitration.py` — `arbitrate()` | `tests/test_arbitration.py` | STUB/importorskip → un-stub | Remove importorskip → RED → implement → GREEN | existing 6 stubs, `constants.py` (ARBITRATION_MARGIN=15.0) | Direct TDD · T2 Sonnet |
+| 4 | `src/signals/weights.py` — active loader + cold-start | `tests/test_weights.py` | SPEC → write first | Write RED → implement → GREEN | `test_is_commercial.py` (supabase mock pattern), design doc §3.3 | Direct TDD · T2 Sonnet |
+| 5 | `src/signals/engine.py` — full emit pipeline steps 1–7 | `tests/test_engine.py` | SPEC → write first | Write RED → implement → GREEN | All Phase 2+3 files once built, design doc §3.4 | Direct TDD · T2 Sonnet (or subagent via `dispatching-parallel-agents`) |
+
+**Phase 3 sign-off:** Soros, Druckenmiller, Shakuni dispatched as **independent subagents** via `dispatching-parallel-agents` skill. Each receives: (1) full pytest -q output, (2) COUNCIL_TEST_MAP.md Phase 3 column, (3) Phase 2 critical findings list. Commit must include `[council:subagent]`.
+
+**After Phase 3 + sign-off:** ~95 PASS / ~11 SKIP / 3 FAIL + promote governance test `--warn` → `--strict`
+
+---
+
+### TEST SUITE STATE PROGRESSION
+
+| Milestone | PASS | SKIP | FAIL | Notes |
+|---|---|---|---|---|
+| Now (baseline) | 61 | 22 | 3 | Phase 2 complete |
+| After Group A | ~65 | ~18 | 3 | 4 stale skips removed + ghost fixed |
+| After Groups B+C | ~65 | ~18 | 3 | Governance test GREEN (0 warnings) |
+| After Phase 3 | ~95+ | ~11 | 3 | Phase 4 stubs remain SKIP |
+| After Phase 3 sign-off | ~95+ | ~11 | 3 | Governance test promoted to --strict |
+
+The 3 FAIL tests (`test_c10_*`) require seed data — intentional until Phase 6 ingest pipeline.
+
+---
+
+### GOVERNANCE FM SUMMARY (for next session)
+
+- FM-01→14: all addressed in the approved plan (Section 11)
+- Two accepted residual risks (FM-11, FM-12): no CI enforcement → documentation mitigation only
+- Dalio caching: Move to Phase 3 in Step 1 — no Tarun approval needed, council-resolved
 
 Design doc v0.6 is the approved build spec. R4 CONDITIONAL GO is in force. Build sequence:
 
