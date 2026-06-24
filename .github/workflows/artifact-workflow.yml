@@ -1,0 +1,155 @@
+name: AlphaVeda Artifact Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force regeneration even if artifacts are fresh'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      types:
+        description: 'Comma-separated artifact types (leave empty for all)'
+        required: false
+        default: 'sprint-status,schema-viewer,session-checkpoint'
+
+  push:
+    paths:
+      - 'alphaveda/graphify-out/SESSION_RESUME.md'
+      - 'alphaveda/COUNCIL_TEST_MAP.md'
+
+  schedule:
+    # 15:00 UTC weekdays = 20:30 IST (close of market day)
+    - cron: '0 15 * * 1-5'
+
+jobs:
+  generate-artifacts:
+    name: Generate & Council-Review AlphaVeda Artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write    # needed to push artifact commit back to repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 5    # enough for git log in session_checkpoint generator
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          # anthropic installed for future LLM-assisted review seats
+          # current implementation is rule-based only (no API key needed)
+          pip install anthropic
+          # Install any alphaveda requirements if present
+          if [ -f alphaveda/requirements.txt ]; then
+            pip install -r alphaveda/requirements.txt || true
+          fi
+
+      - name: Validate and resolve workflow flags
+        id: flags
+        # All ${{ }} expressions are loaded into env vars first (never interpolated
+        # directly into shell commands) to prevent command injection.
+        env:
+          INPUT_FORCE: ${{ github.event.inputs.force }}
+          INPUT_TYPES: ${{ github.event.inputs.types }}
+        run: |
+          # -- force flag: allowlist check (only 'true' or empty/false accepted) --
+          FORCE_FLAG=""
+          if [ "$INPUT_FORCE" = "true" ]; then
+            FORCE_FLAG="--force"
+          fi
+
+          # -- types flag: validate each token against allowlist --
+          # Allowlist of valid artifact types (must match SUPPORTED_TYPES in artifact_workflow.py)
+          ALLOWED="sprint-status schema-viewer session-checkpoint"
+          TYPES_FLAG=""
+          if [ -n "$INPUT_TYPES" ]; then
+            VALIDATED=""
+            # Split on comma, validate each token
+            IFS=',' read -ra TOKENS <<< "$INPUT_TYPES"
+            for token in "${TOKENS[@]}"; do
+              # Strip whitespace
+              token="${token#"${token%%[![:space:]]*}"}"
+              token="${token%"${token##*[![:space:]]}"}"
+              # Check against allowlist
+              valid=false
+              for allowed in $ALLOWED; do
+                if [ "$token" = "$allowed" ]; then
+                  valid=true
+                  break
+                fi
+              done
+              if [ "$valid" = "true" ]; then
+                VALIDATED="${VALIDATED:+${VALIDATED},}${token}"
+              else
+                echo "WARNING: Ignoring unknown artifact type: '${token}'" >&2
+              fi
+            done
+            if [ -n "$VALIDATED" ]; then
+              TYPES_FLAG="--types ${VALIDATED}"
+            fi
+          fi
+
+          echo "force_flag=${FORCE_FLAG}" >> "$GITHUB_OUTPUT"
+          echo "types_flag=${TYPES_FLAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Run artifact workflow
+        id: workflow
+        # Flags come from step outputs (already validated above).
+        # They are passed via env vars to avoid shell word-splitting injection.
+        env:
+          AW_FORCE_FLAG: ${{ steps.flags.outputs.force_flag }}
+          AW_TYPES_FLAG: ${{ steps.flags.outputs.types_flag }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          # Deliberately word-split via read-array so no eval/injection path exists
+          ARGS=()
+          if [ -n "$AW_FORCE_FLAG" ]; then
+            ARGS+=("$AW_FORCE_FLAG")
+          fi
+          if [ -n "$AW_TYPES_FLAG" ]; then
+            # Split validated types flag into two safe tokens: --types <value>
+            IFS=' ' read -r flag_name flag_value <<< "$AW_TYPES_FLAG"
+            ARGS+=("$flag_name" "$flag_value")
+          fi
+          python3 alphaveda/scripts/artifact_workflow.py "${ARGS[@]}"
+        continue-on-error: true   # partial-approval returns exit 1 but we still push
+
+      - name: Commit generated artifacts (if any changed)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # artifact_workflow.py commits internally via subprocess git;
+          # this step pushes those commits to the remote.
+          git diff --quiet HEAD || git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Report workflow outcome
+        if: always()
+        # github.event_name and github.ref are written to env vars before echo
+        # to avoid expression injection into the shell echo commands.
+        env:
+          GH_EVENT_NAME: ${{ github.event_name }}
+          GH_REF: ${{ github.ref }}
+        run: |
+          echo "=== AlphaVeda Artifact Workflow Complete ==="
+          echo "Trigger: ${GH_EVENT_NAME}"
+          echo "Ref: ${GH_REF}"
+          ARTIFACT_DATE=$(date -u '+%Y-%m-%d')
+          echo "Artifact date: ${ARTIFACT_DATE}"
+          if [ -d "alphaveda/docs/artifacts/${ARTIFACT_DATE}" ]; then
+            echo "Generated files:"
+            ls -lh "alphaveda/docs/artifacts/${ARTIFACT_DATE}/"
+          else
+            echo "No artifacts directory found for today — check logs above"
+          fi
