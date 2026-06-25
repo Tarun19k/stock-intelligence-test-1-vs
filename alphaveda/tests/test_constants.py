@@ -76,8 +76,9 @@ def test_sebi_disclaimer_non_empty():
     assert "not" in SEBI_DISCLAIMER.lower()
 
 
-def test_arbitration_margin_positive():
-    assert ARBITRATION_MARGIN > 0
+def test_arbitration_margin_pinned():
+    """C5: Pin ARBITRATION_MARGIN at 15.0 — any refactor moving it to config must fail this test."""
+    assert ARBITRATION_MARGIN == 15.0
 
 
 def test_regime_staleness_days():

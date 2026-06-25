@@ -23,6 +23,14 @@ def arbitrate(signals: list[dict]) -> dict | None:
     if not signals:
         return None
 
+    _REQUIRED_KEYS = {"direction", "confidence", "weight"}
+    for i, s in enumerate(signals):
+        missing = _REQUIRED_KEYS - s.keys()
+        if missing:
+            raise ValueError(
+                f"Signal at index {i} missing required keys: {missing!r}"
+            )
+
     bull_score = sum(
         s["confidence"] * s["weight"] for s in signals if s["direction"] == "BULL"
     )

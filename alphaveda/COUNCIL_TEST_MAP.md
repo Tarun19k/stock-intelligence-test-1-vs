@@ -27,9 +27,9 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Marks** | cycle_phase derivation — all PHASE_RULES | test_cycle_phase.py | test_all_results_are_valid_phases | 2 | GREEN ✓ |
 | **Marks** | cycle_phase never returns None | test_cycle_phase.py | test_never_returns_none | 2 | GREEN ✓ |
 | **Marks** | Invalid phase rejected by DB | test_migrations.py | test_invalid_phase_rejected | G1 | SPEC |
-| **Soros** | Streak discount fires at emit (step 3b), not ledger | test_engine.py | test_streak_discount_at_emit | 3 | SPEC |
-| **Soros** | PIPELINE CONTRACT: bins built from post-discount confidence | test_engine.py | test_pipeline_contract_ordering | 3 | SPEC |
-| **Soros** | Streak flag triggers correctly at STREAK_WINDOW | test_ledger.py | test_streak_flag_fires_at_n | 3 | SPEC |
+| **Soros** | Streak discount fires at emit (step 3b), not ledger | test_engine.py | test_streak_discount_applied_when_flag_set | 3 | GREEN ✓ |
+| **Soros** | PIPELINE CONTRACT: bins built from post-discount confidence | test_engine.py | test_pipeline_discount_fires_before_calibration | 3 | GREEN ✓ |
+| **Soros** | Streak flag triggers correctly at STREAK_WINDOW | test_ledger.py | test_at_window_is_true | 3 | GREEN ✓ |
 | **Druckenmiller** | Kelly formula: b = magnitude/downside | test_optimizer.py | test_kelly_rupee_with_downside | 4 | RED |
 | **Druckenmiller** | Kelly returns 0 when downside_target=None | test_optimizer.py | test_kelly_no_rupee_without_downside | 4 | RED |
 | **Druckenmiller** | Kelly capped at MAX_POSITION_PCT | test_optimizer.py | test_kelly_capped_at_max_position | 4 | RED |
@@ -74,7 +74,7 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Reddy** | Calibration p ≤ confidence/100 (cold-start) | test_g0_gate.py | test_c5_calibration_cold_start | 6 | RED |
 | **Reddy** | Calibration cold fallback: p = min(conf/100, hit_rate) | test_calibration.py | test_cold_start_calibration | G1 | SPEC |
 | **Shakuni** | No duplicate ACTIVE per segment | test_g0_gate.py | test_c2_signal_weights_no_duplicate_active | 6 | RED |
-| **Shakuni** | approve_signal_weight rejects non-PROPOSED | test_signal_weights.py | test_approve_rejects_non_proposed | 3 | SPEC |
+| **Shakuni** | approve_signal_weight rejects non-PROPOSED | test_signal_weights.py | test_approve_rejects_non_proposed | 3 | GREEN ✓ |
 | **Synthesis Chair** | G0 criterion 10 runs first | test_g0_gate.py | test_c10_seed_instruments_exist | 6 | RED |
 | **Synthesis Chair** | Kelly rupee live with valid downside | test_g0_gate.py | test_c8_kelly_rupee_with_downside | 6 | RED |
 
@@ -104,7 +104,7 @@ Each Phase is NOT done until:
 | Phase 5 | Varghese, Munger, Tanvi Rao, Constraint Enforcer | Sonnet |
 | Phase 6 (G0) | All 21 council seats | **Opus** |
 
-Last updated: 2026-06-24 (Phase 2 audit)
+Last updated: 2026-06-25 (Phase 3 council sign-off)
 
 ---
 
@@ -112,3 +112,7 @@ Last updated: 2026-06-24 (Phase 2 audit)
 
 - Phase 1 (Foundation) — signed off 2026-06-23
 - Phase 2 (Data Layer) — signed off 2026-06-23
+- Phase 3 (Signal Layer) — signed off 2026-06-25 [council:subagent]
+  - Soros: APPROVE — pipeline contract enforced; 4 calibration items for Phase 6 backlog
+  - Druckenmiller: APPROVE — GAP-001 Kelly prerequisite satisfied; 2 hardening items before Phase 5
+  - Shakuni: REVISE resolved → APPROVE — C1 (approve_signal_weight), C2 (weight range), C3 (KeyError), C4 (floor on DB path) all fixed; 112 PASS / 15 SKIP / 3 FAIL

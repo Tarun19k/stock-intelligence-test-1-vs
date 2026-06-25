@@ -64,3 +64,10 @@ def test_arbitration_empty_signals():
     """No signals — must suppress."""
     result = arbitrate([])
     assert result is None
+
+
+def test_arbitration_malformed_signal_raises():
+    """C3: Signal dict missing required keys raises ValueError before scoring."""
+    malformed = [{"direction": "BULL", "confidence": 80.0}]  # missing 'weight'
+    with pytest.raises(ValueError, match="missing required keys"):
+        arbitrate(malformed)

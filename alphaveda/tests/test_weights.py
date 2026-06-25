@@ -64,3 +64,19 @@ def test_db_exception_falls_back_to_cold_start():
     with patch("src.signals.weights.get_supabase_client", return_value=m):
         result = load_weights(lynch_class="fast_grower", regime="RISK_ON")
     assert result == COLD_START_WEIGHTS["fast_grower"]
+
+
+def test_extreme_weight_raises_on_db_path():
+    """C2: DB row with injected extreme weight raises ValueError before entering pipeline."""
+    db_rows = [{"signal_name": "roic", "weight": 1000.0}]
+    with patch("src.signals.weights.get_supabase_client", return_value=_mock_client(db_rows)):
+        with pytest.raises(ValueError, match="out of valid range"):
+            load_weights(lynch_class="stalwart", regime="RISK_ON")
+
+
+def test_fundamental_floor_violated_raises_on_db_path():
+    """C4: DB rows that violate combined fundamental floor raise ValueError."""
+    db_rows = [{"signal_name": "roic", "weight": 0.0}]
+    with patch("src.signals.weights.get_supabase_client", return_value=_mock_client(db_rows)):
+        with pytest.raises(ValueError, match="FUNDAMENTAL_WEIGHT_FLOOR"):
+            load_weights(lynch_class="stalwart", regime="RISK_ON")
