@@ -30,15 +30,15 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Soros** | Streak discount fires at emit (step 3b), not ledger | test_engine.py | test_streak_discount_applied_when_flag_set | 3 | GREEN ✓ |
 | **Soros** | PIPELINE CONTRACT: bins built from post-discount confidence | test_engine.py | test_pipeline_discount_fires_before_calibration | 3 | GREEN ✓ |
 | **Soros** | Streak flag triggers correctly at STREAK_WINDOW | test_ledger.py | test_at_window_is_true | 3 | GREEN ✓ |
-| **Druckenmiller** | Kelly formula: b = magnitude/downside | test_optimizer.py | test_kelly_rupee_with_downside | 4 | RED |
-| **Druckenmiller** | Kelly returns 0 when downside_target=None | test_optimizer.py | test_kelly_no_rupee_without_downside | 4 | RED |
-| **Druckenmiller** | Kelly capped at MAX_POSITION_PCT | test_optimizer.py | test_kelly_capped_at_max_position | 4 | RED |
-| **Druckenmiller** | EXIT E1: drift outside Kelly band | test_optimizer.py | test_exit_e1 | 4 | SPEC |
-| **Druckenmiller** | EXIT E2: consecutive BEAR emits (bucket-aware) | test_optimizer.py | test_exit_e2_bucket_threshold | 4 | SPEC |
-| **Druckenmiller** | EXIT E2: confidence floor (≥50 only counts) | test_optimizer.py | test_exit_e2_confidence_floor | 4 | SPEC |
-| **Druckenmiller** | EXIT E2: UNCERTAINTY path (double threshold + MA) | test_optimizer.py | test_exit_e2_uncertainty_path | 4 | SPEC |
-| **Druckenmiller** | EXIT E3: magnitude_target < 3% | test_optimizer.py | test_exit_e3 | 4 | SPEC |
-| **Druckenmiller** | EXIT E4: sector cap breach | test_optimizer.py | test_exit_e4 | 4 | SPEC |
+| **Druckenmiller** | Kelly formula: b = magnitude/downside | test_optimizer.py | test_kelly_rupee_with_downside | 4 | GREEN ✓ |
+| **Druckenmiller** | Kelly returns 0 when downside_target=None | test_optimizer.py | test_kelly_no_rupee_without_downside | 4 | GREEN ✓ |
+| **Druckenmiller** | Kelly capped at MAX_POSITION_PCT | test_optimizer.py | test_kelly_capped_at_max_position | 4 | GREEN ✓ |
+| **Druckenmiller** | EXIT E1: drift outside Kelly band | test_optimizer.py | test_exit_e1 | 4 | GREEN ✓ |
+| **Druckenmiller** | EXIT E2: consecutive BEAR emits (bucket-aware) | test_optimizer.py | test_exit_e2_bucket_threshold | 4 | GREEN ✓ |
+| **Druckenmiller** | EXIT E2: confidence floor (≥50 only counts) | test_optimizer.py | test_exit_e2_confidence_floor | 4 | GREEN ✓ |
+| **Druckenmiller** | EXIT E2: UNCERTAINTY path (double threshold + MA) | test_optimizer.py | test_exit_e2_uncertainty_path | 4 | GREEN ✓ |
+| **Druckenmiller** | EXIT E3: magnitude_target < 3% | test_optimizer.py | test_exit_e3 | 4 | GREEN ✓ |
+| **Druckenmiller** | EXIT E4: sector cap breach | test_optimizer.py | test_exit_e4 | 4 | GREEN ✓ |
 | **Lynch** | instruments.classification CHECK — 6 values | test_migrations.py | test_instruments_table | 1 | GREEN ✓ |
 | **Lynch** | Invalid Lynch class rejected | test_migrations.py | test_invalid_class_rejected | G1 | SPEC |
 | **Lynch** | lynch_class on every prediction row | test_migrations.py | test_prediction_without_lynch_rejected | G1 | SPEC |
@@ -104,7 +104,7 @@ Each Phase is NOT done until:
 | Phase 5 | Varghese, Munger, Tanvi Rao, Constraint Enforcer | Sonnet |
 | Phase 6 (G0) | All 21 council seats | **Opus** |
 
-Last updated: 2026-06-25 (Phase 3 council sign-off)
+Last updated: 2026-06-25 (Phase 4 portfolio layer — modules GREEN, sign-off pending)
 
 ---
 
