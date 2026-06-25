@@ -1,7 +1,7 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-25 (Phase 3 SIGNED OFF, Phase 4 COMPLETE — sign-off in progress)
+**Session date:** 2026-06-25 (Phase 5 SIGNED OFF — Phase 6 is next)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
 
 ---
@@ -22,34 +22,41 @@
 - Shakuni blockers fixed: approve_signal_weight() C1, weight range validation C2, KeyError safety C3, FUNDAMENTAL_WEIGHT_FLOOR on DB path C4, ARBITRATION_MARGIN pin C5
 - Result after fixes: 112 PASS / 15 SKIP / 3 FAIL
 
-### 4. Phase 4 Portfolio Layer COMPLETE (Commit de5fa22) — 128 PASS
+### 4. Phase 4 Portfolio Layer + Circuit Flag Fix (Commits de5fa22, 9537131)
 - `src/portfolio/optimizer.py`: kelly_position_size() + should_exit_e1/e2/e3/e4()
   - Kelly formula CORRECT: b = magnitude_target / downside_target (GAP-001 fixed)
-  - Quarter Kelly + MAX_POSITION_PCT cap in series
-  - E1: ±50% band drift tolerance
-  - E2: bucket-aware consecutive BEAR threshold (near=3, medium=5, long=7); confidence floor 50; uncertainty_path doubles threshold
-  - E3: magnitude_target < 3% triggers exit
-  - E4: sector_weight > SECTOR_CAP_PCT triggers exit
 - `src/portfolio/buckets.py`: VALID_BUCKETS, validate_bucket_type(), e2_threshold()
-- 14 optimizer tests GREEN
+- Jhunjhunwala fix: circuit_flag rows excluded INSIDE compute_downside_target() — 4 tests added
 
-### 5. Phase 4 Council Sign-Off IN PROGRESS — current session
-- Druckenmiller + Jhunjhunwala dispatched as independent subagents
+### 5. Phase 4 Council Sign-Off COMPLETE (Commit 6d34e67) [council:subagent]
+- Druckenmiller: APPROVE — Kelly correct, all exit rules sound
+- Jhunjhunwala: REVISE → APPROVE — circuit_flag filter, 132 PASS / 12 SKIP / 3 FAIL
+
+### 6. Phase 5 Presentation Layer COMPLETE (Commits b09a0a5, 0892867) [council:subagent]
+- `src/app.py`: Streamlit entry, get_disclaimer_html() always returns full SEBI_DISCLAIMER
+- `src/pages/data_viewer.py`, `signals.py`, `path.py`, `accuracy.py`
+- 12 tests GREEN (test_app.py)
+- Munger REVISE resolved: accuracy.get_proposed_weights_count() → delegates to signals (single source of truth)
+- Council sign-off: Varghese APPROVE, Constraint Enforcer APPROVE, Tanvi Rao APPROVE, Munger REVISE→APPROVE
+- Final state: 144 PASS / 12 SKIP / 3 FAIL
 
 ---
 
 ## EXACT RESUME POINT
 
-**If resuming mid-session:** Phase 4 council verdicts are being processed. Check if verdicts have returned (look for APPROVE/REVISE from Druckenmiller + Jhunjhunwala). If signed off, proceed to Phase 5 TDD.
+**Next: Phase 6 TDD — GHA ingest pipeline**
 
-**Phase 5 TDD plan:**
-1. `src/app.py` — Streamlit entry point, SEBI disclaimer on every page (Varghese condition)
-2. `src/pages/data_viewer.py` — OHLCV and fundamentals view
-3. `src/pages/signals.py` — signal output with cold-start label (Tanvi Rao condition)
-4. `src/pages/path.py` — Kelly rupee display (suppressed when commercial=True, Constraint Enforcer)
-5. `src/pages/accuracy.py` — accuracy ledger with PROPOSED weight review banner (Munger condition)
+Phase 6 scope (6 files):
+1. `src/ingest/bhavcopy.py` — NSE/BSE daily download + parse
+2. `src/ingest/fundamentals.py` — BSE XBRL fundamentals loader
+3. `src/ingest/resolve_outcomes.py` — score predictions against actuals (excludes circuit_flag rows)
+4. `src/ingest/waitlist.py` — waitlist form submission handler
+5. `scripts/ingest.py` — orchestrator script
+6. `.github/workflows/ingest.yml` — GHA cron (daily EOD)
 
-Phase 5 test stubs: tests/test_app.py (SPEC for Varghese/Munger/Tanvi/CE tests)
+Council seats for Phase 6 sign-off: Imran (SRA) + Rashida + all 21 seats (G0 Gate is Opus)
+
+**Before Phase 6:** Promote GOVERNANCE_STRICT=1 in pytest.ini (warn mode → strict mode).
 
 ---
 
@@ -60,6 +67,7 @@ Phase 5 test stubs: tests/test_app.py (SPEC for Varghese/Munger/Tanvi/CE tests)
 | Stream A (Gumroad Governance Pack): Tarun to publish | All 6 PRG gates PASS since 2026-06-22 | OVERDUE — REVENUE BLOCKER |
 | Stream C: 3 consulting outreach targets WhatsApp signal | OVERDUE | Revenue clock |
 | T2 action: pip install supabase postgrest pandas_market_calendars streamlit plotly pytest | PENDING | Before G0 smoke tests |
+| GOVERNANCE_STRICT promotion: set to 1 in pytest.ini | Phase 5 signed off — ready to promote | Before Phase 6 |
 
 ---
 
@@ -67,7 +75,7 @@ Phase 5 test stubs: tests/test_app.py (SPEC for Varghese/Munger/Tanvi/CE tests)
 
 - **Stream A:** READY_TO_LIST. All gates pass. Tarun to publish. REVENUE BLOCKER.
 - **Stream C:** OVERDUE. 3 targets needed.
-- **Stream D (AlphaVeda):** Phase 1+2+3 signed, Phase 4 complete + signing off. Next = Phase 5.
+- **Stream D (AlphaVeda):** Phases 1-5 signed off. Phase 6 ingest pipeline is next.
 - **Stream B:** Deferred — out of 21-day scope.
 
 ---
@@ -79,10 +87,10 @@ Phase 5 test stubs: tests/test_app.py (SPEC for Varghese/Munger/Tanvi/CE tests)
 | Phase 1 (Foundation) | ✓ SIGNED OFF 2026-06-23 | 1ae8e37 |
 | Phase 2 (Data layer) | ✓ SIGNED OFF 2026-06-23 | ce9cba9 |
 | Phase 3 (Signal layer) | ✓ SIGNED OFF 2026-06-25 | f444ec1 |
-| Phase 4 (Portfolio layer) | ✓ COMPLETE — sign-off in progress | de5fa22 |
-| Phase 5 (Presentation) | NEXT after Phase 4 sign-off | — |
-| Phase 6 (GHA ingest) | AWAITING Phase 5 | — |
-| G0 Gate | AWAITING T2 + Phase 6 | — |
+| Phase 4 (Portfolio layer) | ✓ SIGNED OFF 2026-06-25 | 9537131 |
+| Phase 5 (Presentation) | ✓ SIGNED OFF 2026-06-25 | 0892867 |
+| Phase 6 (GHA ingest) | NEXT | — |
+| G0 Gate | AWAITING Phase 6 | — |
 
 ---
 
@@ -90,9 +98,9 @@ Phase 5 test stubs: tests/test_app.py (SPEC for Varghese/Munger/Tanvi/CE tests)
 
 | Milestone | PASS | SKIP | FAIL |
 |---|---|---|---|
-| After Phase 3 modules | 107 | 15 | 3 |
-| After Phase 3 sign-off (Shakuni) | 112 | 15 | 3 |
-| After Phase 4 | 128 | 12 | 3 |
+| After Phase 3 sign-off | 112 | 15 | 3 |
+| After Phase 4 sign-off | 132 | 12 | 3 |
+| After Phase 5 sign-off | 144 | 12 | 3 |
 
 ---
 
@@ -106,4 +114,13 @@ Phase 5 test stubs: tests/test_app.py (SPEC for Varghese/Munger/Tanvi/CE tests)
 
 ---
 
-*Updated: 2026-06-25 mid-session housekeeping — Phase 4 council in progress.*
+## PHASE 5 NON-BLOCKING ITEMS (carry to G0 polish)
+
+- Varghese: `test_disclaimer_non_dismissable` fallback `or "not" in html.lower()` too permissive — tighten to specific phrase
+- Constraint Enforcer: path.py calls is_commercial() twice per render (get_kelly_display_data + render()) — consider caching at G1
+- Tanvi Rao: cold-start label uses "Bayesian priors" — accessible language pass needed before public launch
+- Tanvi Rao: cold-start label notes operational cause (observation count) but not implication (lower confidence)
+
+---
+
+*Updated: 2026-06-25 — Phase 5 signed off, Phase 6 is next.*

@@ -104,7 +104,7 @@ Each Phase is NOT done until:
 | Phase 5 | Varghese, Munger, Tanvi Rao, Constraint Enforcer | Sonnet |
 | Phase 6 (G0) | All 21 council seats | **Opus** |
 
-Last updated: 2026-06-25 (Phase 5 presentation layer — 12 tests GREEN, council sign-off pending)
+Last updated: 2026-06-25 (Phase 5 presentation layer — SIGNED OFF [council:subagent])
 
 ---
 
@@ -119,3 +119,8 @@ Last updated: 2026-06-25 (Phase 5 presentation layer — 12 tests GREEN, council
 - Phase 4 (Portfolio Layer) — signed off 2026-06-25 [council:subagent]
   - Druckenmiller: APPROVE — Kelly correct, GAP-001 resolved, all 4 exit rules sound
   - Jhunjhunwala: REVISE resolved → APPROVE — circuit_flag filter added to compute_downside_target(); 4 tests added; 132 PASS / 12 SKIP / 3 FAIL
+- Phase 5 (Presentation Layer) — signed off 2026-06-25 [council:subagent]
+  - Varghese: APPROVE — disclaimer pinned unconditionally, uses constant, non-dismissable; non-blocking: test fallback `or "not" in html.lower()` too permissive (polish for later)
+  - Constraint Enforcer: APPROVE — commercial gate fail-closed, rupee=None when commercial, suppression label uses deliberate-state language; non-blocking: double is_commercial() call per render (caching for G1)
+  - Tanvi Rao: APPROVE — cold-start uses OBSERVATION_THRESHOLD constant, suppression label passes degradation check; non-blocking: "Bayesian priors" may confuse lay users (polish item)
+  - Munger: REVISE resolved → APPROVE — accuracy.get_proposed_weights_count() was standalone Supabase query; fixed to delegate to signals (single source of truth); all 4 weight-review conditions met; 144 PASS / 12 SKIP / 3 FAIL
