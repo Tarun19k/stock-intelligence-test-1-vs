@@ -6,6 +6,11 @@ Priority order (GAP-001 fix — Druckenmiller condition):
 
 Result is always clamped to [DOWNSIDE_FLOOR, DOWNSIDE_CAP].
 Fallback (DOWNSIDE_FALLBACK) applies when OHLCV history is insufficient.
+
+Circuit-flag rows (circuit_flag=True) are excluded before ATR computation.
+Circuit-locked prices are artificial lock prices whose True Range is compressed to
+near-zero — including them underestimates ATR and inflates Kelly position sizing.
+Filter is enforced internally (Jhunjhunwala condition, Phase 4 sign-off).
 """
 from __future__ import annotations
 from constants import ATR_PERIOD, ATR_MULTIPLIER
@@ -22,27 +27,30 @@ def compute_downside_target(
 ) -> float:
     """Return downside target in [DOWNSIDE_FLOOR, DOWNSIDE_CAP].
 
-    ohlcv_rows: list of dicts with 'high', 'low', 'close' keys, chronological order.
+    ohlcv_rows: dicts with 'high', 'low', 'close' keys, chronological order.
+    Optional 'circuit_flag' key: True rows are excluded before ATR computation.
+    last_close is sourced from the last non-circuit-locked row.
     """
     if signal_stop_loss_pct is not None:
         return _clamp(signal_stop_loss_pct)
 
-    if len(ohlcv_rows) < 2:
+    clean_rows = [r for r in ohlcv_rows if not r.get("circuit_flag", False)]
+    if len(clean_rows) < 2:
         return DOWNSIDE_FALLBACK
 
     true_ranges = [
         max(
-            ohlcv_rows[i]["high"] - ohlcv_rows[i]["low"],
-            abs(ohlcv_rows[i]["high"] - ohlcv_rows[i - 1]["close"]),
-            abs(ohlcv_rows[i]["low"]  - ohlcv_rows[i - 1]["close"]),
+            clean_rows[i]["high"] - clean_rows[i]["low"],
+            abs(clean_rows[i]["high"] - clean_rows[i - 1]["close"]),
+            abs(clean_rows[i]["low"]  - clean_rows[i - 1]["close"]),
         )
-        for i in range(1, len(ohlcv_rows))
+        for i in range(1, len(clean_rows))
     ]
 
     period = min(ATR_PERIOD, len(true_ranges))
     atr = sum(true_ranges[-period:]) / period
 
-    last_close = ohlcv_rows[-1]["close"]
+    last_close = clean_rows[-1]["close"]
     if last_close == 0:
         return DOWNSIDE_FALLBACK
 
