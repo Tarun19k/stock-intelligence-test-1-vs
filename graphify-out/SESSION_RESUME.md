@@ -1,7 +1,7 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-25 (Phase 3 signal layer complete)
+**Session date:** 2026-06-25 (Phase 3 SIGNED OFF — Phase 4 TDD next)
 **Previous session:** 2026-06-24 (governance housekeeping + artifact automation)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
 
@@ -38,43 +38,60 @@ Built fully automated artifact system (background agent):
 - `alphaveda/scripts/artifact_workflow.py`: 5-iteration feedback loop per artifact type; MAX_ITERATIONS=5 with partial-approval fallback
 - `.github/workflows/artifact-workflow.yml`: triggers on SESSION_RESUME/COUNCIL_TEST_MAP push + weekday 9 PM IST cron
 
-Pipeline: generate → council review (5 seats independently) → if APPROVE: commit; if REVISE: accumulate gaps → regenerate (up to 5 times) → commit with gap list.
-
-Security: GHA `${{}}` expressions isolated via env: block; types input validated against allowlist before shell expansion.
-
 ### 3. Phase 3 Signal Layer COMPLETE (Commit ea270a5)
-
-TDD sequence (RED → GREEN per module):
 
 | Module | Tests | Function | Status |
 |---|---|---|---|
 | `src/accuracy/ledger.py` | `tests/test_ledger.py` (7) | compute_streak_flag() | GREEN |
 | `src/signals/downside.py` | `tests/test_downside.py` (7) | compute_downside_target() | GREEN |
-| `src/signals/arbitration.py` | `tests/test_arbitration.py` (6) | arbitrate() | GREEN |
-| `src/signals/weights.py` | `tests/test_weights.py` (5) | load_weights() | GREEN |
+| `src/signals/arbitration.py` | `tests/test_arbitration.py` (7) | arbitrate() | GREEN |
+| `src/signals/weights.py` | `tests/test_weights.py` (7) | load_weights() + _validate_db_weights() | GREEN |
 | `src/signals/engine.py` | `tests/test_engine.py` (9) | calibrate_confidence() + emit_pipeline() | GREEN |
+| `src/signals/weights.py` | `tests/test_signal_weights.py` (2) | approve_signal_weight() | GREEN |
 
-Key invariants enforced:
-- **Ledger:** streak flag True when consecutive_count >= STREAK_WINDOW (Soros)
-- **Downside:** ATR(14)/price with [0.01, 0.30] clamp; signal-provided stop-loss takes priority (Druckenmiller GAP-001)
-- **Arbitration:** weighted BULL/BEAR scoring with ARBITRATION_MARGIN dead zone; suppresses weak-majority signals (Reddy GAP-003)
-- **Weights:** DB active weights with COLD_START_WEIGHTS fallback; Buffett floor satisfied in all cold-starts (Munger)
-- **Engine:** **Soros pipeline contract enforced** — streak discount fires at step 3b BEFORE calibration; post-discount confidence feeds bins (P1 Soros condition)
+### 4. Phase 3 Council Sign-Off COMPLETE (Commit f444ec1) [council:subagent]
 
-Result: 107 PASS / 15 SKIP / 3 FAIL (3 FAILs = intentional G0 seed gates)
+Three independent subagents dispatched (no shared context):
+
+**Soros: APPROVE** — pipeline contract enforced; streak discount fires step 3b before calibration; 4 calibration items for Phase 6 backlog (STREAK_DISCOUNT_FACTOR value pin, OBSERVATION_THRESHOLD guard, None-return test, map function names).
+
+**Druckenmiller: APPROVE** — GAP-001 Kelly prerequisite satisfied; compute_downside_target() returns [0.01, 0.30] on all paths; 2 hardening items (DOWNSIDE_FALLBACK through _clamp, last_close=0 guard) before Phase 5 integration.
+
+**Shakuni: REVISE → resolved** — 4 blockers implemented:
+- C1: `approve_signal_weight()` — sole application-layer path to ACTIVE status; rejects non-PROPOSED
+- C2: Weight range validation `[0.0, 5.0]` in `_validate_db_weights()` — injection guard
+- C3: KeyError safety in `arbitrate()` — validates `{direction, confidence, weight}` at entry
+- C4: `FUNDAMENTAL_WEIGHT_FLOOR` enforced on DB path, not only cold-start
+- C5 (monitoring): `ARBITRATION_MARGIN=15.0` pinned by `test_arbitration_margin_pinned`
+
+Also fixed: ValueError propagation — DB call and validation separated so validation errors no longer silently fall through to cold-start.
+
+**Result: 112 PASS / 15 SKIP / 3 FAIL** (3 FAILs = intentional G0 seed gates, unchanged)
 
 ---
 
-## EXACT RESUME POINT — Ready for Phase 3 council sign-off
+## EXACT RESUME POINT — Phase 4 TDD
 
-**Next action:** Dispatch Soros, Druckenmiller, Shakuni as independent subagents for Phase 3 sign-off.
+**Next action:** Start Phase 4 (Portfolio layer) TDD — `src/portfolio/buckets.py` first, then `src/portfolio/optimizer.py`.
 
-Each receives:
-1. `pytest -q` output (Phase 3 results: 107 PASS / 15 SKIP / 3 FAIL)
-2. COUNCIL_TEST_MAP.md Phase 3 column (5 modules × 27 tests)
-3. Phase 2 critical findings list (for historical context)
+### Phase 4 implementation order:
 
-No seat sees other seats' verdicts. Commit must include `[council:subagent]`.
+**Step 1 — src/portfolio/buckets.py** (bucket management)
+- Test: `tests/test_buckets.py` — currently importorskip (skip if module missing)
+- Remove importorskip → RED → implement → GREEN
+
+**Step 2 — src/portfolio/optimizer.py** (Kelly sizing + exits)
+- Test: `tests/test_optimizer.py` — currently importorskip stubs
+- Kelly formula: `b = magnitude_target / downside_target` (NOT `b = downside_target/magnitude_target`)
+  - Correct from design doc: b = upside/downside for Kelly
+  - downside_target from Phase 3 compute_downside_target() feeds b denominator
+- E1-E4 exit rules from constants.py (E2_CONSECUTIVE_THRESHOLD, E2_CONFIDENCE_FLOOR)
+- Druckenmiller review gate at Phase 4 sign-off
+
+**Phase 4 critical Druckenmiller finding from design doc:**
+- `GAP-001`: Kelly b = magnitude_target / downside_target (not the inverse)
+- `MAX_POSITION_PCT = 0.10` cap applied after Kelly sizing
+- Quarter Kelly: final position = kelly_fraction * QUARTER_KELLY_FRACTION * PORTFOLIO_VALUE
 
 ---
 
@@ -82,20 +99,20 @@ No seat sees other seats' verdicts. Commit must include `[council:subagent]`.
 
 | Decision | Default | Needed by |
 |---|---|---|
-| Phase 3 sign-off: proceed to Phase 4 portfolio layer? | Recommend YES (all 27 Phase 3 tests GREEN) | Before Phase 4 TDD |
-| Phase 4 scope: Kelly sizing + E1-E4 exits in single phase or split? | Recommend single (E1-E4 depends on Kelly) | Phase 4 TDD start |
+| Phase 4 Kelly formula: confirm b = magnitude_target / downside_target | Recommend YES from design doc v0.6 | Before optimizer.py implementation |
 | T2 action: pip install supabase postgrest pandas_market_calendars streamlit plotly pytest | PENDING confirmation | Before G0 smoke tests |
+| Stream A (Gumroad Governance Pack): Tarun to publish | All 6 gates PASS, no blockers | OVERDUE — REVENUE BLOCKER |
 | Stream C: 3 consulting outreach targets WhatsApp signal | OVERDUE | Revenue clock |
 
 ---
 
 ## COMMERCIAL STATE — Updated 2026-06-25
 
-- **Stream A (Gumroad Governance Pack):** SEPARATE SESSION (Gates 2+6 Tarun-owned)
+- **Stream A (Gumroad Governance Pack):** READY_TO_LIST since 2026-06-22. All 6 PRG gates PASS. Tarun to publish. REVENUE BLOCKER.
 - **Stream C (Financial consulting):** OVERDUE. 3 targets needed immediately.
-- **Stream D (AlphaVeda):** Supabase live ✓. Phase 1+2 signed ✓. Phase 3 ready for sign-off. G0 pending T2 + Phase 6 ingest + seed data.
+- **Stream D (AlphaVeda):** Phase 1+2+3 signed off ✓. Phase 4 next. G0 pending T2 + Phase 6 ingest + seed data.
 - **Stream B (YarnZoo / StitchFlow):** Deferred — out of 21-day scope.
-- **Revenue clock:** 21-day goal started 2026-06-21. AlphaVeda is highest-leverage stream.
+- **Revenue clock:** Started 2026-06-21. Highest-leverage stream = Stream D.
 
 ---
 
@@ -105,8 +122,8 @@ No seat sees other seats' verdicts. Commit must include `[council:subagent]`.
 |---|---|---|
 | Phase 1 (Foundation) | Migration 13, constants, rules, TDD scaffold | ✓ SIGNED OFF 2026-06-23 |
 | Phase 2 (Data layer) | config.py, regime.py, provider.py, cycle_phase.py | ✓ SIGNED OFF 2026-06-23 |
-| Phase 3 (Signal layer) | ledger.py, downside.py, arbitration.py, weights.py, engine.py | ✓ COMPLETE (ready for sign-off) |
-| Phase 4 (Portfolio layer) | buckets.py, optimizer.py with Kelly + E1-E4 | AWAITING Phase 3 sign-off |
+| Phase 3 (Signal layer) | ledger.py, downside.py, arbitration.py, weights.py, engine.py | ✓ SIGNED OFF 2026-06-25 [f444ec1] |
+| Phase 4 (Portfolio layer) | buckets.py, optimizer.py with Kelly + E1-E4 | **NEXT — unblocked** |
 | Phase 5 (Presentation) | app.py + 4 pages (data_viewer, signals, path, accuracy) | AWAITING Phase 4 |
 | Phase 6 (GHA ingest) | 5 ingest scripts + resolve_outcomes.py + ingest.yml | AWAITING Phase 5 |
 | G0 Gate (10 criteria) | Smoke tests: app launchable, waitlist live, seed data | AWAITING T2 + Phase 6 |
@@ -118,17 +135,25 @@ No seat sees other seats' verdicts. Commit must include `[council:subagent]`.
 | Milestone | PASS | SKIP | FAIL | Notes |
 |---|---|---|---|---|
 | After housekeeping (Groups A-C) | 73 | 17 | 3 | Governance test GREEN |
-| After Phase 3 | 107 | 15 | 3 | All modules GREEN; Phase 4 ready |
+| After Phase 3 modules | 107 | 15 | 3 | All modules GREEN |
+| After Phase 3 sign-off (Shakuni fixes) | 112 | 15 | 3 | Approval gate + validation guards added |
 
-The 3 FAIL tests (`test_c10_*`, `test_ingest_status_has_ok_row`) require seed data — intentional until Phase 6 ingest pipeline.
-
----
-
-## PENDING COUNCIL ACTIONS
-
-- **Phase 3 sign-off:** Soros, Druckenmiller, Shakuni (independent subagents) — next session
-- **Phase 4 design:** finalise Kelly formula fix (GAP-001 resolved by downside_target architecture)
+The 3 FAIL tests (`test_c10_*`, `test_ingest_status_has_ok_row`) require seed data — intentional until Phase 6.
 
 ---
 
-*Updated: 2026-06-25 end-of-housekeeping. All completed work this session captured. Ready for compact-ready gate.*
+## PHASE 3 CALIBRATION ITEMS (Phase 6 backlog — not blocking Phase 4)
+
+From Soros:
+- S-C1: Assert `0 < STREAK_DISCOUNT_FACTOR < 1` in test_constants.py (currently tested implicitly; add explicit pin)
+- S-C2: Add OBSERVATION_THRESHOLD guard inside calibrate_confidence
+- S-C3: Test the arbitrate-returns-None branch of emit_pipeline (already partially covered)
+- S-C4 DONE: COUNCIL_TEST_MAP function names corrected
+
+From Druckenmiller:
+- D-C1: Route DOWNSIDE_FALLBACK through `_clamp()` (self-enforcing invariant)
+- D-C2: Guard against `last_close=0` in compute_downside_target (ZeroDivisionError)
+
+---
+
+*Updated: 2026-06-25 Phase 3 council sign-off complete. Phase 4 TDD is next.*
