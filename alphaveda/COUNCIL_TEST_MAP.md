@@ -116,3 +116,6 @@ Last updated: 2026-06-25 (Phase 4 portfolio layer — modules GREEN, sign-off pe
   - Soros: APPROVE — pipeline contract enforced; 4 calibration items for Phase 6 backlog
   - Druckenmiller: APPROVE — GAP-001 Kelly prerequisite satisfied; 2 hardening items before Phase 5
   - Shakuni: REVISE resolved → APPROVE — C1 (approve_signal_weight), C2 (weight range), C3 (KeyError), C4 (floor on DB path) all fixed; 112 PASS / 15 SKIP / 3 FAIL
+- Phase 4 (Portfolio Layer) — signed off 2026-06-25 [council:subagent]
+  - Druckenmiller: APPROVE — Kelly correct, GAP-001 resolved, all 4 exit rules sound
+  - Jhunjhunwala: REVISE resolved → APPROVE — circuit_flag filter added to compute_downside_target(); 4 tests added; 132 PASS / 12 SKIP / 3 FAIL
