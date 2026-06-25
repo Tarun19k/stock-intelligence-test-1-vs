@@ -24,19 +24,11 @@ def get_staleness_warning(last_review_date: date) -> str | None:
 
 
 def get_proposed_weights_count() -> int:
-    """Return count of signal_weights rows in PROPOSED status."""
-    from src.config import get_supabase_client
-    try:
-        result = (
-            get_supabase_client()
-            .table("signal_weights")
-            .select("id", count="exact")
-            .eq("status", "PROPOSED")
-            .execute()
-        )
-        return result.count or 0
-    except Exception:
-        return 0
+    """Return count of signal_weights rows in PROPOSED status.
+    Delegates to signals.get_proposed_weights_count — single source of truth for DB query.
+    """
+    from src.pages.signals import get_proposed_weights_count as _count
+    return _count()
 
 
 def get_proposed_weights_summary() -> dict:
