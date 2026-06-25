@@ -45,7 +45,6 @@ class TestDruckenmillerConditions:
         from constants import QUARTER_KELLY_FRACTION
         assert QUARTER_KELLY_FRACTION == 0.25
 
-    @pytest.mark.skip(reason="src/portfolio/optimizer.py not yet implemented — Phase 4")
     def test_kelly_no_rupee_without_downside(self):
         """Kelly returns 0 when downside_target is None — cannot size without loss-leg."""
         from src.portfolio.optimizer import kelly_position_size
@@ -54,7 +53,6 @@ class TestDruckenmillerConditions:
                                      portfolio_value=PORTFOLIO_VALUE)
         assert result == 0
 
-    @pytest.mark.skip(reason="src/portfolio/optimizer.py not yet implemented — Phase 4")
     def test_kelly_positive_rupee_with_valid_downside(self):
         """b = magnitude/downside = 0.15/0.07 = 2.14; f = 0.65 - 0.35/2.14 = 0.486 → >0 before cap."""
         from src.portfolio.optimizer import kelly_position_size
@@ -63,7 +61,6 @@ class TestDruckenmillerConditions:
                                      portfolio_value=PORTFOLIO_VALUE)
         assert result > 0
 
-    @pytest.mark.skip(reason="src/portfolio/optimizer.py not yet implemented — Phase 4")
     def test_kelly_zero_on_negative_edge(self):
         """p - q/b = 0.20 - 0.80/0.25 = -2.99 → clamp to 0, no negative position."""
         from src.portfolio.optimizer import kelly_position_size
@@ -72,7 +69,6 @@ class TestDruckenmillerConditions:
                                      portfolio_value=PORTFOLIO_VALUE)
         assert result == 0
 
-    @pytest.mark.skip(reason="src/portfolio/optimizer.py not yet implemented — Phase 4")
     def test_kelly_capped_at_max_position(self):
         """Position must never exceed MAX_POSITION_PCT of PORTFOLIO_VALUE."""
         from src.portfolio.optimizer import kelly_position_size
@@ -91,14 +87,11 @@ class TestSorosConditions:
         assert STREAK_WINDOW == 5
         assert STREAK_DISCOUNT_FACTOR == 0.7
 
-    @pytest.mark.skip(reason="src/signals/engine.py not yet implemented — Phase 3")
     def test_pipeline_contract_ordering(self):
         """discount fires BEFORE calibration — bins are built from post-discount confidence."""
-        from src.signals.engine import emit_signal
-        # discount then calibrate order verified by checking intermediate values
-        pass
+        from src.signals.engine import emit_pipeline
+        # Contract verified by test_pipeline_discount_fires_before_calibration in test_engine.py
 
-    @pytest.mark.skip(reason="src/accuracy/ledger.py not yet implemented — Phase 3")
     def test_streak_flag_fires_at_n(self):
         """streak_flag = True only when consecutive same-direction count == STREAK_WINDOW."""
         from src.accuracy.ledger import compute_streak_flag
@@ -137,7 +130,6 @@ class TestMarksConditions:
 class TestArbitrationConditions:
     """Soros + Buffett: Arbitration suppresses when bull/bear confidence within ARBITRATION_MARGIN."""
 
-    @pytest.mark.skip(reason="src/signals/arbitration.py not yet implemented — Phase 3")
     def test_suppression_when_within_margin(self):
         from src.signals.arbitration import arbitrate
         signals = [
@@ -147,7 +139,6 @@ class TestArbitrationConditions:
         result = arbitrate(signals)
         assert result is None  # suppressed — net = 0, within ARBITRATION_MARGIN=15
 
-    @pytest.mark.skip(reason="src/signals/arbitration.py not yet implemented — Phase 3")
     def test_bull_wins_clear_majority(self):
         from src.signals.arbitration import arbitrate
         signals = [
@@ -290,7 +281,6 @@ class TestSynthesisChairConditions:
         classes = {r["classification"] for r in result.data}
         assert len(classes) >= 3
 
-    @pytest.mark.skip(reason="src/portfolio/optimizer.py not yet implemented — Phase 4")
     def test_c8_kelly_rupee_live_with_downside(self):
         from src.portfolio.optimizer import kelly_position_size
         from constants import PORTFOLIO_VALUE
@@ -302,7 +292,6 @@ class TestSynthesisChairConditions:
 class TestReddyConditions:
     """Reddy (calibration): cold-start calibration p must be ≤ confidence/100."""
 
-    @pytest.mark.skip(reason="src/signals/engine.py not yet implemented — Phase 3")
     def test_cold_start_calibration_p_leq_confidence(self):
         """When segment has <30 observations, p = min(confidence/100, hit_rate)."""
         from src.signals.engine import calibrate_confidence
@@ -326,7 +315,7 @@ class TestImranConditions:
         """If last run_at > 1 day ago → amber banner, not silent pass."""
         pass
 
-    @pytest.mark.skip(reason="src/signals/engine.py not yet implemented — Phase 3")
+    @pytest.mark.skip(reason="emit_signal requires live SUPABASE_URL and seed data — G0 gate")
     def test_emit_latency_under_800ms(self):
         """Full emit pipeline (arbitration → discount → calibrate → kelly) ≤ 800ms."""
         import time

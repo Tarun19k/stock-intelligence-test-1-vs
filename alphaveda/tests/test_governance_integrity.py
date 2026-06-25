@@ -62,7 +62,7 @@ def _get_completed_phases() -> set[str]:
         return set()
     phases = set()
     for line in match.group(1).splitlines():
-        m = re.search(r"Phase (\d+)", line)
+        m = re.match(r"^- Phase (\d+)", line.strip())
         if m:
             phases.add(m.group(1))
     return phases

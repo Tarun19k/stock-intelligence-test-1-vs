@@ -12,6 +12,12 @@ _env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 load_dotenv(_env_path, override=False)
 
 
+@pytest.fixture(scope="session", autouse=True)
+def governance_strict_mode():
+    """Phase 5 signed off — promote governance integrity tests to strict mode."""
+    os.environ.setdefault("GOVERNANCE_STRICT", "1")
+
+
 @pytest.fixture(scope="session")
 def supabase_client():
     """Live Supabase client — requires Phase 2 src/config.py + SUPABASE_URL in .env.
