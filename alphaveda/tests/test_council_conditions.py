@@ -321,7 +321,7 @@ class TestImranConditions:
         result = supabase_client.table("ingest_status").select("run_at").limit(1).execute()
         assert result.data is not None
 
-    @pytest.mark.skip(reason="app.py not yet implemented — Phase 5")
+    @pytest.mark.skip(reason="ingest pipeline not yet implemented — Phase 6")
     def test_stale_ingest_surfaces_amber_banner(self):
         """If last run_at > 1 day ago → amber banner, not silent pass."""
         pass

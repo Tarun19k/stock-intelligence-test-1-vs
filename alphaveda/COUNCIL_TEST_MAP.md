@@ -16,10 +16,10 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Buffett** | FUNDAMENTAL_WEIGHT_FLOOR = 0.30 enforced at weights load | test_constants.py | test_fundamental_floor_value | 1 | GREEN ✓ |
 | **Buffett** | Floor applies to COLD_START_WEIGHTS | test_constants.py | test_fundamental_floor_applies_to_all_cold_starts | 1 | GREEN ✓ |
 | **Buffett** | Floor enforced at emit time (engine) | test_engine.py | test_floor_enforced_at_emit | 3 | SPEC |
-| **Munger** | Weight proposal banner on signals page | test_app.py | test_review_banner_shown | 5 | SPEC |
-| **Munger** | Weight proposal banner on path page | test_app.py | test_review_banner_on_path_page | 5 | SPEC |
-| **Munger** | Accuracy tab shows PROPOSED rows | test_app.py | test_accuracy_tab_review_ui | 5 | SPEC |
-| **Munger** | Staleness backstop: 90-day overdue warning | test_app.py | test_staleness_backstop_banner | 5 | SPEC |
+| **Munger** | Weight proposal banner on signals page | test_app.py | test_review_banner_shown | 5 | GREEN ✓ |
+| **Munger** | Weight proposal banner on path page | test_app.py | test_review_banner_on_path_page | 5 | GREEN ✓ |
+| **Munger** | Accuracy tab shows PROPOSED rows | test_app.py | test_accuracy_tab_review_ui | 5 | GREEN ✓ |
+| **Munger** | Staleness backstop: 90-day overdue warning | test_app.py | test_staleness_backstop_banner | 5 | GREEN ✓ |
 | **Dalio** | Regime as-of join (not latest row) | test_regime.py | test_regime_as_of_join | 2 | GREEN ✓ |
 | **Dalio** | Regime cached per calendar day | test_regime.py | test_regime_cached | 3 | SPEC |
 | **Dalio** | Stale regime → visible warning (not silent default) | test_regime.py | test_stale_regime_fails_visibly | 3 | SPEC |
@@ -60,14 +60,14 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Imran (SRA)** | Signal emit latency ≤ 800ms | test_engine.py | test_emit_latency | 3 | SPEC |
 | **Constraint Enforcer** | No imperative BUY/SELL in output | test_g0_gate.py | test_c6_sebi_substance | 6 | RED |
 | **Constraint Enforcer** | Commercial gate fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
-| **Constraint Enforcer** | Rupee suppressed when commercial=True | test_app.py | test_no_rupee_when_commercial | 5 | SPEC |
+| **Constraint Enforcer** | Rupee suppressed when commercial=True | test_app.py | test_no_rupee_when_commercial | 5 | GREEN ✓ |
 | **Bhattacharya** | ohlcv.licence_class column | test_migrations.py | test_ohlcv_has_licence_class | 1 | GREEN ✓ |
 | **Bhattacharya** | ohlcv.deliverable_volume column | test_migrations.py | test_ohlcv_has_circuit_flag | 1 | GREEN ✓ |
-| **Varghese** | SEBI disclaimer on every page | test_app.py | test_disclaimer_in_every_page | 5 | SPEC |
-| **Varghese** | Disclaimer not conditionalised | test_app.py | test_disclaimer_non_dismissable | 5 | SPEC |
+| **Varghese** | SEBI disclaimer on every page | test_app.py | test_disclaimer_in_every_page | 5 | GREEN ✓ |
+| **Varghese** | Disclaimer not conditionalised | test_app.py | test_disclaimer_non_dismissable | 5 | GREEN ✓ |
 | **Varghese** | SEBI substance (no advice language) | test_g0_gate.py | test_c6_sebi_substance | 6 | RED |
-| **Tanvi Rao** | Cold-start label shown | test_app.py | test_cold_start_label_visible | 5 | SPEC |
-| **Tanvi Rao** | Rupee suppression = deliberate state (label) | test_app.py | test_rupee_suppression_label | 5 | SPEC |
+| **Tanvi Rao** | Cold-start label shown | test_app.py | test_cold_start_label_visible | 5 | GREEN ✓ |
+| **Tanvi Rao** | Rupee suppression = deliberate state (label) | test_app.py | test_rupee_suppression_label | 5 | GREEN ✓ |
 | **Rashida** | All 11 core tables exist | test_migrations.py | test_instruments_table..test_ingest_status_table | 1 | RED |
 | **Rashida** | accuracy_predictions.downside_target | test_migrations.py | test_accuracy_predictions_has_downside_target | 1 | RED |
 | **Rashida** | portfolio_buckets seeded (4 rows) | test_migrations.py | test_portfolio_buckets_seeded | 1 | RED |
@@ -104,7 +104,7 @@ Each Phase is NOT done until:
 | Phase 5 | Varghese, Munger, Tanvi Rao, Constraint Enforcer | Sonnet |
 | Phase 6 (G0) | All 21 council seats | **Opus** |
 
-Last updated: 2026-06-25 (Phase 4 portfolio layer — modules GREEN, sign-off pending)
+Last updated: 2026-06-25 (Phase 5 presentation layer — 12 tests GREEN, council sign-off pending)
 
 ---
 
