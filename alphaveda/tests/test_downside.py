@@ -1,6 +1,5 @@
-"""Phase 3 — downside.py tests. Skipped until src/signals/downside.py is implemented."""
+"""Phase 3 — downside.py tests."""
 import pytest
-pytest.importorskip("src.signals.downside", reason="Phase 3 — src/signals/downside.py not yet implemented")
 from src.signals.downside import compute_downside_target
 from constants import ATR_PERIOD
 
