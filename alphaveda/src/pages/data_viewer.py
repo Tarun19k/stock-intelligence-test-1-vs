@@ -4,16 +4,17 @@ Varghese condition: PAGE_REQUIRES_DISCLAIMER = True — injected by app.py on ev
 Imran SRA condition: staleness banner shown when ingest_status is STALE or MISSING.
 """
 from __future__ import annotations
-from datetime import date
+from datetime import date, datetime
 
 PAGE_REQUIRES_DISCLAIMER: bool = True
 
 _STALE_BANNER = (
-    "⚠️ Ingest data is stale (last run: {last_run}). "
-    "Signal accuracy may be lower than expected."
+    "⚠️ Market data hasn't updated since {last_run}. "
+    "Signals shown may be based on older prices."
 )
 _MISSING_BANNER = (
-    "🔴 No ingest data found. Run `python scripts/ingest.py` to populate OHLCV data."
+    "🔴 Market data is not yet available. "
+    "Data refreshes automatically after market close each trading day."
 )
 
 
@@ -35,7 +36,7 @@ def get_staleness_banner(supabase_client) -> str | None:
         )
         if not result.data:
             return _MISSING_BANNER
-        last_run = date.fromisoformat(result.data[0]["run_at"])
+        last_run = datetime.fromisoformat(result.data[0]["last_run"]).date()
         flag = get_ingest_staleness_flag(last_run, date.today())
         if flag == "STALE":
             return _STALE_BANNER.format(last_run=last_run.isoformat())

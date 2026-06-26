@@ -310,10 +310,20 @@ class TestImranConditions:
         result = supabase_client.table("ingest_status").select("run_at").limit(1).execute()
         assert result.data is not None
 
-    @pytest.mark.skip(reason="ingest pipeline not yet implemented — Phase 6")
     def test_stale_ingest_surfaces_amber_banner(self):
-        """If last run_at > 1 day ago → amber banner, not silent pass."""
-        pass
+        """If last_run > 1 day ago → amber banner shown (Imran SRA condition)."""
+        import unittest.mock as mock
+        from datetime import date, timedelta
+        from src.pages.data_viewer import get_staleness_banner
+        stale_dt = (date.today() - timedelta(days=3)).isoformat() + "T18:30:00+00:00"
+        m = mock.MagicMock()
+        (m.table.return_value.select.return_value.eq.return_value
+         .order.return_value.limit.return_value.execute.return_value.data) = [
+            {"last_run": stale_dt}
+        ]
+        banner = get_staleness_banner(m)
+        assert banner is not None
+        assert any(w in banner.lower() for w in ("updated", "since", "stale"))
 
     @pytest.mark.skip(reason="emit_signal requires live SUPABASE_URL and seed data — G0 gate")
     def test_emit_latency_under_800ms(self):

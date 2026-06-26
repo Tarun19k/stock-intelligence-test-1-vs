@@ -147,7 +147,7 @@ def test_ingest_ok_banner_none_when_fresh():
     m = mock.MagicMock()
     (m.table.return_value.select.return_value.eq.return_value
      .order.return_value.limit.return_value.execute.return_value.data) = [
-        {"run_at": date.today().isoformat()}
+        {"last_run": date.today().isoformat() + "T18:30:00+00:00"}
     ]
     banner = get_staleness_banner(m)
     assert banner is None

@@ -117,8 +117,8 @@ class TestResolveOutcomes:
     def _sample_ohlcv(self, circuit_flag=False, close=1100.0, symbol="RELIANCE"):
         return {"symbol": symbol, "close": close, "circuit_flag": circuit_flag}
 
-    def _sample_pred(self, direction="BULLISH", entry_price=1000.0, symbol="RELIANCE"):
-        return {"id": 1, "symbol": symbol, "direction": direction, "entry_price": entry_price}
+    def _sample_pred(self, signal_direction="BULL", entry_price=1000.0, symbol="RELIANCE"):
+        return {"id": 1, "symbol": symbol, "signal_direction": signal_direction, "entry_price": entry_price}
 
     def test_circuit_flag_row_excluded(self):
         """Jhunjhunwala: circuit_flag=True rows must NOT be used for outcome scoring."""
@@ -138,23 +138,26 @@ class TestResolveOutcomes:
     def test_bullish_win_on_gain(self):
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         ohlcv = [self._sample_ohlcv(close=1100.0)]
-        preds = [self._sample_pred(direction="BULLISH", entry_price=1000.0)]
+        preds = [self._sample_pred(signal_direction="BULL", entry_price=1000.0)]
         result = resolve_outcomes_from_ohlcv(preds, ohlcv)
         assert result[0]["outcome"] == "WIN"
+        assert result[0]["hit"] is True
 
     def test_bullish_loss_on_drop(self):
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         ohlcv = [self._sample_ohlcv(close=900.0)]
-        preds = [self._sample_pred(direction="BULLISH", entry_price=1000.0)]
+        preds = [self._sample_pred(signal_direction="BULL", entry_price=1000.0)]
         result = resolve_outcomes_from_ohlcv(preds, ohlcv)
         assert result[0]["outcome"] == "LOSS"
+        assert result[0]["hit"] is False
 
     def test_bearish_win_on_drop(self):
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         ohlcv = [self._sample_ohlcv(close=900.0)]
-        preds = [self._sample_pred(direction="BEARISH", entry_price=1000.0)]
+        preds = [self._sample_pred(signal_direction="BEAR", entry_price=1000.0)]
         result = resolve_outcomes_from_ohlcv(preds, ohlcv)
         assert result[0]["outcome"] == "WIN"
+        assert result[0]["hit"] is True
 
     def test_mixed_circuit_partial_resolution(self):
         """When some rows are circuit-locked, only non-circuit symbols resolve."""
@@ -164,8 +167,8 @@ class TestResolveOutcomes:
             {"symbol": "INFY", "close": 1500.0, "circuit_flag": True},
         ]
         preds = [
-            {"id": 1, "symbol": "RELIANCE", "direction": "BULLISH", "entry_price": 1000.0},
-            {"id": 2, "symbol": "INFY", "direction": "BULLISH", "entry_price": 1400.0},
+            {"id": 1, "symbol": "RELIANCE", "signal_direction": "BULL", "entry_price": 1000.0},
+            {"id": 2, "symbol": "INFY", "signal_direction": "BULL", "entry_price": 1400.0},
         ]
         result = resolve_outcomes_from_ohlcv(preds, ohlcv)
         assert len(result) == 1

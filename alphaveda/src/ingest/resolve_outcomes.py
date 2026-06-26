@@ -16,13 +16,13 @@ def resolve_outcomes_from_ohlcv(
 
     Args:
         predictions: list of open prediction dicts with keys:
-            id, symbol, direction ('BULLISH'|'BEARISH'), entry_price
+            id, symbol, signal_direction ('BULL'|'BEAR'), entry_price
         ohlcv_rows: list of OHLCV dicts with keys:
             symbol, close, circuit_flag (bool, defaults False)
 
     Returns:
-        list of resolution dicts: prediction_id, outcome ('WIN'|'LOSS'),
-        actual_close, pct_change.
+        list of resolution dicts: prediction_id, hit (bool), return_pct,
+        outcome ('WIN'|'LOSS' — human-readable alias for hit).
         Predictions whose symbol has no non-circuit close are silently omitted.
     """
     # Build symbol → last non-circuit close. circuit_flag=True rows are skipped.
@@ -44,18 +44,15 @@ def resolve_outcomes_from_ohlcv(
 
         actual_close = symbol_close[symbol]
         pct_change = (actual_close - entry_price) / entry_price
-        direction = pred.get("direction", "BULLISH")
+        direction = pred.get("signal_direction", "BULL")
 
-        if direction == "BULLISH":
-            outcome = "WIN" if pct_change > 0 else "LOSS"
-        else:
-            outcome = "WIN" if pct_change < 0 else "LOSS"
+        hit = (direction == "BULL" and pct_change > 0) or (direction == "BEAR" and pct_change < 0)
 
         resolutions.append({
             "prediction_id": pred["id"],
-            "outcome": outcome,
-            "actual_close": actual_close,
-            "pct_change": pct_change,
+            "hit": hit,
+            "return_pct": pct_change,
+            "outcome": "WIN" if hit else "LOSS",  # human-readable alias
         })
 
     return resolutions

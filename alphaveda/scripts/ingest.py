@@ -3,13 +3,21 @@
 
 Steps:
   1. Download NSE Bhavcopy for target_date
-  2. Parse and upsert OHLCV rows (source=bhavcopy_nse, licence_class=open)
-  3. Resolve open predictions against actual closes (circuit_flag rows excluded)
-  4. Write ingest_status row (OK or ERROR)
+  2. Resolve symbol → instrument_id via instruments table
+  3. Upsert OHLCV rows (circuit_flag set by parser)
+  4. Resolve open predictions against actual closes (circuit rows excluded)
+  5. Write accuracy_outcomes rows (hit + return_pct)
+  6. Write ingest_status row (OK / NO_DATA / SKIPPED_HOLIDAY / ERROR)
 
 Usage:
   python scripts/ingest.py               # today
   python scripts/ingest.py 2026-06-26    # specific date
+
+Schema reference (FALLBACK_SCHEMA in schema_viewer.py):
+  ohlcv          : instrument_id, as_of, open/high/low/close, volume,
+                   circuit_flag, licence_class, source, ingested_at (DEFAULT now())
+  ingest_status  : source (NN), last_run, rows_written, status
+  accuracy_outcomes: prediction_id (NN), resolved_at, hit, return_pct
 """
 from __future__ import annotations
 
@@ -44,20 +52,19 @@ def run_ingest(target_date: date | None = None) -> dict:
     if target_date is None:
         target_date = date.today()
 
+    from src.config import get_supabase_client
+    supabase = get_supabase_client()
+
     # Holiday gate (Dalio condition): write SKIPPED_HOLIDAY, exit cleanly.
-    # Distinguishes holiday (no data expected) from outage (data missing unexpectedly).
     if not _is_trading_day(target_date):
-        from src.config import get_supabase_client
-        supabase = get_supabase_client()
         supabase.table("ingest_status").insert({
-            "run_at": target_date.isoformat(),
+            "source": "bhavcopy_nse",
+            "last_run": target_date.isoformat(),
             "status": "SKIPPED_HOLIDAY",
+            "rows_written": 0,
         }).execute()
         return {"date": target_date.isoformat(), "ohlcv_rows": 0,
                 "outcomes_resolved": 0, "status": "SKIPPED_HOLIDAY"}
-
-    from src.config import get_supabase_client
-    supabase = get_supabase_client()
 
     summary: dict = {
         "date": target_date.isoformat(),
@@ -67,56 +74,111 @@ def run_ingest(target_date: date | None = None) -> dict:
     }
 
     try:
+        # Step 1: Download + parse
         from src.ingest.bhavcopy import download_bhavcopy_nse, parse_bhavcopy_nse
         csv_bytes = download_bhavcopy_nse(target_date.isoformat())
-        rows = parse_bhavcopy_nse(csv_bytes.decode("utf-8", errors="replace"))
-        summary["ohlcv_rows"] = len(rows)
+        parsed_rows = parse_bhavcopy_nse(csv_bytes.decode("utf-8", errors="replace"))
 
-        # Empty-day guard (Marks condition): 0 rows on a trading day = source issue,
-        # not a successful run. Write NO_DATA status so monitoring can distinguish
-        # from genuine OK.
-        if not rows:
+        # Empty-day guard (Marks condition): 0 rows on a trading day = source issue.
+        if not parsed_rows:
             supabase.table("ingest_status").insert({
-                "run_at": target_date.isoformat(),
+                "source": "bhavcopy_nse",
+                "last_run": target_date.isoformat(),
                 "status": "NO_DATA",
-                "ohlcv_rows": 0,
-                "outcomes_resolved": 0,
+                "rows_written": 0,
             }).execute()
             summary["status"] = "NO_DATA"
             return summary
 
-        # Upsert OHLCV rows (on conflict symbol+date → update).
-        # circuit_flag is set by parse_bhavcopy_nse via proxy H==L==C detection.
-        for row in rows:
-            row["as_of"] = target_date.isoformat()
-            row["ingested_at"] = "now()"
-        supabase.table("ohlcv").upsert(rows, on_conflict="symbol,as_of").execute()
+        # Step 2: Batch resolve symbol → instrument_id (one query, no N+1).
+        symbols = [r["symbol"] for r in parsed_rows]
+        inst_result = (
+            supabase.table("instruments")
+            .select("id, symbol")
+            .in_("symbol", symbols)
+            .execute()
+        )
+        symbol_to_id: dict[str, int] = {r["symbol"]: r["id"] for r in (inst_result.data or [])}
+        id_to_symbol: dict[int, str] = {v: k for k, v in symbol_to_id.items()}
 
-        # Resolve open predictions against freshly-upserted rows (which carry
-        # circuit_flag). Horizon maturity gate is a G1 condition — see
-        # resolve_outcomes.py docstring.
+        # Step 3: Build ohlcv rows mapped to instrument_id.
+        ohlcv_rows = []
+        symbol_close: dict[str, float] = {}  # reused for outcome resolution
+        for row in parsed_rows:
+            iid = symbol_to_id.get(row["symbol"])
+            if iid is None:
+                continue  # instrument not seeded — skip silently
+            symbol_close[row["symbol"]] = row["close"]
+            ohlcv_rows.append({
+                "instrument_id": iid,
+                "as_of": target_date.isoformat(),
+                "open": row["open"],
+                "high": row["high"],
+                "low": row["low"],
+                "close": row["close"],
+                "volume": row["volume"],
+                "circuit_flag": row["circuit_flag"],
+                "licence_class": row["licence_class"],
+                "source": row["source"],
+                # ingested_at omitted — DEFAULT now() handles it
+            })
+
+        # Step 4: Upsert OHLCV (conflict on instrument_id + as_of).
+        if ohlcv_rows:
+            supabase.table("ohlcv").upsert(ohlcv_rows, on_conflict="instrument_id,as_of").execute()
+        summary["ohlcv_rows"] = len(ohlcv_rows)
+
+        # Step 5: Resolve open predictions against today's closes.
+        # Entry price = close at emission date (fetched per-prediction from prior ohlcv).
+        # Horizon maturity gate is a G1 condition (requires target_date migration).
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
-        open_preds = (
+        open_preds_raw = (
             supabase.table("accuracy_predictions")
-            .select("id, symbol, direction, entry_price")
-            .is_("outcome", "null")
+            .select("id, instrument_id, signal_direction, emitted_at")
             .execute()
         ).data or []
-        resolutions = resolve_outcomes_from_ohlcv(open_preds, rows)
+
+        prediction_dicts = []
+        for pred in open_preds_raw:
+            symbol = id_to_symbol.get(pred["instrument_id"])
+            if not symbol:
+                continue
+            emitted_date = pred["emitted_at"][:10]  # YYYY-MM-DD from TIMESTAMPTZ
+            prior = (
+                supabase.table("ohlcv")
+                .select("close")
+                .eq("instrument_id", pred["instrument_id"])
+                .eq("as_of", emitted_date)
+                .limit(1)
+                .execute()
+            )
+            if not prior.data:
+                continue  # no entry price available — skip (G1 resolves this)
+            prediction_dicts.append({
+                "id": pred["id"],
+                "symbol": symbol,
+                "signal_direction": pred["signal_direction"],
+                "entry_price": prior.data[0]["close"],
+            })
+
+        resolutions = resolve_outcomes_from_ohlcv(prediction_dicts, parsed_rows)
         summary["outcomes_resolved"] = len(resolutions)
 
+        # Step 6: Write to accuracy_outcomes (hit BOOLEAN + return_pct).
         for res in resolutions:
-            supabase.table("accuracy_predictions").update({
-                "outcome": res["outcome"],
-                "actual_close": res["actual_close"],
-            }).eq("id", res["prediction_id"]).execute()
+            supabase.table("accuracy_outcomes").insert({
+                "prediction_id": res["prediction_id"],
+                "resolved_at": target_date.isoformat(),
+                "hit": res["hit"],
+                "return_pct": res["return_pct"],
+            }).execute()
 
-        # Write OK ingest_status row
+        # Step 7: Write OK ingest_status row.
         supabase.table("ingest_status").insert({
-            "run_at": target_date.isoformat(),
+            "source": "bhavcopy_nse",
+            "last_run": target_date.isoformat(),
             "status": "OK",
-            "ohlcv_rows": len(rows),
-            "outcomes_resolved": len(resolutions),
+            "rows_written": len(ohlcv_rows),
         }).execute()
 
     except Exception as exc:
@@ -124,9 +186,10 @@ def run_ingest(target_date: date | None = None) -> dict:
         summary["error"] = str(exc)
         try:
             supabase.table("ingest_status").insert({
-                "run_at": target_date.isoformat(),
+                "source": "bhavcopy_nse",
+                "last_run": target_date.isoformat(),
                 "status": "ERROR",
-                "error_message": str(exc)[:500],
+                "rows_written": 0,
             }).execute()
         except Exception:
             pass  # DB write failed — log to stdout only
@@ -139,4 +202,4 @@ if __name__ == "__main__":
     target = date.fromisoformat(date_arg) if date_arg else None
     result = run_ingest(target)
     print(result)
-    sys.exit(0 if result["status"] == "OK" else 1)
+    sys.exit(0 if result["status"] in ("OK", "SKIPPED_HOLIDAY") else 1)
