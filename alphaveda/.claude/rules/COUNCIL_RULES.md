@@ -29,9 +29,9 @@ A REVISE/APPROVE verdict from an unbacked seat is INADMISSIBLE and cannot count 
 | SRA/Reliability Architect (was Imran) | doctrine-panel-systems-reliability-architect | ✓ |
 | DB Integrity (was Rashida) | doctrine-panel-constraint-enforcer (DB ext) | ✓ (enhanced) |
 | Calibration Integrity (was Reddy) | calibration-integrity | ✓ |
-| Jhunjhunwala | ⚠ MISSING — create before next dispatch | ✗ |
-| Bhattacharya | ⚠ MISSING — create before next dispatch | ✗ |
-| Varghese | ⚠ MISSING — create before next dispatch | ✗ |
+| Jhunjhunwala | circuit-microstructure-reviewer | ✓ (created 2026-06-26) |
+| Bhattacharya | data-licence-compliance-reviewer | ✓ (created 2026-06-26) |
+| Varghese | sebi-compliance-reviewer | ✓ (created 2026-06-26) |
 
 ## Rule B — Skill Reference in Dispatch Prompt
 Every council dispatch prompt must name its backing skill:

@@ -6,12 +6,7 @@ The disclaimer is pinned as fixed-bottom HTML — never conditional, collapsible
 from __future__ import annotations
 from constants import SEBI_DISCLAIMER
 
-_DISCLAIMER_HTML = (
-    '<div style="position:fixed;bottom:0;left:0;width:100%;background:#fffbe6;'
-    'border-top:1px solid #e6c800;padding:6px 16px;font-size:0.75rem;z-index:9999;">'
-    f'{SEBI_DISCLAIMER}'
-    '</div>'
-)
+_DISCLAIMER_HTML = f'<div class="av-sebi-footer">{SEBI_DISCLAIMER}</div>'
 
 
 def get_disclaimer_html() -> str:
@@ -27,19 +22,31 @@ def main() -> None:
     """Streamlit app entry point."""
     import streamlit as st
     from src.pages import data_viewer, signals, path, accuracy
+    from src.styles import get_css
 
     st.set_page_config(
         page_title="AlphaVeda",
-        page_icon="📊",
+        page_icon="◈",
         layout="wide",
     )
 
-    # SEBI disclaimer pinned — fires before any page content
+    # Design system CSS — must inject before any content
+    st.markdown(get_css(), unsafe_allow_html=True)
+
+    # SEBI disclaimer pinned — fires before any page content (Varghese requirement)
     st.markdown(get_disclaimer_html(), unsafe_allow_html=True)
+
+    _NAV_LABELS = {
+        "Data Viewer": "Market Data",
+        "Signals": "Signals",
+        "Path": "Path",
+        "Accuracy": "Accuracy",
+    }
 
     page = st.sidebar.radio(
         "Navigate",
-        options=["Data Viewer", "Signals", "Path", "Accuracy"],
+        options=list(_NAV_LABELS.keys()),
+        format_func=lambda k: _NAV_LABELS[k],
         label_visibility="collapsed",
     )
 

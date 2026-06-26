@@ -29,13 +29,20 @@ def test_disclaimer_in_every_page():
 
 
 def test_disclaimer_non_dismissable():
-    """get_disclaimer_html() always returns the full SEBI disclaimer text."""
+    """Disclaimer HTML contains substance and no dismiss mechanism (Varghese Check 7)."""
     from src.app import get_disclaimer_html
     html = get_disclaimer_html()
     assert html is not None
     assert len(html) > 0
-    assert "not investment advice" in html.lower() or "not" in html.lower()
+    # Substance checks
     assert SEBI_DISCLAIMER[:40] in html
+    assert "not investment advice" in html.lower()
+    # Form checks — no dismiss/close mechanism allowed
+    html_lower = html.lower()
+    assert "onclick" not in html_lower
+    assert "<button" not in html_lower
+    assert "dismiss" not in html_lower
+    assert 'class="close"' not in html_lower
 
 
 # ── Constraint Enforcer — commercial gate ────────────────────────────────────
