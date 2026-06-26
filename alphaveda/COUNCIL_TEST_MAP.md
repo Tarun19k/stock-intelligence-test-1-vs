@@ -50,8 +50,8 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Wealth & Revenue** | is_commercial() derived from converted_at | test_is_commercial.py | test_is_commercial_false_when_no_subscribers | 2 | GREEN ✓ |
 | **Wealth & Revenue** | is_commercial() fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
 | **Wealth & Revenue** | Waitlist form writes to DB | test_waitlist.py | test_waitlist_form_submits | 1 ext | SPEC |
-| **Rashida** | Bhavcopy parse: correct OHLCV fields | test_ingest.py | test_correct_ohlcv_fields | 6 | GREEN ✓ |
-| **Rashida** | Fundamentals parse: required keys + None on NA | test_ingest.py | test_returns_all_required_keys | 6 | GREEN ✓ |
+| **DB Integrity** | Bhavcopy parse: correct OHLCV fields | test_ingest.py | test_correct_ohlcv_fields | 6 | GREEN ✓ |
+| **DB Integrity** | Fundamentals parse: required keys + None on NA | test_ingest.py | test_returns_all_required_keys | 6 | GREEN ✓ |
 
 ---
 
@@ -59,10 +59,10 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 
 | Seat | Condition | Test file | Function | Phase | Status |
 |---|---|---|---|---|---|
-| **Imran (SRA)** | Stale ingest → amber banner | test_g0_gate.py | test_c3_missing_run_stale_warning | 6 | GREEN ✓ |
-| **Imran (SRA)** | Zero ingest_status rows → red banner | test_g0_gate.py | test_c4_missing_run_no_row | 6 | GREEN ✓ |
-| **Imran (SRA)** | Staleness flag: OK/STALE/MISSING logic | test_ingest.py | test_ok_when_recent | 6 | GREEN ✓ |
-| **Imran (SRA)** | Signal emit latency ≤ 800ms | test_engine.py | test_emit_latency | 3 | SPEC |
+| **SRA/Reliability Architect** | Stale ingest → amber banner | test_g0_gate.py | test_c3_missing_run_stale_warning | 6 | GREEN ✓ |
+| **SRA/Reliability Architect** | Zero ingest_status rows → red banner | test_g0_gate.py | test_c4_missing_run_no_row | 6 | GREEN ✓ |
+| **SRA/Reliability Architect** | Staleness flag: OK/STALE/MISSING logic | test_ingest.py | test_ok_when_recent | 6 | GREEN ✓ |
+| **SRA/Reliability Architect** | Signal emit latency ≤ 800ms | test_engine.py | test_emit_latency | 3 | SPEC |
 | **Constraint Enforcer** | No imperative BUY/SELL in output | test_g0_gate.py | test_c6_sebi_substance | 6 | GREEN ✓ |
 | **Constraint Enforcer** | Commercial gate fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
 | **Constraint Enforcer** | Rupee suppressed when commercial=True | test_app.py | test_no_rupee_when_commercial | 5 | GREEN ✓ |
@@ -71,13 +71,13 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Varghese** | SEBI disclaimer on every page | test_app.py | test_disclaimer_in_every_page | 5 | GREEN ✓ |
 | **Varghese** | Disclaimer not conditionalised | test_app.py | test_disclaimer_non_dismissable | 5 | GREEN ✓ |
 | **Varghese** | SEBI substance (no advice language) | test_g0_gate.py | test_c6_sebi_substance | 6 | GREEN ✓ |
-| **Tanvi Rao** | Cold-start label shown | test_app.py | test_cold_start_label_visible | 5 | GREEN ✓ |
-| **Tanvi Rao** | Rupee suppression = deliberate state (label) | test_app.py | test_rupee_suppression_label | 5 | GREEN ✓ |
-| **Rashida** | All 11 core tables exist | test_migrations.py | test_instruments_table..test_ingest_status_table | 1 | RED |
-| **Rashida** | accuracy_predictions.downside_target | test_migrations.py | test_accuracy_predictions_has_downside_target | 1 | RED |
-| **Rashida** | portfolio_buckets seeded (4 rows) | test_migrations.py | test_portfolio_buckets_seeded | 1 | RED |
-| **Reddy** | Calibration p ≤ confidence/100 (cold-start) | test_g0_gate.py | test_c5_calibration_cold_start | 6 | GREEN ✓ |
-| **Reddy** | Calibration cold fallback: p = min(conf/100, hit_rate) | test_calibration.py | test_cold_start_calibration | G1 | SPEC |
+| **UX/Accessibility** | Cold-start label shown | test_app.py | test_cold_start_label_visible | 5 | GREEN ✓ |
+| **UX/Accessibility** | Rupee suppression = deliberate state (label) | test_app.py | test_rupee_suppression_label | 5 | GREEN ✓ |
+| **DB Integrity** | All 11 core tables exist | test_migrations.py | test_instruments_table..test_ingest_status_table | 1 | RED |
+| **DB Integrity** | accuracy_predictions.downside_target | test_migrations.py | test_accuracy_predictions_has_downside_target | 1 | RED |
+| **DB Integrity** | portfolio_buckets seeded (4 rows) | test_migrations.py | test_portfolio_buckets_seeded | 1 | RED |
+| **Calibration Integrity** | Calibration p ≤ confidence/100 (cold-start) | test_g0_gate.py | test_c5_calibration_cold_start | 6 | GREEN ✓ |
+| **Calibration Integrity** | Calibration cold fallback: p = min(conf/100, hit_rate) | test_calibration.py | test_cold_start_calibration | G1 | SPEC |
 | **Shakuni** | No duplicate ACTIVE per segment | test_g0_gate.py | test_c2_signal_weights_no_duplicate_active | 6 | GREEN ✓ |
 | **Shakuni** | approve_signal_weight rejects non-PROPOSED | test_signal_weights.py | test_approve_rejects_non_proposed | 3 | GREEN ✓ |
 | **Synthesis Chair** | G0 criterion 10 runs first | test_g0_gate.py | test_c10_seed_instruments_exist | 6 | RED (needs seed) |
@@ -102,14 +102,14 @@ Each Phase is NOT done until:
 
 | Phase | Required council reviewers | Model |
 |---|---|---|
-| Phase 1 | Rashida, Bhattacharya, Jhunjhunwala, Wealth & Revenue | Sonnet |
-| Phase 2 | Dalio, Marks, Imran, Constraint Enforcer | Sonnet |
+| Phase 1 | DB Integrity, Bhattacharya, Jhunjhunwala, Wealth & Revenue | Sonnet |
+| Phase 2 | Dalio, Marks, SRA/Reliability Architect, Constraint Enforcer | Sonnet |
 | Phase 3 | Soros, Druckenmiller, Buffett, Lynch, Shakuni | Sonnet |
 | Phase 4 | Druckenmiller, Jhunjhunwala | Sonnet |
-| Phase 5 | Varghese, Munger, Tanvi Rao, Constraint Enforcer | Sonnet |
+| Phase 5 | Varghese, Munger, UX/Accessibility, Constraint Enforcer | Sonnet |
 | Phase 6 (G0) | All 21 council seats | **Opus** |
 
-Last updated: 2026-06-26 (Phase 6 ingest — modules + 20 tests GREEN; c10 seed gate pending; council dispatch next)
+Last updated: 2026-06-26 (Phase 6 SIGNED OFF — 179 PASS / 1 SKIP / 3 FAIL; c10 RED = intentional seed gate; all 21 seats resolved; seat names updated to skill-canonical names)
 
 ---
 
@@ -127,5 +127,9 @@ Last updated: 2026-06-26 (Phase 6 ingest — modules + 20 tests GREEN; c10 seed 
 - Phase 5 (Presentation Layer) — signed off 2026-06-25 [council:subagent]
   - Varghese: APPROVE — disclaimer pinned unconditionally, uses constant, non-dismissable; non-blocking: test fallback `or "not" in html.lower()` too permissive (polish for later)
   - Constraint Enforcer: APPROVE — commercial gate fail-closed, rupee=None when commercial, suppression label uses deliberate-state language; non-blocking: double is_commercial() call per render (caching for G1)
-  - Tanvi Rao: APPROVE — cold-start uses OBSERVATION_THRESHOLD constant, suppression label passes degradation check; non-blocking: "Bayesian priors" may confuse lay users (polish item)
+  - UX/Accessibility (ui-ux-pro-max): APPROVE — cold-start uses OBSERVATION_THRESHOLD constant, suppression label passes degradation check; non-blocking: "Bayesian priors" may confuse lay users (polish item)
   - Munger: REVISE resolved → APPROVE — accuracy.get_proposed_weights_count() was standalone Supabase query; fixed to delegate to signals (single source of truth); all 4 weight-review conditions met; 144 PASS / 12 SKIP / 3 FAIL
+- Phase 6 (GHA Ingest Pipeline) — signed off 2026-06-26 [council:subagent]
+  - Wave 1 (7 seats): Buffett APPROVE; Munger REVISE→APPROVE (circuit_flag end-to-end); Soros APPROVE (horizon deferred G1); Druckenmiller APPROVE (horizon deferred G1); Jhunjhunwala REVISE→APPROVE (circuit_flag proxy in parser); Marks REVISE→APPROVE (NO_DATA + SKIPPED_HOLIDAY); Dalio REVISE→APPROVE (_is_trading_day NSE calendar)
+  - Wave 2 (14 seats): Lynch APPROVE; Wealth & Revenue APPROVE; Bhattacharya APPROVE; Varghese APPROVE; UX/Accessibility REVISE→APPROVE (banner language); Shakuni APPROVE; Constraint Enforcer APPROVE; SRA/Reliability Architect REVISE→APPROVE (TIMESTAMPTZ parsing + stale test); DB Integrity REVISE→APPROVE (ingest_status columns, ohlcv instrument_id resolution, accuracy_outcomes write); Calibration Integrity REVISE→APPROVE (BULL/BEAR enum, hit+return_pct output); Synthesis Chair REVISE→APPROVE (all fixes resolved)
+  - Final: 179 PASS / 1 SKIP / 3 FAIL; 3 FAIL = intentional G0 seed gates (need live DB seed)
