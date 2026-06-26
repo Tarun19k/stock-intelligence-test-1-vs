@@ -1,12 +1,32 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-25 (Phase 5 SIGNED OFF — Phase 6 is next)
+**Session date:** 2026-06-26 (Phase 6 SIGNED OFF — council infrastructure + UI-1 next)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
+**Last commits:** 0282c4c (governance), f978fc5 (phase 6 fixes)
 
 ---
 
-## DO NOT REDO — Session 2026-06-25
+## DO NOT REDO — Session 2026-06-26
+
+### Phase 6 (GHA Ingest Pipeline) COMPLETE — 179 PASS / 1 SKIP / 3 FAIL (Commit f978fc5)
+- All 4 council REVISE fixes implemented: Tanvi/Imran/Rashida/Reddy
+- circuit_flag end-to-end: proxy detection in parser, exclusion in resolve_outcomes
+- Holiday gate (NSE trading calendar), empty-day (NO_DATA status), staleness banner wired
+- BULL/BEAR direction enum (not BULLISH/BEARISH)
+- Stale test un-skipped (Imran condition)
+- Schema contract alignment: ingest_status columns, ohlcv instrument_id resolution, accuracy_outcomes write path
+- G0 blocked only on live DB seed (first `python3 scripts/ingest.py` run against seeded Supabase)
+
+### Council Seat Infrastructure — Rules + Skills (Commit 0282c4c)
+- Skill confidence check: 5 seats without SKILL.md found (Rashida, Reddy, Jhunjhunwala, Bhattacharya, Varghese)
+- Created `calibration-integrity/SKILL.md` (new skill, Reddy seat)
+- Enhanced `doctrine-panel-constraint-enforcer/SKILL.md` with DB Integrity Extension (Rashida seat)
+- Renamed 4 seats to canonical names: Tanvi→UX/Accessibility, Imran→SRA/Reliability Architect, Rashida→DB Integrity, Reddy→Calibration Integrity
+- Created `alphaveda/.claude/rules/COUNCIL_RULES.md` (Rules A/B/C: dispatch gate, seat registry, zero-assumption)
+- Created `~/.claude/scripts/check-seat-skill.sh` (verification hook)
+- Phase 6 sign-off entry in COUNCIL_TEST_MAP.md (all 21 seats resolved, Wave 1+2 verdicts)
+- Governance root-cause investigation: unmapped seats, no dispatch-time validation gate (systemic, not one-time)
 
 ### 1. Governance Housekeeping + Artifact Automation (Commits 9fa257f, eb95e91, b52381b)
 - GROUP A/B/C housekeeping complete — zero governance warnings
@@ -44,83 +64,93 @@
 
 ## EXACT RESUME POINT
 
-**Next: Phase 6 TDD — GHA ingest pipeline**
+**Current:** Phase 6 ingest pipeline SIGNED OFF (179 PASS). Infrastructure (skills + rules) written. Ready for **UI-1** or **global rule writes**.
 
-Phase 6 scope (6 files):
-1. `src/ingest/bhavcopy.py` — NSE/BSE daily download + parse
-2. `src/ingest/fundamentals.py` — BSE XBRL fundamentals loader
-3. `src/ingest/resolve_outcomes.py` — score predictions against actuals (excludes circuit_flag rows)
-4. `src/ingest/waitlist.py` — waitlist form submission handler
-5. `scripts/ingest.py` — orchestrator script
-6. `.github/workflows/ingest.yml` — GHA cron (daily EOD)
+**Two paths forward:**
 
-Council seats for Phase 6 sign-off: Imran (SRA) + Rashida + all 21 seats (G0 Gate is Opus)
+### Option A (RECOMMENDED): Start UI-1 — AlphaVeda UI design
+- Load `ui-ux-pro-max` skill (UX/Accessibility)
+- Design CSS system (colour palette: indigo/gold/emerald/terra/ivory)
+- Typography stack: Fraunces/DM Sans/DM Mono (Google Fonts)
+- Navigation structure + Streamlit st.navigation()
+- SEBI footer bar (fixed bottom, always visible)
+- Signal card component (direction chip, confidence bar, Kelly rupee, lynch class)
+- G0 gate remains blocked until live DB seed
 
-**Before Phase 6:** Promote GOVERNANCE_STRICT=1 in pytest.ini (warn mode → strict mode).
+**Why Option A:** G0 is unblockable in this session (needs external DB seed). UI-1 is independent, high-value, unblocked. Infrastructure can follow.
+
+### Option B: Global governance rules — Rules B and C to CLAUDE.md
+- Requires Tarun explicit approval (cross-workspace impact: agentic-operations + crochet-counter)
+- Rule B: Seat registration requirement (global skills-index.md)
+- Rule C: Zero-assumption tolerance (global CLAUDE.md)
+- Estimated 30min once approved
+- Unblocks council dispatch gate enforcement for all workspaces
+- Refactoring needed: `alphaveda/scripts/council_review.py` has inline seat logic (Rule C violation)
 
 ---
 
 ## OPEN DECISIONS (Tarun-owned)
 
-| Decision | Default | Needed by |
+| Decision | Impact | Needed by |
 |---|---|---|
-| Stream A (Gumroad Governance Pack): Tarun to publish | All 6 PRG gates PASS since 2026-06-22 | OVERDUE — REVENUE BLOCKER |
-| Stream C: 3 consulting outreach targets WhatsApp signal | OVERDUE | Revenue clock |
-| T2 action: pip install supabase postgrest pandas_market_calendars streamlit plotly pytest | PENDING | Before G0 smoke tests |
-| GOVERNANCE_STRICT promotion: set to 1 in pytest.ini | Phase 5 signed off — ready to promote | Before Phase 6 |
+| Start UI-1 (AlphaVeda design) now or defer? | Determines visible progress this week | This session |
+| Approve global CLAUDE.md Rules B/C (seat registry + zero-assumption)? | Cross-workspace governance; blocks council dispatch gate | Next session (background approval) |
+| Prioritize 3 missing skills? (Jhunjhunwala/Bhattacharya/Varghese) | Blocks council dispatch Phase 7+; governance debt | Next Phase dispatch |
+| Stream A (Gumroad Governance Pack): Tarun publish | All 6 PRG gates PASS; REVENUE BLOCKER | OVERDUE |
+| Stream C: 3 consulting targets | Revenue clock | OVERDUE |
 
 ---
 
-## COMMERCIAL STATE — Updated 2026-06-25
+## COMMERCIAL STATE — Updated 2026-06-26
 
 - **Stream A:** READY_TO_LIST. All gates pass. Tarun to publish. REVENUE BLOCKER.
 - **Stream C:** OVERDUE. 3 targets needed.
-- **Stream D (AlphaVeda):** Phases 1-5 signed off. Phase 6 ingest pipeline is next.
+- **Stream D (AlphaVeda):** Phases 1-6 signed off. UI-1 (design) is next. G0 blocked on live DB seed. Infrastructure-heavy; no revenue until UI layers + seed.
 - **Stream B:** Deferred — out of 21-day scope.
 
 ---
 
 ## BLOCK SEQUENCE — LIVE STATUS
 
-| Block | Status | Commit |
-|---|---|---|
-| Phase 1 (Foundation) | ✓ SIGNED OFF 2026-06-23 | 1ae8e37 |
-| Phase 2 (Data layer) | ✓ SIGNED OFF 2026-06-23 | ce9cba9 |
-| Phase 3 (Signal layer) | ✓ SIGNED OFF 2026-06-25 | f444ec1 |
-| Phase 4 (Portfolio layer) | ✓ SIGNED OFF 2026-06-25 | 9537131 |
-| Phase 5 (Presentation) | ✓ SIGNED OFF 2026-06-25 | 0892867 |
-| Phase 6 (GHA ingest) | NEXT | — |
-| G0 Gate | AWAITING Phase 6 | — |
+| Block | Status | Commit | Notes |
+|---|---|---|---|
+| Phase 1 (Foundation) | ✓ SIGNED OFF 2026-06-23 | 1ae8e37 | |
+| Phase 2 (Data layer) | ✓ SIGNED OFF 2026-06-23 | ce9cba9 | |
+| Phase 3 (Signal layer) | ✓ SIGNED OFF 2026-06-25 | f444ec1 | |
+| Phase 4 (Portfolio layer) | ✓ SIGNED OFF 2026-06-25 | 9537131 | |
+| Phase 5 (Presentation) | ✓ SIGNED OFF 2026-06-25 | 0892867 | |
+| Phase 6 (GHA ingest) | ✓ SIGNED OFF 2026-06-26 | f978fc5 | 179 PASS; all 21 council seats resolved |
+| G0 Gate | BLOCKED | — | Live DB seed required (manual) |
+| UI-1 (CSS + nav) | NEXT | — | Load `ui-ux-pro-max` skill |
 
 ---
 
 ## TEST SUITE STATE PROGRESSION
 
-| Milestone | PASS | SKIP | FAIL |
-|---|---|---|---|
-| After Phase 3 sign-off | 112 | 15 | 3 |
-| After Phase 4 sign-off | 132 | 12 | 3 |
-| After Phase 5 sign-off | 144 | 12 | 3 |
+| Milestone | PASS | SKIP | FAIL | Notes |
+|---|---|---|---|---|
+| After Phase 3 sign-off | 112 | 15 | 3 | Shakuni REVISE resolved |
+| After Phase 4 sign-off | 132 | 12 | 3 | Jhunjhunwala REVISE resolved |
+| After Phase 5 sign-off | 144 | 12 | 3 | Munger REVISE resolved |
+| After Phase 6 sign-off | 179 | 1 | 3 | All 4 REVISE seats resolved; 3 FAIL = intentional G0 seed gates |
 
 ---
 
-## PHASE CALIBRATION BACKLOG (Phase 6)
+## GOVERNANCE BACKLOG (Global Rules B/C)
 
-- D-C1: DOWNSIDE_FALLBACK not through _clamp() in downside.py
-- D-C2: last_close=0 guard in downside.py (ZeroDivisionError on bad data)
-- S-C1: STREAK_DISCOUNT_FACTOR explicit value pin test
-- S-C2: OBSERVATION_THRESHOLD guard in calibrate_confidence
-- S-C3: None-return branch test for emit_pipeline
+- Rules B+C to global CLAUDE.md (seat registry, zero-assumption tolerance) — needs Tarun approval
+- Refactor `alphaveda/scripts/council_review.py` — move inline seat logic to SKILL.md references
+- Create 3 missing skills: Jhunjhunwala (circuit microstructure), Bhattacharya (data licence), Varghese (SEBI compliance)
 
 ---
 
-## PHASE 5 NON-BLOCKING ITEMS (carry to G0 polish)
+## PHASE 5–6 NON-BLOCKING ITEMS (carry to UI polish)
 
-- Varghese: `test_disclaimer_non_dismissable` fallback `or "not" in html.lower()` too permissive — tighten to specific phrase
+- Varghese (SEBI): `test_disclaimer_non_dismissable` fallback `or "not" in html.lower()` too permissive — tighten to specific phrase
 - Constraint Enforcer: path.py calls is_commercial() twice per render (get_kelly_display_data + render()) — consider caching at G1
-- Tanvi Rao: cold-start label uses "Bayesian priors" — accessible language pass needed before public launch
-- Tanvi Rao: cold-start label notes operational cause (observation count) but not implication (lower confidence)
+- UX/Accessibility: cold-start label uses "Bayesian priors" — accessible language pass needed before public launch
+- UX/Accessibility: cold-start label notes operational cause (observation count) but not implication (lower confidence)
 
 ---
 
-*Updated: 2026-06-25 — Phase 5 signed off, Phase 6 is next.*
+*Updated: 2026-06-26 — Phase 6 signed off. UI-1 design next (or global rule writes). G0 blocked on live seed.*
