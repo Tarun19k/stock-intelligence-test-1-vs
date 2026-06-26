@@ -44,10 +44,14 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **Lynch** | lynch_class on every prediction row | test_migrations.py | test_prediction_without_lynch_rejected | G1 | SPEC |
 | **Jhunjhunwala** | ohlcv.circuit_flag column exists | test_migrations.py | test_ohlcv_has_circuit_flag | 1 | GREEN ✓ |
 | **Jhunjhunwala** | circuit_flag backfill rule documented | DATA_SOURCES.md | (rule, not test) | 1 | GREEN ✓ |
+| **Jhunjhunwala** | circuit_flag rows excluded from resolve_outcomes | test_ingest.py | test_circuit_flag_row_excluded | 6 | GREEN ✓ |
+| **Jhunjhunwala** | Mixed circuit/clean: only clean symbols resolve | test_ingest.py | test_mixed_circuit_partial_resolution | 6 | GREEN ✓ |
 | **Wealth & Revenue** | waitlist.price_feedback column | test_migrations.py | test_waitlist_table | 1 | GREEN ✓ |
 | **Wealth & Revenue** | is_commercial() derived from converted_at | test_is_commercial.py | test_is_commercial_false_when_no_subscribers | 2 | GREEN ✓ |
 | **Wealth & Revenue** | is_commercial() fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
 | **Wealth & Revenue** | Waitlist form writes to DB | test_waitlist.py | test_waitlist_form_submits | 1 ext | SPEC |
+| **Rashida** | Bhavcopy parse: correct OHLCV fields | test_ingest.py | test_correct_ohlcv_fields | 6 | GREEN ✓ |
+| **Rashida** | Fundamentals parse: required keys + None on NA | test_ingest.py | test_returns_all_required_keys | 6 | GREEN ✓ |
 
 ---
 
@@ -55,28 +59,29 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 
 | Seat | Condition | Test file | Function | Phase | Status |
 |---|---|---|---|---|---|
-| **Imran (SRA)** | Stale ingest → amber banner | test_g0_gate.py | test_c3_missing_run_stale | 6 | RED |
-| **Imran (SRA)** | Zero ingest_status rows → red banner | test_g0_gate.py | test_c4_missing_run_no_row | 6 | RED |
+| **Imran (SRA)** | Stale ingest → amber banner | test_g0_gate.py | test_c3_missing_run_stale_warning | 6 | GREEN ✓ |
+| **Imran (SRA)** | Zero ingest_status rows → red banner | test_g0_gate.py | test_c4_missing_run_no_row | 6 | GREEN ✓ |
+| **Imran (SRA)** | Staleness flag: OK/STALE/MISSING logic | test_ingest.py | test_ok_when_recent | 6 | GREEN ✓ |
 | **Imran (SRA)** | Signal emit latency ≤ 800ms | test_engine.py | test_emit_latency | 3 | SPEC |
-| **Constraint Enforcer** | No imperative BUY/SELL in output | test_g0_gate.py | test_c6_sebi_substance | 6 | RED |
+| **Constraint Enforcer** | No imperative BUY/SELL in output | test_g0_gate.py | test_c6_sebi_substance | 6 | GREEN ✓ |
 | **Constraint Enforcer** | Commercial gate fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
 | **Constraint Enforcer** | Rupee suppressed when commercial=True | test_app.py | test_no_rupee_when_commercial | 5 | GREEN ✓ |
 | **Bhattacharya** | ohlcv.licence_class column | test_migrations.py | test_ohlcv_has_licence_class | 1 | GREEN ✓ |
 | **Bhattacharya** | ohlcv.deliverable_volume column | test_migrations.py | test_ohlcv_has_circuit_flag | 1 | GREEN ✓ |
 | **Varghese** | SEBI disclaimer on every page | test_app.py | test_disclaimer_in_every_page | 5 | GREEN ✓ |
 | **Varghese** | Disclaimer not conditionalised | test_app.py | test_disclaimer_non_dismissable | 5 | GREEN ✓ |
-| **Varghese** | SEBI substance (no advice language) | test_g0_gate.py | test_c6_sebi_substance | 6 | RED |
+| **Varghese** | SEBI substance (no advice language) | test_g0_gate.py | test_c6_sebi_substance | 6 | GREEN ✓ |
 | **Tanvi Rao** | Cold-start label shown | test_app.py | test_cold_start_label_visible | 5 | GREEN ✓ |
 | **Tanvi Rao** | Rupee suppression = deliberate state (label) | test_app.py | test_rupee_suppression_label | 5 | GREEN ✓ |
 | **Rashida** | All 11 core tables exist | test_migrations.py | test_instruments_table..test_ingest_status_table | 1 | RED |
 | **Rashida** | accuracy_predictions.downside_target | test_migrations.py | test_accuracy_predictions_has_downside_target | 1 | RED |
 | **Rashida** | portfolio_buckets seeded (4 rows) | test_migrations.py | test_portfolio_buckets_seeded | 1 | RED |
-| **Reddy** | Calibration p ≤ confidence/100 (cold-start) | test_g0_gate.py | test_c5_calibration_cold_start | 6 | RED |
+| **Reddy** | Calibration p ≤ confidence/100 (cold-start) | test_g0_gate.py | test_c5_calibration_cold_start | 6 | GREEN ✓ |
 | **Reddy** | Calibration cold fallback: p = min(conf/100, hit_rate) | test_calibration.py | test_cold_start_calibration | G1 | SPEC |
-| **Shakuni** | No duplicate ACTIVE per segment | test_g0_gate.py | test_c2_signal_weights_no_duplicate_active | 6 | RED |
+| **Shakuni** | No duplicate ACTIVE per segment | test_g0_gate.py | test_c2_signal_weights_no_duplicate_active | 6 | GREEN ✓ |
 | **Shakuni** | approve_signal_weight rejects non-PROPOSED | test_signal_weights.py | test_approve_rejects_non_proposed | 3 | GREEN ✓ |
-| **Synthesis Chair** | G0 criterion 10 runs first | test_g0_gate.py | test_c10_seed_instruments_exist | 6 | RED |
-| **Synthesis Chair** | Kelly rupee live with valid downside | test_g0_gate.py | test_c8_kelly_rupee_with_downside | 6 | RED |
+| **Synthesis Chair** | G0 criterion 10 runs first | test_g0_gate.py | test_c10_seed_instruments_exist | 6 | RED (needs seed) |
+| **Synthesis Chair** | Kelly rupee live with valid downside | test_g0_gate.py | test_c8_kelly_rupee_with_downside | 6 | GREEN ✓ |
 
 ---
 
@@ -104,7 +109,7 @@ Each Phase is NOT done until:
 | Phase 5 | Varghese, Munger, Tanvi Rao, Constraint Enforcer | Sonnet |
 | Phase 6 (G0) | All 21 council seats | **Opus** |
 
-Last updated: 2026-06-25 (Phase 5 presentation layer — SIGNED OFF [council:subagent])
+Last updated: 2026-06-26 (Phase 6 ingest — modules + 20 tests GREEN; c10 seed gate pending; council dispatch next)
 
 ---
 
