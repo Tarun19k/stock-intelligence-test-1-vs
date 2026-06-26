@@ -21,6 +21,20 @@ from datetime import date
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
+def _is_trading_day(d: date) -> bool:
+    """Return True if d is an NSE trading day (exchange-calendar aware).
+
+    Falls back to Mon-Fri check if pandas_market_calendars is unavailable.
+    """
+    try:
+        import pandas_market_calendars as mcal
+        nse = mcal.get_calendar("NSE")
+        schedule = nse.schedule(start_date=d.isoformat(), end_date=d.isoformat())
+        return not schedule.empty
+    except Exception:
+        return d.weekday() < 5
+
+
 def run_ingest(target_date: date | None = None) -> dict:
     """Run the full ingest pipeline for target_date (defaults to today).
 
@@ -29,6 +43,18 @@ def run_ingest(target_date: date | None = None) -> dict:
     """
     if target_date is None:
         target_date = date.today()
+
+    # Holiday gate (Dalio condition): write SKIPPED_HOLIDAY, exit cleanly.
+    # Distinguishes holiday (no data expected) from outage (data missing unexpectedly).
+    if not _is_trading_day(target_date):
+        from src.config import get_supabase_client
+        supabase = get_supabase_client()
+        supabase.table("ingest_status").insert({
+            "run_at": target_date.isoformat(),
+            "status": "SKIPPED_HOLIDAY",
+        }).execute()
+        return {"date": target_date.isoformat(), "ohlcv_rows": 0,
+                "outcomes_resolved": 0, "status": "SKIPPED_HOLIDAY"}
 
     from src.config import get_supabase_client
     supabase = get_supabase_client()
@@ -46,14 +72,29 @@ def run_ingest(target_date: date | None = None) -> dict:
         rows = parse_bhavcopy_nse(csv_bytes.decode("utf-8", errors="replace"))
         summary["ohlcv_rows"] = len(rows)
 
-        # Upsert OHLCV rows (on conflict symbol+date → update)
-        if rows:
-            for row in rows:
-                row["as_of"] = target_date.isoformat()
-                row["ingested_at"] = "now()"
-            supabase.table("ohlcv").upsert(rows, on_conflict="symbol,as_of").execute()
+        # Empty-day guard (Marks condition): 0 rows on a trading day = source issue,
+        # not a successful run. Write NO_DATA status so monitoring can distinguish
+        # from genuine OK.
+        if not rows:
+            supabase.table("ingest_status").insert({
+                "run_at": target_date.isoformat(),
+                "status": "NO_DATA",
+                "ohlcv_rows": 0,
+                "outcomes_resolved": 0,
+            }).execute()
+            summary["status"] = "NO_DATA"
+            return summary
 
-        # Resolve open predictions
+        # Upsert OHLCV rows (on conflict symbol+date → update).
+        # circuit_flag is set by parse_bhavcopy_nse via proxy H==L==C detection.
+        for row in rows:
+            row["as_of"] = target_date.isoformat()
+            row["ingested_at"] = "now()"
+        supabase.table("ohlcv").upsert(rows, on_conflict="symbol,as_of").execute()
+
+        # Resolve open predictions against freshly-upserted rows (which carry
+        # circuit_flag). Horizon maturity gate is a G1 condition — see
+        # resolve_outcomes.py docstring.
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         open_preds = (
             supabase.table("accuracy_predictions")

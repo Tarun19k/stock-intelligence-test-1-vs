@@ -24,6 +24,17 @@ _NSE_HEADERS = {
 }
 
 
+def _detect_circuit_flag(h: float, l: float, c: float) -> bool:
+    """Proxy circuit detection: H == L == C > 0 indicates a locked-price bar.
+
+    NSE Bhavcopy has no explicit circuit column. When all trades occur at a
+    single price (circuit limit), H=L=C. This is approximate — a genuine single-
+    trade day can also show H=L=C. G1 replaces this with the explicit ±5/10/20%
+    price-band check against the prior day's close.
+    """
+    return c > 0 and h == l == c
+
+
 def parse_bhavcopy_nse(csv_text: str) -> list[dict]:
     """Parse NSE Bhavcopy CSV text into OHLCV row dicts.
 
@@ -32,7 +43,7 @@ def parse_bhavcopy_nse(csv_text: str) -> list[dict]:
     silently skipped.
 
     Returned keys per row: symbol, open, high, low, close, volume, source,
-    licence_class.
+    licence_class, circuit_flag.
     """
     reader = csv.DictReader(io.StringIO(csv_text))
     rows: list[dict] = []
@@ -40,15 +51,19 @@ def parse_bhavcopy_nse(csv_text: str) -> list[dict]:
         if row.get("SERIES", "").strip() not in _VALID_SERIES:
             continue
         try:
+            h = float(row["HIGH"])
+            l = float(row["LOW"])
+            c = float(row["CLOSE"])
             rows.append({
                 "symbol": row["SYMBOL"].strip(),
                 "open": float(row["OPEN"]),
-                "high": float(row["HIGH"]),
-                "low": float(row["LOW"]),
-                "close": float(row["CLOSE"]),
+                "high": h,
+                "low": l,
+                "close": c,
                 "volume": int(float(row.get("TOTTRDQTY", "0") or "0")),
                 "source": "bhavcopy_nse",
                 "licence_class": "open",
+                "circuit_flag": _detect_circuit_flag(h, l, c),
             })
         except (ValueError, KeyError):
             continue

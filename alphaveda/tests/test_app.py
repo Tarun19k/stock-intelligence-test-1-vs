@@ -127,6 +127,32 @@ def test_no_staleness_warning_when_recent():
     assert warning is None
 
 
+# ── Imran SRA — ingest staleness banner wired to data_viewer ─────────────────
+
+def test_ingest_stale_banner_shown_when_missing():
+    """When no ingest_status rows exist, data_viewer returns the MISSING banner."""
+    from src.pages.data_viewer import get_staleness_banner
+    m = mock.MagicMock()
+    (m.table.return_value.select.return_value.eq.return_value
+     .order.return_value.limit.return_value.execute.return_value.data) = []
+    banner = get_staleness_banner(m)
+    assert banner is not None
+    assert len(banner) > 0
+
+
+def test_ingest_ok_banner_none_when_fresh():
+    """When last ingest was today, data_viewer returns None (no banner)."""
+    from src.pages.data_viewer import get_staleness_banner
+    from datetime import date
+    m = mock.MagicMock()
+    (m.table.return_value.select.return_value.eq.return_value
+     .order.return_value.limit.return_value.execute.return_value.data) = [
+        {"run_at": date.today().isoformat()}
+    ]
+    banner = get_staleness_banner(m)
+    assert banner is None
+
+
 def test_review_banner_on_path_page():
     """Path page shows weight review banner when PROPOSED weights exist."""
     from src.pages.path import get_weight_review_banner

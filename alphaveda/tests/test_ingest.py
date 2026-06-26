@@ -65,6 +65,24 @@ class TestParseBhavcopynse:
         rows = parse_bhavcopy_nse("SYMBOL,SERIES,OPEN,HIGH,LOW,CLOSE,LAST,PREVCLOSE,TOTTRDQTY,TOTTRDVAL,TIMESTAMP,TOTALTRADES,ISIN\n")
         assert rows == []
 
+    def test_circuit_flag_set_on_hlc_equal(self):
+        """Jhunjhunwala gate: proxy detects H==L==C (locked-price bar) as circuit."""
+        from src.ingest.bhavcopy import parse_bhavcopy_nse
+        circuit_csv = (
+            "SYMBOL,SERIES,OPEN,HIGH,LOW,CLOSE,LAST,PREVCLOSE,TOTTRDQTY,TOTTRDVAL,TIMESTAMP,TOTALTRADES,ISIN\n"
+            "CIRCUIT,EQ,1100.00,1100.00,1100.00,1100.00,1100.00,1000.00,500,550000,26-JUN-2026,10,INE001A01036\n"
+        )
+        rows = parse_bhavcopy_nse(circuit_csv)
+        assert len(rows) == 1
+        assert rows[0]["circuit_flag"] is True
+
+    def test_circuit_flag_false_on_normal_bar(self):
+        """Normal trading day (H≠L): circuit_flag must be False."""
+        from src.ingest.bhavcopy import parse_bhavcopy_nse
+        rows = parse_bhavcopy_nse(NSE_CSV_SAMPLE)
+        normal = next(r for r in rows if r["symbol"] == "RELIANCE")
+        assert normal["circuit_flag"] is False
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Ingest staleness flag (Imran SRA condition)
