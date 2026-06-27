@@ -1,13 +1,43 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-27 (UI-1 COMPLETE — Phase 7 planning mobilised, Rules B/C planned)
+**Session date:** 2026-06-27 (ALL 4 STREAMS COMPLETE — Rules B/C live, MVP spec done, Phase 7 DRAFT brief)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
-**Last commits:** f36e6c9 (UI-1 design system), f4116f2 (housekeeping checkpoint)
+**Last commits:** 76ade56 (Rules B/C), ac9775d (MVP spec), c1eacbe (Phase 7 brief), e0464aa (memory+graph)
 
 ---
 
-## DO NOT REDO — Session 2026-06-26
+## DO NOT REDO — Session 2026-06-27
+
+### Stream 0 — Housekeeping COMPLETE (Commit 93e3140)
+- SESSION_RESUME.md checkpoint (2026-06-27) 
+- Graph rebuild triggered (auto-hook)
+
+### Stream 2 — Global CLAUDE.md Rules B/C COMPLETE (Commit 76ade56)
+- Rule B: Seat registration requirement (INADMISSIBLE verdict for unbacked seats)
+- Rule C: Zero-assumption tolerance (dispatch prompts must reference SKILL.md)
+- Post-compaction anchor: `/chief-of-staff recover` → SESSION_RESUME.md before new work
+- 126 lines (under 130-line threshold); premortem logged: window-8671-2026-06-27
+
+### Stream 1 — AlphaVeda MVP Specification COMPLETE (Commit ac9775d)
+- `docs/MVP_SPEC.md` — 6 capabilities, 3 personas, UI-2 page briefs for all 4 pages
+- State map: cold-start/empty/staleness/suppression/circuit-locked
+- SEBI compliance summary (Varghese 7 checks all pass)
+- Definition of MVP complete (single blocker: G0 seed)
+
+### Stream 3 — Phase 7 Expert Planning Council COMPLETE (Commit c1eacbe)
+- `docs/plans/PHASE7_BRIEF.md` — 215 lines, DRAFT status
+- Architecture: Next.js on Vercel + FastAPI on Railway (hybrid)
+- 3-session sprint structure; top-5 risk register; token budgets
+- Council verdict: APPROVED WITH CONDITIONAL (SRA's FM-01/02/05 must be designed before Phase 7 build)
+- Gate: no Phase 7 action until Tarun says "PHASE7_BRIEF APPROVED"
+
+### Stream 4 — Memory + Graph Update COMPLETE (Commit e0464aa)
+- Updated `project_alphaveda_sprint.md` — Phases 1–6 + UI-1 done
+- Updated `project_alphaveda_governance_rules.md` — Rules B/C LIVE
+- New `project_phase7_planning.md` — Phase 7 architecture + effort
+- Updated MEMORY.md index — 3 entries
+- Graph update queued (auto-hook)
 
 ### UI-1 Design System COMPLETE (Commit f36e6c9)
 - `src/styles.py`: CSS tokens (--indigo/--gold/--emerald/--terra/--ivory), Google Fonts (Fraunces/DM Sans/DM Mono),
