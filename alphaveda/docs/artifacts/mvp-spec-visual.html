@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlphaVeda — MVP Specification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --indigo:  #4F46E5;
+    --indigo-light: #6366F1;
+    --indigo-dim:  rgba(79,70,229,0.15);
+    --gold:    #D4AF37;
+    --gold-dim: rgba(212,175,55,0.12);
+    --emerald: #10B981;
+    --emerald-dim: rgba(16,185,129,0.12);
+    --terra:   #C0503A;
+    --terra-dim: rgba(192,80,58,0.12);
+    --ivory:   #F5F0E8;
+    --ivory-dim: rgba(245,240,232,0.06);
+    --bg:      #080714;
+    --bg2:     #0D0B20;
+    --bg3:     #12102A;
+    --surface: #1A1735;
+    --surface2:#221F42;
+    --border:  rgba(255,255,255,0.07);
+    --border-accent: rgba(212,175,55,0.25);
+    --text-primary: #F5F0E8;
+    --text-muted: rgba(245,240,232,0.5);
+    --text-dim: rgba(245,240,232,0.3);
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-glow: 0 0 32px rgba(79,70,229,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .f-display { font-family: 'Fraunces', serif; font-style: italic; font-weight: 700; }
+  .f-heading { font-family: 'Fraunces', serif; font-weight: 700; }
+  .f-mono    { font-family: 'DM Mono', monospace; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0D0B20 0%, #1A1735 50%, #0D0B20 100%);
+    border-bottom: 1px solid var(--border-accent);
+    padding: 56px 40px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(79,70,229,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .hero-logo {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 20px rgba(79,70,229,0.4);
+    flex-shrink: 0;
+  }
+  .hero-title {
+    font-size: 40px;
+    color: var(--ivory);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .hero-title span { color: var(--gold); }
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-top: 8px;
+    max-width: 520px;
+  }
+  .hero-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  .hero-stat {
+    text-align: right;
+  }
+  .hero-stat-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--emerald);
+    line-height: 1;
+  }
+  .hero-stat-val.gold { color: var(--gold); }
+  .hero-stat-val.indigo { color: var(--indigo-light); }
+  .hero-stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--emerald-dim);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: var(--emerald);
+    font-weight: 500;
+    margin-top: 16px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); }
+
+  /* ── SECTION WRAPPER ── */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 40px 0;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--ivory);
+  }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── CAPABILITIES ── */
+  .cap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .cap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .cap-card:hover { border-color: rgba(79,70,229,0.35); }
+  .cap-card.blocked { border-color: rgba(212,175,55,0.2); }
+  .cap-card-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cap-status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .cap-status-dot.live { background: var(--emerald); box-shadow: 0 0 6px rgba(16,185,129,0.5); }
+  .cap-status-dot.blocked { background: var(--gold); box-shadow: 0 0 6px rgba(212,175,55,0.5); }
+  .cap-status-dot.always { background: var(--indigo-light); box-shadow: 0 0 6px rgba(99,102,241,0.5); }
+  .cap-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .cap-name {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--ivory);
+    margin-bottom: 6px;
+  }
+  .cap-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .cap-tag {
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .cap-tag.live { background: var(--emerald-dim); color: var(--emerald); }
+  .cap-tag.blocked { background: var(--gold-dim); color: var(--gold); }
+  .cap-tag.always { background: var(--indigo-dim); color: var(--indigo-light); }
+  .cap-tag.pre-sub { background: rgba(192,80,58,0.1); color: var(--terra); }
+
+  /* ── PERSONAS ── */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .persona-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .persona-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .persona-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .persona-tag.a { color: var(--indigo-light); }
+  .persona-tag.b { color: var(--gold); }
+  .persona-tag.c { color: var(--emerald); }
+  .persona-name {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--ivory);
+    margin-bottom: 4px;
+  }
+  .persona-profile {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .persona-body { padding: 16px 20px; }
+  .persona-pain {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .persona-journey {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .journey-step {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .journey-step.active {
+    background: var(--indigo-dim);
+    border-color: rgba(79,70,229,0.4);
+    color: var(--indigo-light);
+  }
+  .journey-arrow {
+    color: var(--text-dim);
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .persona-value {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--ivory);
+    border-left: 3px solid;
+    line-height: 1.5;
+  }
+  .persona-value.a { border-color: var(--indigo-light); }
+  .persona-value.b { border-color: var(--gold); }
+  .persona-value.c { border-color: var(--emerald); }
+
+  /* ── PAGE WIREFRAMES ── */
+  .pages-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .page-frame {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .page-chrome {
+    background: var(--surface);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chrome-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .chrome-dot:nth-child(1) { background: #FF5F57; }
+  .chrome-dot:nth-child(2) { background: #FFBD2E; }
+  .chrome-dot:nth-child(3) { background: #28C840; }
+  .chrome-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: 6px;
+  }
+  .page-content {
+    padding: 12px;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .page-h1 {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ivory);
+    margin-bottom: 4px;
+  }
+  /* Mock UI elements */
+  .mock-banner {
+    border-radius: 5px;
+    padding: 6px 8px;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .mock-banner.terra { background: rgba(192,80,58,0.15); border: 1px solid rgba(192,80,58,0.3); color: var(--terra); }
+  .mock-banner.gold { background: var(--gold-dim); border: 1px solid rgba(212,175,55,0.3); color: var(--gold); }
+  .mock-banner.info { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); color: var(--indigo-light); }
+  .mock-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+  }
+  .mock-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    flex: 1;
+  }
+  .mock-table-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+    padding: 4px 8px;
+  }
+  .mock-table-row.head { background: var(--bg3); }
+  .mock-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+  }
+  .mock-cell.head { color: var(--text-muted); font-weight: 500; }
+  .mock-cell.val { color: var(--ivory); }
+  .mock-cell.up { color: var(--emerald); }
+  .mock-cell.down { color: var(--terra); }
+  .mock-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    display: inline-block;
+    border: 1px solid;
+    color: var(--gold);
+    border-color: rgba(212,175,55,0.4);
+    background: var(--gold-dim);
+  }
+  /* Signal card mock */
+  .mock-signal-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    flex: 1;
+  }
+  .mock-instrument { font-size: 12px; color: var(--ivory); font-weight: 500; margin-bottom: 6px; }
+  .mock-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .mock-chip.bull { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: var(--emerald); }
+  .mock-chip.bear { background: rgba(192,80,58,0.15); border: 1px solid rgba(192,80,58,0.4); color: var(--terra); }
+  .conf-track {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    margin-bottom: 4px;
+    overflow: hidden;
+  }
+  .conf-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .conf-fill.emerald { background: linear-gradient(90deg, var(--emerald), rgba(16,185,129,0.5)); }
+  .conf-fill.terra { background: linear-gradient(90deg, var(--terra), rgba(192,80,58,0.5)); }
+  .conf-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-dim); }
+  .kelly-val {
+    margin-top: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  /* Path page mock */
+  .mock-direction {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-style: italic;
+    color: var(--emerald);
+    text-align: center;
+    padding: 12px 0 4px;
+  }
+  .exit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .exit-cell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 8px;
+    font-size: 9px;
+  }
+  .exit-cell-label { color: var(--text-dim); font-family: 'DM Mono', monospace; margin-bottom: 2px; }
+  .exit-cell-val { color: var(--ivory); font-family: 'DM Mono', monospace; font-size: 10px; }
+  .exit-cell-val.warn { color: var(--terra); }
+  /* Accuracy mock */
+  .acc-metric {
+    background: var(--gold-dim);
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .acc-metric-val { font-family: 'DM Mono', monospace; font-size: 18px; color: var(--gold); font-weight: 500; }
+  .acc-metric-lbl { font-size: 9px; color: var(--text-dim); margin-top: 2px; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; border-radius: 2px; background: var(--indigo-light); }
+
+  /* ── STATE MAP ── */
+  .state-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 900px) { .state-grid { grid-template-columns: repeat(2,1fr); } }
+  .state-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+  }
+  .state-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+  .state-name {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ivory);
+    margin-bottom: 4px;
+  }
+  .state-trigger { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+  .state-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid;
+  }
+  .state-pill.terra { color: var(--terra); border-color: rgba(192,80,58,0.3); background: var(--terra-dim); }
+  .state-pill.gold { color: var(--gold); border-color: rgba(212,175,55,0.3); background: var(--gold-dim); }
+  .state-pill.info { color: var(--indigo-light); border-color: rgba(99,102,241,0.3); background: var(--indigo-dim); }
+  .state-pill.ivory { color: var(--text-muted); border-color: rgba(245,240,232,0.12); background: var(--ivory-dim); }
+
+  /* ── COMPLIANCE PILLARS ── */
+  .compliance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .compliance-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .compliance-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .compliance-icon { font-size: 20px; }
+  .compliance-title { font-family: 'Fraunces', serif; font-size: 15px; font-style: italic; color: var(--ivory); }
+  .compliance-body { padding: 16px 20px; }
+  .check-list { list-style: none; }
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-mark { color: var(--emerald); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+  .gate-list { list-style: none; }
+  .gate-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .gate-item:last-child { border-bottom: none; }
+  .gate-name { color: var(--text-muted); }
+  .gate-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid;
+  }
+  .gate-status.live { color: var(--emerald); border-color: rgba(16,185,129,0.3); background: var(--emerald-dim); }
+  .gate-status.blocked { color: var(--gold); border-color: rgba(212,175,55,0.3); background: var(--gold-dim); }
+  .gate-status.always { color: var(--indigo-light); border-color: rgba(99,102,241,0.3); background: var(--indigo-dim); }
+
+  /* ── MVP GATE ── */
+  .gate-track {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+  }
+  .phases-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+    overflow-x: auto;
+  }
+  .phase-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .phase-circle {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    border: 2px solid;
+    position: relative;
+  }
+  .phase-circle.done {
+    background: var(--emerald-dim);
+    border-color: var(--emerald);
+    color: var(--emerald);
+  }
+  .phase-circle.done::after {
+    content: '✓';
+    font-size: 14px;
+  }
+  .phase-circle.blocked {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .phase-circle.planning {
+    background: var(--indigo-dim);
+    border-color: var(--indigo-light);
+    color: var(--indigo-light);
+  }
+  .phase-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    max-width: 60px;
+    line-height: 1.3;
+  }
+  .phase-connector {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    min-width: 20px;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .phase-connector.done { background: rgba(16,185,129,0.35); }
+  .phase-connector.blocked { background: rgba(212,175,55,0.25); }
+
+  .gate-status-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .gate-stat {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .gate-stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .gate-stat-num.green { color: var(--emerald); }
+  .gate-stat-num.gold { color: var(--gold); }
+  .gate-stat-num.red { color: var(--terra); }
+  .gate-stat-lbl { font-size: 11px; color: var(--text-dim); }
+
+  /* ── FEATURES TABLE ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .features-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .features-card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .features-card-header.yes { color: var(--emerald); }
+  .features-card-header.no { color: var(--text-muted); }
+  .feature-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .feature-row:last-child { border-bottom: none; }
+  .feature-row.yes { color: var(--text-primary); }
+  .feature-row.no { color: var(--text-muted); }
+  .feature-icon { flex-shrink: 0; width: 16px; text-align: center; font-size: 12px; }
+  .feature-reason { font-size: 10px; color: var(--text-dim); font-family: 'DM Mono', monospace; margin-left: auto; padding-left: 10px; white-space: nowrap; }
+
+  /* ── SEBI FOOTER MOCKUP ── */
+  .sebi-footer-preview {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0D0B20;
+    border-top: 1px solid rgba(212,175,55,0.25);
+    padding: 10px 24px;
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    z-index: 100;
+  }
+  .sebi-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 500;
+    flex-shrink: 0;
+    background: var(--gold-dim);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(212,175,55,0.3);
+  }
+  .sebi-text { flex: 1; line-height: 1.4; }
+  .sebi-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--indigo-light);
+    background: var(--indigo-dim);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(99,102,241,0.25);
+    flex-shrink: 0;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 40px 40px 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .divider-full { height: 1px; background: var(--border); margin: 40px 0 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<div class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-brand">
+        <div class="hero-logo">α</div>
+        <h1 class="f-display hero-title">Alpha<span>Veda</span></h1>
+      </div>
+      <p class="hero-sub">NSE/BSE signal research platform — EOD data · 7-council signal engine · Kelly position sizing · SEBI-compliant by design</p>
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Code-complete — Phases 1–6 + UI-1 signed off · Single blocker: G0 seed
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val">179</div>
+        <div class="hero-stat-label">Tests passing</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val gold">6</div>
+        <div class="hero-stat-label">Capabilities live</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val indigo">21</div>
+        <div class="hero-stat-label">Council seats</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CAPABILITIES ═══════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">Capabilities</h2>
+    <span class="section-label">C1 — C6</span>
+  </div>
+  <div class="cap-grid">
+    <div class="cap-card blocked">
+      <div class="cap-card-id">C1 — Market Data Ingest <span class="cap-status-dot blocked"></span></div>
+      <span class="cap-icon">📊</span>
+      <div class="cap-name">Market Data Ingest</div>
+      <div class="cap-desc">Daily EOD OHLCV from NSE/BSE Bhavcopy via GHA pipeline. Circuit-flag detection. Staleness tracking.</div>
+      <span class="cap-tag blocked">⚡ G0 — Awaiting live seed</span>
+    </div>
+    <div class="cap-card">
+      <div class="cap-card-id">C2 — Signal Engine <span class="cap-status-dot live"></span></div>
+      <span class="cap-icon">🎯</span>
+      <div class="cap-name">Signal Engine</div>
+      <div class="cap-desc">7-council pipeline: momentum · trend · fundamental · streak · calibration · arbitration → BULL/BEAR output with calibrated confidence.</div>
+      <span class="cap-tag live">✓ Phase 3 signed off</span>
+    </div>
+    <div class="cap-card">
+      <div class="cap-card-id">C3 — Kelly Sizing <span class="cap-status-dot live"></span></div>
+      <span class="cap-icon">⚖️</span>
+      <div class="cap-name">Kelly Position Sizing</div>
+      <div class="cap-desc">Downside-adjusted Kelly fraction → rupee position. E1–E4 exit rules. Portfolio-value-aware. Pre-commercial only.</div>
+      <span class="cap-tag live">✓ Phase 4 signed off</span>
+    </div>
+    <div class="cap-card">
+      <div class="cap-card-id">C4 — Accuracy Ledger <span class="cap-status-dot live"></span></div>
+      <span class="cap-icon">📋</span>
+      <div class="cap-name">Signal Accuracy Ledger</div>
+      <div class="cap-desc">Per-segment outcome tracking. Hit-rate vs 30-observation threshold. PROPOSED weight queue. 90-day review gate.</div>
+      <span class="cap-tag live">✓ Phase 3 signed off</span>
+    </div>
+    <div class="cap-card">
+      <div class="cap-card-id">C5 — SEBI Compliance <span class="cap-status-dot always"></span></div>
+      <span class="cap-icon">⚖️</span>
+      <div class="cap-name">SEBI Compliance Layer</div>
+      <div class="cap-desc">Fixed-bottom non-dismissable disclaimer on every page. No BUY/SELL language. No personalised advice. Varghese 7-check suite.</div>
+      <span class="cap-tag always">◉ Always on</span>
+    </div>
+    <div class="cap-card">
+      <div class="cap-card-id">C6 — Commercial Gate <span class="cap-status-dot always"></span></div>
+      <span class="cap-icon">🔐</span>
+      <div class="cap-name">Commercial State Gate</div>
+      <div class="cap-desc">Auto-detects first subscriber via waitlist.converted_at. Blocks yfinance. Suppresses rupee amounts. FMP required when commercial=True.</div>
+      <span class="cap-tag pre-sub">Pre-subscriber</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ PERSONAS ═══════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">User Personas</h2>
+    <span class="section-label">A · B · C</span>
+  </div>
+  <div class="persona-grid">
+    <!-- Persona A -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-tag a">PERSONA A</div>
+        <div class="persona-name">Retail Researcher</div>
+        <div class="persona-profile">Individual investor · 30–55 · NSE/BSE follower · No quant background</div>
+      </div>
+      <div class="persona-body">
+        <div class="persona-pain">Signal information is scattered across 5+ sources with no confidence weighting.</div>
+        <div class="persona-journey">
+          <span class="journey-step active">Data Viewer</span>
+          <span class="journey-arrow">→</span>
+          <span class="journey-step active">Signals</span>
+        </div>
+        <div class="persona-value a">Single-pane view — instrument data alongside BULL/BEAR signal with calibrated confidence bar. Not a tip. A starting point.</div>
+      </div>
+    </div>
+    <!-- Persona B -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-tag b">PERSONA B</div>
+        <div class="persona-name">HNI DIY Investor</div>
+        <div class="persona-profile">High-net-worth · self-managed · ₹50L–₹2Cr deployed · Understands risk/reward</div>
+      </div>
+      <div class="persona-body">
+        <div class="persona-pain">Position sizing requires Kelly formula inputs (p, b, downside) that are tedious to compute manually.</div>
+        <div class="persona-journey">
+          <span class="journey-step active">Signals</span>
+          <span class="journey-arrow">→</span>
+          <span class="journey-step active">Path</span>
+        </div>
+        <div class="persona-value b">Calibrated p + downside ATR → Kelly rupee amount, instantly. Pre-commercial only — rupee suppressed after first subscriber.</div>
+      </div>
+    </div>
+    <!-- Persona C -->
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-tag c">PERSONA C</div>
+        <div class="persona-name">Data-Curious Experimenter</div>
+        <div class="persona-profile">Developer or analyst · Evaluating AlphaVeda as a tool · Wants model transparency</div>
+      </div>
+      <div class="persona-body">
+        <div class="persona-pain">Black-box models provide no visibility into how often they're right.</div>
+        <div class="persona-journey">
+          <span class="journey-step active">Accuracy Ledger</span>
+        </div>
+        <div class="persona-value c">Per-segment hit-rate table, observation count vs threshold (30), PROPOSED weight queue. Full transparency — model surfaces its own uncertainty.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ PAGE WIREFRAMES ═══════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">UI-2 Page Designs</h2>
+    <span class="section-label">4 pages · design tokens wired to real data</span>
+  </div>
+  <div class="pages-grid">
+
+    <!-- Page 1: Data Viewer -->
+    <div class="page-frame">
+      <div class="page-chrome">
+        <span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span>
+        <span class="chrome-title">Data Viewer</span>
+      </div>
+      <div class="page-content">
+        <div class="page-h1">Market Data</div>
+        <div class="mock-banner terra">⚠ Data last updated 3 days ago · Staleness detected</div>
+        <div class="mock-select"><span>RELIANCE</span><span>▾</span></div>
+        <div class="mock-table">
+          <div class="mock-table-row head">
+            <span class="mock-cell head">Date</span>
+            <span class="mock-cell head">Close</span>
+            <span class="mock-cell head">Volume</span>
+            <span class="mock-cell head">Flag</span>
+          </div>
+          <div class="mock-table-row">
+            <span class="mock-cell val">2026-06-26</span>
+            <span class="mock-cell up">2,847</span>
+            <span class="mock-cell val">12.4M</span>
+            <span class="mock-cell val">—</span>
+          </div>
+          <div class="mock-table-row">
+            <span class="mock-cell val">2026-06-25</span>
+            <span class="mock-cell down">2,791</span>
+            <span class="mock-cell val">9.8M</span>
+            <span class="mock-cell val"><span class="mock-badge">⚡ LCS</span></span>
+          </div>
+          <div class="mock-table-row">
+            <span class="mock-cell val">2026-06-24</span>
+            <span class="mock-cell up">2,912</span>
+            <span class="mock-cell val">14.2M</span>
+            <span class="mock-cell val">—</span>
+          </div>
+          <div class="mock-table-row">
+            <span class="mock-cell val">2026-06-23</span>
+            <span class="mock-cell up">2,878</span>
+            <span class="mock-cell val">11.1M</span>
+            <span class="mock-cell val">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 2: Signals -->
+    <div class="page-frame">
+      <div class="page-chrome">
+        <span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span>
+        <span class="chrome-title">Signals</span>
+      </div>
+      <div class="page-content">
+        <div class="page-h1">Signals</div>
+        <div class="mock-banner gold">⚡ 3 weights pending review</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div class="mock-select"><span>RELIANCE</span><span>▾</span></div>
+          <div class="mock-select"><span>NEAR_TERM</span><span>▾</span></div>
+        </div>
+        <div class="mock-signal-card">
+          <div class="mock-instrument">RELIANCE · Near Term</div>
+          <div class="mock-chip bull">↑ BULL</div>
+          <div class="conf-track"><div class="conf-fill emerald" style="width:73%"></div></div>
+          <div class="conf-label">Confidence 73 / 100</div>
+          <div class="conf-label" style="color:var(--text-dim);font-size:8px;margin-top:2px;">NEAR_TERM · calibrated · 42 obs</div>
+          <div class="kelly-val">₹72,500</div>
+        </div>
+        <div style="font-size:9px;color:var(--text-dim);">Signal output is research-only. See SEBI disclaimer below.</div>
+      </div>
+    </div>
+
+    <!-- Page 3: Path -->
+    <div class="page-frame">
+      <div class="page-chrome">
+        <span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span>
+        <span class="chrome-title">Path</span>
+      </div>
+      <div class="page-content">
+        <div class="page-h1">Path</div>
+        <div class="mock-banner info">ℹ Position size is shown as direction + confidence only.</div>
+        <div class="mock-direction">BULL</div>
+        <div class="conf-track"><div class="conf-fill emerald" style="width:73%"></div></div>
+        <div class="conf-label" style="margin-bottom:8px;">73 / 100 · Quarter Kelly</div>
+        <div class="kelly-val" style="font-size:11px;color:var(--text-dim);">Rupee amount: —</div>
+        <div class="exit-grid">
+          <div class="exit-cell">
+            <div class="exit-cell-label">E1 Band drift</div>
+            <div class="exit-cell-val">±48% · OK</div>
+          </div>
+          <div class="exit-cell">
+            <div class="exit-cell-label">E2 Confidence</div>
+            <div class="exit-cell-val warn">48 / 50 ⚠</div>
+          </div>
+          <div class="exit-cell">
+            <div class="exit-cell-label">E3 Magnitude</div>
+            <div class="exit-cell-val">5.2% · OK</div>
+          </div>
+          <div class="exit-cell">
+            <div class="exit-cell-label">E4 Sector</div>
+            <div class="exit-cell-val">ENERGY · OK</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 4: Accuracy -->
+    <div class="page-frame">
+      <div class="page-chrome">
+        <span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span>
+        <span class="chrome-title">Accuracy Ledger</span>
+      </div>
+      <div class="page-content">
+        <div class="page-h1">Accuracy Ledger</div>
+        <div class="acc-metric">
+          <div class="acc-metric-val">3</div>
+          <div class="acc-metric-lbl">Weights pending review</div>
+        </div>
+        <div class="mock-table">
+          <div class="mock-table-row head">
+            <span class="mock-cell head">Segment</span>
+            <span class="mock-cell head">Obs</span>
+            <span class="mock-cell head">Hit%</span>
+            <span class="mock-cell head"></span>
+          </div>
+          <div class="mock-table-row">
+            <span class="mock-cell val">NEAR_TERM</span>
+            <span class="mock-cell up">42</span>
+            <span class="mock-cell up">71%</span>
+            <span class="mock-cell"><span class="cap-tag live" style="font-size:8px;padding:1px 5px;">LIVE</span></span>
+          </div>
+          <div class="mock-table-row">
+            <span class="mock-cell val">MEDIUM_TERM</span>
+            <span class="mock-cell up">31</span>
+            <span class="mock-cell up">65%</span>
+            <span class="mock-cell"><span class="cap-tag live" style="font-size:8px;padding:1px 5px;">LIVE</span></span>
+          </div>
+          <div class="mock-table-row">
+            <span class="mock-cell val">LONG_TERM</span>
+            <span class="mock-cell gold" style="color:var(--gold)">18</span>
+            <span class="mock-cell" style="color:var(--text-dim)">—</span>
+            <span class="mock-cell"><span class="cap-tag blocked" style="font-size:8px;padding:1px 5px;">COLD</span></span>
+          </div>
+        </div>
+        <div class="progress-row">
+          <span style="min-width:65px;">LONG_TERM</span>
+          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+          <span>18/30</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ STATE MAP ═══════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">UX State Map</h2>
+    <span class="section-label">7 states · every trigger covered</span>
+  </div>
+  <div class="state-grid">
+    <div class="state-card">
+      <span class="state-icon">○</span>
+      <div class="state-name">Empty</div>
+      <div class="state-trigger">G0 not seeded</div>
+      <span class="state-pill ivory">st.info() · ivory · all 4 pages</span>
+    </div>
+    <div class="state-card">
+      <span class="state-icon">⏱</span>
+      <div class="state-name">Stale Data</div>
+      <div class="state-trigger">ingest_status.last_run not today</div>
+      <span class="state-pill terra">st.warning() · terra · Data Viewer</span>
+    </div>
+    <div class="state-card">
+      <span class="state-icon">🌱</span>
+      <div class="state-name">Cold Start</div>
+      <div class="state-trigger">segment_obs &lt; 30</div>
+      <span class="state-pill info">st.info() · non-alarming · Signals</span>
+    </div>
+    <div class="state-card">
+      <span class="state-icon">📅</span>
+      <div class="state-name">Weight Overdue</div>
+      <div class="state-trigger">last_review_date &gt; 90 days</div>
+      <span class="state-pill terra">st.warning() · terra · Accuracy</span>
+    </div>
+    <div class="state-card">
+      <span class="state-icon">⚡</span>
+      <div class="state-name">Weight Pending</div>
+      <div class="state-trigger">PROPOSED count &gt; 0</div>
+      <span class="state-pill gold">st.warning() · gold · Signals · Path</span>
+    </div>
+    <div class="state-card">
+      <span class="state-icon">🔐</span>
+      <div class="state-name">Commercial</div>
+      <div class="state-trigger">is_commercial() = True</div>
+      <span class="state-pill info">st.info() · deliberate state · Path</span>
+    </div>
+    <div class="state-card">
+      <span class="state-icon">⚡</span>
+      <div class="state-name">Circuit Locked</div>
+      <div class="state-trigger">circuit_flag = True</div>
+      <span class="state-pill gold">gold badge · Data Viewer OHLCV table</span>
+    </div>
+    <!-- Spacer to fill the 4th column -->
+    <div class="state-card" style="background:transparent;border-color:transparent;">
+      <div style="padding:16px;text-align:center;">
+        <div style="font-family:'DM Mono',monospace;font-size:28px;color:var(--text-dim);line-height:1;">7</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:6px;">states mapped</div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">0 unhandled</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ COMPLIANCE PILLARS ═══════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">Compliance</h2>
+    <span class="section-label">SEBI · Commercial Gate</span>
+  </div>
+  <div class="compliance-grid">
+
+    <div class="compliance-card">
+      <div class="compliance-header">
+        <span class="compliance-icon">⚖️</span>
+        <span class="compliance-title">SEBI Compliance — Varghese 7 Checks</span>
+      </div>
+      <div class="compliance-body">
+        <ul class="check-list">
+          <li><span class="check-mark">✓</span> Disclaimer present on every page — PAGE_REQUIRES_DISCLAIMER = True</li>
+          <li><span class="check-mark">✓</span> No BUY/SELL/HOLD language — signal labels: BULL / BEAR only</li>
+          <li><span class="check-mark">✓</span> No personalised advice — "Signal output is research-only" caption on every page</li>
+          <li><span class="check-mark">✓</span> Past-performance disclaimer — accuracy page carries 90-day review gate framing</li>
+          <li><span class="check-mark">✓</span> RA boundary enforced — no recommendations framing; SEBI_DISCLAIMER text explicit</li>
+          <li><span class="check-mark">✓</span> Risk disclosure — disclaimer includes risk language in constants.py</li>
+          <li><span class="check-mark">✓</span> Non-dismissable — av-sebi-footer is position:fixed; no onclick/button/dismiss in HTML</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="compliance-card">
+      <div class="compliance-header">
+        <span class="compliance-icon">🔐</span>
+        <span class="compliance-title">Commercial Gate — State by State</span>
+      </div>
+      <div class="compliance-body">
+        <ul class="gate-list">
+          <li class="gate-item">
+            <span class="gate-name">SEBI disclaimer</span>
+            <span class="gate-status always">Always on</span>
+          </li>
+          <li class="gate-item">
+            <span class="gate-name">Signal direction + confidence</span>
+            <span class="gate-status always">Always shown</span>
+          </li>
+          <li class="gate-item">
+            <span class="gate-name">Data Viewer</span>
+            <span class="gate-status always">Always shown</span>
+          </li>
+          <li class="gate-item">
+            <span class="gate-name">Kelly rupee amount (Path)</span>
+            <span class="gate-status live">Pre-sub only</span>
+          </li>
+          <li class="gate-item">
+            <span class="gate-name">yfinance data source</span>
+            <span class="gate-status live">Pre-sub only</span>
+          </li>
+          <li class="gate-item">
+            <span class="gate-name">FMP data source</span>
+            <span class="gate-status blocked">Commercial trigger</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ FEATURES TABLE ═══════════════ -->
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title">MVP Scope</h2>
+    <span class="section-label">In · Out of scope</span>
+  </div>
+  <div class="features-grid">
+    <div class="features-card">
+      <div class="features-card-header yes">✓ &nbsp;MVP Does</div>
+      <div class="feature-row yes"><span class="feature-icon">🎯</span> Signal research with confidence scoring <span class="feature-reason">engine.py</span></div>
+      <div class="feature-row yes"><span class="feature-icon">📊</span> Staleness banner — data not refreshed <span class="feature-reason">get_staleness_banner()</span></div>
+      <div class="feature-row yes"><span class="feature-icon">🌱</span> Cold-start label — pre-threshold segment <span class="feature-reason">get_cold_start_label()</span></div>
+      <div class="feature-row yes"><span class="feature-icon">⚡</span> Weight review banner — PROPOSED queue <span class="feature-reason">get_weight_review_banner()</span></div>
+      <div class="feature-row yes"><span class="feature-icon">⚖️</span> Kelly rupee sizing (pre-commercial) <span class="feature-reason">kelly_position_size()</span></div>
+      <div class="feature-row yes"><span class="feature-icon">🔐</span> Rupee suppression label (commercial) <span class="feature-reason">get_suppression_label()</span></div>
+      <div class="feature-row yes"><span class="feature-icon">📋</span> SEBI disclaimer — every page, fixed-bottom <span class="feature-reason">av-sebi-footer</span></div>
+      <div class="feature-row yes"><span class="feature-icon">🔄</span> Commercial state auto-detection <span class="feature-reason">is_commercial()</span></div>
+      <div class="feature-row yes"><span class="feature-icon">⚡</span> Circuit-flag exclusion from accuracy <span class="feature-reason">resolve_outcomes.py</span></div>
+      <div class="feature-row yes"><span class="feature-icon">🎨</span> Design system — dark theme, branded <span class="feature-reason">src/styles.py</span></div>
+    </div>
+    <div class="features-card">
+      <div class="features-card-header no">○ &nbsp;Phase 7+ (Out of Scope Now)</div>
+      <div class="feature-row no"><span class="feature-icon">🔑</span> User accounts / authentication <span class="feature-reason">Phase 7 — Supabase Auth</span></div>
+      <div class="feature-row no"><span class="feature-icon">📱</span> Portfolio management / trade execution <span class="feature-reason">SEBI RA boundary</span></div>
+      <div class="feature-row no"><span class="feature-icon">⚡</span> Real-time price data <span class="feature-reason">EOD only · paid gate</span></div>
+      <div class="feature-row no"><span class="feature-icon">🔍</span> Multi-instrument comparison view <span class="feature-reason">Phase 7 UI scope</span></div>
+      <div class="feature-row no"><span class="feature-icon">🔔</span> Alerts / notifications <span class="feature-reason">Phase 7 — infrastructure</span></div>
+      <div class="feature-row no"><span class="feature-icon">📱</span> Mobile-optimised layout <span class="feature-reason">Phase 7 — responsive pass</span></div>
+      <div class="feature-row no"><span class="feature-icon">✅</span> Weight approval UI (interactive) <span class="feature-reason">Phase 7 — interactivity</span></div>
+      <div class="feature-row no"><span class="feature-icon">🗣</span> Accessible language pass <span class="feature-reason">Phase 7 UX polish</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ MVP GATE ═══════════════ -->
+<div class="section" style="padding-bottom:40px;">
+  <div class="section-header">
+    <h2 class="section-title">Build Progress</h2>
+    <span class="section-label">MVP gate · single blocker</span>
+  </div>
+  <div class="gate-track">
+    <!-- Phase flow -->
+    <div class="phases-flow">
+      <div class="phase-node">
+        <div class="phase-circle done"></div>
+        <div class="phase-label">Ph 1<br>Foundation</div>
+      </div>
+      <div class="phase-connector done"></div>
+      <div class="phase-node">
+        <div class="phase-circle done"></div>
+        <div class="phase-label">Ph 2<br>Data Layer</div>
+      </div>
+      <div class="phase-connector done"></div>
+      <div class="phase-node">
+        <div class="phase-circle done"></div>
+        <div class="phase-label">Ph 3<br>Signals</div>
+      </div>
+      <div class="phase-connector done"></div>
+      <div class="phase-node">
+        <div class="phase-circle done"></div>
+        <div class="phase-label">Ph 4<br>Portfolio</div>
+      </div>
+      <div class="phase-connector done"></div>
+      <div class="phase-node">
+        <div class="phase-circle done"></div>
+        <div class="phase-label">Ph 5<br>Presentation</div>
+      </div>
+      <div class="phase-connector done"></div>
+      <div class="phase-node">
+        <div class="phase-circle done"></div>
+        <div class="phase-label">Ph 6<br>GHA Ingest</div>
+      </div>
+      <div class="phase-connector done"></div>
+      <div class="phase-node">
+        <div class="phase-circle done"></div>
+        <div class="phase-label">UI-1<br>Design Sys</div>
+      </div>
+      <div class="phase-connector blocked"></div>
+      <div class="phase-node">
+        <div class="phase-circle blocked">G0</div>
+        <div class="phase-label" style="color:var(--gold);">Live DB<br>Seed</div>
+      </div>
+      <div class="phase-connector blocked"></div>
+      <div class="phase-node">
+        <div class="phase-circle planning">P7</div>
+        <div class="phase-label" style="color:var(--indigo-light);">Phase 7<br>Next.js</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="gate-status-row">
+      <div class="gate-stat">
+        <div class="gate-stat-num green">179</div>
+        <div class="gate-stat-lbl">Tests passing · 3 FAIL = intentional G0 gates</div>
+      </div>
+      <div class="gate-stat">
+        <div class="gate-stat-num gold">1</div>
+        <div class="gate-stat-lbl">Blocker remaining — G0 live seed (Tarun-owned)</div>
+      </div>
+      <div class="gate-stat">
+        <div class="gate-stat-num" style="color:var(--indigo-light);">8</div>
+        <div class="gate-stat-lbl">Phases complete · UI-1 + Ph 1–6 all signed off</div>
+      </div>
+    </div>
+
+    <!-- Single blocker callout -->
+    <div style="margin-top:20px;background:var(--gold-dim);border:1px solid rgba(212,175,55,0.25);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px;">
+      <span style="font-size:24px;flex-shrink:0;">⚡</span>
+      <div>
+        <div style="font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--gold);margin-bottom:4px;">G0 Gate — Single MVP Blocker</div>
+        <div style="font-size:12px;color:var(--text-muted);">Code-complete. Run <span class="f-mono" style="background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;color:var(--ivory);">python3 scripts/ingest.py</span> against live Supabase to seed instruments and resolve this gate. Unblocks everything downstream — all 4 pages, Phase 7 planning, first subscriber path.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEBI FOOTER (fixed) ═══════════════ -->
+<div class="sebi-footer-preview">
+  <span class="sebi-logo">SEBI</span>
+  <span class="sebi-text">AlphaVeda is a personal research tool. Signal outputs are for research purposes only and do not constitute investment advice. Past performance is not indicative of future results. AlphaVeda is not a SEBI-registered Research Analyst or Investment Adviser. All investments involve risk of loss.</span>
+  <span class="sebi-badge">Non-dismissable · av-sebi-footer</span>
+</div>
+
+</body>
+</html>
