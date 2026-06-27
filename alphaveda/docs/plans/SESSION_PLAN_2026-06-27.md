@@ -1,5 +1,5 @@
 # AlphaVeda — Session Plan 2026-06-27
-# Status: COUNCIL REVIEW IN PROGRESS
+# Status: COUNCIL APPROVED — REVISED SEQUENCE (2026-06-27)
 # Owner: Tarun Kochhar | CoS: Claude Sonnet 4.6
 # Recorded: 2026-06-27 | Session: window-8671-2026-06-27
 
@@ -136,8 +136,27 @@ Stream D (AlphaVeda): Blocked on G0 seed. Phase 7 in planning.
 
 ---
 
-## Council review status
+## Council review status — COMPLETE 2026-06-27
 
-**Required seats (Layer 1 gate):** Red-Team / Constraint Enforcer / Synthesis Chair
-**Trigger:** Plan spans 2+ domains, architectural write (CLAUDE.md), cross-seat sequential dependencies
-**Status:** CONVENING THIS SESSION
+**Seats:** Red-Team / Constraint Enforcer / Synthesis Chair
+**Verdict:** APPROVED WITH MANDATORY REVISIONS
+
+| Stream | Verdict | Mandatory change |
+|---|---|---|
+| Stream 0 | APPROVED | Done |
+| Stream 1 | APPROVED | Runs AFTER Stream 2 (not before) |
+| Stream 2 | APPROVED | Premortem verified; Rule B adds "INADMISSIBLE"; Rule C adds council_review.py callout; post-compaction anchor after Cross-Workspace Rules |
+| Stream 3 | APPROVED FOR BACKGROUND | PHASE7_BRIEF.md header = "DRAFT — no build without Tarun approval"; no architectural writes from agent |
+| Stream 4 | APPROVED | Runs after 2+3 complete |
+
+**Revised execution sequence:**
+```
+✓ Stream 0 — housekeeping         DONE (93e3140)
+→ Stream 2 — CLAUDE.md Rules B/C  NEXT
+→ Stream 1 — MVP spec             AFTER Stream 2
+→ Stream 3 — Phase 7 council      BACKGROUND (after Stream 2, DRAFT only)
+→ Stream 4 — memory + graph       AFTER 2+3 complete
+```
+
+**Stream 2 skill selection:** `doctrine-panel-constraint-enforcer` reviews and drafts; CoS executes write.
+**Stream 3 background constraints:** DRAFT status enforced; no architectural writes; Tarun reviews before any Phase 7 action.
