@@ -1,13 +1,29 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-26 (Phase 6 SIGNED OFF — council infrastructure + UI-1 next)
+**Session date:** 2026-06-27 (UI-1 COMPLETE — Phase 7 planning mobilised, Rules B/C planned)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
-**Last commits:** 0282c4c (governance), f978fc5 (phase 6 fixes)
+**Last commits:** f36e6c9 (UI-1 design system), f4116f2 (housekeeping checkpoint)
 
 ---
 
 ## DO NOT REDO — Session 2026-06-26
+
+### UI-1 Design System COMPLETE (Commit f36e6c9)
+- `src/styles.py`: CSS tokens (--indigo/--gold/--emerald/--terra/--ivory), Google Fonts (Fraunces/DM Sans/DM Mono),
+  sidebar brand mark, signal card component HTML, SEBI footer bar (.av-sebi-footer), metric/button/input overrides
+- `src/app.py`: CSS injected before content via get_css(); SEBI footer migrated from inline yellow → design system class
+- `tests/test_app.py`: disclaimer test tightened (Varghese Check 7 — asserts absence of onclick/button/dismiss)
+- `COUNCIL_RULES.md`: all 3 missing seats now skill-backed — circuit-microstructure-reviewer / data-licence-compliance-reviewer / sebi-compliance-reviewer
+
+### Skills created (global ~/.claude/skills/)
+- `circuit-microstructure-reviewer` — Jhunjhunwala seat (7 microstructure checks)
+- `data-licence-compliance-reviewer` — Bhattacharya seat (7 licensing checks)
+- `sebi-compliance-reviewer` — Varghese seat (7 SEBI compliance checks)
+- All 3 pass `check-seat-skill.sh` dispatch gate
+
+### skills-index.md updated
+- Added calibration-integrity, ui-ux-pro-max, 3 new council skills — all registered
 
 ### Phase 6 (GHA Ingest Pipeline) COMPLETE — 179 PASS / 1 SKIP / 3 FAIL (Commit f978fc5)
 - All 4 council REVISE fixes implemented: Tanvi/Imran/Rashida/Reddy
@@ -64,48 +80,36 @@
 
 ## EXACT RESUME POINT
 
-**Current:** Phase 6 ingest pipeline SIGNED OFF (179 PASS). Infrastructure (skills + rules) written. Ready for **UI-1** or **global rule writes**.
+**Current:** UI-1 COMPLETE (f36e6c9). Phase 7 planning APPROVED by Tarun. Rules B/C APPROVED by Tarun.
+**Next session flow (in order):**
+1. Present full plan (this file) → Tarun approves streams
+2. Housekeeping checkpoint (now — in progress)
+3. Stream C: AlphaVeda MVP spec (capabilities, personas, UI-2 plan) — Sonnet + ui-ux-pro-max
+4. Stream D: Rules B/C write to CLAUDE.md — needs premortem log + write (Sonnet)
+5. Stream E: Phase 7 expert council planning — Opus (synthesis-chair)
+6. Graph update — graphify --update after E completes
 
-**Two paths forward:**
-
-### Option A (RECOMMENDED): Start UI-1 — AlphaVeda UI design
-- Load `ui-ux-pro-max` skill (UX/Accessibility)
-- Design CSS system (colour palette: indigo/gold/emerald/terra/ivory)
-- Typography stack: Fraunces/DM Sans/DM Mono (Google Fonts)
-- Navigation structure + Streamlit st.navigation()
-- SEBI footer bar (fixed bottom, always visible)
-- Signal card component (direction chip, confidence bar, Kelly rupee, lynch class)
-- G0 gate remains blocked until live DB seed
-
-**Why Option A:** G0 is unblockable in this session (needs external DB seed). UI-1 is independent, high-value, unblocked. Infrastructure can follow.
-
-### Option B: Global governance rules — Rules B and C to CLAUDE.md
-- Requires Tarun explicit approval (cross-workspace impact: agentic-operations + crochet-counter)
-- Rule B: Seat registration requirement (global skills-index.md)
-- Rule C: Zero-assumption tolerance (global CLAUDE.md)
-- Estimated 30min once approved
-- Unblocks council dispatch gate enforcement for all workspaces
-- Refactoring needed: `alphaveda/scripts/council_review.py` has inline seat logic (Rule C violation)
+**Rules B/C status:** APPROVED by Tarun 2026-06-27. Premortem must be logged before write.
+**Railway config:** 30 min task — approved per council recommendation.
 
 ---
 
 ## OPEN DECISIONS (Tarun-owned)
 
-| Decision | Impact | Needed by |
-|---|---|---|
-| Start UI-1 (AlphaVeda design) now or defer? | Determines visible progress this week | This session |
-| Approve global CLAUDE.md Rules B/C (seat registry + zero-assumption)? | Cross-workspace governance; blocks council dispatch gate | Next session (background approval) |
-| Prioritize 3 missing skills? (Jhunjhunwala/Bhattacharya/Varghese) | Blocks council dispatch Phase 7+; governance debt | Next Phase dispatch |
-| Stream A (Gumroad Governance Pack): Tarun publish | All 6 PRG gates PASS; REVENUE BLOCKER | OVERDUE |
-| Stream C: 3 consulting targets | Revenue clock | OVERDUE |
+| Decision | Status | Impact | Needed by |
+|---|---|---|---|
+| Stream A (Gumroad Governance Pack): publish | OVERDUE | $0 → first revenue | NOW |
+| Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
+| G0 seed: run ingest.py against live Supabase | BLOCKED | Unblocks Phase 7 subscriber readiness | Next available |
+| Phase 7 scope confirmation after council verdict | PENDING | Architecture direction | Next session |
 
 ---
 
-## COMMERCIAL STATE — Updated 2026-06-26
+## COMMERCIAL STATE — Updated 2026-06-27
 
-- **Stream A:** READY_TO_LIST. All gates pass. Tarun to publish. REVENUE BLOCKER.
-- **Stream C:** OVERDUE. 3 targets needed.
-- **Stream D (AlphaVeda):** Phases 1-6 signed off. UI-1 (design) is next. G0 blocked on live DB seed. Infrastructure-heavy; no revenue until UI layers + seed.
+- **Stream A:** READY_TO_LIST. All 6 PRG gates PASS. Tarun to publish. REVENUE BLOCKER.
+- **Stream C:** OVERDUE. 3 consulting targets needed. No code required.
+- **Stream D (AlphaVeda):** Phases 1–6 + UI-1 done. G0 blocked. Phase 7 (Vercel hybrid) being scoped.
 - **Stream B:** Deferred — out of 21-day scope.
 
 ---
@@ -119,9 +123,13 @@
 | Phase 3 (Signal layer) | ✓ SIGNED OFF 2026-06-25 | f444ec1 | |
 | Phase 4 (Portfolio layer) | ✓ SIGNED OFF 2026-06-25 | 9537131 | |
 | Phase 5 (Presentation) | ✓ SIGNED OFF 2026-06-25 | 0892867 | |
-| Phase 6 (GHA ingest) | ✓ SIGNED OFF 2026-06-26 | f978fc5 | 179 PASS; all 21 council seats resolved |
+| Phase 6 (GHA ingest) | ✓ SIGNED OFF 2026-06-26 | f978fc5 | 179 PASS; all 21 seats resolved |
 | G0 Gate | BLOCKED | — | Live DB seed required (manual) |
-| UI-1 (CSS + nav) | NEXT | — | Load `ui-ux-pro-max` skill |
+| UI-1 (CSS + nav) | ✓ COMPLETE | f36e6c9 | Design system; signal card; SEBI footer |
+| Railway deployment config | NOT STARTED | — | 30 min; approved per council |
+| Rules B/C → CLAUDE.md | APPROVED | — | Premortem + write (next stream) |
+| UI-2 (page content) | QUEUED | — | Apply tokens to 4 page modules |
+| Phase 7 (Next.js/Vercel hybrid) | PLANNING | — | Council convening this session |
 
 ---
 
@@ -133,13 +141,22 @@
 | After Phase 4 sign-off | 132 | 12 | 3 | Jhunjhunwala REVISE resolved |
 | After Phase 5 sign-off | 144 | 12 | 3 | Munger REVISE resolved |
 | After Phase 6 sign-off | 179 | 1 | 3 | All 4 REVISE seats resolved; 3 FAIL = intentional G0 seed gates |
+| After UI-1 (design system) | 179 | 1 | 3 | No change — CSS/styles.py adds no new tests |
 
 ---
 
-## GOVERNANCE BACKLOG (Global Rules B/C)
+## GOVERNANCE BACKLOG
 
-- Rules B+C to global CLAUDE.md (seat registry, zero-assumption tolerance) — needs Tarun approval
-- Refactor `alphaveda/scripts/council_review.py` — move inline seat logic to SKILL.md references
+- Rules B+C to global CLAUDE.md — **APPROVED 2026-06-27** (Tarun). Premortem + write next.
+- Refactor `alphaveda/scripts/council_review.py` — inline seat logic → SKILL.md references (Phase 7 scope)
+- `test_disclaimer_non_dismissable`: now checks for absence of onclick/button/dismiss (Varghese Check 7 tightened)
+
+## PHASE 7 PLANNING — MOBILISED 2026-06-27
+
+**Council recommendation (session 2026-06-27):** Hybrid architecture — Next.js on Vercel + FastAPI on Railway.
+**Effort estimate:** 8–12 hours, 2–3 sessions, ~55,000 Sonnet tokens.
+**Prerequisite:** G0 seed must pass before Phase 7 build begins.
+**Expert council convening this session (background):** SRA + Constraint Enforcer + Revenue + Synthesis Chair.
 - Create 3 missing skills: Jhunjhunwala (circuit microstructure), Bhattacharya (data licence), Varghese (SEBI compliance)
 
 ---
