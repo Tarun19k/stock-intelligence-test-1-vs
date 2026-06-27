@@ -208,4 +208,14 @@
 
 ---
 
-*Updated: 2026-06-26 — Phase 6 signed off. UI-1 design next (or global rule writes). G0 blocked on live seed.*
+*Updated: 2026-06-27 — Council review complete. 3 RED fixes queued for Session A. G0 blocked on Tarun seed run.*
+
+---
+
+## ARTIFACTS
+
+| Type | Path | Generated | Commit |
+|---|---|---|---|
+| sprint-status | alphaveda/docs/artifacts/2026-06-27/sprint-status.html | 2026-06-27 | 4ec7392 |
+| session-checkpoint | alphaveda/docs/artifacts/2026-06-27/session-checkpoint.html | 2026-06-27 | 4ec7392 |
+| mvp-spec-visual | alphaveda/docs/artifacts/2026-06-27/mvp-spec-visual.html | 2026-06-27 | be40071 |
