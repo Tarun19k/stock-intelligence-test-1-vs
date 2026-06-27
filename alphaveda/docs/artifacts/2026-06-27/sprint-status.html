@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+  <title>AlphaVeda — Sprint Status — 2026-06-27</title>
+  <style>
+    :root {
+      --indigo: #1A1F3C;
+      --indigo-light: #242A50;
+      --ivory: #F5F3EC;
+      --ivory-dim: #C8C4BB;
+      --gold: #E8A020;
+      --teal: #2D7A72;
+      --green: #4A8C5C;
+      --terra: #C0503A;
+      --red: #D94040;
+      --amber: #D4860A;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--indigo);
+      color: var(--ivory);
+      padding: 24px;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(232,160,32,0.3);
+    }
+    .brand {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    h1 { font-size: 20px; font-weight: 600; color: var(--ivory); }
+    .generated { font-size: 11px; color: var(--ivory-dim); margin-top: 4px; }
+
+    /* Revenue clock */
+    .clock-panel {
+      background: var(--indigo-light);
+      border: 1px solid var(--red);
+      border-radius: 8px;
+      padding: 16px 24px;
+      text-align: right;
+      min-width: 180px;
+    }
+    .clock-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ivory-dim); margin-bottom: 4px; }
+    .clock-days { font-size: 48px; font-weight: 700; line-height: 1; color: var(--red); font-family: 'Courier New', monospace; }
+    .clock-sublabel { font-size: 11px; color: var(--ivory-dim); margin-top: 4px; }
+    .clock-target { font-size: 11px; color: var(--red); font-weight: 600; }
+
+    /* Grid layout */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+    /* Cards */
+    .card {
+      background: var(--indigo-light);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .card-title {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    /* Stream strip */
+    .stream-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .stream-row:last-child { border-bottom: none; }
+    .stream-name { flex: 1; font-size: 13px; color: var(--ivory); }
+    .stream-detail { font-size: 11px; color: var(--ivory-dim); }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .badge-green { background: rgba(74,140,92,0.25); color: #6FBF83; border: 1px solid rgba(74,140,92,0.5); }
+    .badge-gold { background: rgba(232,160,32,0.2); color: var(--gold); border: 1px solid rgba(232,160,32,0.4); }
+    .badge-red { background: rgba(217,64,64,0.2); color: #E87070; border: 1px solid rgba(217,64,64,0.4); }
+    .badge-amber { background: rgba(212,134,10,0.2); color: #E8A040; border: 1px solid rgba(212,134,10,0.4); }
+    .badge-teal { background: rgba(45,122,114,0.25); color: #5BBFB5; border: 1px solid rgba(45,122,114,0.5); }
+
+    /* Progress table */
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ivory-dim);
+      font-weight: 600;
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    td {
+      font-size: 12px;
+      padding: 8px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    .phase-name { font-weight: 600; }
+    .pct { font-family: 'Courier New', monospace; font-size: 11px; }
+
+    /* Progress bar */
+    .bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 3px; }
+    .bar-complete { background: var(--green); }
+    .bar-blocked { background: rgba(217,64,64,0.5); }
+    .bar-draft { background: rgba(212,134,10,0.5); }
+
+    /* Council RAG summary */
+    .rag-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+    .rag-row:last-child { border-bottom: none; }
+    .rag-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .rag-red { background: var(--red); }
+    .rag-amber { background: var(--amber); }
+    .rag-green { background: var(--green); }
+    .rag-count { font-family: 'Courier New', monospace; font-weight: 700; width: 22px; flex-shrink: 0; }
+    .rag-label { color: var(--ivory-dim); }
+
+    /* P0 blockers */
+    .blocker {
+      display: flex;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(217,64,64,0.1);
+      border: 1px solid rgba(217,64,64,0.3);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .blocker:last-child { margin-bottom: 0; }
+    .blocker-num { color: var(--red); font-weight: 700; font-family: 'Courier New', monospace; flex-shrink: 0; }
+    .blocker-text { color: var(--ivory); }
+    .blocker-owner { color: var(--ivory-dim); font-size: 11px; margin-top: 2px; }
+
+    /* Next action */
+    .next-action {
+      background: rgba(45,122,114,0.15);
+      border: 1px solid rgba(45,122,114,0.4);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-top: 16px;
+    }
+    .next-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); font-weight: 600; margin-bottom: 6px; }
+    .next-text { font-size: 13px; color: var(--ivory); }
+    .next-owner { font-size: 11px; color: var(--ivory-dim); margin-top: 4px; }
+
+    /* Test suite pill */
+    .test-suite {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .test-pill {
+      font-size: 11px;
+      font-family: 'Courier New', monospace;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .tp-pass { background: rgba(74,140,92,0.2); color: #6FBF83; }
+    .tp-skip { background: rgba(255,255,255,0.08); color: var(--ivory-dim); }
+    .tp-fail { background: rgba(232,160,32,0.2); color: var(--gold); }
+    .tp-note { font-size: 10px; color: var(--ivory-dim); margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="brand">AlphaVeda — Sprint Dashboard</div>
+      <h1>Build Status — Phases 1–6 + UI-1 Complete</h1>
+      <div class="generated">Generated 2026-06-27 &nbsp;·&nbsp; Post-council review &nbsp;·&nbsp; Session: window-8671-2026-06-27</div>
+    </div>
+    <div class="clock-panel">
+      <div class="clock-label">Revenue deadline</div>
+      <div class="clock-days" id="clock-days">3</div>
+      <div class="clock-sublabel">days remaining</div>
+      <div class="clock-target">Target: 2026-06-30</div>
+    </div>
+  </header>
+
+  <!-- Stream status strip -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">Stream Status</div>
+    <div class="stream-row">
+      <div class="stream-name">Stream A — Gumroad Governance Pack</div>
+      <div class="stream-detail">All 6 PRG gates PASS</div>
+      <span class="badge badge-red">OVERDUE — PUBLISH NOW</span>
+    </div>
+    <div class="stream-row">
+      <div class="stream-name">Stream B — Slack Agents</div>
+      <div class="stream-detail">Out of 21-day scope</div>
+      <span class="badge badge-amber">DEFERRED</span>
+    </div>
+    <div class="stream-row">
+      <div class="stream-name">Stream C — Consulting</div>
+      <div class="stream-detail">3 targets needed</div>
+      <span class="badge badge-red">OVERDUE</span>
+    </div>
+    <div class="stream-row">
+      <div class="stream-name">Stream D — AlphaVeda</div>
+      <div class="stream-detail">Phases 1–6 + UI-1 done &nbsp;·&nbsp; G0 blocked on live seed</div>
+      <span class="badge badge-amber">G0 BLOCKED</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <!-- Sprint progress -->
+    <div class="card">
+      <div class="card-title">Sprint Progress — AlphaVeda</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Gate</th>
+            <th>Status</th>
+            <th style="text-align:right;">%</th>
+            <th style="width:100px;">Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="phase-name">Phase 1 — Foundation</td>
+            <td><span class="badge badge-green">SIGNED OFF</span></td>
+            <td class="pct" style="text-align:right;">100%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-complete" style="width:100%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">Phase 2 — Data Layer</td>
+            <td><span class="badge badge-green">SIGNED OFF</span></td>
+            <td class="pct" style="text-align:right;">100%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-complete" style="width:100%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">Phase 3 — Signal Layer</td>
+            <td><span class="badge badge-green">SIGNED OFF</span></td>
+            <td class="pct" style="text-align:right;">100%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-complete" style="width:100%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">Phase 4 — Portfolio</td>
+            <td><span class="badge badge-green">SIGNED OFF</span></td>
+            <td class="pct" style="text-align:right;">100%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-complete" style="width:100%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">Phase 5 — Presentation</td>
+            <td><span class="badge badge-green">SIGNED OFF</span></td>
+            <td class="pct" style="text-align:right;">100%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-complete" style="width:100%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">Phase 6 — GHA Ingest</td>
+            <td><span class="badge badge-green">SIGNED OFF</span></td>
+            <td class="pct" style="text-align:right;">100%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-complete" style="width:100%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">UI-1 — Design System</td>
+            <td><span class="badge badge-green">COMPLETE</span></td>
+            <td class="pct" style="text-align:right;">100%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-complete" style="width:100%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">G0 — Live DB Seed</td>
+            <td><span class="badge badge-red">BLOCKED</span></td>
+            <td class="pct" style="text-align:right;">0%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-blocked" style="width:5%;"></div></div></td>
+          </tr>
+          <tr>
+            <td class="phase-name">Phase 7 — Next.js/Railway</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td class="pct" style="text-align:right;">0%</td>
+            <td><div class="bar-bg"><div class="bar-fill bar-draft" style="width:5%;"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:14px;">
+        <div class="card-title" style="margin-bottom:8px;">Test Suite State</div>
+        <div class="test-suite">
+          <span class="test-pill tp-pass">179 PASS</span>
+          <span class="test-pill tp-skip">1 SKIP</span>
+          <span class="test-pill tp-fail">3 FAIL</span>
+        </div>
+        <div class="tp-note">3 FAIL = intentional G0 seed gates &nbsp;·&nbsp; 1 SKIP = Imran stale test (condition-gated)</div>
+      </div>
+    </div>
+
+    <!-- Council RAG + blockers -->
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">Council Review — RAG Summary (2026-06-27)</div>
+        <div class="rag-row">
+          <div class="rag-dot rag-red"></div>
+          <div class="rag-count" style="color:var(--red);">3</div>
+          <div class="rag-label">RED — critical findings requiring fixes before G0</div>
+        </div>
+        <div class="rag-row">
+          <div class="rag-dot rag-amber"></div>
+          <div class="rag-count" style="color:var(--amber);">8</div>
+          <div class="rag-label">AMBER — risk items for Session A / Phase 7</div>
+        </div>
+        <div class="rag-row">
+          <div class="rag-dot rag-green"></div>
+          <div class="rag-count" style="color:var(--green);">9</div>
+          <div class="rag-label">GREEN — confirmed solid: SEBI, Kelly, weights, pipeline</div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.07);">
+          <div style="font-size:11px;color:var(--ivory-dim);">Seats: Shakuni / Red Team &nbsp;·&nbsp; Constraint Enforcer &nbsp;·&nbsp; SRA / Reliability Architect &nbsp;·&nbsp; Synthesis Chair</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">P0 Blockers</div>
+        <div class="blocker">
+          <div class="blocker-num">P0-1</div>
+          <div>
+            <div class="blocker-text">accuracy_outcomes uses insert() with no idempotency guard — silent double-write on same-day duplicate ingest runs</div>
+            <div class="blocker-owner">Owner: CoS &nbsp;·&nbsp; Fix: upsert on (prediction_id, resolved_at) &nbsp;·&nbsp; Must fix BEFORE G0 seed runs</div>
+          </div>
+        </div>
+        <div class="blocker">
+          <div class="blocker-num">P0-2</div>
+          <div>
+            <div class="blocker-text">GOVERNANCE_STRICT effectively False — module-level flag read before conftest fixture sets it</div>
+            <div class="blocker-owner">Owner: CoS &nbsp;·&nbsp; Fix: move env set to conftest module-level, not fixture &nbsp;·&nbsp; All governance violations are warnings, not failures</div>
+          </div>
+        </div>
+        <div class="blocker">
+          <div class="blocker-num">P0-3</div>
+          <div>
+            <div class="blocker-text">DATA_SOURCES.md says circuit_flag exclusion NOT implemented — code has it. Phase 7 Session A will read wrong governance doc</div>
+            <div class="blocker-owner">Owner: CoS &nbsp;·&nbsp; Fix: update DATA_SOURCES.md + PHASE7_BRIEF.md Section 6 before Phase 7 build</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;padding:10px;background:rgba(232,160,32,0.08);border-radius:6px;">
+          <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:4px;">Tarun-owned blockers</div>
+          <div style="font-size:12px;color:var(--ivory-dim);">G0 seed → run <code style="background:rgba(255,255,255,0.08);padding:1px 4px;border-radius:3px;font-family:'Courier New',monospace;">python3 scripts/ingest.py</code> against live Supabase</div>
+          <div style="font-size:12px;color:var(--ivory-dim);margin-top:4px;">Stream A → Publish Gumroad Governance Pack (all 6 gates PASS — OVERDUE)</div>
+          <div style="font-size:12px;color:var(--ivory-dim);margin-top:4px;">Phase 7 → state "PHASE7_BRIEF APPROVED" when ready</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Next action -->
+  <div class="next-action">
+    <div class="next-label">Next Action — Session A (Pre-Phase 7 Hardening)</div>
+    <div class="next-text">Fix 3 RED flags (accuracy_outcomes upsert + GOVERNANCE_STRICT timing + DATA_SOURCES.md) before G0 seed runs to prevent corrupt accuracy baseline. Tarun: run G0 seed + publish Gumroad Pack independently.</div>
+    <div class="next-owner">CoS executes Session A hardening &nbsp;·&nbsp; Tarun owns G0 seed, Gumroad publish, Phase 7 approval</div>
+  </div>
+
+  <script>
+    // Update revenue clock dynamically
+    (function() {
+      var deadline = new Date('2026-06-30T00:00:00+05:30');
+      var now = new Date();
+      var diff = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+      var el = document.getElementById('clock-days');
+      if (el) {
+        el.textContent = Math.max(0, diff);
+        if (diff <= 3) {
+          el.style.color = 'var(--red)';
+        } else if (diff <= 7) {
+          el.style.color = 'var(--amber)';
+        }
+      }
+    })();
+  </script>
+
+</body>
+</html>
