@@ -1,13 +1,31 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-27 (ALL 4 STREAMS COMPLETE — Rules B/C live, MVP spec done, Phase 7 DRAFT brief)
+**Session date:** 2026-06-27 (Council review + Pre-G0 hardening complete · Test suite 182 PASS / 2 SKIP / 4 FAIL)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
-**Last commits:** 76ade56 (Rules B/C), ac9775d (MVP spec), c1eacbe (Phase 7 brief), e0464aa (memory+graph)
+**Last commits:** 341bb74 (SESSION_RESUME artifacts section), 4ec7392 (sprint-status + checkpoint artifacts), e35fd0e (pre-G0 hardening — all 3 RED council items resolved)
 
 ---
 
 ## DO NOT REDO — Session 2026-06-27
+
+### Council Review — 4-Seat Audit of Phases 1–6 (This conversation)
+- Shakuni/Red Team, Constraint Enforcer, SRA/Reliability Architect, Synthesis Chair
+- 8 specific findings from direct code inspection; RAG: 3 RED / 8 AMBER / 9 GREEN
+- All 3 RED items already resolved in commit e35fd0e BEFORE this conversation's review output
+- Artifacts committed: sprint-status.html + session-checkpoint.html (4ec7392)
+- NOTE: artifacts reflect pre-fix state — test suite was 179/1/3 at time of generation; actual current state is 182/2/4
+
+### Pre-G0 Hardening — All 3 RED Council Items Fixed (Commit e35fd0e)
+- ingest.py step 5: N+1 ohlcv queries → single batch query (SRA R-02)
+- ingest.py step 6: per-row insert() → batch upsert() on conflict (prediction_id, resolved_at) (S-01/R-03)
+- migration 0014: unique constraint on accuracy_outcomes(prediction_id, resolved_at)
+- conftest.py: GOVERNANCE_STRICT=1 set at module level, not in fixture (S-03)
+- DATA_SOURCES.md: circuit_flag exclusion documented as IMPLEMENTED (C-01)
+- test_g0_gate.py: test_c10_ohlcv_has_rows added — closes fake-OK-row loophole (S-02)
+- Additional: review banner tightened (C-04), dead ALPHAVEDA_COMMERCIAL_ENV_KEY removed (C-02)
+- Additional: test_floor_enforced_at_emit GREEN, test_regime_cached GREEN, test_stale_regime_fails_visibly GREEN
+- Suite state after: 182 PASS / 2 SKIP / 4 FAIL (4 FAILs = intentional G0 seed gates)
 
 ### Stream 0 — Housekeeping COMPLETE (Commit 93e3140)
 - SESSION_RESUME.md checkpoint (2026-06-27) 
@@ -110,25 +128,36 @@
 
 ## EXACT RESUME POINT
 
-**All 4 streams COMPLETE as of 2026-06-27.**
+**Pre-G0 hardening complete. All 3 RED council items resolved. Test suite: 182 PASS / 2 SKIP / 4 FAIL.**
 
-| Stream | Status | Commit |
+| Item | Status | Commit |
 |---|---|---|
-| Stream 0 — housekeeping | ✓ DONE | 93e3140 |
-| Stream 2 — CLAUDE.md Rules B/C | ✓ DONE | 76ade56 (plan); file written directly to ~/.claude/CLAUDE.md |
-| Stream 1 — MVP spec | ✓ DONE | ac9775d |
-| Stream 3 — Phase 7 council | ✓ DONE | c1eacbe |
-| Stream 4 — memory + graph | ✓ DONE | this commit |
+| Phases 1–6 + UI-1 | ✓ SIGNED OFF | f978fc5 / f36e6c9 |
+| Rules B/C → CLAUDE.md | ✓ DONE | 76ade56 |
+| MVP Spec | ✓ DONE | ac9775d |
+| Phase 7 Brief (DRAFT) | ✓ DONE | c1eacbe |
+| Council review (4-seat) | ✓ DONE | this session (artifacts: 4ec7392) |
+| Pre-G0 hardening (3 RED + extras) | ✓ DONE | e35fd0e |
+| G0 — Live DB Seed | BLOCKED | Tarun: run `python3 scripts/ingest.py` |
+| Phase 7 Session A (FastAPI/Railway) | BLOCKED | G0 seed + "PHASE7_BRIEF APPROVED" from Tarun |
+
+**Remaining AMBER items for Phase 7 (NOT blocking G0):**
+- Outcome scoring horizon wrong — all predictions scored on day 1 (R-01, G1 scope)
+- Sync Supabase client in async FastAPI — decide before Session A routes are written (R-04)
+- approve_signal_weight needs route-level auth guard in Phase 7 Session C (S-08)
+- calibrate_confidence warm/cold paths identical — flag before Platt scaling added (S-04)
+- GHA ingest has no failure notification (R-07, G1 scope)
 
 **What's next (Tarun-owned):**
-1. G0 seed: `python3 scripts/ingest.py` against seeded Supabase — unblocks everything downstream
-2. Review PHASE7_BRIEF.md at `alphaveda/docs/plans/PHASE7_BRIEF.md` — say "PHASE7_BRIEF APPROVED" when ready for Phase 7 build
-3. Stream A: Publish Gumroad Governance Pack (OVERDUE — all 6 PRG gates PASS)
-4. Railway deployment config: 30 min task, approved — say "go Railway" to start
+1. G0 seed: `python3 alphaveda/scripts/ingest.py` against Supabase (project kowlkczswaglbmabygtl, ap-south-1)
+   → verify ohlcv rows written AND ingest_status OK row → 4 FAIL tests flip to PASS
+2. Say "PHASE7_BRIEF APPROVED" after reviewing `alphaveda/docs/plans/PHASE7_BRIEF.md`
+3. Stream A: Publish Gumroad Governance Pack — OVERDUE, all 6 PRG gates PASS, no code needed
+4. Stream C: 3 consulting targets — OVERDUE, no code needed
 
-**CoS-owned pending:**
-- council_review.py refactor (known violation of Rule C) — Phase 7 scope
-- tarun-global-memory CLAUDE.md tracking (cp blocked by auto-mode; file written at ~/.claude/CLAUDE.md directly)
+**CoS-owned at next session start:**
+- Async Supabase client decision BEFORE writing any FastAPI routes (R-04)
+- council_review.py refactor (Rule C violation) — Phase 7 scope
 
 ---
 
