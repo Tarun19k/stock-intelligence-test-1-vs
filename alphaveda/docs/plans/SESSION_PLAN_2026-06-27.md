@@ -43,7 +43,7 @@ Graph query first: `"AlphaVeda MVP capabilities personas"` before reading source
 ---
 
 ### Stream 2 — Global CLAUDE.md Rules B/C
-**Status:** QUEUED — Tarun-approved, awaiting council clearance
+**Status:** ✓ COMPLETE — 2026-06-27 (126 lines; premortem window-8671-2026-06-27)
 **Model:** Sonnet | **Skill:** doctrine-panel-constraint-enforcer (review) → CoS (write)
 **Est. tokens:** ~5,000
 
@@ -119,7 +119,7 @@ Actions:
 | UI-1 design system | ✓ DONE | — |
 | All 21 seats skill-backed | ✓ DONE | — |
 | Railway deployment config | ○ PLANNED | ~30 min; post-council |
-| Rules B/C → CLAUDE.md | ○ APPROVED | Premortem + write |
+| Rules B/C → CLAUDE.md | ✓ DONE 2026-06-27 | 126 lines; premortem logged |
 | AlphaVeda MVP spec | ○ QUEUED | Council clearance |
 | G0 seed (live DB) | ✗ BLOCKED | Tarun runs ingest |
 | Phase 7 brief | ○ COUNCIL PLANNING | Background agent |
@@ -152,8 +152,8 @@ Stream D (AlphaVeda): Blocked on G0 seed. Phase 7 in planning.
 **Revised execution sequence:**
 ```
 ✓ Stream 0 — housekeeping         DONE (93e3140)
-→ Stream 2 — CLAUDE.md Rules B/C  NEXT
-→ Stream 1 — MVP spec             AFTER Stream 2
+✓ Stream 2 — CLAUDE.md Rules B/C  DONE (2026-06-27; 126 lines)
+→ Stream 1 — MVP spec             NEXT
 → Stream 3 — Phase 7 council      BACKGROUND (after Stream 2, DRAFT only)
 → Stream 4 — memory + graph       AFTER 2+3 complete
 ```
