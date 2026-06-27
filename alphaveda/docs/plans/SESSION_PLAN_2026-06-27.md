@@ -154,7 +154,7 @@ Stream D (AlphaVeda): Blocked on G0 seed. Phase 7 in planning.
 ✓ Stream 0 — housekeeping         DONE (93e3140)
 ✓ Stream 2 — CLAUDE.md Rules B/C  DONE (76ade56; 126 lines)
 ✓ Stream 1 — MVP spec             DONE (ac9775d)
-~ Stream 3 — Phase 7 council      RUNNING (background Opus agent)
+✓ Stream 3 — Phase 7 council      DONE (c1eacbe; 215 lines, DRAFT)
 → Stream 3 — Phase 7 council      BACKGROUND (after Stream 2, DRAFT only)
 → Stream 4 — memory + graph       AFTER 2+3 complete
 ```

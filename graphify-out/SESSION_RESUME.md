@@ -80,17 +80,25 @@
 
 ## EXACT RESUME POINT
 
-**Current:** UI-1 COMPLETE (f36e6c9). Phase 7 planning APPROVED by Tarun. Rules B/C APPROVED by Tarun.
-**Next session flow (in order):**
-1. Present full plan (this file) → Tarun approves streams
-2. Housekeeping checkpoint (now — in progress)
-3. Stream C: AlphaVeda MVP spec (capabilities, personas, UI-2 plan) — Sonnet + ui-ux-pro-max
-4. Stream D: Rules B/C write to CLAUDE.md — needs premortem log + write (Sonnet)
-5. Stream E: Phase 7 expert council planning — Opus (synthesis-chair)
-6. Graph update — graphify --update after E completes
+**All 4 streams COMPLETE as of 2026-06-27.**
 
-**Rules B/C status:** APPROVED by Tarun 2026-06-27. Premortem must be logged before write.
-**Railway config:** 30 min task — approved per council recommendation.
+| Stream | Status | Commit |
+|---|---|---|
+| Stream 0 — housekeeping | ✓ DONE | 93e3140 |
+| Stream 2 — CLAUDE.md Rules B/C | ✓ DONE | 76ade56 (plan); file written directly to ~/.claude/CLAUDE.md |
+| Stream 1 — MVP spec | ✓ DONE | ac9775d |
+| Stream 3 — Phase 7 council | ✓ DONE | c1eacbe |
+| Stream 4 — memory + graph | ✓ DONE | this commit |
+
+**What's next (Tarun-owned):**
+1. G0 seed: `python3 scripts/ingest.py` against seeded Supabase — unblocks everything downstream
+2. Review PHASE7_BRIEF.md at `alphaveda/docs/plans/PHASE7_BRIEF.md` — say "PHASE7_BRIEF APPROVED" when ready for Phase 7 build
+3. Stream A: Publish Gumroad Governance Pack (OVERDUE — all 6 PRG gates PASS)
+4. Railway deployment config: 30 min task, approved — say "go Railway" to start
+
+**CoS-owned pending:**
+- council_review.py refactor (known violation of Rule C) — Phase 7 scope
+- tarun-global-memory CLAUDE.md tracking (cp blocked by auto-mode; file written at ~/.claude/CLAUDE.md directly)
 
 ---
 
