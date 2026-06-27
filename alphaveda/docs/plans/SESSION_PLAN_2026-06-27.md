@@ -24,7 +24,7 @@ Rules B/C approved by Tarun for global CLAUDE.md write.
 ---
 
 ### Stream 1 — AlphaVeda MVP Spec
-**Status:** QUEUED — awaiting council approval
+**Status:** ✓ COMPLETE — 2026-06-27 (commit ac9775d)
 **Model:** Sonnet | **Skill:** ui-ux-pro-max + bridge-architect
 **Est. tokens:** ~8,000
 **Output:** `alphaveda/docs/MVP_SPEC.md`
@@ -152,8 +152,9 @@ Stream D (AlphaVeda): Blocked on G0 seed. Phase 7 in planning.
 **Revised execution sequence:**
 ```
 ✓ Stream 0 — housekeeping         DONE (93e3140)
-✓ Stream 2 — CLAUDE.md Rules B/C  DONE (2026-06-27; 126 lines)
-→ Stream 1 — MVP spec             NEXT
+✓ Stream 2 — CLAUDE.md Rules B/C  DONE (76ade56; 126 lines)
+✓ Stream 1 — MVP spec             DONE (ac9775d)
+~ Stream 3 — Phase 7 council      RUNNING (background Opus agent)
 → Stream 3 — Phase 7 council      BACKGROUND (after Stream 2, DRAFT only)
 → Stream 4 — memory + graph       AFTER 2+3 complete
 ```
