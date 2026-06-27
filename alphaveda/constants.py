@@ -48,11 +48,6 @@ E2_CONSECUTIVE_THRESHOLD: dict[str, int] = {
 }
 E2_CONFIDENCE_FLOOR = 50  # emits below this do not count toward E2 streak
 
-# ── Commercial gate ──────────────────────────────────────────────────────────
-# NEVER derive from env flag — always derive from waitlist.converted_at (fail-closed).
-# See src/config.py → is_commercial().
-ALPHAVEDA_COMMERCIAL_ENV_KEY = "ALPHAVEDA_COMMERCIAL"  # used only in test overrides
-
 # ── SEBI (Varghese) ──────────────────────────────────────────────────────────
 SEBI_DISCLAIMER = (
     "AlphaVeda provides information and analysis only. "

@@ -121,3 +121,38 @@ def test_emit_pipeline_direction_correct():
     )
     assert result is not None
     assert result["direction"] == "BULL"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Buffett floor — enforced upstream of emit (COUNCIL_TEST_MAP Phase 3)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_floor_enforced_at_emit():
+    """Buffett condition C4: DB weights below FUNDAMENTAL_WEIGHT_FLOOR raise ValueError
+    at get_signal_weights() — preventing floor-violating weights from reaching emit.
+    The floor is enforced in the weight loading layer, not inside emit_pipeline.
+    """
+    from src.signals.weights import load_weights
+    low_floor_row = [{"signal_name": "roic", "weight": 0.10, "status": "ACTIVE"}]
+    mock_sb = MagicMock()
+    (mock_sb.table.return_value
+             .select.return_value
+             .eq.return_value
+             .eq.return_value
+             .eq.return_value
+             .execute.return_value.data) = low_floor_row
+    with patch("src.signals.weights.get_supabase_client", return_value=mock_sb):
+        with pytest.raises(ValueError, match="FUNDAMENTAL_WEIGHT_FLOOR"):
+            load_weights("fast_grower", "RISK_ON")
+
+
+@pytest.mark.skip(reason="Performance test — run manually at G1 load testing, not in unit suite")
+def test_emit_latency():
+    """SRA condition: emit_pipeline completes in ≤ 800ms under normal load.
+    Deferred from unit suite — performance thresholds belong in load tests.
+    """
+    import time
+    start = time.monotonic()
+    emit_pipeline(signals=_BULL_SIGNALS, streak_count=0, segment_obs=0, hit_rate=0.5)
+    elapsed_ms = (time.monotonic() - start) * 1000
+    assert elapsed_ms <= 800, f"emit_pipeline took {elapsed_ms:.0f}ms — exceeds 800ms threshold"

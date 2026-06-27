@@ -31,6 +31,14 @@ def test_c10_ingest_status_has_ok_row(supabase_client):
     assert len(result.data) >= 1, "No OK ingest_status row — run seed first"
 
 
+def test_c10_ohlcv_has_rows(supabase_client):
+    """Criterion 10: ohlcv table must have ≥1 row — closes the fake-OK-row loophole.
+    A manually inserted OK ingest_status row with zero ohlcv data looks green but isn't.
+    """
+    result = supabase_client.table("ohlcv").select("id").limit(1).execute()
+    assert len(result.data) >= 1, "ohlcv table is empty — ingest_status OK row is fake"
+
+
 # ── CRITERIA 1–9 (run after criterion 10) ────────────────────────────────────
 
 def test_c1_all_migrations_applied(supabase_client):

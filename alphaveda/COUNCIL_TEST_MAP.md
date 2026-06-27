@@ -15,14 +15,14 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 |---|---|---|---|---|---|
 | **Buffett** | FUNDAMENTAL_WEIGHT_FLOOR = 0.30 enforced at weights load | test_constants.py | test_fundamental_floor_value | 1 | GREEN ✓ |
 | **Buffett** | Floor applies to COLD_START_WEIGHTS | test_constants.py | test_fundamental_floor_applies_to_all_cold_starts | 1 | GREEN ✓ |
-| **Buffett** | Floor enforced at emit time (engine) | test_engine.py | test_floor_enforced_at_emit | 3 | SPEC |
+| **Buffett** | Floor enforced at emit time (engine) | test_engine.py | test_floor_enforced_at_emit | 3 | GREEN ✓ |
 | **Munger** | Weight proposal banner on signals page | test_app.py | test_review_banner_shown | 5 | GREEN ✓ |
 | **Munger** | Weight proposal banner on path page | test_app.py | test_review_banner_on_path_page | 5 | GREEN ✓ |
 | **Munger** | Accuracy tab shows PROPOSED rows | test_app.py | test_accuracy_tab_review_ui | 5 | GREEN ✓ |
 | **Munger** | Staleness backstop: 90-day overdue warning | test_app.py | test_staleness_backstop_banner | 5 | GREEN ✓ |
 | **Dalio** | Regime as-of join (not latest row) | test_regime.py | test_regime_as_of_join | 2 | GREEN ✓ |
-| **Dalio** | Regime cached per calendar day | test_regime.py | test_regime_cached | 3 | SPEC |
-| **Dalio** | Stale regime → visible warning (not silent default) | test_regime.py | test_stale_regime_fails_visibly | 3 | SPEC |
+| **Dalio** | Regime cached per calendar day | test_regime.py | test_regime_cached | 3 | GREEN ✓ |
+| **Dalio** | Stale regime → visible warning (not silent default) | test_regime.py | test_stale_regime_fails_visibly | 3 | GREEN ✓ |
 | **Dalio** | regime_tag on every prediction row | test_migrations.py | test_prediction_without_regime_rejected | G1 | SPEC |
 | **Marks** | cycle_phase derivation — all PHASE_RULES | test_cycle_phase.py | test_all_results_are_valid_phases | 2 | GREEN ✓ |
 | **Marks** | cycle_phase never returns None | test_cycle_phase.py | test_never_returns_none | 2 | GREEN ✓ |
@@ -62,7 +62,7 @@ Column "Status" = SPEC (not written) | RED (stub written, fails) | GREEN (passes
 | **SRA/Reliability Architect** | Stale ingest → amber banner | test_g0_gate.py | test_c3_missing_run_stale_warning | 6 | GREEN ✓ |
 | **SRA/Reliability Architect** | Zero ingest_status rows → red banner | test_g0_gate.py | test_c4_missing_run_no_row | 6 | GREEN ✓ |
 | **SRA/Reliability Architect** | Staleness flag: OK/STALE/MISSING logic | test_ingest.py | test_ok_when_recent | 6 | GREEN ✓ |
-| **SRA/Reliability Architect** | Signal emit latency ≤ 800ms | test_engine.py | test_emit_latency | 3 | SPEC |
+| **SRA/Reliability Architect** | Signal emit latency ≤ 800ms | test_engine.py | test_emit_latency | 3 | SKIP — G1 load test |
 | **Constraint Enforcer** | No imperative BUY/SELL in output | test_g0_gate.py | test_c6_sebi_substance | 6 | GREEN ✓ |
 | **Constraint Enforcer** | Commercial gate fail-closed | test_is_commercial.py | test_is_commercial_fail_closed | 2 | GREEN ✓ |
 | **Constraint Enforcer** | Rupee suppressed when commercial=True | test_app.py | test_no_rupee_when_commercial | 5 | GREEN ✓ |

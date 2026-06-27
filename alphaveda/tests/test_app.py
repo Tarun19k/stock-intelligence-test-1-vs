@@ -104,7 +104,7 @@ def test_review_banner_shown():
     with mock.patch("src.pages.signals.get_proposed_weights_count", return_value=2):
         banner = get_weight_review_banner()
     assert banner is not None
-    assert "PROPOSED" in banner or "review" in banner.lower()
+    assert "PROPOSED" in banner
 
 
 def test_review_banner_absent_when_no_proposed():

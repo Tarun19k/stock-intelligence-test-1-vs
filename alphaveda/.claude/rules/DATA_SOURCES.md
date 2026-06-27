@@ -22,8 +22,9 @@ Every row in ohlcv, fundamentals, macro_regime must have:
 - ingested_at (TIMESTAMPTZ) — when this row was written
 - licence_class (ohlcv only) — 'personal' | 'commercial' | 'open'
 
-## Circuit-flag rule (pre-G1)
+## Circuit-flag rule
 ohlcv.circuit_flag = TRUE marks circuit-locked prices.
-These rows must be EXCLUDED from outcome scoring in resolve_outcomes.py.
-This exclusion is NOT implemented at G0 — it is a hard pre-G1 gate.
-Do not begin accuracy ledger updates until circuit_flag exclusion is wired.
+These rows ARE EXCLUDED from outcome scoring in resolve_outcomes.py (lines 29–33):
+circuit-locked rows are skipped when building the symbol→close map.
+This exclusion was implemented before G0 (Jhunjhunwala condition, commit f978fc5).
+Do not add a second exclusion layer — the filter already exists at the resolution level.

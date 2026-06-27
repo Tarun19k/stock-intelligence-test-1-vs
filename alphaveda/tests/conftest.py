@@ -11,11 +11,9 @@ from dotenv import load_dotenv
 _env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 load_dotenv(_env_path, override=False)
 
-
-@pytest.fixture(scope="session", autouse=True)
-def governance_strict_mode():
-    """Phase 5 signed off — promote governance integrity tests to strict mode."""
-    os.environ.setdefault("GOVERNANCE_STRICT", "1")
+# Must be set at module level — test_governance_integrity.py reads os.environ at
+# import time (before any fixture runs). A session-scoped fixture fires too late.
+os.environ.setdefault("GOVERNANCE_STRICT", "1")
 
 
 @pytest.fixture(scope="session")

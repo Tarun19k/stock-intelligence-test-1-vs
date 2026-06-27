@@ -128,8 +128,8 @@ def run_ingest(target_date: date | None = None) -> dict:
             supabase.table("ohlcv").upsert(ohlcv_rows, on_conflict="instrument_id,as_of").execute()
         summary["ohlcv_rows"] = len(ohlcv_rows)
 
-        # Step 5: Resolve open predictions against today's closes.
-        # Entry price = close at emission date (fetched per-prediction from prior ohlcv).
+        # Step 5: Batch-resolve entry prices — ONE query for all predictions.
+        # Avoids N+1 Supabase calls (one per prediction) under production load.
         # Horizon maturity gate is a G1 condition (requires target_date migration).
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         open_preds_raw = (
@@ -139,39 +139,59 @@ def run_ingest(target_date: date | None = None) -> dict:
         ).data or []
 
         prediction_dicts = []
-        for pred in open_preds_raw:
-            symbol = id_to_symbol.get(pred["instrument_id"])
-            if not symbol:
-                continue
-            emitted_date = pred["emitted_at"][:10]  # YYYY-MM-DD from TIMESTAMPTZ
-            prior = (
-                supabase.table("ohlcv")
-                .select("close")
-                .eq("instrument_id", pred["instrument_id"])
-                .eq("as_of", emitted_date)
-                .limit(1)
-                .execute()
-            )
-            if not prior.data:
-                continue  # no entry price available — skip (G1 resolves this)
-            prediction_dicts.append({
-                "id": pred["id"],
-                "symbol": symbol,
-                "signal_direction": pred["signal_direction"],
-                "entry_price": prior.data[0]["close"],
+        if open_preds_raw:
+            pred_instrument_ids = list({
+                p["instrument_id"] for p in open_preds_raw
+                if id_to_symbol.get(p["instrument_id"])
             })
+            pred_emit_dates = list({p["emitted_at"][:10] for p in open_preds_raw})
+            entry_price_map: dict[tuple, float] = {}
+            if pred_instrument_ids and pred_emit_dates:
+                prior_batch = (
+                    supabase.table("ohlcv")
+                    .select("instrument_id,as_of,close")
+                    .in_("instrument_id", pred_instrument_ids)
+                    .in_("as_of", pred_emit_dates)
+                    .execute()
+                )
+                for row in (prior_batch.data or []):
+                    entry_price_map[(row["instrument_id"], row["as_of"])] = row["close"]
+
+            for pred in open_preds_raw:
+                symbol = id_to_symbol.get(pred["instrument_id"])
+                if not symbol:
+                    continue
+                emitted_date = pred["emitted_at"][:10]
+                entry_close = entry_price_map.get((pred["instrument_id"], emitted_date))
+                if entry_close is None:
+                    continue
+                prediction_dicts.append({
+                    "id": pred["id"],
+                    "symbol": symbol,
+                    "signal_direction": pred["signal_direction"],
+                    "entry_price": entry_close,
+                })
 
         resolutions = resolve_outcomes_from_ohlcv(prediction_dicts, parsed_rows)
         summary["outcomes_resolved"] = len(resolutions)
 
-        # Step 6: Write to accuracy_outcomes (hit BOOLEAN + return_pct).
-        for res in resolutions:
-            supabase.table("accuracy_outcomes").insert({
-                "prediction_id": res["prediction_id"],
-                "resolved_at": target_date.isoformat(),
-                "hit": res["hit"],
-                "return_pct": res["return_pct"],
-            }).execute()
+        # Step 6: Batch upsert accuracy_outcomes — idempotent on (prediction_id, resolved_at).
+        # Requires unique constraint — see supabase/migrations/0014_accuracy_outcomes_unique.sql.
+        # Replaces per-row insert() which caused silent double-scoring on re-runs.
+        if resolutions:
+            outcome_rows = [
+                {
+                    "prediction_id": res["prediction_id"],
+                    "resolved_at": target_date.isoformat(),
+                    "hit": res["hit"],
+                    "return_pct": res["return_pct"],
+                }
+                for res in resolutions
+            ]
+            supabase.table("accuracy_outcomes").upsert(
+                outcome_rows,
+                on_conflict="prediction_id,resolved_at",
+            ).execute()
 
         # Step 7: Write OK ingest_status row.
         supabase.table("ingest_status").insert({
