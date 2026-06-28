@@ -28,6 +28,13 @@ from datetime import date
 # Ensure alphaveda/ is on the path when run from repo root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+# Load .env from workspace root (two levels up from alphaveda/scripts/)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=False)
+except ImportError:
+    pass  # dotenv not installed — env vars must be set in shell
+
 
 def _is_trading_day(d: date) -> bool:
     """Return True if d is an NSE trading day (exchange-calendar aware).

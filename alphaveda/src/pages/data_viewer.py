@@ -28,9 +28,9 @@ def get_staleness_banner(supabase_client) -> str | None:
     try:
         result = (
             supabase_client.table("ingest_status")
-            .select("run_at")
+            .select("last_run")
             .eq("status", "OK")
-            .order("run_at", desc=True)
+            .order("last_run", desc=True)
             .limit(1)
             .execute()
         )
