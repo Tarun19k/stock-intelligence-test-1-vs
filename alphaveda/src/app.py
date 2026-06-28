@@ -4,6 +4,19 @@ SEBI disclaimer (Varghese): injected via get_disclaimer_html() on every page ren
 The disclaimer is pinned as fixed-bottom HTML — never conditional, collapsible, or dismissable.
 """
 from __future__ import annotations
+import os
+
+# Load .env at Streamlit startup so SUPABASE_URL/SERVICE_KEY are available.
+# Same pattern as scripts/ingest.py — harmless in GHA (env vars already set).
+try:
+    from dotenv import load_dotenv
+    load_dotenv(
+        os.path.join(os.path.dirname(__file__), "..", "..", ".env"),
+        override=False,
+    )
+except ImportError:
+    pass
+
 from constants import SEBI_DISCLAIMER
 
 _DISCLAIMER_HTML = f'<div class="av-sebi-footer">{SEBI_DISCLAIMER}</div>'

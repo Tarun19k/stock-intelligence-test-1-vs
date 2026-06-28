@@ -1,13 +1,32 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-28 (G0 gate CLEARED · Test suite 186 PASS / 2 SKIP / 0 FAIL)
+**Session date:** 2026-06-28 (G0 cleared + live preview confirmed · Test suite 186 PASS / 2 SKIP / 0 FAIL)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
-**Last commits:** 269fb2d (G0 cleared — live ingest pipeline + 186 PASS), caf727b (SESSION_RESUME), 4ec7392 (artifacts), e35fd0e (pre-G0 hardening)
+**Last commits:** abb3990 (SESSION_RESUME G0 update), 269fb2d (G0 cleared), 0810379 (migration 0015 + data_viewer fix)
 
 ---
 
-## DO NOT REDO — Session 2026-06-28 (G0 cleared)
+## DO NOT REDO — Session 2026-06-28 (G0 cleared + live preview)
+
+### app.py: load_dotenv() added for Streamlit startup (uncommitted → commit this checkpoint)
+- `src/app.py`: added `load_dotenv()` at module top using dotenv + os.path relative to file
+- Same pattern as `scripts/ingest.py` — harmless in GHA (env vars pre-set there)
+- Without this: Streamlit throws "SUPABASE_URL not set" on first render
+- Pattern: `load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=False)`
+
+### Live App Preview Confirmed (2026-06-28, Playwright screenshots)
+- All 4 pages rendered correctly: Market Data / Signals / Path / Accuracy Ledger
+- Design system fully applied: indigo dark shell, gold brand mark, SEBI footer pinned
+- Market Data: Imran staleness banner firing correctly ("hasn't updated since 2026-06-25")
+- Signals/Path/Accuracy: correct cold-start empty states, SEBI disclaimer visible
+- Minor UI note: Streamlit MPA sidebar links (app/accuracy/data viewer/path/signals) visible above custom radio nav — CSS rule to hide not firing in this session. UI-2 polish item, not a blocker.
+
+### Lynch Strategy + Expert Panel Explanation Delivered
+- Honest answer documented: 14 stocks = G0 test seed (not screened portfolio)
+- Selection criteria: appear in NSE Bhavcopy EQ-series, cover all 6 Lynch classifications, count ≥10
+- Expert voices grounded in actual code: COLD_START_WEIGHTS, constants.py constants, engine.py pipeline
+- Per-expert mapping: Lynch (classification weights), Buffett (FUNDAMENTAL_WEIGHT_FLOOR=0.30), Soros (STREAK_DISCOUNT_FACTOR=0.7), Munger (PROPOSAL_MIN_DELTA=0.03), Dalio (REGIME_STALENESS_DAYS=3), Marks (VIX_CALM_THRESHOLD=18.0), Druckenmiller (QUARTER_KELLY_FRACTION=0.25, PORTFOLIO_VALUE=725000)
 
 ### G0 Live Ingest Pipeline CLEARED (Commit 269fb2d) — 186 PASS / 2 SKIP / 0 FAIL
 - Instruments seeded: 14 NSE stocks × 6 Lynch classifications (all 6 covered)
@@ -142,7 +161,7 @@
 
 ## EXACT RESUME POINT
 
-**G0 CLEARED 2026-06-28. Test suite: 186 PASS / 2 SKIP / 0 FAIL. Single remaining gate: Tarun approval for Phase 7.**
+**G0 CLEARED + LIVE APP PREVIEWED 2026-06-28. Test suite: 186 PASS / 2 SKIP / 0 FAIL. Single gate remaining: Tarun says "PHASE7_BRIEF APPROVED".**
 
 | Item | Status | Commit |
 |---|---|---|
@@ -153,6 +172,8 @@
 | Council review (4-seat) | ✓ DONE | artifacts: 4ec7392 |
 | Pre-G0 hardening (3 RED + extras) | ✓ DONE | e35fd0e |
 | G0 — Live DB Seed | ✓ CLEARED | 269fb2d — 14 instruments, 13 OHLCV rows, 186 PASS |
+| app.py dotenv fix | ✓ DONE | this checkpoint commit |
+| Live app preview (4 pages) | ✓ CONFIRMED | Playwright 2026-06-28 |
 | Phase 7 Session A (FastAPI/Railway) | BLOCKED | "PHASE7_BRIEF APPROVED" from Tarun only |
 
 **Remaining AMBER items for Phase 7 (NOT blocking):**
