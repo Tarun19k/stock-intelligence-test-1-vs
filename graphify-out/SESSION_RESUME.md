@@ -161,36 +161,49 @@
 
 ## EXACT RESUME POINT
 
-**G0 CLEARED + LIVE APP PREVIEWED 2026-06-28. Test suite: 186 PASS / 2 SKIP / 0 FAIL. Single gate remaining: Tarun says "PHASE7_BRIEF APPROVED".**
+**PHASE 7 APPROVED 2026-06-28. Notion hub created. SRA conditionals designed. Blocked only on Tarun Pre-work (Railway + Vercel accounts + CLIs).**
 
-| Item | Status | Commit |
+| Item | Status | Detail |
 |---|---|---|
 | Phases 1–6 + UI-1 | ✓ SIGNED OFF | f978fc5 / f36e6c9 |
 | Rules B/C → CLAUDE.md | ✓ DONE | 76ade56 |
 | MVP Spec | ✓ DONE | ac9775d |
-| Phase 7 Brief (DRAFT) | ✓ DONE | c1eacbe |
-| Council review (4-seat) | ✓ DONE | artifacts: 4ec7392 |
-| Pre-G0 hardening (3 RED + extras) | ✓ DONE | e35fd0e |
+| Phase 7 Brief | ✓ DONE | c1eacbe |
 | G0 — Live DB Seed | ✓ CLEARED | 269fb2d — 14 instruments, 13 OHLCV rows, 186 PASS |
-| app.py dotenv fix | ✓ DONE | this checkpoint commit |
-| Live app preview (4 pages) | ✓ CONFIRMED | Playwright 2026-06-28 |
-| Phase 7 Session A (FastAPI/Railway) | BLOCKED | "PHASE7_BRIEF APPROVED" from Tarun only |
+| Live app preview | ✓ CONFIRMED | Playwright 2026-06-28 |
+| Phase 7 APPROVED | ✓ APPROVED | Tarun approved 2026-06-28 — explicit |
+| SRA FM-05 | ✓ RESOLVED | G0 cleared 2026-06-28 |
+| SRA FM-02 design | ✓ DESIGNED | Root layout + backend envelope + Playwright CI gate |
+| SRA FM-01 design | ✓ DESIGNED | Keep-warm GHA cron + WarmingState component |
+| Notion Product Hub | ✓ CREATED | 27 tasks: Pre-work(5) / Session A(11) / B(5) / C(5) + 1 extra |
+| Session A Brief | ✓ WRITTEN | alphaveda/docs/plans/PHASE7_SESSION_A_BRIEF.md |
+| Design Decisions | ✓ WRITTEN | alphaveda/docs/plans/PHASE7_DESIGN_DECISIONS.md |
+| Phase 7 Session A (FastAPI/Railway) | BLOCKED ON TARUN | Railway account + CLI + project must exist first |
 
-**Remaining AMBER items for Phase 7 (NOT blocking):**
-- Outcome scoring horizon wrong — all predictions scored on day 1 (R-01, G1 scope)
-- Sync Supabase client in async FastAPI — decide before Session A routes are written (R-04)
-- approve_signal_weight needs route-level auth guard in Phase 7 Session C (S-08)
-- calibrate_confidence warm/cold paths identical — flag before Platt scaling added (S-04)
-- GHA ingest has no failure notification (R-07, G1 scope)
+**Notion AlphaVeda Product Hub:**
+- URL: https://app.notion.com/p/38d648bc8b1b8154bb38f84753045675
+- Phase 7 Task Tracker: https://app.notion.com/p/8d4f4b67607d436fa5773d43324df637
+- 27 tasks loaded with Owner/Priority/Status/Gate fields
 
-**What's next (Tarun-owned):**
-1. Say "PHASE7_BRIEF APPROVED" after reviewing `alphaveda/docs/plans/PHASE7_BRIEF.md` — unblocks Phase 7 Session A
-2. Stream A: Publish Gumroad Governance Pack — OVERDUE, all 6 PRG gates PASS, no code needed
-3. Stream C: 3 consulting targets — OVERDUE, no code needed
+**Tarun Pre-work (P0 — blocks Session A):**
+1. Create Railway account at railway.app
+2. Create project named `alphaveda-api` in Railway dashboard
+3. Install Railway CLI: `sudo npm install -g @railway/cli` then `railway login`
+4. Install Vercel CLI: `sudo npm install -g vercel` then `vercel login`
+5. Create Vercel project linked to GSI repo, named `alphaveda-web`
+6. Enable Supabase Auth on project `kowlkczswaglbmabygtl` (Auth > Enable)
 
-**CoS-owned at next session start:**
-- Async Supabase client decision BEFORE writing any FastAPI routes (R-04)
-- council_review.py refactor (Rule C violation) — Phase 7 scope
+**CoS-owned at Session A start (all ready — no decisions pending):**
+- Async Supabase decision: USE SYNC (see PHASE7_DESIGN_DECISIONS.md) — R-04 resolved
+- CORS strategy: allow_origin_regex for Vercel domains (see PHASE7_DESIGN_DECISIONS.md)
+- Full execution brief: alphaveda/docs/plans/PHASE7_SESSION_A_BRIEF.md
+- Session A creates: api/ directory, 5 endpoints, railway.toml, tests/test_api.py
+
+**Remaining AMBER (NOT blocking — G1 scope):**
+- Outcome scoring horizon: all predictions scored on day 1 (R-01)
+- approve_signal_weight route-level auth guard — Phase 7 Session C (S-08)
+- calibrate_confidence warm/cold paths identical — flag before Platt scaling (S-04)
+- GHA ingest has no failure notification (R-07)
 
 ---
 
@@ -201,7 +214,8 @@
 | Stream A (Gumroad Governance Pack): publish | OVERDUE | $0 → first revenue | NOW |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
 | G0 seed: run ingest.py against live Supabase | ✓ DONE | Cleared 2026-06-28 (269fb2d) | — |
-| Phase 7 scope confirmation after council verdict | PENDING | Architecture direction | Next session |
+| Phase 7 APPROVED | ✓ DONE | Approved 2026-06-28, plans written, Notion hub live | — |
+| Railway account + CLI (Tarun Pre-work) | PENDING | Blocks Session A build | Before Session A |
 
 ---
 
@@ -270,7 +284,7 @@
 
 ---
 
-*Updated: 2026-06-28 — G0 gate cleared. 186 PASS / 0 FAIL. Phase 7 blocked only on Tarun saying "PHASE7_BRIEF APPROVED".*
+*Updated: 2026-06-28 — Phase 7 APPROVED. Notion hub live (27 tasks). SRA FM-01/02/05 designed. Blocked only on Tarun Pre-work (Railway + Vercel accounts + CLIs).*
 
 ---
 
@@ -281,3 +295,6 @@
 | sprint-status | alphaveda/docs/artifacts/2026-06-27/sprint-status.html | 2026-06-27 | 4ec7392 |
 | session-checkpoint | alphaveda/docs/artifacts/2026-06-27/session-checkpoint.html | 2026-06-27 | 4ec7392 |
 | mvp-spec-visual | alphaveda/docs/artifacts/2026-06-27/mvp-spec-visual.html | 2026-06-27 | be40071 |
+| Session A Brief | alphaveda/docs/plans/PHASE7_SESSION_A_BRIEF.md | 2026-06-28 | this commit |
+| Design Decisions | alphaveda/docs/plans/PHASE7_DESIGN_DECISIONS.md | 2026-06-28 | this commit |
+| Notion Product Hub | https://app.notion.com/p/38d648bc8b1b8154bb38f84753045675 | 2026-06-28 | online |
