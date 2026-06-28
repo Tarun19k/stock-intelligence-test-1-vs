@@ -97,15 +97,17 @@ def run_ingest(target_date: date | None = None) -> dict:
             summary["status"] = "NO_DATA"
             return summary
 
-        # Step 2: Batch resolve symbol → instrument_id (one query, no N+1).
-        symbols = [r["symbol"] for r in parsed_rows]
+        # Step 2: Fetch all seeded instruments (one query), join against bhavcopy in Python.
+        # We do NOT pass all 2,000+ bhavcopy tickers to Supabase — the URL would exceed
+        # PostgREST limits and return a 400. The instruments table is always small
+        # (tens to hundreds of rows), so fetching it wholesale is correct and fast.
         inst_result = (
             supabase.table("instruments")
-            .select("id, symbol")
-            .in_("symbol", symbols)
+            .select("id, ticker")
+            .eq("is_active", True)
             .execute()
         )
-        symbol_to_id: dict[str, int] = {r["symbol"]: r["id"] for r in (inst_result.data or [])}
+        symbol_to_id: dict[str, int] = {r["ticker"]: r["id"] for r in (inst_result.data or [])}
         id_to_symbol: dict[int, str] = {v: k for k, v in symbol_to_id.items()}
 
         # Step 3: Build ohlcv rows mapped to instrument_id.
@@ -118,7 +120,7 @@ def run_ingest(target_date: date | None = None) -> dict:
             symbol_close[row["symbol"]] = row["close"]
             ohlcv_rows.append({
                 "instrument_id": iid,
-                "as_of": target_date.isoformat(),
+                "trade_date": target_date.isoformat(),  # DB column is trade_date (not as_of)
                 "open": row["open"],
                 "high": row["high"],
                 "low": row["low"],
@@ -130,18 +132,20 @@ def run_ingest(target_date: date | None = None) -> dict:
                 # ingested_at omitted — DEFAULT now() handles it
             })
 
-        # Step 4: Upsert OHLCV (conflict on instrument_id + as_of).
+        # Step 4: Upsert OHLCV (conflict on instrument_id + trade_date per UNIQUE constraint).
         if ohlcv_rows:
-            supabase.table("ohlcv").upsert(ohlcv_rows, on_conflict="instrument_id,as_of").execute()
+            supabase.table("ohlcv").upsert(ohlcv_rows, on_conflict="instrument_id,trade_date").execute()
         summary["ohlcv_rows"] = len(ohlcv_rows)
 
         # Step 5: Batch-resolve entry prices — ONE query for all predictions.
         # Avoids N+1 Supabase calls (one per prediction) under production load.
         # Horizon maturity gate is a G1 condition (requires target_date migration).
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
+        # DB column is 'direction' (not 'signal_direction') — resolve_outcomes.py
+        # uses the Python key 'signal_direction', so we remap at dict-build time.
         open_preds_raw = (
             supabase.table("accuracy_predictions")
-            .select("id, instrument_id, signal_direction, emitted_at")
+            .select("id, instrument_id, direction, emitted_at")
             .execute()
         ).data or []
 
@@ -156,26 +160,26 @@ def run_ingest(target_date: date | None = None) -> dict:
             if pred_instrument_ids and pred_emit_dates:
                 prior_batch = (
                     supabase.table("ohlcv")
-                    .select("instrument_id,as_of,close")
+                    .select("instrument_id,trade_date,close")
                     .in_("instrument_id", pred_instrument_ids)
-                    .in_("as_of", pred_emit_dates)
+                    .in_("trade_date", pred_emit_dates)
                     .execute()
                 )
                 for row in (prior_batch.data or []):
-                    entry_price_map[(row["instrument_id"], row["as_of"])] = row["close"]
+                    entry_price_map[(row["instrument_id"], row["trade_date"])] = row["close"]
 
             for pred in open_preds_raw:
                 symbol = id_to_symbol.get(pred["instrument_id"])
                 if not symbol:
                     continue
-                emitted_date = pred["emitted_at"][:10]
+                emitted_date = pred["emitted_at"][:10]  # matches trade_date key format
                 entry_close = entry_price_map.get((pred["instrument_id"], emitted_date))
                 if entry_close is None:
                     continue
                 prediction_dicts.append({
                     "id": pred["id"],
                     "symbol": symbol,
-                    "signal_direction": pred["signal_direction"],
+                    "signal_direction": pred["direction"],  # remap DB col → Python key
                     "entry_price": entry_close,
                 })
 

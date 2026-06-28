@@ -307,7 +307,7 @@ class TestImranConditions:
 
     @skip_no_db
     def test_ingest_status_table_exists(self, supabase_client):
-        result = supabase_client.table("ingest_status").select("run_at").limit(1).execute()
+        result = supabase_client.table("ingest_status").select("last_run").limit(1).execute()  # renamed from run_at in migration 0015
         assert result.data is not None
 
     def test_stale_ingest_surfaces_amber_banner(self):

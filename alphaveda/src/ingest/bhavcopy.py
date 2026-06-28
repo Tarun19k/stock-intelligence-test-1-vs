@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import io
+import ssl
 import urllib.request
 from datetime import date
 from typing import Optional
@@ -46,21 +47,31 @@ def parse_bhavcopy_nse(csv_text: str) -> list[dict]:
     licence_class, circuit_flag.
     """
     reader = csv.DictReader(io.StringIO(csv_text))
+    # NSE Bhavcopy uses "SYMBOL, SERIES, ..." headers with spaces after commas.
+    # csv.DictReader preserves those spaces in field names (e.g. " SERIES" not "SERIES").
+    # Strip all field names so lookups work regardless of NSE's formatting.
+    if reader.fieldnames:
+        reader.fieldnames = [f.strip() for f in reader.fieldnames]
     rows: list[dict] = []
     for row in reader:
         if row.get("SERIES", "").strip() not in _VALID_SERIES:
             continue
         try:
-            h = float(row["HIGH"])
-            l = float(row["LOW"])
-            c = float(row["CLOSE"])
+            # NSE sec_bhavdata_full columns (as of 2026):
+            #   OPEN_PRICE, HIGH_PRICE, LOW_PRICE, CLOSE_PRICE, TTL_TRD_QNTY
+            # Older format used OPEN/HIGH/LOW/CLOSE/TOTTRDQTY — support both.
+            h = float(row.get("HIGH_PRICE") or row["HIGH"])
+            l = float(row.get("LOW_PRICE") or row["LOW"])
+            c = float(row.get("CLOSE_PRICE") or row["CLOSE"])
             rows.append({
                 "symbol": row["SYMBOL"].strip(),
-                "open": float(row["OPEN"]),
+                "open": float(row.get("OPEN_PRICE") or row["OPEN"]),
                 "high": h,
                 "low": l,
                 "close": c,
-                "volume": int(float(row.get("TOTTRDQTY", "0") or "0")),
+                "volume": int(float(
+                    row.get("TTL_TRD_QNTY") or row.get("TOTTRDQTY") or "0"
+                ) or 0),
                 "source": "bhavcopy_nse",
                 "licence_class": "open",
                 "circuit_flag": _detect_circuit_flag(h, l, c),
@@ -93,5 +104,12 @@ def download_bhavcopy_nse(date_str: str) -> bytes:
     ddmmyyyy = d.strftime("%d%m%Y")
     url = _NSE_URL.format(ddmmyyyy=ddmmyyyy)
     req = urllib.request.Request(url, headers=_NSE_HEADERS)
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    # macOS Python's bundled SSL roots often miss intermediate CAs used by NSE's CDN.
+    # certifi ships Mozilla's curated CA bundle (already a transitive dep via requests).
+    try:
+        import certifi
+        ssl_ctx = ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        ssl_ctx = None  # fall back to system roots
+    with urllib.request.urlopen(req, timeout=30, context=ssl_ctx) as resp:
         return resp.read()
