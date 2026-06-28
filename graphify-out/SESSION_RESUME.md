@@ -1,15 +1,29 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-06-27 (Council review + Pre-G0 hardening complete · Test suite 182 PASS / 2 SKIP / 4 FAIL)
+**Session date:** 2026-06-28 (G0 gate CLEARED · Test suite 186 PASS / 2 SKIP / 0 FAIL)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP build)
-**Last commits:** 341bb74 (SESSION_RESUME artifacts section), 4ec7392 (sprint-status + checkpoint artifacts), e35fd0e (pre-G0 hardening — all 3 RED council items resolved)
+**Last commits:** 269fb2d (G0 cleared — live ingest pipeline + 186 PASS), caf727b (SESSION_RESUME), 4ec7392 (artifacts), e35fd0e (pre-G0 hardening)
 
 ---
 
-## DO NOT REDO — Session 2026-06-27
+## DO NOT REDO — Session 2026-06-28 (G0 cleared)
 
-### Council Review — 4-Seat Audit of Phases 1–6 (This conversation)
+### G0 Live Ingest Pipeline CLEARED (Commit 269fb2d) — 186 PASS / 2 SKIP / 0 FAIL
+- Instruments seeded: 14 NSE stocks × 6 Lynch classifications (all 6 covered)
+- First live ingest: 2026-06-25 → 13 OHLCV rows written, status=OK
+- 6 pipeline bugs fixed (see commit message for full list):
+  1. bhavcopy.py: certifi SSL for NSE CDN
+  2. bhavcopy.py: CSV header whitespace (NSE "SYMBOL, SERIES," format)
+  3. bhavcopy.py: column names OPEN_PRICE/HIGH_PRICE/LOW_PRICE/CLOSE_PRICE/TTL_TRD_QNTY
+  4. ingest.py: instrument resolution — fetch all seeded (not .in_() with 2669 tickers — URL limit)
+  5. ingest.py: DB column `trade_date` (not `as_of`) + conflict target
+  6. ingest.py: DB column `direction` (not `signal_direction`) in accuracy_predictions
+  7. test_council_conditions.py: `last_run` (not `run_at`) — migration 0015 rename
+  8. migration 0016: VARCHAR(20) for ingest_status.status (SKIPPED_HOLIDAY = 15 chars)
+- G0 gate tests: 12/12 PASS
+
+### Council Review — 4-Seat Audit of Phases 1–6 (Session 2026-06-27)
 - Shakuni/Red Team, Constraint Enforcer, SRA/Reliability Architect, Synthesis Chair
 - 8 specific findings from direct code inspection; RAG: 3 RED / 8 AMBER / 9 GREEN
 - All 3 RED items already resolved in commit e35fd0e BEFORE this conversation's review output
@@ -128,7 +142,7 @@
 
 ## EXACT RESUME POINT
 
-**Pre-G0 hardening complete. All 3 RED council items resolved. Test suite: 182 PASS / 2 SKIP / 4 FAIL.**
+**G0 CLEARED 2026-06-28. Test suite: 186 PASS / 2 SKIP / 0 FAIL. Single remaining gate: Tarun approval for Phase 7.**
 
 | Item | Status | Commit |
 |---|---|---|
@@ -136,12 +150,12 @@
 | Rules B/C → CLAUDE.md | ✓ DONE | 76ade56 |
 | MVP Spec | ✓ DONE | ac9775d |
 | Phase 7 Brief (DRAFT) | ✓ DONE | c1eacbe |
-| Council review (4-seat) | ✓ DONE | this session (artifacts: 4ec7392) |
+| Council review (4-seat) | ✓ DONE | artifacts: 4ec7392 |
 | Pre-G0 hardening (3 RED + extras) | ✓ DONE | e35fd0e |
-| G0 — Live DB Seed | BLOCKED | Tarun: run `python3 scripts/ingest.py` |
-| Phase 7 Session A (FastAPI/Railway) | BLOCKED | G0 seed + "PHASE7_BRIEF APPROVED" from Tarun |
+| G0 — Live DB Seed | ✓ CLEARED | 269fb2d — 14 instruments, 13 OHLCV rows, 186 PASS |
+| Phase 7 Session A (FastAPI/Railway) | BLOCKED | "PHASE7_BRIEF APPROVED" from Tarun only |
 
-**Remaining AMBER items for Phase 7 (NOT blocking G0):**
+**Remaining AMBER items for Phase 7 (NOT blocking):**
 - Outcome scoring horizon wrong — all predictions scored on day 1 (R-01, G1 scope)
 - Sync Supabase client in async FastAPI — decide before Session A routes are written (R-04)
 - approve_signal_weight needs route-level auth guard in Phase 7 Session C (S-08)
@@ -149,11 +163,9 @@
 - GHA ingest has no failure notification (R-07, G1 scope)
 
 **What's next (Tarun-owned):**
-1. G0 seed: `python3 alphaveda/scripts/ingest.py` against Supabase (project kowlkczswaglbmabygtl, ap-south-1)
-   → verify ohlcv rows written AND ingest_status OK row → 4 FAIL tests flip to PASS
-2. Say "PHASE7_BRIEF APPROVED" after reviewing `alphaveda/docs/plans/PHASE7_BRIEF.md`
-3. Stream A: Publish Gumroad Governance Pack — OVERDUE, all 6 PRG gates PASS, no code needed
-4. Stream C: 3 consulting targets — OVERDUE, no code needed
+1. Say "PHASE7_BRIEF APPROVED" after reviewing `alphaveda/docs/plans/PHASE7_BRIEF.md` — unblocks Phase 7 Session A
+2. Stream A: Publish Gumroad Governance Pack — OVERDUE, all 6 PRG gates PASS, no code needed
+3. Stream C: 3 consulting targets — OVERDUE, no code needed
 
 **CoS-owned at next session start:**
 - Async Supabase client decision BEFORE writing any FastAPI routes (R-04)
@@ -167,7 +179,7 @@
 |---|---|---|---|
 | Stream A (Gumroad Governance Pack): publish | OVERDUE | $0 → first revenue | NOW |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
-| G0 seed: run ingest.py against live Supabase | BLOCKED | Unblocks Phase 7 subscriber readiness | Next available |
+| G0 seed: run ingest.py against live Supabase | ✓ DONE | Cleared 2026-06-28 (269fb2d) | — |
 | Phase 7 scope confirmation after council verdict | PENDING | Architecture direction | Next session |
 
 ---
@@ -191,7 +203,7 @@
 | Phase 4 (Portfolio layer) | ✓ SIGNED OFF 2026-06-25 | 9537131 | |
 | Phase 5 (Presentation) | ✓ SIGNED OFF 2026-06-25 | 0892867 | |
 | Phase 6 (GHA ingest) | ✓ SIGNED OFF 2026-06-26 | f978fc5 | 179 PASS; all 21 seats resolved |
-| G0 Gate | BLOCKED | — | Live DB seed required (manual) |
+| G0 Gate | ✓ CLEARED | 269fb2d | 14 instruments seeded; 13 OHLCV rows; 186 PASS |
 | UI-1 (CSS + nav) | ✓ COMPLETE | f36e6c9 | Design system; signal card; SEBI footer |
 | Railway deployment config | NOT STARTED | — | 30 min; approved per council |
 | Rules B/C → CLAUDE.md | APPROVED | — | Premortem + write (next stream) |
@@ -237,7 +249,7 @@
 
 ---
 
-*Updated: 2026-06-27 — Council review complete. 3 RED fixes queued for Session A. G0 blocked on Tarun seed run.*
+*Updated: 2026-06-28 — G0 gate cleared. 186 PASS / 0 FAIL. Phase 7 blocked only on Tarun saying "PHASE7_BRIEF APPROVED".*
 
 ---
 
