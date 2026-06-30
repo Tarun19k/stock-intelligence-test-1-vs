@@ -49,3 +49,47 @@ jobs:
           else
             python scripts/ingest.py
           fi
+
+      - name: Verify ingest wrote rows
+        # Fails the job if ingest status=OK but rows_written=0 (silent failure guard).
+        # SKIPPED_HOLIDAY exits 0 — that is correct behaviour, not a failure.
+        # Added as a step in the existing job: zero additional GHA minutes consumed.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python - <<'EOF'
+          import os, sys
+          from supabase import create_client
+
+          sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SERVICE_KEY"])
+
+          row = (
+              sb.table("ingest_status")
+              .select("status,rows_written,last_run")
+              .order("last_run", desc=True)
+              .limit(1)
+              .execute()
+              .data
+          )
+          if not row:
+              print("ALERT: ingest_status table is empty after ingest run")
+              sys.exit(1)
+
+          status = row[0]["status"]
+          rows = row[0].get("rows_written") or 0
+
+          if status == "SKIPPED_HOLIDAY":
+              print(f"OK: holiday — ingest correctly skipped ({row[0]['last_run']})")
+              sys.exit(0)
+
+          if status == "ERROR":
+              print(f"ALERT: ingest status=ERROR — check error column in ingest_status")
+              sys.exit(1)
+
+          if status == "OK" and rows == 0:
+              print(f"ALERT: ingest status=OK but rows_written=0 — silent failure (format change?)")
+              sys.exit(1)
+
+          print(f"OK: status={status}, rows_written={rows}, last_run={row[0]['last_run']}")
+          EOF

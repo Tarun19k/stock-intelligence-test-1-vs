@@ -161,7 +161,7 @@
 
 ## EXACT RESUME POINT
 
-**PHASE 7 APPROVED 2026-06-28. Notion hub created. SRA conditionals designed. Blocked only on Tarun Pre-work (Railway + Vercel accounts + CLIs).**
+**SESSION A BUILT 2026-06-30. Fly.io chosen. api/ + Dockerfile + fly.toml + tests written. Awaiting Tarun: flyctl login + fly apps create + fly secrets set + fly deploy.**
 
 | Item | Status | Detail |
 |---|---|---|
@@ -170,40 +170,38 @@
 | MVP Spec | ✓ DONE | ac9775d |
 | Phase 7 Brief | ✓ DONE | c1eacbe |
 | G0 — Live DB Seed | ✓ CLEARED | 269fb2d — 14 instruments, 13 OHLCV rows, 186 PASS |
-| Live app preview | ✓ CONFIRMED | Playwright 2026-06-28 |
-| Phase 7 APPROVED | ✓ APPROVED | Tarun approved 2026-06-28 — explicit |
+| Phase 7 APPROVED | ✓ APPROVED | Tarun approved 2026-06-28 |
 | SRA FM-05 | ✓ RESOLVED | G0 cleared 2026-06-28 |
+| SRA FM-01 | ✓ ELIMINATED | Fly.io auto_stop=false — no cold-start, no GHA cron needed |
 | SRA FM-02 design | ✓ DESIGNED | Root layout + backend envelope + Playwright CI gate |
-| SRA FM-01 design | ✓ DESIGNED | Keep-warm GHA cron + WarmingState component |
-| Notion Product Hub | ✓ CREATED | 27 tasks: Pre-work(5) / Session A(11) / B(5) / C(5) + 1 extra |
-| Session A Brief | ✓ WRITTEN | alphaveda/docs/plans/PHASE7_SESSION_A_BRIEF.md |
-| Design Decisions | ✓ WRITTEN | alphaveda/docs/plans/PHASE7_DESIGN_DECISIONS.md |
-| Phase 7 Session A (FastAPI/Railway) | BLOCKED ON TARUN | Railway account + CLI + project must exist first |
+| GHA ingest zero-row alert | ✓ DONE | Step added to ingest.yml — no new workflow |
+| Notion Product Hub | ✓ CREATED | 27 tasks — https://app.notion.com/p/38d648bc8b1b8154bb38f84753045675 |
+| Session A — api/ built | ✓ BUILT | api/main.py + 5 routes + Dockerfile + fly.toml + tests/test_api.py |
+| Session A — fly deploy | TARUN ACTION | 3 commands, then `fly deploy` from alphaveda/ |
+| Session B — Next.js | NOT STARTED | Unblocks after fly deploy verified + Vercel project created |
 
-**Notion AlphaVeda Product Hub:**
-- URL: https://app.notion.com/p/38d648bc8b1b8154bb38f84753045675
-- Phase 7 Task Tracker: https://app.notion.com/p/8d4f4b67607d436fa5773d43324df637
-- 27 tasks loaded with Owner/Priority/Status/Gate fields
+**Fly.io usage tracking:**
+- Dashboard: fly.io → Billing → Usage (check weekly)
+- Trial: $5 one-time credit, no free allowances
+- 256MB machine: ~$2.02/month → ~2.5 months runway on trial
+- Add credit card before credit depletes to prevent service shutdown
+- Scale if OOM: `fly scale memory 512` (~$3.32/month)
 
-**Tarun Pre-work (P0 — blocks Session A):**
-1. Create Railway account at railway.app
-2. Create project named `alphaveda-api` in Railway dashboard
-3. Install Railway CLI: `sudo npm install -g @railway/cli` then `railway login`
-4. Install Vercel CLI: `sudo npm install -g vercel` then `vercel login`
-5. Create Vercel project linked to GSI repo, named `alphaveda-web`
-6. Enable Supabase Auth on project `kowlkczswaglbmabygtl` (Auth > Enable)
+**Tarun — 3 commands to deploy Session A:**
+1. `brew install flyctl` → `fly auth login` (if not done)
+2. `fly apps create alphaveda-api` (run from alphaveda/ directory)
+3. `fly secrets set SUPABASE_URL=<url> SUPABASE_SERVICE_KEY=<key>`
+4. `fly deploy` (run from alphaveda/ directory)
 
-**CoS-owned at Session A start (all ready — no decisions pending):**
-- Async Supabase decision: USE SYNC (see PHASE7_DESIGN_DECISIONS.md) — R-04 resolved
-- CORS strategy: allow_origin_regex for Vercel domains (see PHASE7_DESIGN_DECISIONS.md)
-- Full execution brief: alphaveda/docs/plans/PHASE7_SESSION_A_BRIEF.md
-- Session A creates: api/ directory, 5 endpoints, railway.toml, tests/test_api.py
+**Tarun — Session B gate (do after fly deploy is verified):**
+5. Create Vercel account + import GSI repo → project name `alphaveda-web`
+6. Enable Supabase Auth on `kowlkczswaglbmabygtl` (defer to before Session C)
 
 **Remaining AMBER (NOT blocking — G1 scope):**
 - Outcome scoring horizon: all predictions scored on day 1 (R-01)
 - approve_signal_weight route-level auth guard — Phase 7 Session C (S-08)
 - calibrate_confidence warm/cold paths identical — flag before Platt scaling (S-04)
-- GHA ingest has no failure notification (R-07)
+- GHA ingest zero-row alert: NOW DONE (step added to ingest.yml)
 
 ---
 

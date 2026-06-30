@@ -81,64 +81,26 @@ This test blocks Vercel deploy on failure. Mirrors `test_sebi_substance` in pyte
 
 ---
 
-## FM-01 — Railway cold-start / blank frontend (P2 — DESIGNED)
+## FM-01 — Cold-start (ELIMINATED — Fly.io chosen over Railway)
 
-**Risk:** Railway free-tier dyno sleeps after 15 min idle. First request
-times out. Frontend shows blank screen or unhandled error.
+**Original risk:** Backend sleep on idle → blank frontend.
 
-**Mitigation: 2-part design**
+**Resolution:** Fly.io with `auto_stop_machines = false` and `min_machines_running = 1`
+in `fly.toml` keeps the VM permanently alive. No sleep, no cold-start, no keep-warm
+GHA cron needed. FM-01 is eliminated at the infrastructure level, not mitigated.
 
-### Part 1 — Keep-warm ping (prevents sleep during market hours)
-
-```yaml
-# .github/workflows/keepwarm.yml — Session A task
-on:
-  schedule:
-    - cron: '*/14 * * * *'  # every 14 min — under Railway's 15-min sleep threshold
-jobs:
-  ping:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Keep Railway warm
-        run: |
-          curl -f ${{ secrets.RAILWAY_API_URL }}/health || echo "Warm-up ping sent"
+**fly.toml config (enforces this):**
+```toml
+[http_service]
+  auto_stop_machines = false
+  min_machines_running = 1
 ```
 
-NSE market hours: 9:15am–3:30pm IST = UTC 3:45am–10:00am.
-Keep-warm runs all day (cheap GHA minutes, no Railway cost).
+**Cost:** 256MB shared-cpu-1x on Fly.io bom (Mumbai) = ~$2.02/month.
+Trial credit $5 → ~2.5 months runway. Add credit card before credit depletes.
 
-### Part 2 — Frontend graceful degradation (never shows blank screen)
-
-```tsx
-// In any Server Component that fetches from Railway — Session B task
-async function fetchWithTimeout(url: string, ms = 30000) {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), ms)
-  try {
-    return await fetch(url, { signal: controller.signal })
-  } catch {
-    return null  // triggers WarmingState, not a crash
-  } finally {
-    clearTimeout(timeout)
-  }
-}
-
-// If fetch returns null: show WarmingState, not an error boundary crash
-function WarmingState() {
-  return (
-    <div className="warming-state">
-      AlphaVeda is warming up. Data will load in a few seconds.
-      <button onClick={() => location.reload()}>Refresh</button>
-    </div>
-  )
-}
-```
-
-### Upgrade path (if cold-start persists)
-
-Upgrade Railway to Starter ($5/month) for always-on dyno.
-Decision deferred until first subscriber confirms value.
-Budget signal: if any single subscriber complains about blank screen → upgrade.
+**No GHA keep-warm cron needed.** A new workflow would add scheduled runs
+(limitation impact). With Fly.io always-on, this cron is unnecessary — eliminated.
 
 ---
 

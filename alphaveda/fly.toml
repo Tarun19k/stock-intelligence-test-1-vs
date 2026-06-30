@@ -1,0 +1,28 @@
+# AlphaVeda API — Fly.io configuration
+# Region: bom (Mumbai) — closest to NSE/BSE data and Indian users.
+# Memory: 256MB shared-cpu-1x (~$2.02/month from trial credit).
+# Upgrade to 512MB with `fly scale memory 512` if OOM on boot.
+# auto_stop_machines = false: VM stays warm, eliminates FM-01 cold-start.
+
+app = 'alphaveda-api'
+primary_region = 'bom'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 25
+    soft_limit = 20
+
+[vm]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
