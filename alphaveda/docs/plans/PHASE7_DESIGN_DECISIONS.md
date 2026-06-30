@@ -22,11 +22,17 @@ Asserted by `test_health_returns_200_with_real_data()` in `tests/test_api.py`.
 
 ---
 
-## FM-02 — Disclaimer drop on a new Next.js route (P1 — DESIGNED)
+## FM-02 — Disclaimer drop on a new Next.js route (P1 — REVISED 2026-06-30)
 
 **Risk:** Next.js per-route rendering could drop the pinned SEBI disclaimer
 that Streamlit injected globally. A developer adds a new route without
 re-adding the disclaimer component.
+
+**Council revision (2026-06-30):** Gall's Law council eliminated FastAPI as
+primary data path. Original Layer 2 ("SebiDisclaimer fetches from FastAPI
+backend") was a runtime dependency on a parked service — P1 silent failure if
+API unreachable. Revised Layer 2 uses Vercel env var: text is immutable per
+deployment, enforced at build time, never null in production.
 
 **Mitigation: 3-layer defence**
 
@@ -46,16 +52,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-`SebiDisclaimer` is a React Server Component. It fetches the disclaimer
-text from the FastAPI backend (`/health` or a dedicated `/disclaimer` endpoint).
-Single source of truth = Python `constants.py`. Renders as fixed-position footer.
-Not collapsible. Not dismissable. Not conditional.
+`SebiDisclaimer` is a React Server Component (no NEXT_PUBLIC_ prefix — never
+reaches client bundle). Renders as fixed-position footer. Not collapsible.
+Not dismissable. Not conditional.
 
-### Layer 2 — Backend as source of truth
+### Layer 2 — Vercel env var as source of truth (REVISED)
 
-Every API response envelope contains `sebi_disclaimer: "AlphaVeda provides..."`.
-Frontend renders the backend-provided string, never its own copy.
-Text cannot drift between Python and TypeScript.
+```typescript
+// app/components/SebiDisclaimer.tsx
+const text = process.env.SEBI_DISCLAIMER  // server-side only
+if (!text) {
+  throw new Error('SEBI_DISCLAIMER env var is required — set in Vercel project settings')
+}
+// Throws at build time → Vercel deploy fails if env var absent
+// Text is immutable per deployment — cannot mutate at runtime
+```
+
+`SEBI_DISCLAIMER` Vercel env var is populated from `constants.py` text during
+Vercel project setup (same one-time step as SUPABASE_URL). Python `constants.py`
+remains the canonical definition.
+
+**Drift risk (Synthesis Chair minority view):** If `constants.py` text is ever
+updated, Vercel env var must be manually re-synced. Mitigated by Playwright
+exact-text assertion (Layer 3) — text mismatch fails CI before deploy.
 
 ### Layer 3 — CI Playwright gate (blocks Vercel deploy)
 
@@ -73,6 +92,12 @@ for (const route of routes) {
     expect(text).not.toContain('BUY')
     expect(text).not.toContain('SELL')
     expect(text).not.toContain('invest in')
+  })
+  // FM-B: service key must never appear in client HTML (SRE gate)
+  test(`service key not exposed on ${route}`, async ({ page }) => {
+    await page.goto(route)
+    const html = await page.content()
+    expect(html).not.toContain('SUPABASE_SERVICE_KEY')
   })
 }
 ```
@@ -146,8 +171,21 @@ Never `allow_origins=['*']` — that would allow any origin to call the API.
 | Conditional | Status | Resolution |
 |---|---|---|
 | FM-05: build against empty DB | RESOLVED | G0 cleared 2026-06-28 — 14 instruments, 13 OHLCV rows |
-| FM-02: disclaimer drop on new route | DESIGNED | 3-layer: root layout + backend envelope + Playwright CI |
-| FM-01: Railway cold-start | DESIGNED | Keep-warm GHA cron + frontend WarmingState + 30s timeout |
+| FM-02: disclaimer drop on new route | REVISED + DESIGNED | 3-layer: root layout + Vercel env var (revised 2026-06-30) + Playwright CI |
+| FM-01: Fly.io cold-start | ELIMINATED | `auto_stop_machines = false` + `min_machines_running = 1` in fly.toml |
 
 SRA verdict upgrades from CONDITIONAL to APPROVED once FM-02 Playwright gate
 is written and passing in Session B CI pipeline.
+
+## Directory structure decision (council 2026-06-30)
+
+Next.js frontend goes in `alphaveda/web/` (inside alphaveda/, not at repo root).
+Vercel root directory setting: `alphaveda/web`.
+All AlphaVeda code lives in one directory. Root-level GSI legacy files frozen.
+
+## FastAPI deployment decision (council 2026-06-30)
+
+`alphaveda/api/` stays in repo — code is built and pytest passes via TestClient.
+Fly.io deployment DEFERRED to Session C gate. No live server needed for Session B.
+Rationale: Session B queries Supabase directly. No FastAPI in the data path.
+Fly.io trial credit preserved. Tarun fly deploy commands deferred.

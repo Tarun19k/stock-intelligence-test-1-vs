@@ -161,7 +161,7 @@
 
 ## EXACT RESUME POINT
 
-**SESSION A BUILT 2026-06-30. Fly.io chosen. api/ + Dockerfile + fly.toml + tests written. Awaiting Tarun: flyctl login + fly apps create + fly secrets set + fly deploy.**
+**COUNCIL DECISIONS LOGGED 2026-06-30. Session A BUILT + parked (Fly.io deploy deferred to Session C). FM-02 Layer 2 revised (Vercel env var, Varghese APPROVED). Directory: alphaveda/web/. Session B unblocks after Tarun completes 3 Vercel setup actions (no CLI needed).**
 
 | Item | Status | Detail |
 |---|---|---|
@@ -177,8 +177,10 @@
 | GHA ingest zero-row alert | ✓ DONE | Step added to ingest.yml — no new workflow |
 | Notion Product Hub | ✓ CREATED | 27 tasks — https://app.notion.com/p/38d648bc8b1b8154bb38f84753045675 |
 | Session A — api/ built | ✓ BUILT | api/main.py + 5 routes + Dockerfile + fly.toml + tests/test_api.py |
-| Session A — fly deploy | TARUN ACTION | 3 commands, then `fly deploy` from alphaveda/ |
-| Session B — Next.js | NOT STARTED | Unblocks after fly deploy verified + Vercel project created |
+| Session A — fly deploy | DEFERRED → Session C | Council 2026-06-30: Session B uses Supabase direct, no FastAPI needed |
+| Directory structure | ✓ DECIDED | alphaveda/web/ for Next.js (inside alphaveda/, Vercel root = alphaveda/web) |
+| FM-02 Layer 2 revised | ✓ APPROVED | Varghese + SRA: Vercel env var replaces FastAPI fetch; build-time enforcement |
+| Session B — Next.js | NOT STARTED | Unblocks after Tarun completes 3 Vercel setup actions |
 
 **Fly.io usage tracking:**
 - Dashboard: fly.io → Billing → Usage (check weekly)
@@ -187,15 +189,23 @@
 - Add credit card before credit depletes to prevent service shutdown
 - Scale if OOM: `fly scale memory 512` (~$3.32/month)
 
-**Tarun — 3 commands to deploy Session A:**
-1. `brew install flyctl` → `fly auth login` (if not done)
-2. `fly apps create alphaveda-api` (run from alphaveda/ directory)
+**Tarun — Session A deploy (DEFERRED to Session C gate — not needed for Session B):**
+1. `brew install flyctl` → `fly auth login`
+2. `fly apps create alphaveda-api` (from alphaveda/ directory)
 3. `fly secrets set SUPABASE_URL=<url> SUPABASE_SERVICE_KEY=<key>`
-4. `fly deploy` (run from alphaveda/ directory)
+4. `fly deploy` (from alphaveda/ directory)
 
-**Tarun — Session B gate (do after fly deploy is verified):**
-5. Create Vercel account + import GSI repo → project name `alphaveda-web`
-6. Enable Supabase Auth on `kowlkczswaglbmabygtl` (defer to before Session C)
+**Tarun — Session B gate (3 actions, ~10 minutes):**
+1. Create Vercel account → import `stock-intelligence-test-1-vs` repo
+2. Set root directory to `alphaveda/web` in Vercel project settings
+3. Set 3 env vars in Vercel → Settings → Environment Variables:
+   - `SUPABASE_URL` = your Supabase project URL
+   - `SUPABASE_SERVICE_KEY` = your Supabase service role key
+   - `SEBI_DISCLAIMER` = (copy exact text from alphaveda/src/constants.py)
+
+**Tarun — Session C gate (defer until first subscriber is 2 weeks out):**
+4. Enable Supabase Auth on `kowlkczswaglbmabygtl`
+5. Fly.io deploy (items 1–4 above)
 
 **Remaining AMBER (NOT blocking — G1 scope):**
 - Outcome scoring horizon: all predictions scored on day 1 (R-01)
