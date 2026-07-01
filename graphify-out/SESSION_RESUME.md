@@ -7,6 +7,15 @@
 
 ---
 
+## PLAN STATUS — LOCKED 2026-07-01
+
+**Canonical execution contract:** `alphaveda/docs/plans/LOOP_ENGINEERED_ROADMAP.md`  
+Read it at session start before accepting any AlphaVeda work. Update the Progress Log section as loops complete.
+
+**G-L8 AMENDMENT (Tarun, 2026-07-01):** Gumroad Stream A listing is gated on Tarun's explicit AlphaVeda go-ahead — not a fixed calendar date. Penalty floor remains 2026-07-07 (earliest possible). Listing trigger = Tarun's approval.
+
+---
+
 ## DO NOT REDO — Session 2026-07-01
 
 ### Session B — Next.js on Vercel DEPLOYED ✓
@@ -76,7 +85,7 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 | test_full_operational_loop | **P0 — NOT WRITTEN** | Add to test_g0_gate.py before next G0 claim |
 | Rule D/E in COUNCIL_RULES.md | **P1 — NOT WRITTEN** | Skip audit gate + cross-domain connectivity test requirement |
 | GraphRAG sync pipelines (Fixes B–D) | **P1 — NOT BUILT** | Notion tasks → md, Vercel state → md, Product Hub → md |
-| Gumroad (Stream A) | OVERDUE + PENALISED | Earliest: 2026-07-07. All 6 gates pass. Tarun to list. |
+| Gumroad (Stream A) | PENALISED + GATED | Earliest: 2026-07-07. Trigger: Tarun's explicit AlphaVeda go-ahead (not a date). |
 | Stream C consulting | OVERDUE | 3 targets needed, no code required |
 
 ---
@@ -85,7 +94,7 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 | Decision | Status | Impact | Needed by |
 |---|---|---|---|
-| Gumroad publish Stream A | OVERDUE — penalty clock running | $0 → first revenue | NOW (earliest 2026-07-07 per penalty rule) |
+| Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval | $0 → first revenue | When Tarun gives explicit AlphaVeda go-ahead (floor: 2026-07-07) |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
 | Approve `emit_signal()` spec before build | Needed | Unlocks all 3 empty pages | Next session |
 
@@ -149,4 +158,4 @@ Next miss adds +24h. Surface this tally at every session start before accepting 
 
 ---
 
-*Updated: 2026-07-01 — Session B deployed. Council analysis complete. Governance rules (penalty + GraphRAG-first) established. Next: emit_signal().*
+*Updated: 2026-07-01 — Session B deployed. Council analysis complete. Loop-engineered roadmap APPROVED and locked at `alphaveda/docs/plans/LOOP_ENGINEERED_ROADMAP.md`. G-L8 amended: Gumroad gated on Tarun's AlphaVeda approval. Next: Session C-P0 — Loop 0 foundation seeds, then emit_signal().*
