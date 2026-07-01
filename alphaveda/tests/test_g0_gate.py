@@ -139,3 +139,21 @@ def test_c9_disclaimer_substance():
     """Criterion 9: disclaimer text passes substance check — non-occlusion is manual."""
     assert len(SEBI_DISCLAIMER) > 50
     assert "research" in SEBI_DISCLAIMER.lower() or "information" in SEBI_DISCLAIMER.lower()
+
+
+def test_full_operational_loop(supabase_client):
+    """NON-NEGOTIABLE LOOP EXIT GATE (G-L5 — LOOP_ENGINEERED_ROADMAP.md).
+
+    Asserts accuracy_predictions has ≥ 1 row — proof that Loop 1 has fired at
+    least once (ingest → emit_signal → write). This test MUST NOT be decorated
+    with @pytest.mark.skip. Skipping it counts as a system miss per governance
+    rule G-L5 and triggers +24h Gumroad penalty.
+
+    Failure message is actionable: it names the exact fix required.
+    """
+    result = supabase_client.table("accuracy_predictions").select("id").limit(1).execute()
+    assert len(result.data) >= 1, (
+        "accuracy_predictions is empty — Loop 1 has never completed. "
+        "Fix: ensure emit_signal() is wired in ingest.py and run "
+        "`python scripts/ingest.py` with a valid trade date."
+    )

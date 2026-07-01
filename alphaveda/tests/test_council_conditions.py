@@ -325,7 +325,6 @@ class TestImranConditions:
         assert banner is not None
         assert any(w in banner.lower() for w in ("updated", "since", "stale"))
 
-    @pytest.mark.skip(reason="emit_signal requires live SUPABASE_URL and seed data — G0 gate")
     def test_emit_latency_under_800ms(self):
         """Full emit pipeline (arbitration → discount → calibrate → kelly) ≤ 800ms."""
         import time

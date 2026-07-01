@@ -11,21 +11,19 @@ from src.config import get_supabase_client
 
 
 def get_current_regime(emitted_at: date) -> Optional[dict]:
-    """As-of join: SELECT * FROM macro_regime WHERE effective_date <= :emitted_at
-    ORDER BY effective_date DESC LIMIT 1.
+    """As-of join: SELECT * FROM macro_regime WHERE regime_date <= :emitted_at
+    ORDER BY regime_date DESC LIMIT 1.
 
-    Returns None when:
-    - macro_regime is empty
-    - no row predates emitted_at
-    - any exception occurs (DB down, auth failure, etc.)
+    Actual DB column is regime_date (verified 2026-07-01 — not effective_date).
+    Returns None when table is empty, no row predates emitted_at, or DB is down.
     """
     try:
         result = (
             get_supabase_client()
             .table("macro_regime")
             .select("*")
-            .lte("effective_date", str(emitted_at))
-            .order("effective_date", desc=True)
+            .lte("regime_date", str(emitted_at))
+            .order("regime_date", desc=True)
             .limit(1)
             .execute()
         )

@@ -5,9 +5,10 @@ Steps:
   1. Download NSE Bhavcopy for target_date
   2. Resolve symbol → instrument_id via instruments table
   3. Upsert OHLCV rows (circuit_flag set by parser)
-  4. Resolve open predictions against actual closes (circuit rows excluded)
-  5. Write accuracy_outcomes rows (hit + return_pct)
-  6. Write ingest_status row (OK / NO_DATA / SKIPPED_HOLIDAY / ERROR)
+  4. Emit predictions for each active instrument (emit_signal → accuracy_predictions)
+  5. Resolve open predictions against actual closes (circuit rows excluded)
+  6. Write accuracy_outcomes rows (hit + return_pct)
+  7. Write ingest_status row (OK / NO_DATA / SKIPPED_HOLIDAY / ERROR)
 
 Usage:
   python scripts/ingest.py               # today
@@ -76,6 +77,7 @@ def run_ingest(target_date: date | None = None) -> dict:
     summary: dict = {
         "date": target_date.isoformat(),
         "ohlcv_rows": 0,
+        "predictions_emitted": 0,
         "outcomes_resolved": 0,
         "status": "OK",
     }
@@ -132,10 +134,24 @@ def run_ingest(target_date: date | None = None) -> dict:
                 # ingested_at omitted — DEFAULT now() handles it
             })
 
-        # Step 4: Upsert OHLCV (conflict on instrument_id + trade_date per UNIQUE constraint).
+        # Step 3: Upsert OHLCV (conflict on instrument_id + trade_date per UNIQUE constraint).
         if ohlcv_rows:
             supabase.table("ohlcv").upsert(ohlcv_rows, on_conflict="instrument_id,trade_date").execute()
         summary["ohlcv_rows"] = len(ohlcv_rows)
+
+        # Step 4: Emit predictions for each instrument that appeared in today's bhavcopy.
+        # Fail-open: one instrument failing must not abort the full ingest.
+        from src.signals.engine import emit_signal
+        predictions_emitted = 0
+        for iid in symbol_to_id.values():
+            try:
+                emitted = emit_signal(instrument_id=iid, as_of=target_date.isoformat())
+                if emitted is not None:
+                    predictions_emitted += 1
+            except Exception as emit_exc:
+                print(f"[WARN] emit_signal skipped instrument_id={iid}: {emit_exc}", flush=True)
+        summary["predictions_emitted"] = predictions_emitted
+        print(f"[INFO] Emitted {predictions_emitted} predictions for {target_date}", flush=True)
 
         # Step 5: Batch-resolve entry prices — ONE query for all predictions.
         # Avoids N+1 Supabase calls (one per prediction) under production load.
