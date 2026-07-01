@@ -20,9 +20,9 @@ def _mock_client(data: list) -> MagicMock:
 
 
 def test_regime_as_of_join():
-    """Returns the most recent regime row where effective_date <= emitted_at."""
+    """Returns the most recent regime row where regime_date <= emitted_at."""
     mock = _mock_client([
-        {"regime": "RISK_ON", "effective_date": "2026-06-01", "nifty_close": 22000}
+        {"regime": "RISK_ON", "regime_date": "2026-06-01", "nifty_close": 22000}
     ])
     with patch("src.data.regime.get_supabase_client", return_value=mock):
         from src.data.regime import get_current_regime
@@ -51,25 +51,25 @@ def test_regime_returns_none_on_db_exception():
 
 
 def test_regime_lte_called_with_correct_date():
-    """Verify the as-of join uses lte(effective_date) not just latest row."""
-    mock = _mock_client([{"regime": "RISK_OFF", "effective_date": "2026-05-01"}])
+    """Verify the as-of join uses lte(regime_date) not just latest row."""
+    mock = _mock_client([{"regime": "RISK_OFF", "regime_date": "2026-05-01"}])
     with patch("src.data.regime.get_supabase_client", return_value=mock):
         from src.data.regime import get_current_regime
         result = get_current_regime(date(2026, 5, 15))
     mock.table.return_value.select.return_value.lte.assert_called_once_with(
-        "effective_date", "2026-05-15"
+        "regime_date", "2026-05-15"
     )
     assert result["regime"] == "RISK_OFF"
 
 
 def test_regime_order_desc():
-    """Query must order by effective_date descending to get most recent row."""
-    mock = _mock_client([{"regime": "RISK_ON", "effective_date": "2026-06-01"}])
+    """Query must order by regime_date descending to get most recent row."""
+    mock = _mock_client([{"regime": "RISK_ON", "regime_date": "2026-06-01"}])
     with patch("src.data.regime.get_supabase_client", return_value=mock):
         from src.data.regime import get_current_regime
         get_current_regime(date(2026, 6, 21))
     mock.table.return_value.select.return_value.lte.return_value.order.assert_called_once_with(
-        "effective_date", desc=True
+        "regime_date", desc=True
     )
 
 
@@ -84,7 +84,7 @@ def test_regime_cached():
     the consistency contract without @lru_cache.
     """
     from src.data.regime import get_current_regime
-    mock = _mock_client([{"regime": "RISK_ON", "effective_date": "2026-06-01"}])
+    mock = _mock_client([{"regime": "RISK_ON", "regime_date": "2026-06-01"}])
     with patch("src.data.regime.get_supabase_client", return_value=mock):
         result_a = get_current_regime(date(2026, 6, 21))
         result_b = get_current_regime(date(2026, 6, 21))

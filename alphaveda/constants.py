@@ -50,7 +50,7 @@ E2_CONFIDENCE_FLOOR = 50  # emits below this do not count toward E2 streak
 
 # ── SEBI (Varghese) ──────────────────────────────────────────────────────────
 SEBI_DISCLAIMER = (
-    "AlphaVeda provides information and analysis only. "
+    "AlphaVeda provides research and analysis only. "
     "This is NOT investment advice. Consult a SEBI-registered "
     "investment advisor before making any investment decision. "
     "Past signal accuracy does not guarantee future returns."
