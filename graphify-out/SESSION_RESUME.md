@@ -16,7 +16,7 @@ Read it at session start before accepting any AlphaVeda work. Update the Progres
 
 ---
 
-## DO NOT REDO — Session 2026-07-01
+## DO NOT REDO — Session C-P0 (2026-07-01 continued)
 
 ### Session B — Next.js on Vercel DEPLOYED ✓
 - Commit d54fc6e pushed to main → triggered first successful Vercel build
@@ -49,6 +49,17 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 - Data completeness gate in ingest.yml
 - Phase sign-off user-outcome checklist
 
+### Loop 1 — First Fire COMPLETE ✓ (commit 867eaf5)
+- `emit_signal()` written in `alphaveda/src/signals/engine.py` — DB orchestrator
+- `regime.py` fixed: `effective_date` → `regime_date` (verified actual column name)
+- `ingest.py` Step 4 wired: emit predictions for all instruments after OHLCV upsert
+- `macro_regime` seeded: 1 row (regime=RISK_ON, vix=14.0, regime_date=2026-07-01)
+- `accuracy_outcomes` migration 0017 applied: added `hit BOOL NOT NULL DEFAULT FALSE` + `return_pct NUMERIC`
+- Loop 1 batch run: 13 predictions in `accuracy_predictions` (12 emitted + 1 smoke test; TATAMOTORS suppressed no OHLCV)
+- `test_full_operational_loop` GREEN — G-L5 gate active
+- `test_emit_latency_under_800ms` GREEN — @skip removed, 800ms SLA met
+- Full test suite: 44/44 PASS (13 G0 + 31 council conditions) + 10 engine unit tests
+
 ### Penalty Rule — Gumroad Delay ✓
 - Rule established: every system miss on AlphaVeda = +24h Gumroad (Stream A) delay
 - 6 misses × 24h = +144h (+6 days) accumulated
@@ -71,21 +82,22 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 ## EXACT RESUME POINT
 
-**Session B COMPLETE and live. The system has no working prediction loop. Next session must start with `emit_signal()` — the single step that unlocks Signals, Path, and Accuracy pages.**
+**Loop 1 is LIVE. 13 predictions in `accuracy_predictions`. Next: run ingest for next trading day, verify outcomes resolve, wire the 3 empty Next.js pages (Signals, Path, Accuracy) to read from `accuracy_predictions`.**
 
 | Item | Status | Detail |
 |---|---|---|
 | Session B — Next.js | ✓ DEPLOYED | stock-intelligence-test-1-vs.vercel.app · READY |
 | Session A — FastAPI | DEFERRED | Fly.io deploy deferred to Session C |
 | Session C — Auth | DEFERRED | Trigger: first subscriber |
-| Prediction emission | **P0 — NOT BUILT** | Write `emit_signal()` in engine.py + call from ingest.py Step 0 |
-| fundamentals ingest | **P1 — NOT BUILT** | BSE XBRL parser exists; needs scheduling |
-| macro_regime seed | **P1 — NOT SEEDED** | Manual row first (VIX + regime_tag); auto-ingest later |
-| magnitude_target / downside_target | **P0 — NOT POPULATED** | Wire ATR call at emit time |
-| test_full_operational_loop | **P0 — NOT WRITTEN** | Add to test_g0_gate.py before next G0 claim |
-| Rule D/E in COUNCIL_RULES.md | **P1 — NOT WRITTEN** | Skip audit gate + cross-domain connectivity test requirement |
-| GraphRAG sync pipelines (Fixes B–D) | **P1 — NOT BUILT** | Notion tasks → md, Vercel state → md, Product Hub → md |
-| Gumroad (Stream A) | PENALISED + GATED | Earliest: 2026-07-07. Trigger: Tarun's explicit AlphaVeda go-ahead (not a date). |
+| Loop 0 — macro_regime seed | ✓ DONE | 1 row (RISK_ON, VIX=14, regime_date=2026-07-01) |
+| Loop 1 — emit_signal() | ✓ LIVE | 13 predictions; 44/44 tests pass; G-L5 gate GREEN |
+| Loop 1 — daily ingest test | **NEXT — P0** | Run `python scripts/ingest.py 2026-07-02` on next trading day |
+| Next.js pages — Signals/Path/Accuracy | **P0 — EMPTY** | Wire to `accuracy_predictions` Supabase reads |
+| Loop 2 — outcome resolution | P1 | Resolve first prediction: wait for next trading close |
+| fundamentals ingest | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling |
+| Rule D/E in COUNCIL_RULES.md | P1 — NOT WRITTEN | Skip audit gate + cross-domain connectivity test |
+| GraphRAG sync pipelines (Fixes B–D) | P1 — NOT BUILT | Notion tasks → md, Vercel state → md, Product Hub → md |
+| Gumroad (Stream A) | PENALISED + GATED | Earliest: 2026-07-07. Trigger: Tarun's explicit AlphaVeda go-ahead. |
 | Stream C consulting | OVERDUE | 3 targets needed, no code required |
 
 ---
@@ -151,11 +163,14 @@ Next miss adds +24h. Surface this tally at every session start before accepting 
 | Session A (FastAPI) | ✓ BUILT, DEFERRED | e7561ca | Fly.io deploy parked |
 | Session B (Next.js) | ✓ DEPLOYED | d54fc6e | READY at production URL |
 | Session C (Auth) | DEFERRED | — | Trigger: first subscriber |
-| Prediction emission | **NOT BUILT** | — | P0: write emit_signal(), wire to ingest.py |
+| Prediction emission | ✓ LIVE (867eaf5) | 867eaf5 | 13 predictions; 44 tests pass |
+| Macro regime seed | ✓ SEEDED | — | 1 row RISK_ON VIX=14 |
+| Migration 0017 | ✓ APPLIED | — | hit + return_pct added to accuracy_outcomes |
+| Next.js pages (Signals/Path/Accuracy) | **EMPTY — P0** | — | Wire to accuracy_predictions |
+| Daily ingest next trading day | **P0 — PENDING** | — | Run scripts/ingest.py 2026-07-02 |
 | Fundamentals ingest | NOT BUILT | — | P1: schedule fundamentals.py |
-| Macro regime seed | NOT SEEDED | — | P1: manual row first |
 | Weekly tracking | NOT BUILT | — | P2: after emission wired |
 
 ---
 
-*Updated: 2026-07-01 — Session B deployed. Council analysis complete. Loop-engineered roadmap APPROVED and locked at `alphaveda/docs/plans/LOOP_ENGINEERED_ROADMAP.md`. G-L8 amended: Gumroad gated on Tarun's AlphaVeda approval. Next: Session C-P0 — Loop 0 foundation seeds, then emit_signal().*
+*Updated: 2026-07-01 (Session C-P0) — Loop 1 first fire complete. 13 predictions live. 44/44 tests pass. Next: wire Next.js pages + run ingest on next trading day.*
