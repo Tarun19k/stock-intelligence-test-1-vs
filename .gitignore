@@ -22,6 +22,9 @@ litellm-proxy/.env
 # Runtime data — NOT source code
 forecast_history.json
 
+# AlphaVeda — local working docs (not source)
+alphaveda/tech_stack/
+
 # macOS
 .DS_Store
 .AppleDouble
