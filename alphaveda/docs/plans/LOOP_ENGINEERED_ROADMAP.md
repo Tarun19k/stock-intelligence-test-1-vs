@@ -184,4 +184,3 @@ Each new miss adds +24h to penalty. Surface at session start before accepting an
 |---|---|
 | 2026-07-01 | Plan created + approved. G-L8 amended: Gumroad gated on Tarun's AlphaVeda approval, not fixed calendar date. |
 | 2026-07-09 | Design catalog v2 discovered (gitignored 07-01, never wired to build). Full capability map + loop-engineered gap audit converged: 17 gaps (G1–G17), 6 red flags (RF-A–F). Financial panel (7-member, adapted for system review) returned 3 BLOCKERs: RF-B (emit_signal direction/confidence incoherence below p=0.5), RF-A (marketing overstates multi-doctrine capability vs live single-signal), Munger sequencing (fix RF-B before waitlist G8 ships). Sign-off criterion defined: zero BLOCKER on panel re-run. Gap register not yet a standalone file — see SESSION_RESUME.md 2026-07-09 checkpoint for full detail. |
-# hook fix verification 2026-07-09T17:57:09Z
