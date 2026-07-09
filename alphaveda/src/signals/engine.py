@@ -157,8 +157,10 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
         ret = (last_close - ref_open) / ref_open
 
     direction = "BULL" if ret >= 0 else "BEAR"
-    # Floor at 20.0 ensures score > ARBITRATION_MARGIN=15.0 at weight=1.0
-    confidence = max(min(abs(ret) * 500, 100.0), 20.0)
+    # No artificial floor: weak signals must fail to clear ARBITRATION_MARGIN
+    # naturally and go silent via emit_pipeline() returning None. A floor here
+    # previously defeated that suppression mechanism (RF-B, 2026-07-09).
+    confidence = min(abs(ret) * 500, 100.0)
     signals = [{"direction": direction, "confidence": confidence,
                 "signal_name": "momentum_price", "weight": 1.0}]
 
