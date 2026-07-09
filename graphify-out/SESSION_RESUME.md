@@ -1,18 +1,60 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-07-01 (Session B deployed + council strategic analysis + governance rules established)
+**Session date:** 2026-07-09 (post-compaction review session — design catalog discovered, capability audit, financial panel sign-off)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
-**Last commits:** 692b380 (graphify-gaps.md), d54fc6e (Session B Next.js frontend)
+**Last commits (prior to this checkpoint):** da017fa (graphify index), e0f0daa (test fixes), 867eaf5 (Loop 1 first fire)
 
 ---
 
-## PLAN STATUS — LOCKED 2026-07-01
+## PLAN STATUS — LOCKED 2026-07-01, ACTIVE 2026-07-09
 
-**Canonical execution contract:** `alphaveda/docs/plans/LOOP_ENGINEERED_ROADMAP.md`  
+**Canonical execution contract:** `alphaveda/docs/plans/LOOP_ENGINEERED_ROADMAP.md`
 Read it at session start before accepting any AlphaVeda work. Update the Progress Log section as loops complete.
 
-**G-L8 AMENDMENT (Tarun, 2026-07-01):** Gumroad Stream A listing is gated on Tarun's explicit AlphaVeda go-ahead — not a fixed calendar date. Penalty floor remains 2026-07-07 (earliest possible). Listing trigger = Tarun's approval.
+**G-L8 AMENDMENT (Tarun, 2026-07-01):** Gumroad Stream A listing is gated on Tarun's explicit AlphaVeda go-ahead — not a fixed calendar date. Penalty floor remains 2026-07-07 (earliest possible, already passed). Listing trigger = Tarun's approval.
+
+---
+
+## DO NOT REDO — Session 2026-07-09 (post-compaction review)
+
+### Design catalog discovered — LOCKED v2, never wired to repo/build
+- Found at `alphaveda/tech_stack/files (4)/` — gitignored 07-01 as "local working docs," invisible to GraphRAG until now
+- Contents: `alphaveda_design_catalog_v2.html` (3 full directions, interactive), `PLAIN_LANGUAGE_LEXICON.md` (LOCKED copy source-of-truth, i18n-ready), `DESIGN_PACK_README.md`, `CLAUDE_CODE_ADDENDUM.md` (R1–R11 strategic loop revisions, document authority order), `design_evals_v2.py`
+- 17 design evals + 7 language evals PASS (LOCKED). Directions: D1 Bharat Fintech Clarity (~1 session migration), D2 Quiet Instrument (~1.5), D3 Research Journal (~2–2.5)
+- Simple/Pro language mode layer designed in full (grade-6.7 readability, frequency-framed probabilities, tap-to-learn glossary, dual SEBI treatment) — **zero of this exists in the deployed Next.js build**
+- **Decision needed from Tarun:** which direction wins (phone walkthrough + 5-second recall test + rubric — the catalog reserves this step for you, not Claude)
+- **Decision needed from Tarun:** whether to un-gitignore the design pack into the repo proper (data-governance surface change — becomes public if repo goes public)
+
+### Psychological suitability review (Fable) — COMPLETE
+- All 3 directions assessed for cognitive load, trust, comprehension, decision safety
+- Shared layer (frequency framing, honest negative states, progressive disclosure, agency preservation, empirical 5-sec testing) verified sound — carries ~80% of the psychological load regardless of direction
+- **Recommendation: D1 (Bharat Fintech Clarity)** as base, transplant D2's copy voice for NO CALL/ledger surfaces
+- 3 findings: F1 (SEBI disclaimer now 4-way conflict — constants.py / Vercel env / sebi.spec.ts / lexicon all disagree), F2 (verdict labels on held positions read as directive despite analytical language — Portfolio surface rule needed), F3 (no surface shows "68% right also means 32% wrong" — anchoring risk)
+
+### Full capability map + loop-engineered gap audit — CONVERGED (5 passes, no new findings on pass 5)
+- Full feature inventory across Data/Signal/Accuracy/Portfolio/Compliance/Frontend/API/Ops layers — built vs designed-only vs missing, documented in-session
+- Persona × capability × learning-path matrix (first-week investor, Pro/analyst, owner, future subscriber, operator)
+- **17 gaps (G1–G17) + 6 red flags (RF-A–F) found.** Compressed into 4 structural truths:
+  1. Honesty machinery (ledger, calibration display) is ahead of honesty *content* (RF-A/B/C undermine what it would currently show)
+  2. **Commercial loop has no entry point** — no waitlist route exists anywhere in the deployed app (G8); privacy/DPDP policy also missing (G10). Session C's own trigger (`waitlist.converted_at`) is structurally unreachable
+  3. Designed product ≠ deployed product — Simple/Pro layer, glossary, chosen direction all catalog-only (G3/G9)
+  4. Known-fragile operations running unwatched — Jul 2→9 ingest health **still unverified** (G12), macro regime already stale by the system's own 3-day rule (G13), no missed-run watchdog (G11)
+- Full G1–G17 list + RF-A–F detail: see this session's transcript; **not yet persisted to a standalone gap-register file** (queued, not done)
+
+### Strategic analysis (6 frameworks) — COMPLETE
+- Posture: CONSOLIDATE. Weakest pillar: Market (1/5) — commercial loop cannot close, zero external users
+- Trap verdict: CLEAR, conditional on this session ending in execution rather than another audit layer (4th review pass this session alone)
+- Explicit self-check: review/audit work reclassified from Enforce to **Automate-avoidance** — marginal finding rate dropping, cost of not shipping rising
+
+### Financial panel (7-member, adapted for system-review not ticker-verdict) — COMPLETE, 3 BLOCKERS
+- Panel adapted from `panel-convene` (no ticker/RSI/Weinstein inputs — reviewed AlphaVeda's financial engineering directly)
+- **RF-B — BLOCKER (Druckenmiller CF5, Munger CF5):** `emit_signal()` confidence floor (20, set only to clear ARBITRATION_MARGIN=15.0) is written directly as `calibrated_p` and displayed as a directional verdict. A 0.20 probability of "up" is a 0.80 probability of "down" — direction should flip or emission should suppress below p=0.5. **Not yet fixed.**
+- **RF-C — SOUND once RF-B fixed (Druckenmiller CF5):** Kelly's `f* = 2p−1` correctly zero-sizes at p=0.20 (symmetric b=1 from magnitude=downside MVP simplification) — this is *correct* protective Kelly behavior, not a bug. No fix needed once RF-B is resolved.
+- **RF-A — BLOCKER (Buffett CF5):** landing/marketing copy ("seven doctrines, one calibrated signal") describes a multi-signal system; live engine is single momentum signal at weight=1.0. Reclassify as honest cold-start MVP framing (Lynch: SOUND once relabeled).
+- **Munger — BLOCKER on sequencing:** RF-B must be fixed BEFORE the waitlist (G8) ships — shipping G8 first would expose real users to the incoherent direction/confidence label.
+- Consensus: BLOCKER 3/7, CONCERN 3/7 (Dalio/Marks/Soros — structural, resolve as data accumulates, not gates), SOUND 1/7
+- **Defined sign-off completion criterion:** re-run this panel post-fix; sign-off achieved at **zero BLOCKER verdicts** (CONCERN is acceptable, not a gate)
 
 ---
 
@@ -82,22 +124,27 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 ## EXACT RESUME POINT
 
-**Loop 1 is LIVE. 13 predictions in `accuracy_predictions`. Next: run ingest for next trading day, verify outcomes resolve, wire the 3 empty Next.js pages (Signals, Path, Accuracy) to read from `accuracy_predictions`.**
+**Financial panel gave 3 BLOCKERs, all cheap. Fix order: (1) RF-B `emit_signal()` direction/confidence coherence [~30 min, Sonnet] → (2) RF-A landing copy rescoped to honest cold-start MVP framing [~15 min] → (3) THEN build waitlist page G8 (never before #1, per Munger sequencing BLOCKER). Re-run financial panel post-fix; sign-off = zero BLOCKER verdicts. Also still open from Loop 1 era: verify Jul 2→9 ingest health (network was down last check), wire 3 Next.js pages to live `accuracy_predictions` data and visually confirm populated states (never done — pages were built against empty tables).**
 
 | Item | Status | Detail |
 |---|---|---|
 | Session B — Next.js | ✓ DEPLOYED | stock-intelligence-test-1-vs.vercel.app · READY |
 | Session A — FastAPI | DEFERRED | Fly.io deploy deferred to Session C |
 | Session C — Auth | DEFERRED | Trigger: first subscriber |
-| Loop 0 — macro_regime seed | ✓ DONE | 1 row (RISK_ON, VIX=14, regime_date=2026-07-01) |
-| Loop 1 — emit_signal() | ✓ LIVE | 13 predictions; 44/44 tests pass; G-L5 gate GREEN |
-| Loop 1 — daily ingest test | **NEXT — P0** | Run `python scripts/ingest.py 2026-07-02` on next trading day |
-| Next.js pages — Signals/Path/Accuracy | **P0 — EMPTY** | Wire to `accuracy_predictions` Supabase reads |
-| Loop 2 — outcome resolution | P1 | Resolve first prediction: wait for next trading close |
-| fundamentals ingest | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling |
+| Loop 1 — emit_signal() | ✓ LIVE, ⚠️ BLOCKER found | 13 predictions exist, but RF-B confidence/direction logic is incoherent — fix before any external eyes |
+| Loop 1 — Jul 2→9 ingest health | **UNVERIFIED — P0** | Network was down at last check attempt this session; re-run the health query first thing next session |
+| RF-B fix (emit_signal direction/confidence) | **P0 — BLOCKER, not yet fixed** | One conditional in `emit_signal()`; all 7 panelists converged on this |
+| RF-A fix (landing copy scope) | **P0 — BLOCKER, not yet fixed** | Rescope "seven doctrines" claim to honest single-signal cold-start framing |
+| Waitlist + privacy page (G8/G10) | **P0 — sequenced AFTER RF-B** | Commercial loop's only entry point; currently unreachable — do not ship before RF-B fix |
+| Next.js pages — Signals/Path/Accuracy | **P0 — visually unverified** | Built against empty tables; populated-state rendering never confirmed even after Loop 1 fired |
+| Design direction pick (D1/D2/D3) | **Tarun-owned — NOT DONE** | Fable recommends D1 + D2 copy transplant; final pick needs your phone walkthrough + 5-sec test |
+| Design pack repo decision | **Tarun-owned — NOT DONE** | Un-gitignore into repo proper, or leave local-only |
+| Gap register file (G1–G17, RF-A–F) | **NOT YET WRITTEN** | Findings exist only in this session's transcript + this checkpoint summary — queued as a standalone doc |
+| fundamentals ingest | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling (also G1) |
+| macro_regime freshness | P1 — STALE (G13) | Seeded 07-01, system's own rule is 3-day staleness — already stale |
 | Rule D/E in COUNCIL_RULES.md | P1 — NOT WRITTEN | Skip audit gate + cross-domain connectivity test |
 | GraphRAG sync pipelines (Fixes B–D) | P1 — NOT BUILT | Notion tasks → md, Vercel state → md, Product Hub → md |
-| Gumroad (Stream A) | PENALISED + GATED | Earliest: 2026-07-07. Trigger: Tarun's explicit AlphaVeda go-ahead. |
+| Gumroad (Stream A) | PENALISED + GATED | Floor 2026-07-07 (passed). Trigger: Tarun's explicit AlphaVeda go-ahead — now additionally blocked behind RF-B/A fixes per financial panel |
 | Stream C consulting | OVERDUE | 3 targets needed, no code required |
 
 ---
@@ -106,9 +153,11 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 | Decision | Status | Impact | Needed by |
 |---|---|---|---|
-| Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval | $0 → first revenue | When Tarun gives explicit AlphaVeda go-ahead (floor: 2026-07-07) |
+| Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | $0 → first revenue | When Tarun gives go-ahead (floor 2026-07-07, passed) |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
-| Approve `emit_signal()` spec before build | Needed | Unlocks all 3 empty pages | Next session |
+| Design direction pick (D1 recommended) | Needed | Unblocks design migration session | Whenever Tarun does the phone/rubric walk |
+| Design pack repo commit decision | Needed | Data-governance surface change if repo goes public | Before design migration starts |
+| Confirm RF-B fix approach (flip direction vs suppress emission below p=0.5) | Needed — panel leans toward one but Tarun should confirm the product call | Determines emit_signal() behavior for every future low-confidence prediction | Before RF-B code lands |
 
 ---
 
