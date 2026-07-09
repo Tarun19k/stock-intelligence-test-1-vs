@@ -144,7 +144,7 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 ## EXACT RESUME POINT
 
-**RF-B fix is DECIDED (remove the artificial confidence floor in `emit_signal()` — see decision block above) but NOT YET APPLIED TO CODE. This is the very next action: edit `alphaveda/src/signals/engine.py`, change `confidence = max(min(abs(ret) * 500, 100.0), 20.0)` to `confidence = min(abs(ret) * 500, 100.0)`, re-run test suite, re-run financial panel to confirm zero BLOCKER. Then RF-A landing copy rescope. THEN waitlist page G8 (never before RF-B, per Munger sequencing BLOCKER). Also still open: verify Jul 2→9 ingest health, wire 3 Next.js pages to live data and visually confirm populated states.**
+**RF-B fix APPLIED AND COMMITTED (edb8d01) — the artificial confidence floor is removed from `emit_signal()`. 17/18 relevant unit tests pass (1 pre-existing perf-test skip); 39 DB-dependent tests failed on httpx.ConnectError (network down to Supabase — unrelated to this change, pre-existing this session). NEXT ACTIONS in order: (1) re-run financial panel once network is back to confirm zero-BLOCKER sign-off — RF-B is code-fixed but not yet panel-reconfirmed; (2) re-run full test suite once network is back to get a true pass count including the DB-dependent tests; (3) RF-A landing copy rescope; (4) THEN waitlist page G8 (never before RF-B — now satisfied, but wait for panel reconfirmation first). Also still open: verify Jul 2→9 ingest health, wire 3 Next.js pages to live data and visually confirm populated states. Settings.json token-tracker hooks still pending Tarun's specific yes/no (see OPEN DECISIONS).**
 
 | Item | Status | Detail |
 |---|---|---|
