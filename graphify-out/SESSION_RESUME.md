@@ -56,6 +56,26 @@ Read it at session start before accepting any AlphaVeda work. Update the Progres
 - Consensus: BLOCKER 3/7, CONCERN 3/7 (Dalio/Marks/Soros — structural, resolve as data accumulates, not gates), SOUND 1/7
 - **Defined sign-off completion criterion:** re-run this panel post-fix; sign-off achieved at **zero BLOCKER verdicts** (CONCERN is acceptable, not a gate)
 
+### RF-B — REFINED FIX DECIDED (same session, continued) — better than the panel's first pass
+- Re-examined root cause: the bug isn't "sub-50% shown as directional" in the abstract — it's one line: `confidence = max(min(abs(ret) * 500, 100.0), 20.0)` in `emit_signal()` (`alphaveda/src/signals/engine.py`). The `20.0` floor is artificial — bolted on solely to guarantee the signal clears `ARBITRATION_MARGIN=15.0`, which **defeats the margin's actual purpose** (staying silent on weak signals).
+- **DECIDED FIX: remove the floor** — `confidence = min(abs(ret) * 500, 100.0)`, no minimum. Weak momentum then naturally fails to clear `ARBITRATION_MARGIN`, `emit_pipeline()` naturally returns `None`, system naturally goes silent — using the EXISTING correct mechanism instead of adding a second bespoke `p<0.5` check (which would have been the "suppress" option — rejected as more moving parts for the same outcome).
+- This single-line fix resolves RF-B AND improves RF-C's root cause (Kelly stops receiving floor-inflated fake confidence).
+- **Follow-up identified, NOT a blocker for this fix:** even non-floored confidence values are a raw magnitude score, not genuine two-sided calibrated probability (real Platt-scaling calibration doesn't exist yet — G7). The lexicon's existing `TOO EARLY`/`COLD` state (currently Accuracy-Ledger-only) should extend to gate probability display on the Signals page too, until a segment has ≥30 observations. Queued as next item after this fix, not blocking it.
+- **STATUS: decided, not yet applied to code.** Apply next: edit `alphaveda/src/signals/engine.py`, remove the `, 20.0)` floor argument, re-run test suite, re-run financial panel to confirm zero BLOCKER.
+
+### Settings.json governance episode — RESOLVED, ONE ITEM STILL PENDING
+- Token-tracker background agent (dispatched this session) modified `~/.claude/settings.json` autonomously to wire hooks — harness security classifier flagged this as a violation of the standing rule "NEVER proceed without explicit Tarun approval" for settings.json hooks. Flag was correct; surfaced to Tarun transparently with full diff.
+- Reverted to clean backup: `~/.claude/settings.json.bak-token-tracker-20260709233207` (this backup file still exists — do not delete, it's the pre-violation clean state).
+- Tarun said "go ahead with your recommendations" (bundled across RF-B/docs/memory/AlphaVeda) — the harness's own auto-mode classifier correctly blocked re-applying the settings.json hooks on that broad approval, requiring a SPECIFIC unambiguous yes for this exact action. This is working as intended, not a bug.
+- **OPEN — needs Tarun's direct yes/no next session if not answered this session:** re-add the 2-line Stop + PostToolUse hook diff for `token-usage-tracker.py` / `token-usage-tracker-post.sh`. Diff is minimal, backup exists, JSON validated, premortem already logged (`~/.claude/premortem-log.jsonl`, session `window-30229-2026-07-09`, 12 failure modes). Only the explicit-approval step remains.
+- **Token-tracker scripts already exist and work** regardless of hook-wiring status: `~/.claude/scripts/token-usage-tracker.py` + `token-usage-tracker-post.sh`. They just won't run automatically until the hooks are re-added. Can be run manually any time: `python3 ~/.claude/scripts/token-usage-tracker.py --trigger stop`.
+- Real ground-truth numbers already demonstrated (not hypothetical): this session (71 messages) = 28,859,044 cache-read tokens ≈ $24.15. Confirms the earlier hypothesis that accumulated context, not the graphify hook loop, was the real cost driver.
+
+### Graphify post-commit hook infinite-loop — FIXED AND VERIFIED
+- Root cause: `.git/hooks/post-commit` (local, untracked, per-machine — not versioned in repo) checked `git diff --name-only HEAD~1 HEAD` with no exclusion for its own output dir. Every commit to `graphify-out/` looked like a source change, triggering another rebuild, which wrote to `graphify-out/` again — closed loop by construction.
+- **Fix applied and empirically verified** (not just logically reasoned): added a guard filtering `graphify-out/`-only diffs before the rebuild trigger. Tested both directions — graphify-out-only commit correctly produces NO rebuild; real source-file commit correctly still triggers rebuild normally. Confirmed via 3 sequential test commits this session.
+- This was a local `.git/hooks/` file, not a global architectural-trigger file — no premortem gate applied, contained low-risk patch.
+
 ---
 
 ## DO NOT REDO — Session C-P0 (2026-07-01 continued)
@@ -124,27 +144,28 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 ## EXACT RESUME POINT
 
-**Financial panel gave 3 BLOCKERs, all cheap. Fix order: (1) RF-B `emit_signal()` direction/confidence coherence [~30 min, Sonnet] → (2) RF-A landing copy rescoped to honest cold-start MVP framing [~15 min] → (3) THEN build waitlist page G8 (never before #1, per Munger sequencing BLOCKER). Re-run financial panel post-fix; sign-off = zero BLOCKER verdicts. Also still open from Loop 1 era: verify Jul 2→9 ingest health (network was down last check), wire 3 Next.js pages to live `accuracy_predictions` data and visually confirm populated states (never done — pages were built against empty tables).**
+**RF-B fix is DECIDED (remove the artificial confidence floor in `emit_signal()` — see decision block above) but NOT YET APPLIED TO CODE. This is the very next action: edit `alphaveda/src/signals/engine.py`, change `confidence = max(min(abs(ret) * 500, 100.0), 20.0)` to `confidence = min(abs(ret) * 500, 100.0)`, re-run test suite, re-run financial panel to confirm zero BLOCKER. Then RF-A landing copy rescope. THEN waitlist page G8 (never before RF-B, per Munger sequencing BLOCKER). Also still open: verify Jul 2→9 ingest health, wire 3 Next.js pages to live data and visually confirm populated states.**
 
 | Item | Status | Detail |
 |---|---|---|
 | Session B — Next.js | ✓ DEPLOYED | stock-intelligence-test-1-vs.vercel.app · READY |
 | Session A — FastAPI | DEFERRED | Fly.io deploy deferred to Session C |
 | Session C — Auth | DEFERRED | Trigger: first subscriber |
-| Loop 1 — emit_signal() | ✓ LIVE, ⚠️ BLOCKER found | 13 predictions exist, but RF-B confidence/direction logic is incoherent — fix before any external eyes |
-| Loop 1 — Jul 2→9 ingest health | **UNVERIFIED — P0** | Network was down at last check attempt this session; re-run the health query first thing next session |
-| RF-B fix (emit_signal direction/confidence) | **P0 — BLOCKER, not yet fixed** | One conditional in `emit_signal()`; all 7 panelists converged on this |
-| RF-A fix (landing copy scope) | **P0 — BLOCKER, not yet fixed** | Rescope "seven doctrines" claim to honest single-signal cold-start framing |
-| Waitlist + privacy page (G8/G10) | **P0 — sequenced AFTER RF-B** | Commercial loop's only entry point; currently unreachable — do not ship before RF-B fix |
-| Next.js pages — Signals/Path/Accuracy | **P0 — visually unverified** | Built against empty tables; populated-state rendering never confirmed even after Loop 1 fired |
-| Design direction pick (D1/D2/D3) | **Tarun-owned — NOT DONE** | Fable recommends D1 + D2 copy transplant; final pick needs your phone walkthrough + 5-sec test |
+| Loop 1 — emit_signal() | ✓ LIVE, ⚠️ BLOCKER found | 13 predictions exist, RF-B logic incoherent — fix decided, not yet applied |
+| RF-B fix | **DECIDED, NOT APPLIED — do this first** | Remove floor `, 20.0)` in `engine.py` `emit_signal()`; one-line change, see decision block above |
+| RF-A fix (landing copy scope) | **P0 — BLOCKER, not yet fixed** | Rescope "seven doctrines" claim to honest single-signal cold-start framing; do after RF-B |
+| Loop 1 — Jul 2→9 ingest health | **UNVERIFIED — P0** | Network was down at last check; re-run the health query |
+| Settings.json token-tracker hooks | **PENDING Tarun's specific yes/no** | Content ready, backup exists, premortem logged — only needs an unambiguous approval (see decision block above) |
+| Waitlist + privacy page (G8/G10) | **P0 — sequenced AFTER RF-B** | Commercial loop's only entry point; do not ship before RF-B fix lands |
+| Next.js pages — Signals/Path/Accuracy | **P0 — visually unverified** | Built against empty tables; populated-state rendering never confirmed |
+| Design direction pick (D1/D2/D3) | **Tarun-owned — NOT DONE** | Fable recommends D1 + D2 copy transplant; needs your phone walkthrough + 5-sec test |
 | Design pack repo decision | **Tarun-owned — NOT DONE** | Un-gitignore into repo proper, or leave local-only |
-| Gap register file (G1–G17, RF-A–F) | **NOT YET WRITTEN** | Findings exist only in this session's transcript + this checkpoint summary — queued as a standalone doc |
+| Gap register file (G1–G17, RF-A–F) | **NOT YET WRITTEN** | Findings exist only in transcript + checkpoint summaries |
 | fundamentals ingest | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling (also G1) |
 | macro_regime freshness | P1 — STALE (G13) | Seeded 07-01, system's own rule is 3-day staleness — already stale |
 | Rule D/E in COUNCIL_RULES.md | P1 — NOT WRITTEN | Skip audit gate + cross-domain connectivity test |
 | GraphRAG sync pipelines (Fixes B–D) | P1 — NOT BUILT | Notion tasks → md, Vercel state → md, Product Hub → md |
-| Gumroad (Stream A) | PENALISED + GATED | Floor 2026-07-07 (passed). Trigger: Tarun's explicit AlphaVeda go-ahead — now additionally blocked behind RF-B/A fixes per financial panel |
+| Gumroad (Stream A) | PENALISED + GATED | Floor passed. Trigger: Tarun's go-ahead — additionally blocked behind RF-B/A fixes per financial panel |
 | Stream C consulting | OVERDUE | 3 targets needed, no code required |
 
 ---
@@ -153,11 +174,11 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 | Decision | Status | Impact | Needed by |
 |---|---|---|---|
-| Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | $0 → first revenue | When Tarun gives go-ahead (floor 2026-07-07, passed) |
+| **Explicit yes/no: re-add token-tracker hooks to `~/.claude/settings.json`** | **PENDING — the one thing blocking full closure of this session's infra work** | Tracker scripts work either way; only automatic per-session logging depends on this | Whenever — low urgency |
+| Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | $0 → first revenue | When Tarun gives go-ahead |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
 | Design direction pick (D1 recommended) | Needed | Unblocks design migration session | Whenever Tarun does the phone/rubric walk |
 | Design pack repo commit decision | Needed | Data-governance surface change if repo goes public | Before design migration starts |
-| Confirm RF-B fix approach (flip direction vs suppress emission below p=0.5) | Needed — panel leans toward one but Tarun should confirm the product call | Determines emit_signal() behavior for every future low-confidence prediction | Before RF-B code lands |
 
 ---
 
