@@ -1,0 +1,77 @@
+name: Ingest Missed-Run Watchdog
+
+# G11 / R7 (LOOP_ENGINEERED_ROADMAP.md, CLAUDE_CODE_ADDENDUM.md): detects the case the
+# ingest job's own "Verify ingest wrote rows" step CANNOT catch — the scheduled cron
+# never fired at all (GHA best-effort scheduling drop, GitHub outage, workflow disabled).
+# That step only runs as part of the ingest job itself, so if the job never starts,
+# nothing checks for it. This workflow is a separate, independent schedule that checks
+# from the outside: "did *any* ingest_status row land for today?"
+#
+# R7 acceptance: kill a scheduled run in staging -> alert visible within 2h.
+# Ingest cron is 13:00 UTC; this runs at 15:00 UTC (T+2h) Mon-Fri — matching the ingest
+# cron's own trading-day schedule, since NSE is closed weekends and no row is expected
+# then (holidays WITHIN Mon-Fri still write a SKIPPED_HOLIDAY row, so those are fine).
+#
+# Deliberately reuses the exact Python/Supabase pattern from ingest.yml's verify step
+# rather than inventing a new mechanism (COUNCIL_RULES.md Rule C spirit — no bespoke
+# parallel logic where an existing pattern already does the job).
+
+on:
+  schedule:
+    - cron: "0 15 * * 1-5"
+  workflow_dispatch: {}
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: alphaveda
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check for today's ingest_status row
+        # Fails loudly (exit 1) if no row exists for today's UTC date — surfaces via
+        # GitHub's native workflow-failure notification. Presence of ANY status
+        # (OK / NO_DATA / SKIPPED_HOLIDAY / ERROR) proves the cron fired; whether that
+        # run itself succeeded is ingest.yml's verify step's job, not this one's.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          echo "TODAY=$TODAY" >> "$GITHUB_ENV"
+          python - <<'EOF'
+          import os, sys
+          from supabase import create_client
+
+          sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SERVICE_KEY"])
+          today = os.environ["TODAY"]
+
+          row = (
+              sb.table("ingest_status")
+              .select("status,rows_written,last_run")
+              .eq("last_run", today)
+              .order("id", desc=True)
+              .limit(1)
+              .execute()
+              .data
+          )
+
+          if not row:
+              print(f"ALERT: no ingest_status row for {today} by T+2h — scheduled ingest cron "
+                    f"appears to have never fired (missed run). Manual re-run: "
+                    f"'gh workflow run ingest.yml -f date={today}'")
+              sys.exit(1)
+
+          print(f"OK: ingest cron fired for {today} — status={row[0]['status']}, "
+                f"rows_written={row[0].get('rows_written')}")
+          EOF

@@ -44,36 +44,55 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           INGEST_DATE: ${{ inputs.date }}
         run: |
+          # Resolve the target date here (once) instead of letting ingest.py resolve it
+          # implicitly, so the verify step below can query for THIS run's exact date
+          # instead of guessing from a global "latest last_run" ordering. GHA runners run
+          # UTC, matching Python's date.today() default — this is a no-op equivalence,
+          # not a change to ingest.py's own date-resolution logic.
           if [ -n "$INGEST_DATE" ]; then
-            python scripts/ingest.py "$INGEST_DATE"
+            TARGET_DATE="$INGEST_DATE"
           else
-            python scripts/ingest.py
+            TARGET_DATE=$(date -u +%Y-%m-%d)
           fi
+          echo "TARGET_DATE=$TARGET_DATE" >> "$GITHUB_ENV"
+          python scripts/ingest.py "$TARGET_DATE"
 
       - name: Verify ingest wrote rows
         # Fails the job if ingest status=OK but rows_written=0 (silent failure guard).
         # SKIPPED_HOLIDAY exits 0 — that is correct behaviour, not a failure.
         # Added as a step in the existing job: zero additional GHA minutes consumed.
+        #
+        # Queries by THIS run's own TARGET_DATE (set above), not by "last_run DESC" —
+        # last_run is the ingest TARGET date, not wall-clock execution time. Two
+        # out-of-order manual runs (e.g. a dispatch for tomorrow, followed minutes later
+        # by one for today) would otherwise make the numerically-larger date look
+        # "latest" even though it ran first and is already superseded. Filtering on the
+        # exact date this run targeted, then taking the highest `id` (insertion-order
+        # PK) among same-date rows, always resolves to the row THIS run just wrote —
+        # correct under out-of-order dispatches and same-day reruns alike.
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TARGET_DATE: ${{ env.TARGET_DATE }}
         run: |
           python - <<'EOF'
           import os, sys
           from supabase import create_client
 
           sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SERVICE_KEY"])
+          target_date = os.environ["TARGET_DATE"]
 
           row = (
               sb.table("ingest_status")
               .select("status,rows_written,last_run")
-              .order("last_run", desc=True)
+              .eq("last_run", target_date)
+              .order("id", desc=True)
               .limit(1)
               .execute()
               .data
           )
           if not row:
-              print("ALERT: ingest_status table is empty after ingest run")
+              print(f"ALERT: no ingest_status row found for target_date={target_date} — insert may have failed")
               sys.exit(1)
 
           status = row[0]["status"]
