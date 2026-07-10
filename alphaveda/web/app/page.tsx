@@ -1,4 +1,6 @@
 import { getServerSupabase } from '@/lib/supabase'
+import { LexOrRaw } from '@/components/Lex'
+import { lynchClassLexKey } from '@/lib/lexicon'
 
 type Instrument = { id: number; ticker: string; classification: string }
 type OHLCVRow = {
@@ -56,15 +58,15 @@ export default async function MarketDataPage() {
       )}
       {!ingestRow && (
         <div className="av-banner av-banner--red">
-          No ingest status found. Run the daily ingest pipeline to seed price data.
+          We&apos;re still setting up. Price data will appear here soon — check back shortly.
         </div>
       )}
 
       <div className="av-card" style={{ overflowX: 'auto' }}>
         {instruments.length === 0 ? (
           <div className="av-empty">
-            <p className="av-empty__title">No instruments seeded</p>
-            <p>Run the ingest pipeline to populate market data.</p>
+            <p className="av-empty__title">No data yet</p>
+            <p>We&apos;re still setting up. Check back soon.</p>
           </div>
         ) : (
           <table className="av-table">
@@ -88,7 +90,7 @@ export default async function MarketDataPage() {
                   return (
                     <tr key={inst.id}>
                       <td className="mono">{inst.ticker}</td>
-                      <td>{inst.classification}</td>
+                      <td><LexOrRaw k={lynchClassLexKey(inst.classification)} fallback={inst.classification} /></td>
                       <td colSpan={7} style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                         No data yet
                       </td>
@@ -99,7 +101,7 @@ export default async function MarketDataPage() {
                   <tr key={inst.id}>
                     <td><strong className="mono">{inst.ticker}</strong></td>
                     <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      {inst.classification}
+                      <LexOrRaw k={lynchClassLexKey(inst.classification)} fallback={inst.classification} />
                     </td>
                     <td className="mono" style={{ fontSize: '0.8rem' }}>{row.trade_date}</td>
                     <td className="mono" style={{ textAlign: 'right' }}>{fmt(row.open)}</td>

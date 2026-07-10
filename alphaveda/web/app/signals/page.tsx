@@ -1,5 +1,5 @@
 import { getServerSupabase } from '@/lib/supabase'
-import { LexOrRaw } from '@/components/Lex'
+import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
 import { directionLexKey, lynchClassLexKey, regimeLexKey } from '@/lib/lexicon'
 
@@ -97,8 +97,8 @@ export default async function SignalsPage() {
           </h2>
           {predictions.length === 0 ? (
             <div className="av-empty">
-              <p className="av-empty__title">No predictions yet</p>
-              <p>Select an instrument and segment to generate a signal.</p>
+              <p className="av-empty__title">No signals yet</p>
+              <p>We&apos;re still setting up. Check back soon.</p>
             </div>
           ) : (
             <table className="av-table">
@@ -127,7 +127,7 @@ export default async function SignalsPage() {
                           style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}
                           title={`${segmentObs(p)} of ${OBSERVATION_THRESHOLD} results for this type — too early to grade`}
                         >
-                          TOO EARLY
+                          <Lex k="ledger.cold" />
                         </span>
                       ) : (
                         <ProbabilityFrame pct={p.confidence} />
@@ -154,8 +154,8 @@ export default async function SignalsPage() {
           </h2>
           {weights.length === 0 ? (
             <div className="av-empty">
-              <p className="av-empty__title">No active weights</p>
-              <p>Run the ingest pipeline to generate weight proposals.</p>
+              <p className="av-empty__title">No active weights yet</p>
+              <p>We&apos;re still setting up. Check back soon.</p>
             </div>
           ) : (
             <table className="av-table">

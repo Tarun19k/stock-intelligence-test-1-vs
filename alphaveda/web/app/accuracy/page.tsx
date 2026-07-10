@@ -1,4 +1,7 @@
 import { getServerSupabase } from '@/lib/supabase'
+import { LexOrRaw } from '@/components/Lex'
+import ProbabilityFrame from '@/components/ProbabilityFrame'
+import { directionLexKey } from '@/lib/lexicon'
 
 const STALENESS_DAYS = 90
 
@@ -62,7 +65,7 @@ export default async function AccuracyPage() {
     <>
       <h1 className="av-heading">Accuracy Ledger</h1>
       <p className="av-subheading">
-        Prediction outcomes — populates once predictions reach the observation threshold
+        A public record of every call we&apos;ve made and how it turned out
       </p>
 
       <div className="av-banner av-banner--amber">
@@ -94,7 +97,7 @@ export default async function AccuracyPage() {
         <div className="av-card">
           <div className="av-stat__label">Hit Rate</div>
           <div className="av-stat__value" style={{ color: hitRate != null && hitRate >= 50 ? 'var(--emerald)' : 'var(--terra)' }}>
-            {hitRate != null ? `${hitRate.toFixed(1)}%` : '—'}
+            {hitRate != null ? <ProbabilityFrame pct={hitRate} /> : '—'}
           </div>
         </div>
         <div className="av-card">
@@ -117,8 +120,8 @@ export default async function AccuracyPage() {
       <div className="av-card" style={{ overflowX: 'auto' }}>
         {outcomes.length === 0 ? (
           <div className="av-empty">
-            <p className="av-empty__title">No outcomes yet</p>
-            <p>Populates once predictions reach the observation threshold and begin resolving.</p>
+            <p className="av-empty__title">No results yet</p>
+            <p>We grade every call once enough time has passed. Check back soon.</p>
           </div>
         ) : (
           <table className="av-table">
@@ -141,11 +144,13 @@ export default async function AccuracyPage() {
                     <td className="mono">{ticker ?? '—'}</td>
                     <td>
                       {pred
-                        ? <span className={`pill pill--${pred.direction === 'BULL' ? 'bull' : 'bear'}`}>{pred.direction}</span>
+                        ? <span className={`pill pill--${pred.direction === 'BULL' ? 'bull' : 'bear'}`}>
+                            <LexOrRaw k={directionLexKey(pred.direction)} fallback={pred.direction} />
+                          </span>
                         : '—'}
                     </td>
-                    <td className="mono" style={{ textAlign: 'right' }}>
-                      {pred ? `${pred.confidence}%` : '—'}
+                    <td style={{ textAlign: 'right' }}>
+                      {pred ? <ProbabilityFrame pct={pred.confidence} /> : '—'}
                     </td>
                     <td>
                       <span style={{ color: o.hit ? 'var(--emerald)' : 'var(--terra)', fontWeight: 500 }}>

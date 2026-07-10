@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import LanguageToggle from './LanguageToggle'
 
 const LINKS = [
   { href: '/', label: 'Market Data' },
@@ -25,6 +26,9 @@ export default function Nav() {
             </Link>
           </li>
         ))}
+        <li>
+          <LanguageToggle />
+        </li>
       </ul>
     </nav>
   )

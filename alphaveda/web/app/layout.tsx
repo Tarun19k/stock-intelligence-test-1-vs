@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Nav from '@/components/Nav'
 import SebiDisclaimer from '@/components/SebiDisclaimer'
+import { LanguageModeProvider } from '@/lib/language-mode'
 
 export const metadata: Metadata = {
   title: 'AlphaVeda — Indian Stock Research',
@@ -12,9 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Nav />
-        <main className="av-page">{children}</main>
-        <SebiDisclaimer />
+        <LanguageModeProvider>
+          <Nav />
+          <main className="av-page">{children}</main>
+          <SebiDisclaimer />
+        </LanguageModeProvider>
       </body>
     </html>
   )
