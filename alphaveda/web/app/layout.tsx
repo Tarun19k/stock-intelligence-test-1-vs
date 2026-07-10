@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Nav from '@/components/Nav'
 import SebiDisclaimer from '@/components/SebiDisclaimer'
+import GlossaryModal from '@/components/GlossaryModal'
 import { LanguageModeProvider } from '@/lib/language-mode'
+import { GlossaryProvider } from '@/lib/glossary-context'
 
 export const metadata: Metadata = {
   title: 'AlphaVeda — Indian Stock Research',
@@ -14,9 +16,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <LanguageModeProvider>
-          <Nav />
-          <main className="av-page">{children}</main>
-          <SebiDisclaimer />
+          <GlossaryProvider>
+            <Nav />
+            <main className="av-page">{children}</main>
+            <SebiDisclaimer />
+            <GlossaryModal />
+          </GlossaryProvider>
         </LanguageModeProvider>
       </body>
     </html>
