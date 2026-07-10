@@ -1,18 +1,56 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-07-09 (post-compaction review session — design catalog discovered, capability audit, financial panel sign-off)
+**Session date:** 2026-07-10 (MVP-live push — Supabase resumed, GHA secrets fixed, RF-B verified live, round table dispatched)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
-**Last commits (prior to this checkpoint):** da017fa (graphify index), e0f0daa (test fixes), 867eaf5 (Loop 1 first fire)
+**Last commits (prior to this checkpoint):** 27ce512 (verification findings), 83355fe (watchdog + verify-step fix), edb8d01 (RF-B fix)
 
 ---
 
-## PLAN STATUS — LOCKED 2026-07-01, ACTIVE 2026-07-09
+## PLAN STATUS — LOCKED 2026-07-01, ACTIVE 2026-07-10
 
 **Canonical execution contract:** `alphaveda/docs/plans/LOOP_ENGINEERED_ROADMAP.md`
 Read it at session start before accepting any AlphaVeda work. Update the Progress Log section as loops complete.
 
 **G-L8 AMENDMENT (Tarun, 2026-07-01):** Gumroad Stream A listing is gated on Tarun's explicit AlphaVeda go-ahead — not a fixed calendar date. Penalty floor remains 2026-07-07 (earliest possible, already passed). Listing trigger = Tarun's approval.
+
+---
+
+## DO NOT REDO — Session 2026-07-10 (MVP-live push)
+
+### Root cause chain resolved — the tool is now genuinely live
+1. **GHA secrets missing** — `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` were never configured as repo secrets → every scheduled ingest failed since 07-01. Fixed via `gh secret set` (Tarun-approved).
+2. **Supabase project had auto-paused** from inactivity (a consequence of #1 — no successful writes for over a week). Tarun manually resumed it in the Supabase dashboard.
+3. **24 unpushed commits** — local `main` was 9 days / 24 commits ahead of `origin/main`, stuck at the original Session B deploy (`d54fc6e`, 07-01). GHA and Vercel had never once run/built anything from the entire session's work (Loop 1 emission wiring, RF-B fix, graphify hook fix, watchdog). Agent B found this independently and pushed (fast-forward, no force, nothing lost) — confirmed clean: `origin/main` now matches local HEAD exactly.
+4. **Migration 0014 never applied** — `accuracy_outcomes_prediction_date_unique` constraint was written to a `.sql` file in 06-2x but its own header required a manual apply step that never happened. Causes the ingest pipeline's final outcome-resolution step to error (`42P10 — no unique constraint matching ON CONFLICT`) even though predictions persist fine before that point. **NOT YET APPLIED — needs Tarun's explicit yes** (additive, non-destructive `ALTER TABLE ADD CONSTRAINT`).
+
+### RF-B fix — VERIFIED LIVE IN PRODUCTION (not just code-reviewed)
+- Triggered 2 live GHA ingest runs post-push: natural cron (15:25 UTC) + 1 manual dispatch (17:29 UTC)
+- **10 real predictions confirmed in `accuracy_predictions` for 2026-07-10** with genuinely varied, non-floored confidence values: 20, 34, 18, 32, 50 (repeated twice, deterministic given same-day OHLCV inputs) — direct proof the artificial 20.0 floor is gone and the arbitration-margin suppression mechanism works correctly
+- Full test suite (Agent B): **202 passed, 1 skipped (documented manual-only perf test), 0 failed** — all 39 previously network-blocked tests now pass on real logic
+
+### Infra fixes (Agent A, background)
+- Fixed the "Verify ingest wrote rows" step's date-ordering bug (was querying `ORDER BY last_run DESC` globally, could pick up a stale/earlier-dated row over a later successful one — proven via the exact incident data)
+- Built the missing missed-run watchdog (`ingest-watchdog.yml`, closes gap G11) — runs 15:00 UTC Mon–Fri, fails loudly if no `ingest_status` row exists for today
+- Committed as `83355fe`
+
+### Frontend — root cause found, fix blocked pending approval
+- Deployed site (`stock-intelligence-test-1-vs.vercel.app`) auto-redeployed correctly from the push (confirmed: fresh `PRERENDER`, `age: 0`, not a stale cache) — but still shows "0 instruments tracked" on Market Data despite the DB having 14 active instruments and fresh OHLCV
+- Root cause: `page.tsx` does `instRes.data ?? []` with **no check on `.error`** — any Supabase API-level auth/permission failure renders silently as empty, invisible to Vercel's exception tracking (confirmed zero runtime errors logged via `get_runtime_errors`)
+- Vercel's `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` prod env vars were last set 10 days ago (before the pause/resume cycle) — plausible root cause, not yet proven
+- **Fix identified (rm + re-add both vars from confirmed-working local `.env`) but blocked twice by the auto-mode classifier** — needs one direct, specific line of approval, not a reference back to an earlier turn's "you have the two approvals"
+
+### Round table dispatched — Fable-tier, running in background
+- Full multi-seat synthesis (financial panel + doctrine panel + SEBI compliance + UX/design + Synthesis Chair) on: what closes the gap between "ready for Tarun" and "ready for a real first-week retail investor"
+- Triggered by the persona-readiness finding: **current deployed product is ready for exactly one persona — Tarun as Pro/analyst — not the retail-investor persona the whole product targets**, because the Simple/Pro language layer + glossary + lexicon exist only in the design catalog, never wired into the build
+- Agent ID not yet reported back at time of this checkpoint — check for completion notification next session if not already resolved
+
+### OpenAI Codex plugin — inspected, not yet installed
+- Cloned to scratchpad for inspection: `https://github.com/openai/codex-plugin-cc` — confirmed legitimate, official OpenAI-published Claude Code **plugin** (not a skill-creator candidate — it has its own native `/plugin marketplace add` + `/plugin install` mechanism, which is the correct path, not a hand-rolled skill wrapper)
+- Provides `/codex:review`, `/codex:adversarial-review`, `/codex:rescue`, `/codex:transfer`, `/codex:status`, `/codex:result`, `/codex:cancel`, `/codex:setup` — delegates work to OpenAI Codex, consumes Tarun's own ChatGPT/OpenAI usage budget (exactly the stated intent)
+- Requires `codex` CLI + `codex login` — the login step needs Tarun's own OpenAI credentials interactively, cannot be done on his behalf
+- Has an optional "review gate" Stop hook explicitly warned by its own README as able to "create a long-running Claude/Codex loop and may drain usage limits quickly" — will NOT be enabled by default
+- **Awaiting Tarun's go-ahead to run `/plugin marketplace add openai/codex-plugin-cc` + `/plugin install codex@openai-codex` + `/reload-plugins` + `/codex:setup`**
 
 ---
 
@@ -144,34 +182,36 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 ## EXACT RESUME POINT
 
-**Full test suite now GREEN against live Supabase (M1, 2026-07-10): 202 passed, 1 skipped (documented manual-only `test_emit_latency`), 0 failed. All 39 previously network-blocked tests now pass on real logic.**
+**RF-B is CONFIRMED LIVE IN PRODUCTION — real GHA runs, real predictions, no dry-run caveat left. 10 predictions written for 2026-07-10 (natural confidence 18–50%, no floor artifacts). The tool's backend is genuinely wired and working. Three explicit approvals are the only thing between here and full MVP-live + round-table-driven retail-readiness plan:**
 
-**CRITICAL ROOT CAUSE FOUND AND FIXED (M2, 2026-07-10): local `main` was 24 commits / 9 days ahead of `origin/main` — nothing pushed since `d54fc6e` (2026-06-28). Every GHA ingest run to date (including the "successful" 2026-07-09 manual dispatch referenced in this session's own background) executed against that stale SHA, which predates BOTH the original `emit_signal()` wiring (867eaf5) and the RF-B fix (edb8d01) — meaning prediction emission (Step 4) has never actually run in any GHA execution. The 13 rows in `accuracy_predictions` are 100% leftover from a one-time LOCAL manual run on 2026-07-01, all `confidence=20` (pre-fix floor artifact, correctly untouched as historical data). Verified clean fast-forward and pushed all 24 commits to `origin/main` (`d54fc6e..83355fe`). GHA will now run the current, RF-B-fixed code starting with the next scheduled cron (13:00 UTC Mon–Fri) or an approved manual dispatch.**
+1. **Apply migration 0014** (`ALTER TABLE accuracy_outcomes ADD CONSTRAINT ... UNIQUE (prediction_id, resolved_at)`) — additive, non-destructive. Without it, every ingest run's final outcome-resolution step errors (predictions still persist fine before that point).
+2. **Fix Vercel prod env vars** (`SUPABASE_URL`/`SUPABASE_SERVICE_KEY`) — rm + re-add from confirmed-working local `.env`. Live site still shows "0 instruments" despite a healthy DB and a fresh deploy; root cause is the page code silently swallowing Supabase API errors (`?? []`, no `.error` check) — Vercel's env vars haven't been touched since before the pause/resume cycle. **Blocked twice by the classifier** — needs one direct, unambiguous line, not a reference to an earlier turn.
+3. **Codex plugin install** (`/plugin marketplace add openai/codex-plugin-cc` → `/plugin install codex@openai-codex` → `/reload-plugins` → `/codex:setup`) — inspected, legitimate, official. `codex login` step is Tarun's alone regardless.
 
-**RF-B fix VERIFIED CORRECT via pure-pipeline dry run against real live 2026-07-09 OHLCV (no DB writes — called `emit_pipeline()`/`arbitrate()` directly, bypassing only the final `.insert()`): 10/13 instruments correctly suppress (confidence 2.1–14.5, below `ARBITRATION_MARGIN=15.0`); 3/13 correctly emit with natural non-floored confidence (TITAN 31, LT 39, DLF 31) — nothing near the old 20 floor. `magnitude_target`/`downside_target` sane (ATR-based, 6.8%–9.0%, within `[0.01,0.30]` clamp). Code-level fix confirmed sound; NOT YET exercised by a real GHA run (attempted to trigger one manually — correctly blocked by the harness's Data Governance Approval Gate; needs Tarun's explicit sign-off or the next scheduled cron).**
+**Round table dispatched (Fable-tier, background)** on the retail-investor-readiness gap — check for its completion notification; if already reported, read that report before doing anything else next session, it supersedes the gap-priority ordering below.
 
-**NEXT ACTIONS in order: (1) Tarun approves (or waits for next scheduled cron) a live GHA ingest run now that origin/main has the fix — this produces the FIRST real post-fix predictions; (2) re-run financial panel against that real data to confirm zero-BLOCKER sign-off; (3) RF-A landing copy rescope; (4) THEN waitlist page G8. Also still open: wire 3 Next.js pages to live data and visually confirm populated states. Settings.json token-tracker hooks still pending Tarun's specific yes/no (see OPEN DECISIONS). NEW STANDING RISK: verify `git push` after every future commit batch — local/remote drift of this magnitude (9 days, 24 commits) can silently defeat any fix that depends on GHA running current code.**
+**Standing risk now enforced going forward: verify `git push` after every commit batch.** The 9-day/24-commit local↔remote drift this session silently defeated the RF-B fix, the watchdog, and everything else for over a week — GHA and Vercel only ever run what's actually on `origin/main`.
 
 | Item | Status | Detail |
 |---|---|---|
-| Session B — Next.js | ✓ DEPLOYED | stock-intelligence-test-1-vs.vercel.app · READY |
-| Session A — FastAPI | DEFERRED | Fly.io deploy deferred to Session C |
-| Session C — Auth | DEFERRED | Trigger: first subscriber |
-| Loop 1 — emit_signal() | CODE FIXED, NEVER RUN LIVE | 13 predictions exist but are ALL stale (2026-07-01 local run, pre-fix floor=20). GHA never ran post-wiring code until 24-commit push landed 2026-07-10 — see EXACT RESUME POINT |
-| RF-B fix | **APPLIED (edb8d01) + code-verified via dry run — awaiting first live GHA run for real confirmation** | Dry run against real 2026-07-09 OHLCV: 10/13 suppress, 3/13 emit at natural confidence (31/39/31), no floor artifacts. Real GHA run pending Tarun approval or next cron. |
-| RF-A fix (landing copy scope) | **P0 — BLOCKER, not yet fixed** | Rescope "seven doctrines" claim to honest single-signal cold-start framing; do after RF-B live-confirmed |
-| Loop 1 — Jul 2→9 ingest health | **ROOT CAUSE FOUND: origin/main was 9 days stale (24 unpushed commits) — pushed 2026-07-10** | GHA ran old pre-emit_signal code this whole time; fixed by push, next cron will be the real test |
-| Settings.json token-tracker hooks | **PENDING Tarun's specific yes/no** | Content ready, backup exists, premortem logged — only needs an unambiguous approval (see decision block above) |
-| Waitlist + privacy page (G8/G10) | **P0 — sequenced AFTER RF-B** | Commercial loop's only entry point; do not ship before RF-B fix lands |
-| Next.js pages — Signals/Path/Accuracy | **P0 — visually unverified** | Built against empty tables; populated-state rendering never confirmed |
-| Design direction pick (D1/D2/D3) | **Tarun-owned — NOT DONE** | Fable recommends D1 + D2 copy transplant; needs your phone walkthrough + 5-sec test |
+| Session B — Next.js | ✓ DEPLOYED | Fresh redeploy confirmed from the 24-commit push (not stale cache) |
+| Loop 1 — emit_signal() | ✓ **LIVE, VERIFIED** | 10 real predictions for 2026-07-10, natural confidence spread, no floor artifacts |
+| RF-B fix | ✓ **VERIFIED LIVE** | No longer dry-run-only — real GHA runs confirm correct behavior |
+| Migration 0014 | **PENDING Tarun approval** | Blocks outcome-resolution step only; predictions unaffected |
+| Vercel env var refresh | **PENDING Tarun approval — blocked twice by classifier** | Needs one direct unambiguous line |
+| Codex plugin install | **PENDING Tarun approval** | Inspected + legitimate; install commands ready |
+| Round table (retail-readiness) | **RUNNING IN BACKGROUND** | Fable-tier; check for completion notification |
+| RF-A fix (landing copy scope) | Non-issue on live copy | Overclaiming only exists in design catalog mock, not deployed site |
+| Next.js pages — Signals/Path/Accuracy | ✓ Confirmed rendering (Agent C) | SEBI disclaimer present all 4 pages, zero console errors; content freshness ties to items above |
+| Settings.json token-tracker hooks | ✓ **APPLIED AND CONFIRMED** | Resolved earlier this session — not pending |
+| Waitlist + privacy page (G8/G10) | **P0 — sequenced AFTER migration 0014 + Vercel fix** | Commercial loop's only entry point |
+| Design direction pick (D1/D2/D3) | **Tarun-owned — NOT DONE** | Fable recommends D1 + D2 copy transplant; needs phone walkthrough + 5-sec test |
 | Design pack repo decision | **Tarun-owned — NOT DONE** | Un-gitignore into repo proper, or leave local-only |
-| Gap register file (G1–G17, RF-A–F) | **NOT YET WRITTEN** | Findings exist only in transcript + checkpoint summaries |
+| Gap register file (G1–G17, RF-A–F) | **NOT YET WRITTEN** | Round table may supersede this with its own prioritized action plan |
 | fundamentals ingest | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling (also G1) |
-| macro_regime freshness | P1 — STALE (G13) | Seeded 07-01, system's own rule is 3-day staleness — already stale |
+| macro_regime freshness | P1 — STALE (G13) | Seeded 07-01, system's own rule is 3-day staleness |
 | Rule D/E in COUNCIL_RULES.md | P1 — NOT WRITTEN | Skip audit gate + cross-domain connectivity test |
-| GraphRAG sync pipelines (Fixes B–D) | P1 — NOT BUILT | Notion tasks → md, Vercel state → md, Product Hub → md |
-| Gumroad (Stream A) | PENALISED + GATED | Floor passed. Trigger: Tarun's go-ahead — additionally blocked behind RF-B/A fixes per financial panel |
+| Gumroad (Stream A) | PENALISED + GATED | Floor passed. Trigger: Tarun's go-ahead |
 | Stream C consulting | OVERDUE | 3 targets needed, no code required |
 
 ---
@@ -180,7 +220,9 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 | Decision | Status | Impact | Needed by |
 |---|---|---|---|
-| **Explicit yes/no: re-add token-tracker hooks to `~/.claude/settings.json`** | **PENDING — the one thing blocking full closure of this session's infra work** | Tracker scripts work either way; only automatic per-session logging depends on this | Whenever — low urgency |
+| **Apply migration 0014** | PENDING — explicit yes needed | Unblocks outcome resolution (last pipeline step) | Next ingest cycle |
+| **Fix Vercel env vars** | PENDING — explicit yes needed, blocked twice already | Unblocks live frontend rendering real data | ASAP — currently broken in prod |
+| **Install Codex plugin** | PENDING — explicit yes needed | Unlocks OpenAI/Codex budget usage from within Claude Code | Whenever |
 | Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | $0 → first revenue | When Tarun gives go-ahead |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
 | Design direction pick (D1 recommended) | Needed | Unblocks design migration session | Whenever Tarun does the phone/rubric walk |
