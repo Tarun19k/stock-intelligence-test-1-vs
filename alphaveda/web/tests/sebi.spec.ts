@@ -11,7 +11,7 @@ for (const route of ROUTES) {
     await expect(footer).toBeVisible()
     const text = await footer.textContent()
     expect(text).toContain('NOT investment advice')
-    expect(text).toContain('information and analysis only')
+    expect(text).toContain('research and analysis only')
   })
 
   test(`No prohibited advice language on ${route}`, async ({ page }) => {

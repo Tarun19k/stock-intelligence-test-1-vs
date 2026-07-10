@@ -83,3 +83,27 @@ def test_arbitration_margin_pinned():
 
 def test_regime_staleness_days():
     assert REGIME_STALENESS_DAYS == 3
+
+
+def test_generated_ts_disclaimer_matches_source():
+    """NG-4 / A2: web/lib/sebi-disclaimer.generated.ts must stay byte-identical to
+    what alphaveda/scripts/generate_sebi_disclaimer_ts.py would produce from
+    constants.py right now. This is the single source-of-truth guarantee — if
+    someone edits SEBI_DISCLAIMER without regenerating, or hand-edits the .generated.ts
+    file, this test fails CI.
+    """
+    import sys
+    from pathlib import Path
+
+    alphaveda_dir = Path(__file__).resolve().parents[1]
+    scripts_dir = alphaveda_dir / "scripts"
+    sys.path.insert(0, str(scripts_dir))
+    from generate_sebi_disclaimer_ts import render  # noqa: E402
+
+    generated_path = alphaveda_dir / "web" / "lib" / "sebi-disclaimer.generated.ts"
+    expected = render(SEBI_DISCLAIMER)
+    actual = generated_path.read_text(encoding="utf-8")
+    assert actual == expected, (
+        "sebi-disclaimer.generated.ts is out of sync with constants.py SEBI_DISCLAIMER. "
+        "Run: python3 alphaveda/scripts/generate_sebi_disclaimer_ts.py"
+    )
