@@ -15,3 +15,16 @@ export async function isCommercial(): Promise<boolean> {
     return true
   }
 }
+
+// NG-2 / A5: there is no auth/login layer in this app yet — every visitor is
+// currently indistinguishable from an anonymous public visitor. Before this
+// flag, the Path page showed Tarun's personal PORTFOLIO_VALUE-derived rupee
+// figures to anyone, gated only on `!isCommercial()` (i.e. "no paying
+// subscriber yet"), which is not the same thing as "this is Tarun looking at
+// his own tool." This is a server-only, non-public env var — it is never sent
+// to the client and cannot be toggled by a site visitor. Fail-closed by
+// default (unset/anything-but-'true' => rupee amounts stay suppressed), same
+// posture as isCommercial().
+export function isPersonalContext(): boolean {
+  return process.env.ALPHAVEDA_PERSONAL_CONTEXT === 'true'
+}

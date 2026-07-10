@@ -1,5 +1,8 @@
 import { getServerSupabase } from '@/lib/supabase'
-import { isCommercial } from '@/lib/commercial'
+import { isCommercial, isPersonalContext } from '@/lib/commercial'
+import { LexOrRaw } from '@/components/Lex'
+import ProbabilityFrame from '@/components/ProbabilityFrame'
+import type { LexKey } from '@/lib/lexicon'
 
 const PORTFOLIO_VALUE = 725000
 const QUARTER_KELLY_FRACTION = 0.25
@@ -17,15 +20,33 @@ type Prediction = {
 
 type Instrument = { id: number; ticker: string; classification: string }
 
-function kellyRupee(confidence: number, magnitude: number, downside: number): number | null {
-  if (!magnitude || !downside || downside <= 0) return null
+type KellyResult = { rupee: number | null; band: 'above' | 'within' | 'below' }
+
+// A13 fix (F2, Fable round table 2026-07-10): the Path/Portfolio surface is
+// where a user reviews positions they may already hold — a BULL/BEAR verdict
+// pill next to a held position reads as an implicit sell/buy instruction even
+// with analytical wording (loss-aversion effect, Munger seat). Fix: this
+// surface leads with the Kelly band position (ABOVE/WITHIN/BELOW range,
+// already analytical, matches lexicon §3 port.above/within/below) and does
+// NOT repeat the raw directional verdict pill. The Signals page is
+// unaffected — it has no "held position" context, so its verdict pill stays.
+function kellyBand(confidence: number, magnitude: number, downside: number): KellyResult {
+  if (!magnitude || !downside || downside <= 0) return { rupee: null, band: 'below' }
   const p = confidence / 100
   const b = magnitude / downside
   const kelly = p - (1 - p) / b
-  if (kelly <= 0) return null
+  if (kelly <= 0) return { rupee: null, band: 'below' }
   const quarterKelly = kelly * QUARTER_KELLY_FRACTION
   const capped = Math.min(quarterKelly, MAX_POSITION_PCT)
-  return Math.round(capped * PORTFOLIO_VALUE)
+  const rupee = Math.round(capped * PORTFOLIO_VALUE)
+  const band: KellyResult['band'] = quarterKelly > MAX_POSITION_PCT ? 'above' : 'within'
+  return { rupee, band }
+}
+
+const BAND_LEX: Record<KellyResult['band'], LexKey> = {
+  above: 'port.above',
+  within: 'port.within',
+  below: 'port.below',
 }
 
 export const revalidate = 3600
@@ -33,6 +54,10 @@ export const revalidate = 3600
 export default async function PathPage() {
   const sb = getServerSupabase()
   const commercial = await isCommercial()
+  // NG-2 / A5: rupee amounts are derived from Tarun's personal PORTFOLIO_VALUE.
+  // Public/unauthenticated visitors — which today means everyone, since there is
+  // no auth layer — must see band position only, never the literal figure.
+  const showRupee = !commercial && isPersonalContext()
 
   const [predsRes, instsRes, proposedRes] = await Promise.all([
     sb.from('accuracy_predictions')
@@ -62,7 +87,7 @@ export default async function PathPage() {
         </div>
       )}
 
-      {commercial && (
+      {!showRupee && (
         <div className="av-banner av-banner--blue">
           DELIBERATE STATE — Position sizes suppressed in research mode.
           Signal direction and confidence are shown; rupee amounts require a personal-use context.
@@ -80,12 +105,12 @@ export default async function PathPage() {
             <thead>
               <tr>
                 <th>Ticker</th>
-                <th>Signal</th>
+                <th>Position vs. band</th>
                 <th style={{ textAlign: 'right' }}>Confidence</th>
                 <th style={{ textAlign: 'right' }}>Target</th>
                 <th style={{ textAlign: 'right' }}>Stop</th>
                 <th style={{ textAlign: 'right' }}>
-                  {commercial ? 'Size' : 'Kelly (₹)'}
+                  {showRupee ? 'Kelly (₹)' : 'Size'}
                 </th>
                 <th>Emitted</th>
               </tr>
@@ -93,18 +118,21 @@ export default async function PathPage() {
             <tbody>
               {predictions.map((p) => {
                 const inst = instById.get(p.instrument_id)
-                const rupee = (!commercial && p.magnitude_target && p.downside_target)
-                  ? kellyRupee(p.confidence, p.magnitude_target, p.downside_target)
+                const result = (p.magnitude_target && p.downside_target)
+                  ? kellyBand(p.confidence, p.magnitude_target, p.downside_target)
                   : null
+                const rupee = showRupee ? (result?.rupee ?? null) : null
                 return (
                   <tr key={p.id}>
                     <td className="mono">{inst?.ticker ?? p.instrument_id}</td>
                     <td>
-                      <span className={`pill pill--${p.direction === 'BULL' ? 'bull' : 'bear'}`}>
-                        {p.direction}
-                      </span>
+                      {result
+                        ? <span className="pill">
+                            <LexOrRaw k={BAND_LEX[result.band]} fallback={result.band.toUpperCase()} />
+                          </span>
+                        : <span style={{ color: 'var(--text-muted)' }}>—</span>}
                     </td>
-                    <td className="mono" style={{ textAlign: 'right' }}>{p.confidence}%</td>
+                    <td style={{ textAlign: 'right' }}><ProbabilityFrame pct={p.confidence} /></td>
                     <td className="mono" style={{ textAlign: 'right' }}>
                       {p.magnitude_target != null ? `${p.magnitude_target.toFixed(1)}%` : '—'}
                     </td>
@@ -112,7 +140,7 @@ export default async function PathPage() {
                       {p.downside_target != null ? `${p.downside_target.toFixed(1)}%` : '—'}
                     </td>
                     <td className="mono" style={{ textAlign: 'right' }}>
-                      {commercial
+                      {!showRupee
                         ? <span style={{ color: 'var(--text-muted)' }}>–</span>
                         : rupee != null
                           ? `₹${rupee.toLocaleString('en-IN')}`
@@ -129,9 +157,13 @@ export default async function PathPage() {
         )}
       </div>
 
-      {!commercial && (
+      {showRupee ? (
         <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
           Portfolio value: ₹{PORTFOLIO_VALUE.toLocaleString('en-IN')} · Quarter Kelly · Max {(MAX_POSITION_PCT * 100).toFixed(0)}% per position
+        </p>
+      ) : (
+        <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          Position sizing method: Quarter Kelly · Max {(MAX_POSITION_PCT * 100).toFixed(0)}% per position — band shown, rupee amounts hidden in research mode.
         </p>
       )}
     </>
