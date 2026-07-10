@@ -65,6 +65,14 @@ export default async function AccuracyPage() {
         Prediction outcomes — populates once predictions reach the observation threshold
       </p>
 
+      <div className="av-banner av-banner--amber">
+        Past performance is not indicative of future results. The hit rate and returns
+        below are a historical record only — they do not predict what will happen next,
+        and results can get worse as well as better. Negative returns are a normal part
+        of this record and carry real downside risk if acted on; nothing here is a
+        guarantee or a recommendation.
+      </div>
+
       {proposedCount > 0 && (
         <div className="av-banner av-banner--amber">
           ⚠ {proposedCount} PROPOSED weight update{proposedCount !== 1 ? 's' : ''} pending review.
@@ -93,6 +101,9 @@ export default async function AccuracyPage() {
           <div className="av-stat__label">Avg Return</div>
           <div className="av-stat__value" style={{ color: avgReturn != null && avgReturn >= 0 ? 'var(--emerald)' : 'var(--terra)' }}>
             {avgReturn != null ? `${avgReturn.toFixed(2)}%` : '—'}
+          </div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+            Average of past outcomes only — individual results vary and losses are possible.
           </div>
         </div>
         <div className="av-card">
