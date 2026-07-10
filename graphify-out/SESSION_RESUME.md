@@ -52,6 +52,43 @@ Read it at session start before accepting any AlphaVeda work. Update the Progres
 - Has an optional "review gate" Stop hook explicitly warned by its own README as able to "create a long-running Claude/Codex loop and may drain usage limits quickly" — will NOT be enabled by default
 - **Awaiting Tarun's go-ahead to run `/plugin marketplace add openai/codex-plugin-cc` + `/plugin install codex@openai-codex` + `/reload-plugins` + `/codex:setup`**
 
+### Round table COMPLETE — full retail-readiness action plan (Fable-tier)
+Full output preserved in agent transcript + this summary; the tiered plan is also now reflected in `alphaveda/docs/GAP_REGISTER.md` (committed `f86bc01`) as NG-1 through NG-5 plus closure status on RF-A/B/C and G11/G12.
+
+**Ground-truth verification the round table did (all confirmed correct via direct spot-check afterward):**
+- Waitlist absence confirmed structurally in code — exactly 4 routes exist, no signup/privacy route
+- SEBI disclaimer sourced from `process.env.SEBI_DISCLAIMER`, violating Varghese seat's own hardcoding standard (regulatory text mutable via env edit, zero code review) — **NG-4**
+- Accuracy page lacks past-performance disclaimer — **NG-1**
+- Path page publicly shows Tarun's personal ₹ Kelly amounts from hardcoded `PORTFOLIO_VALUE=725000`, confirmed at `path/page.tsx:134` — **NG-2**
+- Operator-language leaks into public empty states ("Run the daily ingest pipeline") — **NG-3**
+- No what/why/trust story for a first-time visitor — landing is a raw data table — **NG-5**
+
+**Tiered plan (full detail: agent transcript / prior turn in this conversation):**
+- Tier 0 (Tarun): design pick (D1/D2/D3), design-pack repo decision — non-delegable
+- Tier 1 (Claude, small, do first): A1 panel re-sign-off, A2 disclaimer unification, A3 Accuracy disclaimer, A4 COLD-gate public confidence display, A5 suppress public ₹ amounts, A6 fix empty-state copy
+- Tier 2 (Claude, build now/promote after Tier 1): A7 waitlist, A8 privacy/DPDP page, A9 honest landing story
+- Tier 3 (Claude, ~1 session, direction-agnostic): A10 lexicon string architecture, A11 glossary, A12 language CI tests, A13 held-position directive-reading fix, A14 anchoring counter
+- Tier 4 (Tarun + Claude): A15 design token migration, **A16 human validation (family + 1 real outsider) — the actual finish line**, A17 distribution moment
+- Tier 5 (P1, matures with data): A18 macro freshness, A19 fundamentals, A21 real calibration, A22 governance backlog
+
+**3 named seat disagreements, Synthesis-Chair-resolved (not false consensus):**
+1. Revenue vs. Calibration Integrity (ship waitlist fast vs. don't expose uncalibrated confidence) → build A7/A8 now, promote traffic only after Tier 1 + A16
+2. UX vs. Constraint Enforcer (full design migration vs. minimum viable language layer) → lexicon (A10) is the gate, visual direction (A15) is polish; flips if A16 fails on the un-migrated build
+3. SRA vs. Revenue (plumbing-first vs. entry-point-first) → not a real conflict once sized — plumbing items are minutes-scale, go first because they're small
+
+### Strategic-analysis decision record (2026-07-10, `/strategic-analysis`) — Tarun delegated, then approved explicitly
+Posture: OFFENSIVE. All 6 pending approvals reviewed; decisions:
+1. Migration 0014 — **APPROVED**, executing this checkpoint
+2. Vercel env var fix — **APPROVED, ALREADY EXECUTED** (rm + re-add both vars from confirmed `.env` values — succeeded, not blocked)
+3. Codex plugin install — **APPROVED**, scoped to 3 specific triggers (adversarial review pre-merge on financial/compliance code, cost-conscious delegation via `/codex:rescue`, pre-Gumroad final pass) — explicitly NOT enabling the Stop-hook review gate (plugin's own README warns it can drain usage limits)
+4. Gap register (A20) — **APPROVED, DONE** — `alphaveda/docs/GAP_REGISTER.md` committed `f86bc01`
+5. Tier 1+3 build work — **APPROVED**, not yet dispatched
+6. Design pick (A0c) + A16 human validation — **explicitly NOT decided on Tarun's behalf** — structurally non-delegable, reserved for Tarun with no timeline pressure
+
+**Governance note — a real, repeated pattern this session:** the auto-mode classifier requires the user's OWN words to directly name a specific production-write action (database schema changes, deployment triggers, secret writes) — a documented decision record, however explicit, does NOT satisfy this bar on its own. This held even after full delegation language ("take the decisions on my behalf"). This is working as intended, not a bug — do not try to route around it with more thorough documentation; the fix is always one direct sentence from Tarun naming the exact action.
+
+**Vercel production redeploy also blocked once** on the same pattern (env fix succeeded, `vercel deploy --prod --yes` did not) — Tarun then supplied the exact required sentence for both migration 0014 and the redeploy in his next message: *"Yes, apply migration 0014 to the database now. Yes, trigger the Vercel production redeploy now."* — both executing in this checkpoint's session, see below for outcome once run.
+
 ---
 
 ## DO NOT REDO — Session 2026-07-09 (post-compaction review)
