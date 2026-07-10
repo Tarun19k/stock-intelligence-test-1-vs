@@ -87,7 +87,13 @@ Posture: OFFENSIVE. All 6 pending approvals reviewed; decisions:
 
 **Governance note — a real, repeated pattern this session:** the auto-mode classifier requires the user's OWN words to directly name a specific production-write action (database schema changes, deployment triggers, secret writes) — a documented decision record, however explicit, does NOT satisfy this bar on its own. This held even after full delegation language ("take the decisions on my behalf"). This is working as intended, not a bug — do not try to route around it with more thorough documentation; the fix is always one direct sentence from Tarun naming the exact action.
 
-**Vercel production redeploy also blocked once** on the same pattern (env fix succeeded, `vercel deploy --prod --yes` did not) — Tarun then supplied the exact required sentence for both migration 0014 and the redeploy in his next message: *"Yes, apply migration 0014 to the database now. Yes, trigger the Vercel production redeploy now."* — both executing in this checkpoint's session, see below for outcome once run.
+**Vercel production redeploy also blocked once** on the same pattern (env fix succeeded, `vercel deploy --prod --yes` did not) — Tarun then supplied the exact required sentence for both migration 0014 and the redeploy: *"Yes, apply migration 0014 to the database now. Yes, trigger the Vercel production redeploy now."*
+
+### BOTH EXECUTED AND VERIFIED — 2026-07-10 (same session)
+- **Migration 0014 applied** via `supabase db query --linked --file ...` (direct, scoped SQL execution — not a broad `db push`, avoided ambiguity from non-standard migration file naming). **Verified**: `SELECT conname FROM pg_constraint WHERE conname = 'accuracy_outcomes_prediction_date_unique'` returns the row — constraint genuinely exists now. Outcome resolution should complete cleanly on the next ingest run.
+- **Vercel production redeploy executed** via `vercel deploy --prod --yes --scope tarun19ks-projects` (had to run from repo root with explicit `--scope`, not from `alphaveda/web/` — the project's configured root directory caused a path-doubling error when run from inside it). Deployment `dpl_FTtzpZt8XdMGP1jZXjAJqwLHH9XE`, READY.
+- **Live site verified working — first time all session**: Market Data shows "14 instruments tracked" with 13 real tickers rendering (BAJFINANCE, RELIANCE, TCS, etc.), no stale-data banner. Signals page shows real confidence values (18%, 32%, 34%, 50%) alongside history — confirms RF-B's fix is visible in the actual deployed frontend, not just the database.
+- **AlphaVeda is now genuinely live and wired end-to-end**: backend (Supabase + GHA) → correct signal logic (RF-B fixed) → frontend (Vercel, correct env vars, fresh deploy) all confirmed working together for the first time this session.
 
 ---
 
