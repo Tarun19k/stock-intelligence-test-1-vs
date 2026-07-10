@@ -263,9 +263,9 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 | Decision | Status | Impact | Needed by |
 |---|---|---|---|
-| **Apply migration 0014** | PENDING — explicit yes needed | Unblocks outcome resolution (last pipeline step) | Next ingest cycle |
-| **Fix Vercel env vars** | PENDING — explicit yes needed, blocked twice already | Unblocks live frontend rendering real data | ASAP — currently broken in prod |
-| **Install Codex plugin** | PENDING — explicit yes needed | Unlocks OpenAI/Codex budget usage from within Claude Code | Whenever |
+| ~~Apply migration 0014~~ | ✅ **DONE + VERIFIED** — constraint confirmed via `pg_constraint` query | Outcome resolution unblocked | — |
+| ~~Fix Vercel env vars + redeploy~~ | ✅ **DONE + VERIFIED** — live site confirmed showing 14 instruments, real tickers, no stale banner | Frontend genuinely live | — |
+| **Install Codex plugin** | PENDING — explicit yes needed, approved in strategic-analysis decision record, just not yet run | Unlocks OpenAI/Codex budget usage from within Claude Code | Whenever |
 | Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | $0 → first revenue | When Tarun gives go-ahead |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
 | Design direction pick (D1 recommended) | Needed | Unblocks design migration session | Whenever Tarun does the phone/rubric walk |

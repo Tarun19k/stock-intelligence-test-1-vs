@@ -100,3 +100,4 @@ claude-temp-memory/
 graphify-out/.graphify_*
 graphify-out/cache/
 graphify-out/manifest.json
+.vercel
