@@ -97,8 +97,8 @@ export default async function PathPage() {
       <div className="av-card" style={{ overflowX: 'auto' }}>
         {predictions.length === 0 ? (
           <div className="av-empty">
-            <p className="av-empty__title">No predictions available</p>
-            <p>Signals must be emitted before Kelly sizing can be computed.</p>
+            <p className="av-empty__title">No positions yet</p>
+            <p>We&apos;re still setting up. Check back soon.</p>
           </div>
         ) : (
           <table className="av-table">
