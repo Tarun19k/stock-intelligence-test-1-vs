@@ -32,13 +32,20 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 | G8 | Commercial gate (`waitlist.converted_at`) structurally unreachable — no waitlist route | OPEN | Tier 2, A7 |
 | G9 | Designed product ≠ deployed product (design catalog, direction, Simple/Pro all unwired) | OPEN | A0c (Tarun) + A10–A15 |
 | G10 | No privacy/DPDP policy — required before any waitlist collects emails | OPEN | Tier 2, A8, ships with A7 not after |
-| G11 | No missed-run watchdog for silent GHA cron failures | **CLOSED 2026-07-10** | `ingest-watchdog.yml` built and committed (`83355fe`) |
+| G11 | No missed-run watchdog for silent GHA cron failures | **CLOSED 2026-07-10, alert-wiring added 2026-07-12** | `ingest-watchdog.yml` built and committed (`83355fe`). SRE council review 2026-07-12 found the watchdog detected misses but produced no human-reaching alert (only a failed job in the Actions tab) — this repo has no email/Slack secrets configured (`gh secret list` confirms only SUPABASE_URL/SUPABASE_SERVICE_KEY exist). Fixed by opening a GitHub Issue on failure via `actions/github-script` (no new secret needed, GITHUB_TOKEN is automatic). |
 | G12 | Jul 2→9 ingest health unverified | **CLOSED 2026-07-10** | Root cause found (24 unpushed commits) and resolved; RF-B live-verified |
 | G13 | `macro_regime` stale by the system's own `REGIME_STALENESS_DAYS=3` rule | OPEN | Tier 5, A18 |
 | G14 | Cold-start segment threshold (30 obs) has no scheduled backfill path | OPEN | Blocked behind G5 (attribution migration) |
 | G15 | Two presentation layers coexist (Streamlit `src/pages/` + Next.js) — dead weight | OPEN | Needs formal deprecation marker |
 | G16 | Zero production observability — no error monitoring, uptime check, or analytics | OPEN | Not yet tiered |
 | G17 | Governance promises uncoded (Rule D/E, GraphRAG-first enforcement) | OPEN | Tier 5, A22 |
+
+## New Gaps (G18-G19) — found by calibration-integrity council review, 2026-07-12 (forecast model solidification plan)
+
+| ID | Description | Status | Note |
+|---|---|---|---|
+| G18 | No horizon-maturity gate — `ingest.py` Step 5 resolves ALL open predictions against the current run's OHLCV regardless of elapsed time since `emitted_at`, with no check that `horizon_days` has actually elapsed. Additionally, no terminal-resolution check existed at all: `accuracy_outcomes`' unique constraint is on `(prediction_id, resolved_at)` not `prediction_id` alone, so every ingest run re-resolved every open prediction, appending a new outcome row each day with that day's price — a prediction could accumulate a different hit/miss verdict on different days indefinitely. | **CLOSED 2026-07-12** | Fixed directly in `ingest.py` Step 5: added a horizon-maturity filter (`target_date >= emitted_at + horizon_days`) and a terminal-exclusion filter (skip any prediction_id already present in `accuracy_outcomes`). Syntax-verified (`py_compile`); not yet exercised against a real ingest run — that verification rides with the existing ingest-reliability verification already tracked. |
+| G19 | Cold-start denominator mismatch — `engine.py` computes `segment_obs` (which gates `calibrate_confidence()`) **per instrument_id**; the UI's cold-start banner (`signals/page.tsx`, `OBSERVATION_THRESHOLD=30`) gates display on counts pooled by `(lynch_class, regime)` across many tickers. A pooled segment can cross 30 observations (UI shows "warm") while any individual instrument inside it is still near-zero in the actual per-instrument calibration math. Users see a false "no longer cold start" signal. | OPEN | P1 — either compute `segment_obs` in `engine.py` per `(lynch_class, regime)` to match the UI's own promise, or change the UI to show per-instrument readiness instead |
 
 ## New Gaps (NG) — found by the 2026-07-10 round table, not in the original G1–G17 list
 

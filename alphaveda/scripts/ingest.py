@@ -155,15 +155,47 @@ def run_ingest(target_date: date | None = None) -> dict:
 
         # Step 5: Batch-resolve entry prices — ONE query for all predictions.
         # Avoids N+1 Supabase calls (one per prediction) under production load.
-        # Horizon maturity gate is a G1 condition (requires target_date migration).
+        #
+        # G18 fix (2026-07-12, calibration-integrity + SRE council review): this step
+        # previously had NO horizon-maturity gate and NO terminal-resolution check —
+        # every row in accuracy_predictions was re-resolved on every ingest run, and
+        # because accuracy_outcomes' unique constraint is on (prediction_id,
+        # resolved_at) rather than prediction_id alone, each run appended a NEW
+        # outcome row for the same prediction with that day's price. A prediction
+        # could accumulate a different hit/miss verdict every day it stayed in the
+        # query, corrupting the ledger's own promise that a stated horizon (T+1)
+        # means anything. Two independent gates fix this:
+        #   1. Horizon maturity: only resolve predictions where emitted_at's date +
+        #      horizon_days <= target_date (the horizon has actually elapsed).
+        #   2. Terminal exclusion: never re-resolve a prediction_id that already has
+        #      an accuracy_outcomes row, regardless of horizon — once resolved, done.
+        from datetime import timedelta
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         # DB column is 'direction' (not 'signal_direction') — resolve_outcomes.py
         # uses the Python key 'signal_direction', so we remap at dict-build time.
-        open_preds_raw = (
+        already_resolved_ids = {
+            row["prediction_id"]
+            for row in (
+                supabase.table("accuracy_outcomes")
+                .select("prediction_id")
+                .execute()
+            ).data or []
+        }
+        open_preds_all = (
             supabase.table("accuracy_predictions")
-            .select("id, instrument_id, direction, emitted_at")
+            .select("id, instrument_id, direction, emitted_at, horizon_days")
             .execute()
         ).data or []
+
+        open_preds_raw = []
+        for p in open_preds_all:
+            if p["id"] in already_resolved_ids:
+                continue  # terminal — already scored, never re-resolve
+            emitted_date = date.fromisoformat(p["emitted_at"][:10])
+            horizon_days = p.get("horizon_days") or 1
+            if target_date < emitted_date + timedelta(days=horizon_days):
+                continue  # horizon not yet elapsed — leave open for a future run
+            open_preds_raw.append(p)
 
         prediction_dicts = []
         if open_preds_raw:

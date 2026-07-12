@@ -39,10 +39,11 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Check for today's ingest_status row
-        # Fails loudly (exit 1) if no row exists for today's UTC date — surfaces via
-        # GitHub's native workflow-failure notification. Presence of ANY status
-        # (OK / NO_DATA / SKIPPED_HOLIDAY / ERROR) proves the cron fired; whether that
-        # run itself succeeded is ingest.yml's verify step's job, not this one's.
+        id: check
+        # Fails loudly (exit 1) if no row exists for today's UTC date. Presence of
+        # ANY status (OK / NO_DATA / SKIPPED_HOLIDAY / ERROR) proves the cron fired;
+        # whether that run itself succeeded is ingest.yml's verify step's job, not
+        # this one's.
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -75,3 +76,47 @@ jobs:
           print(f"OK: ingest cron fired for {today} — status={row[0]['status']}, "
                 f"rows_written={row[0].get('rows_written')}")
           EOF
+
+      # SRE council review (2026-07-12): the check above fails loudly in the GHA UI,
+      # but that alone is a silent failure mode for a human who isn't checking the
+      # Actions tab daily — this repo has no email/Slack secrets configured (only
+      # SUPABASE_URL/SUPABASE_SERVICE_KEY exist, confirmed via `gh secret list`), so
+      # there is no existing notification channel to reuse. Opening a GitHub Issue on
+      # failure needs no new secret (GITHUB_TOKEN is automatic) and is loud both in
+      # the repo and via GitHub's own issue-notification path for anyone watching it.
+      - name: Open an issue if the ingest cron missed its run
+        if: failure() && steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = process.env.TODAY;
+            const title = `Ingest missed-run alert — ${today}`;
+            const body = [
+              `No \`ingest_status\` row found for **${today}** by T+2h (15:00 UTC check).`,
+              '',
+              'The scheduled `ingest.yml` cron (13:00 UTC Mon-Fri) appears to have never fired.',
+              '',
+              '**Manual re-run:**',
+              '```',
+              `gh workflow run ingest.yml -f date=${today}`,
+              '```',
+              '',
+              `_Opened automatically by [Ingest Missed-Run Watchdog](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})._`,
+            ].join('\n');
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ingest-watchdog',
+            });
+            if (existing.data.some(i => i.title === title)) {
+              console.log('Issue already open for today — not creating a duplicate.');
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['ingest-watchdog'],
+            });

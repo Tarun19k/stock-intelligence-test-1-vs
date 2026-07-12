@@ -24,6 +24,23 @@ Categories:
 
 ---
 
+## 2026-07-12 — Session live-infra debugging (dynamic-state, expected per rule)
+
+Per `feedback_graphrag_first_rule.md`'s own "Exception — real-time dynamic state" clause: these
+correctly skipped the graph, but the rule requires logging expected misses even when the
+exception applies. Representative entries only (not exhaustive) — one per category actually hit
+this session, per Constraint Enforcer's proportionality ruling (full backfill of every individual
+lookup was rejected as disproportionate for a P3/silent/contained item).
+
+| # | Question | API Used | Category | Fix Required |
+|---|---|---|---|---|
+| 7 | Is `kowlkczswaglbmabygtl.supabase.co` resolving / is the project paused? | DNS + Supabase dashboard | `dynamic-state` | None — expected, graph cannot hold live pause state |
+| 8 | Did the GHA ingest workflow run succeed on the target date? | GitHub Actions run logs | `dynamic-state` | None — expected, graph cannot hold live CI run history |
+| 9 | Was migration 0014's unique constraint actually applied to the live DB? | `supabase db query --linked` + `pg_constraint` | `dynamic-state` | None — expected, graph cannot hold live schema application state |
+| 10 | What is the current Vercel production deployment's readyState after redeploy? | Vercel CLI / dashboard | `dynamic-state` (readyState) | None — expected, matches gap #2 pattern |
+
+---
+
 ## Gap Registry — Fixes Backlog
 
 | Fix ID | Description | Effort | Priority |
