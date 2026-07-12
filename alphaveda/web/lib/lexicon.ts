@@ -40,6 +40,17 @@ export type LexKey =
   | 'signal.regime.bear'
   | 'signal.regime.sideways'
   | 'signal.regime.highvol'
+  | 'instrument.title'
+  | 'instrument.live_price'
+  | 'instrument.current_signal'
+  | 'instrument.lynch_class'
+  | 'instrument.accuracy'
+  | 'instrument.no_price'
+  | 'instrument.no_signal'
+  | 'instrument.not_enough_data'
+  | 'instrument.signals_graded'
+  | 'instrument.aggregate_prefix'
+  | 'instrument.aggregate_suffix'
   | 'ledger.title'
   | 'ledger.pass'
   | 'ledger.demoted'
@@ -75,6 +86,17 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'signal.regime.bear': { pro: 'bear regime', simple: 'market falling', learn: 'regime' },
   'signal.regime.sideways': { pro: 'sideways', simple: 'market drifting flat', learn: 'regime' },
   'signal.regime.highvol': { pro: 'highvol', simple: 'market unusually jumpy', learn: 'regime' },
+  'instrument.title': { pro: 'Instrument detail', simple: 'Stock detail' },
+  'instrument.live_price': { pro: 'Latest close', simple: 'Latest price' },
+  'instrument.current_signal': { pro: 'Current signal', simple: 'Current signal' },
+  'instrument.lynch_class': { pro: 'Lynch class', simple: 'Company type', learn: 'lynch_class' },
+  'instrument.accuracy': { pro: 'Instrument accuracy', simple: 'Results for this stock' },
+  'instrument.no_price': { pro: 'No price available', simple: 'No price available yet' },
+  'instrument.no_signal': { pro: 'No signal available', simple: 'No signal available yet' },
+  'instrument.not_enough_data': { pro: 'not enough data yet', simple: 'not enough data yet' },
+  'instrument.signals_graded': { pro: 'signals graded', simple: 'signals graded' },
+  'instrument.aggregate_prefix': { pro: 'tracked stocks showing a positive signal', simple: 'tracked stocks looking positive' },
+  'instrument.aggregate_suffix': { pro: 'this week', simple: 'this week' },
 
   'ledger.title': { pro: 'Accuracy Ledger', simple: 'Our scorecard' },
   'ledger.pass': { pro: 'PASS', simple: 'GOOD' },

@@ -25,7 +25,7 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 | G1 | `fundamentals` table empty — BSE XBRL parser built, never scheduled | OPEN | Tier 5, A19 |
 | G2 | `macro_regime` — was 0 rows, now 1 manual row | OPEN — stale | Already stale by system's own 3-day rule; see G13 |
 | G3 | Simple/Pro language layer, glossary, lexicon exist only in design catalog — zero wired into build | OPEN — Tier 3 core work | A10–A14; direction-agnostic, doesn't need design pick first |
-| G4 | Landing page + waitlist signup — catalog mock only, no route exists | OPEN | Tier 2, A7–A9 |
+| G4 | Landing page + waitlist signup — catalog mock only, no route exists | **IN PROGRESS 2026-07-13** | Tier 2, A7–A9. Same as G8/NG-5 — now gated by REVENUE_ROADMAP.md's proof window (Day 0 = 2026-07-13); Tarun explicitly sequenced this ahead of Stream A this week |
 | G5 | Attribution schema (`prediction_components`) missing — blocks per-signal RCA | OPEN | Needed before Loop 3 |
 | G6 | Kelly sizing runs on hardcoded `PORTFOLIO_VALUE=725000`, not real holdings | OPEN | Also NG-2 (public display issue) |
 | G7 | Warm calibration (Platt scaling) is placeholder — cold-start path only | OPEN — bridged by A4 | COLD-gating (A4) is the honest interim; A21 is the real fix, deferred to Loop 3 window |
@@ -39,6 +39,12 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 | G15 | Two presentation layers coexist (Streamlit `src/pages/` + Next.js) — dead weight | OPEN | Needs formal deprecation marker |
 | G16 | Zero production observability — no error monitoring, uptime check, or analytics | OPEN | Not yet tiered |
 | G17 | Governance promises uncoded (Rule D/E, GraphRAG-first enforcement) | OPEN | Tier 5, A22 |
+
+## New Gaps (G18-G20)
+
+| ID | Description | Status | Note |
+|---|---|---|---|
+| G20 | No per-instrument "stock detail" page — all 4 live routes (/, /signals, /path, /accuracy) are flat lists across every tracked instrument; nothing lets a user drill into ONE stock's consolidated signal/sizing/accuracy view. Codex's independent design doc also missed this page type. | **IN PROGRESS 2026-07-13 — MVP via Codex, soft-launch only** | Full page still gated (see original gate below). MVP round 2 council (Buffett/Munger/SRE/Constraint Enforcer/Lynch + Synthesis Chair) approved a narrower MVP: live price + current signal + lynch_class badge + live-computed "X of 20 signals graded" note + a mandatory non-removable watchlist/aggregate strip (Munger's structural safeguard against standalone-screenshot misuse — resolves his dissent by design, not by launch-gating alone). Conditions: preview/branch link only, NOT linked from primary nav, NOT merged to production nav until landing page/waitlist ships, not promoted externally, read-only build isolated from ingest, scope locked to exactly 5 elements before Codex starts. Munger's residual-risk note preserved: if the MVP is ever screenshotted/forwarded as a standalone call even in soft-launch, his original NO becomes binding and it reverts to password-gated preview or full defer. Graduation to promoted/linked page requires the ORIGINAL gate (≥20 resolved signals/2 categories or 7 days clean ingest) AND ≥1 week of the watchlist-strip element live with no misuse incident. |
 
 ## New Gaps (G18-G19) — found by calibration-integrity council review, 2026-07-12 (forecast model solidification plan)
 
