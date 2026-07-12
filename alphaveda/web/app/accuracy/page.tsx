@@ -1,5 +1,5 @@
 import { getServerSupabase } from '@/lib/supabase'
-import { LexOrRaw } from '@/components/Lex'
+import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
 import { directionLexKey } from '@/lib/lexicon'
 
@@ -63,16 +63,16 @@ export default async function AccuracyPage() {
 
   return (
     <>
-      <h1 className="av-heading">Accuracy Ledger</h1>
+      <h1 className="av-heading"><Lex k="ledger.title" /></h1>
       <p className="av-subheading">
         A public record of every call we&apos;ve made and how it turned out
       </p>
 
       <div className="av-banner av-banner--amber">
-        Past performance is not indicative of future results. The hit rate and returns
-        below are a historical record only — they do not predict what will happen next,
-        and results can get worse as well as better. Negative returns are a normal part
-        of this record and carry real downside risk if acted on; nothing here is a
+        Past performance is not indicative of future results. The success percentage and
+        returns below are a historical record only — they do not predict what will happen
+        next, and results can get worse as well as better. Negative returns are a normal
+        part of this record and carry real downside risk if acted on; nothing here is a
         guarantee or a recommendation.
       </div>
 
@@ -95,7 +95,7 @@ export default async function AccuracyPage() {
           <div className="av-stat__value">{outcomes.length}</div>
         </div>
         <div className="av-card">
-          <div className="av-stat__label">Hit Rate</div>
+          <div className="av-stat__label"><Lex k="ledger.hit_label" /></div>
           <div className="av-stat__value" style={{ color: hitRate != null && hitRate >= 50 ? 'var(--emerald)' : 'var(--terra)' }}>
             {hitRate != null ? <ProbabilityFrame pct={hitRate} /> : '—'}
           </div>

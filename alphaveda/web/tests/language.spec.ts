@@ -46,11 +46,25 @@ const JARGON = [
   'NO CALL', 'COLD', 'hit rate', 'ledger',
 ]
 
+// Word-boundary match, not plain substring — a naive `.includes()` scan false-
+// positives on e.g. "ECE" inside "REC[ent]" (r-e-C-E-n-t contains the literal
+// substring "ece"). `\b` doesn't work before/after non-word chars like the
+// space in "n=" or period in "p 0.", so anchor on whichever side is a real
+// word character and leave the punctuated side unanchored.
+function jargonRegex(token: string): RegExp {
+  const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const startsWithWord = /^\w/.test(token)
+  const endsWithWord = /\w$/.test(token)
+  const left = startsWithWord ? '\\b' : ''
+  const right = endsWithWord ? '\\b' : ''
+  return new RegExp(`${left}${escaped}${right}`, 'i')
+}
+
 for (const route of ROUTES) {
   test(`L1 jargon scan — no banned tokens in Simple mode on ${route}`, async ({ page }) => {
     await gotoWithMode(page, route, 'simple')
-    const bodyText = (await page.locator('body').innerText()).toLowerCase()
-    const hits = JARGON.filter((j) => bodyText.includes(j.toLowerCase()))
+    const bodyText = await page.locator('body').innerText()
+    const hits = JARGON.filter((j) => jargonRegex(j).test(bodyText))
     expect(hits, `jargon leaked into Simple mode on ${route}: ${JSON.stringify(hits)}`).toEqual([])
   })
 }

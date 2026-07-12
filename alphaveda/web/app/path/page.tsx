@@ -1,6 +1,6 @@
 import { getServerSupabase } from '@/lib/supabase'
 import { isCommercial, isPersonalContext } from '@/lib/commercial'
-import { LexOrRaw } from '@/components/Lex'
+import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
 import type { LexKey } from '@/lib/lexicon'
 
@@ -78,7 +78,7 @@ export default async function PathPage() {
     <>
       <h1 className="av-heading">Path</h1>
       <p className="av-subheading">
-        Kelly-based position sizing — research purposes only
+        <Lex k="port.subtitle" />
       </p>
 
       {proposedCount > 0 && (
@@ -159,11 +159,11 @@ export default async function PathPage() {
 
       {showRupee ? (
         <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          Portfolio value: ₹{PORTFOLIO_VALUE.toLocaleString('en-IN')} · Quarter Kelly · Max {(MAX_POSITION_PCT * 100).toFixed(0)}% per position
+          Portfolio value: ₹{PORTFOLIO_VALUE.toLocaleString('en-IN')} · <Lex k="port.method" /> · Max {(MAX_POSITION_PCT * 100).toFixed(0)}% per position
         </p>
       ) : (
         <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          Position sizing method: Quarter Kelly · Max {(MAX_POSITION_PCT * 100).toFixed(0)}% per position — band shown, rupee amounts hidden in research mode.
+          Position sizing method: <Lex k="port.method" /> · Max {(MAX_POSITION_PCT * 100).toFixed(0)}% per position — band shown, rupee amounts hidden in research mode.
         </p>
       )}
     </>

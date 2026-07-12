@@ -85,8 +85,7 @@ export default async function SignalsPage() {
 
       {isColdStart && (
         <div className="av-banner av-banner--blue">
-          COLD START — {allPredictions.length} of {OBSERVATION_THRESHOLD} observations accumulated.
-          Signals are using Bayesian prior weights until the threshold is reached.
+          <Lex k="ledger.cold_banner" /> — {allPredictions.length} of {OBSERVATION_THRESHOLD} graded so far.
         </div>
       )}
 

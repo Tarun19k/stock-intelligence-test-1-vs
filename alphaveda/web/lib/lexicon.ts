@@ -44,12 +44,16 @@ export type LexKey =
   | 'ledger.pass'
   | 'ledger.demoted'
   | 'ledger.cold'
+  | 'ledger.hit_label'
+  | 'ledger.cold_banner'
   | 'port.title'
   | 'port.band'
   | 'port.above'
   | 'port.within'
   | 'port.below'
   | 'port.judgment'
+  | 'port.subtitle'
+  | 'port.method'
 
 // ---------------------------------------------------------------------------
 // §1 Signal surface, §2 Scorecard surface, §3 Portfolio surface (labels only —
@@ -76,8 +80,18 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'ledger.pass': { pro: 'PASS', simple: 'GOOD' },
   'ledger.demoted': { pro: 'DEMOTED', simple: 'UNDER REVIEW', learn: 'ledger_demoted' },
   'ledger.cold': { pro: 'COLD', simple: 'TOO EARLY', learn: 'ledger_cold' },
+  'ledger.hit_label': { pro: 'Hit Rate', simple: 'How often right' },
+  // Locked source (lexicon §2, ledger.cold learn card): "New types get graded after 30 results."
+  // Lead-in phrase — composed by the caller with a trailing "X of Y graded so far" clause.
+  'ledger.cold_banner': {
+    pro: 'COLD START',
+    simple: 'Just getting started',
+    learn: 'ledger_cold',
+  },
 
   'port.title': { pro: 'Kelly view', simple: 'Your position sizes' },
+  'port.subtitle': { pro: 'Kelly-based position sizing — research purposes only', simple: 'How much of your money each idea might fit — research only' },
+  'port.method': { pro: 'Quarter Kelly', simple: 'a cautious slice of the full formula', learn: 'kelly_band' },
   'port.band': { pro: 'Kelly band', simple: 'healthy range', learn: 'kelly_band' },
   'port.above': { pro: 'ABOVE', simple: 'LARGER than range' },
   'port.within': { pro: 'WITHIN', simple: 'HEALTHY' },

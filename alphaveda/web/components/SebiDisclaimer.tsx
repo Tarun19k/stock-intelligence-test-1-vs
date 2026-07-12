@@ -13,12 +13,20 @@
 // alphaveda/docs/GAP_REGISTER.md NG-4 for the cleanup follow-up.
 
 import { SEBI_DISCLAIMER as disclaimerText } from '@/lib/sebi-disclaimer.generated'
+import { SEBI_PLAIN } from '@/lib/lexicon'
 
+// Dual SEBI treatment (R11, addendum §6): the plain-identity line does the
+// behavioral trust work (people absorb a plain statement; they don't read
+// legal text), the legal line does the regulatory work. Both always render,
+// in both language modes — never toggled, never hidden.
 export default function SebiDisclaimer() {
   return (
     <div className="sebi-footer" role="complementary" aria-label="SEBI regulatory disclaimer">
       <span className="sebi-footer__icon" aria-hidden="true">⚠</span>
-      {disclaimerText}
+      <span>
+        <span className="sebi-footer__plain">{SEBI_PLAIN}</span>{' '}
+        <span className="sebi-footer__legal">{disclaimerText}</span>
+      </span>
     </div>
   )
 }
