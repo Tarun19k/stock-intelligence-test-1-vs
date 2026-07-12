@@ -1,0 +1,1224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlphaVeda — Design Overview</title>
+  <style>
+    :root {
+      --indigo-950: #15112f;
+      --indigo-900: #1c163a;
+      --indigo-800: #282050;
+      --indigo-700: #382d6d;
+      --gold-500: #d9aa4a;
+      --gold-300: #f0cf80;
+      --emerald-500: #2eb67d;
+      --emerald-100: rgba(46, 182, 125, 0.13);
+      --terra-500: #c0503a;
+      --terra-100: rgba(192, 80, 58, 0.14);
+      --ivory-50: #fff9ee;
+      --ivory-100: #f8efd9;
+      --muted: #c8bddf;
+      --muted-2: #9d91bc;
+      --line: rgba(255, 249, 238, 0.14);
+      --panel: rgba(255, 255, 255, 0.055);
+      --panel-strong: rgba(255, 255, 255, 0.085);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 999px;
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-serif: Georgia, "Times New Roman", serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ivory-50);
+      font-family: var(--font-sans);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(217, 170, 74, 0.24), transparent 28%),
+        radial-gradient(circle at 90% 2%, rgba(46, 182, 125, 0.12), transparent 30%),
+        linear-gradient(135deg, var(--indigo-950) 0%, var(--indigo-900) 44%, #0f0d21 100%);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 28px 0 104px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(21, 17, 47, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 16px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: max-content;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: var(--indigo-950);
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      font-size: 22px;
+      font-weight: 800;
+      box-shadow: 0 10px 28px rgba(217, 170, 74, 0.25);
+    }
+
+    .brand-title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-style: italic;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .nav a,
+    .mode-pill {
+      color: var(--ivory-100);
+      text-decoration: none;
+      font-size: 13px;
+      line-height: 1;
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .nav a.active {
+      border-color: rgba(217, 170, 74, 0.62);
+      color: var(--gold-300);
+      background: rgba(217, 170, 74, 0.12);
+    }
+
+    .mode-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: max-content;
+    }
+
+    .mode-pill:last-child {
+      color: var(--gold-300);
+      border-color: rgba(217, 170, 74, 0.48);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 34px;
+    }
+
+    .hero-copy,
+    .hero-card,
+    .panel,
+    .page-card,
+    .metric,
+    .flow-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 42px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      right: -110px;
+      bottom: -120px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(217, 170, 74, 0.10);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border: 1px solid rgba(217, 170, 74, 0.38);
+      border-radius: var(--radius-sm);
+      color: var(--gold-300);
+      background: rgba(217, 170, 74, 0.09);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin-bottom: 18px;
+      font-family: var(--font-serif);
+      font-size: clamp(42px, 7vw, 76px);
+      font-style: italic;
+      font-weight: 700;
+      line-height: 0.94;
+      letter-spacing: -0.055em;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin-bottom: 26px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      border: 0;
+      border-radius: var(--radius-sm);
+      padding: 13px 18px;
+      color: var(--indigo-950);
+      background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+      font-weight: 800;
+      box-shadow: 0 12px 30px rgba(217, 170, 74, 0.20);
+    }
+
+    .button.secondary {
+      color: var(--ivory-50);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: none;
+    }
+
+    .hero-card {
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.035));
+    }
+
+    .signal-preview {
+      border: 1px solid rgba(255, 249, 238, 0.16);
+      border-radius: 24px;
+      padding: 22px;
+      background: rgba(12, 10, 27, 0.48);
+    }
+
+    .signal-header,
+    .section-title-row,
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .ticker {
+      color: var(--ivory-50);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .chip.good {
+      color: #aaf4d2;
+      border: 1px solid rgba(46, 182, 125, 0.42);
+      background: var(--emerald-100);
+    }
+
+    .chip.warn {
+      color: var(--gold-300);
+      border: 1px solid rgba(217, 170, 74, 0.44);
+      background: rgba(217, 170, 74, 0.11);
+    }
+
+    .chip.risk {
+      color: #f3b5a9;
+      border: 1px solid rgba(192, 80, 58, 0.46);
+      background: var(--terra-100);
+    }
+
+    .big-signal {
+      margin: 24px 0 14px;
+      font-size: 36px;
+      font-weight: 850;
+      letter-spacing: -0.04em;
+    }
+
+    .confidence {
+      height: 8px;
+      overflow: hidden;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+    .confidence span {
+      display: block;
+      width: 68%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--emerald-500), var(--gold-500));
+    }
+
+    .preview-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .mini-metric {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .mini-metric strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--ivory-50);
+      font-family: var(--font-mono);
+      font-size: 15px;
+    }
+
+    .label {
+      color: var(--muted-2);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .banner {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      color: var(--ivory-100);
+      border: 1px solid rgba(217, 170, 74, 0.30);
+      background: rgba(217, 170, 74, 0.08);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .panel {
+      padding: 28px;
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-size: 36px;
+      font-style: italic;
+      letter-spacing: -0.035em;
+    }
+
+    .section-note {
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .app-map {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .map-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .map-node {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .map-node h3 {
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .map-node p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .flow-card {
+      position: relative;
+      min-height: 132px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .flow-card:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      z-index: 2;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      color: var(--indigo-950);
+      background: var(--gold-500);
+      font-weight: 900;
+    }
+
+    .flow-number {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 12px;
+      color: var(--indigo-950);
+      background: var(--gold-500);
+      font-weight: 900;
+    }
+
+    .flow-card h3 {
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .flow-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .page-card {
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.052);
+    }
+
+    .page-card-header {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .page-card-header h3 {
+      margin-bottom: 6px;
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-style: italic;
+      letter-spacing: -0.025em;
+    }
+
+    .page-card-header p {
+      margin-bottom: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .wireframe {
+      padding: 18px;
+    }
+
+    .wire-banner,
+    .wire-control,
+    .wire-table,
+    .wire-card,
+    .wire-row {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(12, 10, 27, 0.34);
+    }
+
+    .wire-banner {
+      padding: 10px 12px;
+      color: var(--gold-300);
+      font-size: 12px;
+    }
+
+    .wire-controls {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .wire-control {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: var(--muted-2);
+      font-size: 12px;
+    }
+
+    .wire-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      min-height: 64px;
+      padding: 10px;
+      box-shadow: none;
+      border-radius: 14px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted-2);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 7px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+    }
+
+    .wire-table {
+      margin-top: 12px;
+      padding: 8px;
+    }
+
+    .wire-row {
+      display: grid;
+      grid-template-columns: 0.9fr 0.8fr 0.8fr 0.8fr;
+      gap: 8px;
+      padding: 9px;
+      border-radius: 10px;
+      border-color: rgba(255, 249, 238, 0.08);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .wire-row + .wire-row {
+      margin-top: 6px;
+    }
+
+    .wire-card {
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .wire-card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .wire-card h4 {
+      margin: 0;
+      font-size: 13px;
+      color: var(--ivory-100);
+    }
+
+    .wire-signal {
+      margin: 10px 0 14px;
+      font-size: 25px;
+      font-weight: 850;
+      letter-spacing: -0.04em;
+    }
+
+    .tiny-note {
+      margin: 12px 0 0;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .exit-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .exit-rule {
+      min-height: 54px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 11px;
+    }
+
+    .score-progress {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .progress-row {
+      display: grid;
+      grid-template-columns: 96px 1fr 48px;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .bar {
+      height: 7px;
+      overflow: hidden;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--gold-500), var(--emerald-500));
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .pipeline-step {
+      position: relative;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      min-height: 118px;
+    }
+
+    .pipeline-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -12px;
+      width: 12px;
+      height: 2px;
+      background: var(--gold-500);
+    }
+
+    .pipeline-step h3 {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .pipeline-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .states {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .state-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .state-card h3 {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .state-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .copy-rules {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .rule-box {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.048);
+    }
+
+    .rule-box ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0;
+      margin: 14px 0 0;
+      list-style: none;
+    }
+
+    .rule-box li {
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .rule-box.avoid li {
+      color: #f2b8ad;
+      border-color: rgba(192, 80, 58, 0.35);
+      background: var(--terra-100);
+    }
+
+    .rule-box.prefer li {
+      color: #b8f4d8;
+      border-color: rgba(46, 182, 125, 0.32);
+      background: var(--emerald-100);
+    }
+
+    .sebi-footer {
+      position: fixed;
+      left: 18px;
+      right: 18px;
+      bottom: 16px;
+      z-index: 30;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 12px 16px;
+      border: 1px solid rgba(217, 170, 74, 0.34);
+      border-radius: 18px;
+      color: var(--ivory-100);
+      background: rgba(21, 17, 47, 0.92);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.38);
+      backdrop-filter: blur(18px);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .sebi-footer strong {
+      color: var(--gold-300);
+    }
+
+    @media (max-width: 980px) {
+      .topbar,
+      .hero,
+      .app-map,
+      .pages-grid,
+      .copy-rules {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        display: grid;
+      }
+
+      .flow,
+      .pipeline,
+      .states {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .flow-card::after,
+      .pipeline-step::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 24px, 1180px);
+        padding-top: 14px;
+      }
+
+      .hero-copy,
+      .panel {
+        padding: 22px;
+      }
+
+      .flow,
+      .pipeline,
+      .states,
+      .wire-metrics,
+      .preview-meta,
+      .exit-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wire-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .wire-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .sebi-footer {
+        left: 12px;
+        right: 12px;
+        bottom: 10px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar" aria-label="AlphaVeda navigation">
+      <div class="brand" aria-label="AlphaVeda brand">
+        <div class="brand-mark">◈</div>
+        <div>
+          <p class="brand-title">AlphaVeda</p>
+          <p class="brand-subtitle">Indian equity research · not investment advice</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="active" href="#market-data">Market Data</a>
+        <a href="#signals">Signals</a>
+        <a href="#path">Path</a>
+        <a href="#accuracy">Accuracy</a>
+      </nav>
+
+      <div class="mode-switch" aria-label="Language mode">
+        <span class="mode-pill">Simple</span>
+        <span class="mode-pill">Pro</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <span class="eyebrow">Trust-first research dashboard</span>
+          <h1 id="hero-title">Fewer signals. Clearer context. Publicly graded.</h1>
+          <p class="lead">
+            AlphaVeda is a calm, compliance-aware research experience for Indian equities.
+            It shows the data behind each signal, explains uncertainty in plain language,
+            and makes historical grading visible before asking users to trust the model.
+          </p>
+          <div class="hero-actions">
+            <button class="button" type="button">Review current signal</button>
+            <button class="button secondary" type="button">Check accuracy ledger</button>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Signal preview">
+          <div class="signal-preview">
+            <div class="signal-header">
+              <span class="ticker">TICKER · FAST GROWER</span>
+              <span class="chip good">LOOKS POSITIVE</span>
+            </div>
+            <div class="big-signal">Research signal with earned confidence</div>
+            <div class="confidence" aria-label="Confidence 68 percent"><span></span></div>
+            <div class="preview-meta">
+              <div class="mini-metric">
+                <span class="label">Confidence</span>
+                <strong>68%</strong>
+              </div>
+              <div class="mini-metric">
+                <span class="label">Status</span>
+                <strong>Mature</strong>
+              </div>
+              <div class="mini-metric">
+                <span class="label">Mode</span>
+                <strong>Research</strong>
+              </div>
+            </div>
+            <div class="banner">
+              Signal output is algorithmically generated from market data and historical grading.
+              It is research-only and not a recommendation.
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section panel" aria-labelledby="app-map-title">
+        <div class="section-title-row">
+          <div>
+            <h2 id="app-map-title">Application Blueprint</h2>
+            <p class="section-note">
+              The product is organized around four user questions: what data is being used,
+              what the model sees, what the risk-aware context is, and how well prior signals worked.
+            </p>
+          </div>
+          <span class="chip warn">Global SEBI disclaimer</span>
+        </div>
+
+        <div class="app-map">
+          <div class="map-stack">
+            <article class="map-node">
+              <h3>Global Shell</h3>
+              <p>Persistent navigation, Simple/Pro language mode, glossary affordances, and research-only disclaimer.</p>
+            </article>
+            <article class="map-node">
+              <h3>Trust Layer</h3>
+              <p>Data freshness, cold-start labels, no-call states, public scorecard, and compliance-safe copy.</p>
+            </article>
+            <article class="map-node">
+              <h3>Decision Boundary</h3>
+              <p>AlphaVeda provides research context; users make independent decisions outside the tool.</p>
+            </article>
+          </div>
+
+          <div class="pages-grid" aria-label="Core pages overview">
+            <article class="map-node">
+              <h3>Market Data</h3>
+              <p>Raw OHLCV, circuit flags, instrument coverage, and ingest freshness.</p>
+            </article>
+            <article class="map-node">
+              <h3>Signals</h3>
+              <p>Current research direction, confidence, context, no-call and cold-start states.</p>
+            </article>
+            <article class="map-node">
+              <h3>Path</h3>
+              <p>Risk-aware sizing context, downside framing, and exit-rule discipline.</p>
+            </article>
+            <article class="map-node">
+              <h3>Accuracy</h3>
+              <p>Graded outcomes, hit-rate context, observation counts, and weight-review status.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section panel" aria-labelledby="flow-title">
+        <h2 id="flow-title">Primary Research Flow</h2>
+        <p class="section-note">
+          The intended path is not “pick stock → buy stock.” It is a research workflow that moves from input verification to signal review, risk context, and historical evidence.
+        </p>
+        <div class="flow">
+          <article class="flow-card">
+            <div class="flow-number">1</div>
+            <h3>Verify data</h3>
+            <p>Check raw prices, freshness, circuit flags, and missing-data states.</p>
+          </article>
+          <article class="flow-card">
+            <div class="flow-number">2</div>
+            <h3>Review signal</h3>
+            <p>See whether AlphaVeda has a positive, negative, or no-call view.</p>
+          </article>
+          <article class="flow-card">
+            <div class="flow-number">3</div>
+            <h3>Assess risk</h3>
+            <p>Use Path for sizing context, downside awareness, and exit-rule framing.</p>
+          </article>
+          <article class="flow-card">
+            <div class="flow-number">4</div>
+            <h3>Check history</h3>
+            <p>Use Accuracy to inspect graded outcomes and confidence maturity.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section pages-grid" aria-label="Page wireframes">
+        <article class="page-card" id="market-data">
+          <div class="page-card-header">
+            <div class="card-title-row">
+              <h3>Market Data</h3>
+              <span class="chip warn">Input audit</span>
+            </div>
+            <p>Shows raw market information and whether the data pipeline is fresh, stale, missing, or circuit-affected.</p>
+          </div>
+          <div class="wireframe">
+            <div class="wire-banner">Data last updated 1 day ago · next ingest after market close</div>
+            <div class="wire-controls">
+              <div class="wire-control">Instrument search</div>
+              <div class="wire-control">Class / flag filter</div>
+            </div>
+            <div class="wire-metrics">
+              <div class="metric"><span>Tracked</span><strong>559</strong></div>
+              <div class="metric"><span>Latest</span><strong>Jul 12</strong></div>
+              <div class="metric"><span>Rows</span><strong>12.4k</strong></div>
+              <div class="metric"><span>Flags</span><strong>03</strong></div>
+            </div>
+            <div class="wire-table" aria-label="OHLCV table preview">
+              <div class="wire-row"><strong>Ticker</strong><strong>Date</strong><strong>Close</strong><strong>Flag</strong></div>
+              <div class="wire-row"><span>ABC</span><span>2026-07-12</span><span>₹428.30</span><span>—</span></div>
+              <div class="wire-row"><span>XYZ</span><span>2026-07-12</span><span>₹91.80</span><span>CIRCUIT</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="page-card" id="signals">
+          <div class="page-card-header">
+            <div class="card-title-row">
+              <h3>Signals</h3>
+              <span class="chip good">Research view</span>
+            </div>
+            <p>Shows the current algorithmic research signal, confidence context, and whether the signal is mature or cold-start.</p>
+          </div>
+          <div class="wireframe">
+            <div class="wire-banner">Just getting started · not enough graded results for this segment</div>
+            <div class="wire-controls">
+              <div class="wire-control">Instrument selector</div>
+              <div class="wire-control">Segment selector</div>
+            </div>
+            <div class="wire-card">
+              <div class="wire-card-title">
+                <h4>TICKER · steady large company</h4>
+                <span class="chip good">LOOKS POSITIVE</span>
+              </div>
+              <div class="wire-signal">Current research signal</div>
+              <div class="confidence"><span></span></div>
+              <p class="tiny-note">Algorithmically generated from market data and historical grading. Research-only.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="page-card" id="path">
+          <div class="page-card-header">
+            <div class="card-title-row">
+              <h3>Path</h3>
+              <span class="chip risk">Risk context</span>
+            </div>
+            <p>Frames sizing and downside context without telling users what to buy, sell, or allocate.</p>
+          </div>
+          <div class="wireframe">
+            <div class="wire-banner">Position size shown as direction + confidence only in this context</div>
+            <div class="wire-metrics">
+              <div class="metric"><span>Direction</span><strong>Positive</strong></div>
+              <div class="metric"><span>Confidence</span><strong>62%</strong></div>
+              <div class="metric"><span>Band</span><strong>Within</strong></div>
+              <div class="metric"><span>Amount</span><strong>—</strong></div>
+            </div>
+            <div class="wire-card">
+              <h4>Risk and exit context</h4>
+              <div class="exit-grid">
+                <div class="exit-rule">E1<br />Downside</div>
+                <div class="exit-rule">E2<br />Streak</div>
+                <div class="exit-rule">E3<br />Regime</div>
+                <div class="exit-rule">E4<br />Review</div>
+              </div>
+              <p class="tiny-note">Sizing is model context only. Final decisions happen outside AlphaVeda.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="page-card" id="accuracy">
+          <div class="page-card-header">
+            <div class="card-title-row">
+              <h3>Accuracy</h3>
+              <span class="chip warn">Public scorecard</span>
+            </div>
+            <p>Shows whether past signals were graded, how often they were right, and which segments are still too early.</p>
+          </div>
+          <div class="wireframe">
+            <div class="wire-banner">Past signal accuracy does not guarantee future returns</div>
+            <div class="wire-metrics">
+              <div class="metric"><span>Signals</span><strong>142</strong></div>
+              <div class="metric"><span>Graded</span><strong>87</strong></div>
+              <div class="metric"><span>Score</span><strong>61%</strong></div>
+              <div class="metric"><span>Cold</span><strong>04</strong></div>
+            </div>
+            <div class="score-progress">
+              <div class="progress-row"><span>Fast grower</span><div class="bar"><span style="width: 93%"></span></div><span>28/30</span></div>
+              <div class="progress-row"><span>Stalwart</span><div class="bar"><span style="width: 100%"></span></div><span>45</span></div>
+              <div class="progress-row"><span>Cyclical</span><div class="bar"><span style="width: 37%"></span></div><span>11/30</span></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section panel" aria-labelledby="pipeline-title">
+        <h2 id="pipeline-title">Data and Trust Pipeline</h2>
+        <p class="section-note">
+          The design makes backend trust visible: market sources flow into ingest checks, database records, signal generation, prediction grading, and the public scorecard.
+        </p>
+        <div class="pipeline">
+          <article class="pipeline-step">
+            <span class="label">01</span>
+            <h3>Market sources</h3>
+            <p>NSE/BSE end-of-day prices, fundamentals, and macro context.</p>
+          </article>
+          <article class="pipeline-step">
+            <span class="label">02</span>
+            <h3>Ingest checks</h3>
+            <p>Normalize rows, detect staleness, and flag circuit-locked prices.</p>
+          </article>
+          <article class="pipeline-step">
+            <span class="label">03</span>
+            <h3>Signal engine</h3>
+            <p>Arbitrate evidence, calibrate confidence, and suppress weak calls.</p>
+          </article>
+          <article class="pipeline-step">
+            <span class="label">04</span>
+            <h3>Ledger</h3>
+            <p>Record predictions and grade outcomes after the defined horizon.</p>
+          </article>
+          <article class="pipeline-step">
+            <span class="label">05</span>
+            <h3>Accuracy UI</h3>
+            <p>Expose scorecard evidence, cold-start counts, and review status.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section panel" aria-labelledby="states-title">
+        <h2 id="states-title">Important Product States</h2>
+        <p class="section-note">
+          Non-happy paths are designed as trust signals. AlphaVeda should explain missing data, stale feeds, cold starts, and no-call decisions clearly.
+        </p>
+        <div class="states">
+          <article class="state-card">
+            <span class="chip warn">Empty</span>
+            <h3>No data yet</h3>
+            <p>The data source is still being set up. Do not show silent blanks.</p>
+          </article>
+          <article class="state-card">
+            <span class="chip risk">Stale</span>
+            <h3>Data delayed</h3>
+            <p>Signals may be limited until the next successful ingest completes.</p>
+          </article>
+          <article class="state-card">
+            <span class="chip warn">Cold</span>
+            <h3>Too early</h3>
+            <p>The segment needs more graded results before strong confidence is shown.</p>
+          </article>
+          <article class="state-card">
+            <span class="chip good">No call</span>
+            <h3>No opinion today</h3>
+            <p>Insufficient or conflicting evidence makes silence the safer output.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section panel" aria-labelledby="copy-title">
+        <h2 id="copy-title">Compliance-Safe Copy Rules</h2>
+        <p class="section-note">
+          AlphaVeda should sound like a research tool, not a broker, adviser, or stock-tip service.
+        </p>
+        <div class="copy-rules">
+          <article class="rule-box avoid">
+            <h3>Avoid</h3>
+            <ul>
+              <li>Buy</li>
+              <li>Sell</li>
+              <li>Hold</li>
+              <li>You should invest</li>
+              <li>Guaranteed</li>
+              <li>Recommended for you</li>
+            </ul>
+          </article>
+          <article class="rule-box prefer">
+            <h3>Prefer</h3>
+            <ul>
+              <li>Research signal</li>
+              <li>Looks positive</li>
+              <li>Looks negative</li>
+              <li>No opinion today</li>
+              <li>Research only</li>
+              <li>Not investment advice</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="sebi-footer" role="contentinfo" aria-label="SEBI disclaimer">
+    <strong>Research only.</strong>
+    AlphaVeda provides algorithmic research and analysis only. This is not investment advice.
+    Consult a SEBI-registered adviser before making any investment decision. Past signal accuracy does not guarantee future returns.
+  </footer>
+</body>
+</html>
