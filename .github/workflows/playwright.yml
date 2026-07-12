@@ -37,11 +37,11 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           SEBI_DISCLAIMER: ${{ secrets.SEBI_DISCLAIMER }}
 
-      - name: Start server and run SEBI tests
+      - name: Start server and run SEBI + language tests
         run: |
           npm run start &
           npx wait-on http://localhost:3000 --timeout 30000
-          npx playwright test tests/sebi.spec.ts
+          npx playwright test tests/sebi.spec.ts tests/language.spec.ts
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
