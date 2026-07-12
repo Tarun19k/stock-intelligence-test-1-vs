@@ -24,6 +24,8 @@ on:
 jobs:
   watchdog:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     defaults:
       run:
         working-directory: alphaveda
@@ -48,7 +50,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          TODAY=$(date -u +%Y-%m-%d)
+          export TODAY=$(date -u +%Y-%m-%d)
           echo "TODAY=$TODAY" >> "$GITHUB_ENV"
           python - <<'EOF'
           import os, sys
