@@ -44,11 +44,17 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 
 | ID | Description | Status | Note |
 |---|---|---|---|
-| NG-1 | Accuracy page lacks past-performance disclaimer; downside metrics lack risk note | OPEN | Tier 1, A3 |
-| NG-2 | Public unauthenticated Path page shows Tarun's personal ₹ Kelly amounts (from hardcoded `PORTFOLIO_VALUE`) | OPEN | Tier 1, A5 — confirmed via direct code read, `path/page.tsx:134` |
-| NG-3 | Operator-facing language leaks into public empty/error states (e.g. "Run the daily ingest pipeline") | OPEN | Tier 1, A6 |
-| NG-4 | SEBI disclaimer sourced from `process.env.SEBI_DISCLAIMER` — mutable via a Vercel env edit with zero code review, violating the documented hardcoding standard | OPEN | Tier 1, A2 — confirmed via direct code read, `SebiDisclaimer.tsx:5` |
-| NG-5 | No what/why/trust story exists anywhere for a first-time visitor — landing is a raw data table | OPEN | Tier 2, A9 |
+| NG-1 | Accuracy page lacks past-performance disclaimer; downside metrics lack risk note | **CLOSED 2026-07-12** | `593394c` (A3) |
+| NG-2 | Public unauthenticated Path page shows Tarun's personal ₹ Kelly amounts (from hardcoded `PORTFOLIO_VALUE`) | **CLOSED 2026-07-12** | `cb51449` (A5) — fail-closed `isPersonalContext()` gate |
+| NG-3 | Operator-facing language leaks into public empty/error states (e.g. "Run the daily ingest pipeline") | **CLOSED 2026-07-12** | `b0e0c07` (A6) |
+| NG-4 | SEBI disclaimer sourced from `process.env.SEBI_DISCLAIMER` — mutable via a Vercel env edit with zero code review, violating the documented hardcoding standard | **CLOSED 2026-07-12** | `f307967` (A2) — now generated from `constants.py` at build time, CI drift test added |
+| NG-5 | No what/why/trust story exists anywhere for a first-time visitor — landing is a raw data table | OPEN | Tier 2, A9 — not yet built |
+| NG-6 | (found by A12's CI suite) SEBI_PLAIN dual-disclaimer line exported but never rendered — R11's "dual SEBI in both modes" requirement unmet | **CLOSED 2026-07-12** | `6c7ed11` |
+| NG-7 | (found by A12's CI suite) 4 hardcoded jargon leaks in Simple mode: "Accuracy Ledger"/"Hit Rate" (Accuracy), "Kelly-based"/"Quarter Kelly" (Path), "COLD START"/"Bayesian prior weights" (Signals), "hit rate" inside the NG-1 disclaimer text | **CLOSED 2026-07-12** | `6c7ed11` — all wired through the A10 lexicon |
+
+## Tier 3 (A10–A14) — CLOSED 2026-07-12
+
+Full plain-language persona layer built, verified, and CI-guarded: lexicon string architecture (A10), tap-to-learn glossary (A11), language test suite ported into CI — `alphaveda/web/tests/language.spec.ts`, 33/33 passing (A12), held-position directive-reading fix (A13), anchoring counter (A14). See `graphify-out/SESSION_RESUME.md` for the full build history including one recovered crashed-agent commit (A14) and one caught+fixed false-positive test bug.
 
 ---
 

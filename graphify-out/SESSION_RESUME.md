@@ -223,6 +223,28 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 
 ---
 
+## Tier 1 + Tier 3 build — COMPLETE 2026-07-12 (continued session)
+
+**Codex plugin**: installed (`claude plugin marketplace add openai/codex-plugin-cc` + `claude plugin install codex@openai-codex` — real CLI commands exist outside the REPL, no manual `/plugin` steps needed), reloaded, confirmed live (`codex:*` agents/skills present). `codex login` still Tarun's to do whenever.
+
+**Tier 1 (A2–A6, truth/compliance hardening)** — dispatched to one background agent, all 5 landed: disclaimer unified to build-time constant with CI drift test (A2, `f307967`), Accuracy past-performance disclaimer (A3, `593394c`), Signals confidence display gated behind `OBSERVATION_THRESHOLD` (A4, `73b8bfe`), Path page rupee amounts fail-closed-suppressed for public visitors via new `isPersonalContext()` (A5, `cb51449`), operator-language empty states rewritten (A6, `b0e0c07`).
+
+**Tier 3 (A10–A14, persona layer)** — dispatched to a second background agent IN PARALLEL with Tier 1, in the SAME working directory (my mistake — should have used isolated worktrees). Real consequences: commit-boundary contamination (A6 partially absorbed into A10's commit, A13 absorbed into A5's commit) — functionally fine, not cleanly per-fix revertible as intended. **The Tier 3 agent also crashed mid-task** (API ConnectionRefused) while implementing A14, leaving an uncommitted-but-complete diff in the working tree. **Lesson learned, applies to all future parallel dispatches: use isolated git worktrees for any 2+ agents touching overlapping files, and always inspect `git status`/`git diff` directly after a crashed or completed agent — do not trust a self-report alone, especially from a task that terminated abnormally.**
+
+Recovery performed directly (not re-delegated): verified the crashed A14 diff was genuinely complete (checked `naturalFrequency()`'s return type matched what the diff consumed, ran typecheck clean) before committing it (`52a3630`).
+
+**A12 (language CI test suite)** — the one task from the original Tier 3 batch that was never attempted before the crash. Dispatched solo (no concurrency risk) — built `alphaveda/web/tests/language.spec.ts`, ported all 5 checks from `design_evals_v2.py` faithfully. **First run: 9/20 passing, 11 failing — and these were REAL findings, not weak tests**: SEBI_PLAIN (dual-disclaimer requirement) was exported but never rendered anywhere; 4 places had hardcoded jargon strings that bypassed the A10 lexicon entirely (Accuracy "Hit Rate"/"Accuracy Ledger", Path "Kelly-based"/"Quarter Kelly", Signals "COLD START"/"Bayesian prior weights", and "hit rate" inside A3's own disclaimer text); one failure ("ECE") was a genuine test bug — a naive substring match false-positiving on "REC[ent]".
+
+**Closed all of it directly** (`6c7ed11`): added `SEBI_PLAIN` rendering to `SebiDisclaimer.tsx`, added 6 new lexicon keys (`ledger.hit_label`, `ledger.cold_banner`, `port.subtitle`, `port.method`) and wired them into all 3 flagged pages, rephrased the disclaimer's "hit rate" to "success percentage" (same specificity, no jargon), and fixed the test's jargon scanner itself to use word-boundary regex instead of plain substring matching. **Final verified state: `language.spec.ts` 33/33 passing, `sebi.spec.ts` unaffected, backend 203 passed/1 skipped, frontend typecheck clean.**
+
+**A1 (financial panel re-verification)** — done directly, not delegated: re-checked every original panel concern (RF-B, RF-C) plus the round table's new findings against the actual landed code (not a dry run this time). **Verdict: zero BLOCKER remaining.** One deployment follow-up, not a defect: `ALPHAVEDA_PERSONAL_CONTEXT` needs to be explicitly set in Vercel if Tarun wants his own view to show rupee amounts — correctly unset (suppressed) by default.
+
+**Tier 1 and Tier 3 (all of A2–A6, A10–A14) are now fully CLOSED.** See `alphaveda/docs/GAP_REGISTER.md` for the updated closure ledger — NG-1 through NG-4, NG-6, NG-7 all closed 2026-07-12. Only NG-5 (landing page trust story, Tier 2) and the Tarun-owned items (design pick, A16 human validation) remain open from the round table's full plan.
+
+**Token tracker confirmed actively monitoring** (checked mid-session): real ground-truth entries logging every Stop/PostToolUse, `~/.claude/monitoring/token-usage.jsonl` growing correctly, no errors in the debug log since the initial 07-09 test noise.
+
+---
+
 ## EXACT RESUME POINT
 
 **RF-B is CONFIRMED LIVE IN PRODUCTION — real GHA runs, real predictions, no dry-run caveat left. 10 predictions written for 2026-07-10 (natural confidence 18–50%, no floor artifacts). The tool's backend is genuinely wired and working. Three explicit approvals are the only thing between here and full MVP-live + round-table-driven retail-readiness plan:**
@@ -265,7 +287,8 @@ Accountability matrix documented in session. 6 infrastructure fixes proposed:
 |---|---|---|---|
 | ~~Apply migration 0014~~ | ✅ **DONE + VERIFIED** — constraint confirmed via `pg_constraint` query | Outcome resolution unblocked | — |
 | ~~Fix Vercel env vars + redeploy~~ | ✅ **DONE + VERIFIED** — live site confirmed showing 14 instruments, real tickers, no stale banner | Frontend genuinely live | — |
-| **Install Codex plugin** | PENDING — explicit yes needed, approved in strategic-analysis decision record, just not yet run | Unlocks OpenAI/Codex budget usage from within Claude Code | Whenever |
+| ~~Install Codex plugin~~ | ✅ **DONE** — installed, reloaded, `codex:*` agents/skills live | `codex login` still Tarun's whenever he wants it active | — |
+| ~~Tier 1 + Tier 3 build (A2–A6, A10–A14)~~ | ✅ **DONE + VERIFIED** — 33/33 language tests, 203/1 backend, clean typecheck, zero-BLOCKER panel re-verification | Full retail-readiness persona layer live | — |
 | Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | $0 → first revenue | When Tarun gives go-ahead |
 | Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
 | Design direction pick (D1 recommended) | Needed | Unblocks design migration session | Whenever Tarun does the phone/rubric walk |
