@@ -1,9 +1,32 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Session date:** 2026-07-10 (MVP-live push — Supabase resumed, GHA secrets fixed, RF-B verified live, round table dispatched)
+**Session date:** 2026-07-13 (Codex fully live, G22 pipeline blocker found+fixed same-day, 5-lens Codex-deliverable audit, persona UAT plan proposed)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
-**Last commits (prior to this checkpoint):** 27ce512 (verification findings), 83355fe (watchdog + verify-step fix), edb8d01 (RF-B fix)
+**Last commits (prior to this checkpoint):** 7bcceab (graphify), 337959e (G22 doc log), e251359 (G22 fix), 62fa2cc (Council Lens fix), eb20e86 (graphify)
+**This checkpoint fired 22 commits and one full working day late** — `SESSION_RESUME.md` was last touched 2026-07-12; everything below from 07-13 existed only in conversation until now. Standing lesson: invoke `/housekeeping checkpoint` at natural break points during long sessions, not only when asked.
+
+---
+
+## DO NOT REDO — Session 2026-07-13 (Codex live, G22 found+fixed, deliverable audit)
+
+- **Codex CLI fully authenticated and proven working end-to-end** (`codex login status` → "Logged in using ChatGPT", PATH fixed permanently in `~/.zshrc`). Real dispatch pattern established: `codex-companion.mjs task --background --write "<prompt>"` — **`--write` is required or Codex silently no-ops** (caught this after 4 early dispatches did nothing; always verify via `git status`/diff after "completed", never trust status alone).
+- **6 Codex deliverables shipped and independently verified** this session: `backtest.py`, `weekly_forecast_report.py` + `.github/workflows/weekly-report.yml`, G21 Lynch content layer (company blurb + 3-question checklist + lynch_class relabeling on the instrument page), G15 Streamlit deprecation markers, Council Lens table fix (added missing Dalio/Marks/Druckenmiller rows + staleness indicator to `docs/detail-page-layouts/stock-detail-alpha.html`).
+- **G19 CLOSED** (`e82a861`) — cold-start display now counts per-instrument, matching `engine.py`'s real calibration math instead of the old pooled `(lynch_class, regime)` count.
+- **RF-F CLOSED** — `horizon_days=1` documented as a conscious MVP deviation, not fixed (real fix waits on ≥30 obs/segment).
+- **REVENUE_ROADMAP.md locked** — 5-seat council (Buffett/Munger/Lynch/Wealth&Revenue/Constraint Enforcer), 3-week-or-15-signal proof window, Day 0 = 2026-07-13.
+- **Haiku Zero-Failure Routing Rule written into governance** (global, cross-workspace, premortem logged): `~/.claude/skills/chief-of-staff/SKILL.md` Token Health section rewritten, new `~/.claude/skills/register-scribe/SKILL.md` created, `~/.claude/skills/bash-systems-scripting/SKILL.md` extended with a commit-message contract, `~/.claude/skills-index.md` updated. Tarun explicitly approved all four before execution.
+- **6-seat + 7-seat financial council reviews of the India-policy design doc + `docs/detail-page-layouts/*.html`** (arrived via an independent Codex Cloud PR, not Claude-dispatched) — converged: citation/verification machinery is good, real doc-vs-implementation gap existed (partially fixed via Codex), Munger found a genuine compliance risk in the proposed ticker-watchlist concept with 5 named structural conditions. **No SEBI-compliance-specific review has run on this yet** — only investment-judgment seats.
+- **G22 found AND fixed same-day** — the real, previously-undiscovered blocker: `accuracy_outcomes` has 3 live NOT NULL columns (`outcome_date`, `actual_direction`, `is_correct`, confirmed via `information_schema`) that `ingest.py` Step 6 never populated. This silently broke **every real scheduled ingest run since G18 shipped** — first genuine trading-day run (`2026-07-13T15:37:16Z`) failed on this, resetting the `REVENUE_ROADMAP.md` clean-run counter to 0. Fixed (`e251359`), verified end-to-end via a real re-triggered ingest run (`29273458980`, `status: OK`, `outcomes_resolved: 10`, zero errors). **Today (07-13) is Day 1 of the clean-run counter, not further along — the 10-day window restarted from this fix.**
+- **Full 5-lens Codex-deliverable audit completed** (silent-failure-hunter, pr-test-analyzer, SRE, sebi-compliance-reviewer, content-accuracy check) — real findings, none yet fixed:
+  1. `backtest.py` has **zero tests** pinning its `momentum_price` replay to `engine.py`'s live math — a future edit to either file can silently desync them with no CI signal (calibration-integrity severity).
+  2. `weekly-report.yml` has **never actually run** (`gh run list` confirms zero runs) and has a confirmed bug: `pandas_market_calendars` is imported but **not in `requirements.txt`** — first run will hit `ImportError`, silently swallowed by a bare `except: pass`, falling back to naive weekday logic with no log line. SRE verdict: CONDITIONAL, not production-ready.
+  3. Same script has a **silent-empty-success** risk — zero resolved predictions in a week produces a syntactically valid, semantically empty markdown file that commits as if normal, no row-count check anywhere.
+  4. `weekly_forecast_report.py`'s `render_markdown()` output has **zero disclaimer text** — the one real SEBI compliance finding (Varghese/sebi-compliance-reviewer seat, REVISE verdict on this file only, APPROVE on everything else checked).
+  5. `alphaveda/docs/ALPHAVEDA_DESIGN_OVERVIEW.md` (781 lines, published as an artifact early this session, never content-reviewed until now) **significantly overstates current capability** — presents fundamentals/macro/multi-signal synthesis as working features with zero cross-reference to G1/G13/RF-E/G7, all of which track these as empty/placeholder/broken in `GAP_REGISTER.md` itself.
+- **MCP tooling investigated**: zero locally-configured MCP servers (`~/.claude/settings.json` confirmed empty `mcpServers`); the large connector list (Canva, Notion, Moody's, financial-analysis providers, etc.) is claude.ai account-level, not locally editable, and mostly unused this session (only Tavily + Playwright genuinely used). Real token cost driver is conversation history, not idle tool listings — confirmed via the ground-truth tracker.
+- **Memory saved**: `feedback_codex_default_heavy_lifting.md` — Codex is now the default for heavy-lifting and review-finding fixes, for the foreseeable future; Claude's role narrows to diagnosis/spec-writing/post-hoc verification.
+- **Persona-based UAT pilot proposed, NOT yet dispatched**: 3 personas (Priya — first-week investor / Rohan — experienced DIY trader / Kavita — Tarun's-family-proxy for anxiety profile), each a Playwright-driven live-site walkthrough in character, meant as a cheap pre-flight filter before Tarun's own real A16 human validation.
 
 ---
 
@@ -247,52 +270,51 @@ Recovery performed directly (not re-delegated): verified the crashed A14 diff wa
 
 ## EXACT RESUME POINT
 
-**RF-B is CONFIRMED LIVE IN PRODUCTION — real GHA runs, real predictions, no dry-run caveat left. 10 predictions written for 2026-07-10 (natural confidence 18–50%, no floor artifacts). The tool's backend is genuinely wired and working. Three explicit approvals are the only thing between here and full MVP-live + round-table-driven retail-readiness plan:**
+**Backend pipeline is genuinely healthy as of the LAST verified run** (`29273458980`, 2026-07-13T18:11:23Z, `status: OK`, 10 outcomes resolved, zero errors) — G22 fixed and proven end-to-end. Today is Day 1 of the 10-day clean-run proof-window counter, not further along; the counter reset when the pre-fix scheduled run failed earlier the same day.
 
-1. **Apply migration 0014** (`ALTER TABLE accuracy_outcomes ADD CONSTRAINT ... UNIQUE (prediction_id, resolved_at)`) — additive, non-destructive. Without it, every ingest run's final outcome-resolution step errors (predictions still persist fine before that point).
-2. **Fix Vercel prod env vars** (`SUPABASE_URL`/`SUPABASE_SERVICE_KEY`) — rm + re-add from confirmed-working local `.env`. Live site still shows "0 instruments" despite a healthy DB and a fresh deploy; root cause is the page code silently swallowing Supabase API errors (`?? []`, no `.error` check) — Vercel's env vars haven't been touched since before the pause/resume cycle. **Blocked twice by the classifier** — needs one direct, unambiguous line, not a reference to an earlier turn.
-3. **Codex plugin install** (`/plugin marketplace add openai/codex-plugin-cc` → `/plugin install codex@openai-codex` → `/reload-plugins` → `/codex:setup`) — inspected, legitimate, official. `codex login` step is Tarun's alone regardless.
+**Immediate next actions, in priority order:**
 
-**Round table dispatched (Fable-tier, background)** on the retail-investor-readiness gap — check for its completion notification; if already reported, read that report before doing anything else next session, it supersedes the gap-priority ordering below.
+1. **Fix `weekly-report.yml`'s 3 confirmed gaps before Friday** (the workflow has never run — this is real lead time, not urgent-urgent, but the fixes are already fully scoped from the audit): add `pandas_market_calendars` to `requirements.txt` (or remove the dead fallback path), add a minimum-row-count check that fails the job on empty results, add a past-performance disclaimer line to `render_markdown()`. All three are Claude/Codex-executable, no Tarun input needed.
+2. **Add tests pinning `backtest.py` to `engine.py`'s live momentum math** — calibration-integrity gap, no CI signal currently protects against the two drifting apart.
+3. **RF-E — still Claude-owned, never actually executed**: add a manually-maintained `above_200ma` boolean to `macro_regime` (schema decision already made, just needs the live market-fact lookup + the actual write).
+4. **6 pending Tarun decisions await explicit confirmation** — recommendations were given for all of them but none have been confirmed yet (see OPEN DECISIONS below). A batch "yes to all except X" would close most of this list in one line.
+5. **Persona UAT pilot** (Priya/Rohan/Kavita, Playwright-driven) — proposed, fully scoped, awaiting go-ahead. Meant to run BEFORE Tarun's own A16 test, not instead of it.
+6. **India-policy design doc / ticker-watchlist concept** — do not build further until the missing SEBI-compliance-specific review runs (only investment-judgment seats have reviewed it so far).
 
-**Standing risk now enforced going forward: verify `git push` after every commit batch.** The 9-day/24-commit local↔remote drift this session silently defeated the RF-B fix, the watchdog, and everything else for over a week — GHA and Vercel only ever run what's actually on `origin/main`.
+**Standing risk, reconfirmed this session: verify `git push` after every commit batch**, and **verify Codex dispatches actually wrote files** (`git status`/diff) before trusting a "completed" status — both classes of silent-no-op were caught this session, not prevented by process alone.
 
 | Item | Status | Detail |
 |---|---|---|
-| Session B — Next.js | ✓ DEPLOYED | Fresh redeploy confirmed from the 24-commit push (not stale cache) |
-| Loop 1 — emit_signal() | ✓ **LIVE, VERIFIED** | 10 real predictions for 2026-07-10, natural confidence spread, no floor artifacts |
-| RF-B fix | ✓ **VERIFIED LIVE** | No longer dry-run-only — real GHA runs confirm correct behavior |
-| Migration 0014 | **PENDING Tarun approval** | Blocks outcome-resolution step only; predictions unaffected |
-| Vercel env var refresh | **PENDING Tarun approval — blocked twice by classifier** | Needs one direct unambiguous line |
-| Codex plugin install | **PENDING Tarun approval** | Inspected + legitimate; install commands ready |
-| Round table (retail-readiness) | **RUNNING IN BACKGROUND** | Fable-tier; check for completion notification |
-| RF-A fix (landing copy scope) | Non-issue on live copy | Overclaiming only exists in design catalog mock, not deployed site |
-| Next.js pages — Signals/Path/Accuracy | ✓ Confirmed rendering (Agent C) | SEBI disclaimer present all 4 pages, zero console errors; content freshness ties to items above |
-| Settings.json token-tracker hooks | ✓ **APPLIED AND CONFIRMED** | Resolved earlier this session — not pending |
-| Waitlist + privacy page (G8/G10) | **P0 — sequenced AFTER migration 0014 + Vercel fix** | Commercial loop's only entry point |
+| Ingest pipeline (G18/G19/G22) | ✓ **VERIFIED CLEAN END-TO-END** | Real re-triggered run, zero errors, 10 outcomes resolved — see resume point above |
+| `weekly-report.yml` | **CONDITIONAL — 3 known gaps, never run once** | SRE verdict; fixes scoped, not yet applied |
+| `backtest.py` | **Built, zero test coverage** | Calibration-integrity gap; spec-compliant but unpinned to `engine.py` |
+| Codex CLI | ✓ **LIVE, PROVEN** | 6 real dispatches this session; `--write` flag required, always verify output |
+| Haiku Zero-Failure Routing Rule | ✓ **LIVE IN GOVERNANCE** | Global, cross-workspace, premortem-logged, Tarun-approved |
+| India-policy design doc / ticker-watchlist | **HOLD** | 13 total financial-seat reviews across 2 rounds; missing SEBI-specific pass |
+| SESSION_RESUME.md | ✓ **THIS CHECKPOINT** | Was 22 commits / 1 day stale before this write |
+| Waitlist + privacy page (G8/G10) | **P2 — Tarun's explicit downgrade** | Still the actual gate on `REVENUE_ROADMAP.md`'s proof window closing |
 | Design direction pick (D1/D2/D3) | **Tarun-owned — NOT DONE** | Fable recommends D1 + D2 copy transplant; needs phone walkthrough + 5-sec test |
-| Design pack repo decision | **Tarun-owned — NOT DONE** | Un-gitignore into repo proper, or leave local-only |
-| Gap register file (G1–G17, RF-A–F) | **NOT YET WRITTEN** | Round table may supersede this with its own prioritized action plan |
-| fundamentals ingest | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling (also G1) |
-| macro_regime freshness | P1 — STALE (G13) | Seeded 07-01, system's own rule is 3-day staleness |
-| Rule D/E in COUNCIL_RULES.md | P1 — NOT WRITTEN | Skip audit gate + cross-domain connectivity test |
-| Gumroad (Stream A) | PENALISED + GATED | Floor passed. Trigger: Tarun's go-ahead |
+| Design pack repo decision | **Tarun-owned — NOT DONE** | Recommendation: commit — 3+ council reviews already needed to read it off disk |
+| G6 — hardcoded portfolio value | **Tarun-owned — NOT DONE** | Recommendation: keep placeholder until Tarun has 30 seconds to give the real number |
+| fundamentals ingest (G1) | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling |
+| macro_regime freshness (G13) | P1 — STALE | Seeded 07-01, system's own rule is 3-day staleness |
+| Gumroad (Stream A) | PENALISED + GATED | Trigger: Tarun's go-ahead + financial panel sign-off |
 | Stream C consulting | OVERDUE | 3 targets needed, no code required |
 
 ---
 
 ## OPEN DECISIONS (Tarun-owned)
 
-| Decision | Status | Impact | Needed by |
+| Decision | Recommendation given | Status | Needed by |
 |---|---|---|---|
-| ~~Apply migration 0014~~ | ✅ **DONE + VERIFIED** — constraint confirmed via `pg_constraint` query | Outcome resolution unblocked | — |
-| ~~Fix Vercel env vars + redeploy~~ | ✅ **DONE + VERIFIED** — live site confirmed showing 14 instruments, real tickers, no stale banner | Frontend genuinely live | — |
-| ~~Install Codex plugin~~ | ✅ **DONE** — installed, reloaded, `codex:*` agents/skills live | `codex login` still Tarun's whenever he wants it active | — |
-| ~~Tier 1 + Tier 3 build (A2–A6, A10–A14)~~ | ✅ **DONE + VERIFIED** — 33/33 language tests, 203/1 backend, clean typecheck, zero-BLOCKER panel re-verification | Full retail-readiness persona layer live | — |
-| Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | $0 → first revenue | When Tarun gives go-ahead |
-| Stream C: 3 consulting targets | OVERDUE | Revenue clock | NOW |
-| Design direction pick (D1 recommended) | Needed | Unblocks design migration session | Whenever Tarun does the phone/rubric walk |
-| Design pack repo commit decision | Needed | Data-governance surface change if repo goes public | Before design migration starts |
+| Design direction pick (D1/D2/D3) | D1 + D2's copy voice for negative/ledger states | **Awaiting confirmation** | Whenever Tarun does the phone/5-sec-recall walk |
+| A16 human validation | 15-min protocol (1 family + 1 outsider, 2-question recall test) | **Awaiting scheduling** — persona pilot proposed as pre-work | — |
+| Design pack repo commit | Commit — proven load-bearing this session | **Awaiting confirmation** | Before any further design work |
+| G6 real portfolio value | Keep placeholder until Tarun has 30 sec to give the real number | **Awaiting confirmation** | Not urgent, doesn't block anything |
+| India-policy design doc scope | Hold — Munger's 5 conditions + missing SEBI review | **Awaiting confirmation** | Before any further build on ticker-watchlist concept |
+| Persona UAT pilot (3 personas) | Start with 3 (Priya/Rohan/Kavita), not 4 | **Awaiting go-ahead** | Whenever — no urgency, but unblocks A16 prep |
+| Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | Unchanged | When Tarun gives go-ahead |
+| Stream C: 3 consulting targets | — | OVERDUE | Revenue clock — NOW |
 
 ---
 
