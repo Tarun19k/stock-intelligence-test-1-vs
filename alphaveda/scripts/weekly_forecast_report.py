@@ -39,10 +39,13 @@ def _trading_days_ending_on(report_date: date, count: int = 5) -> list[date]:
         trading_days = [timestamp.date() for timestamp in schedule.index]
         if len(trading_days) >= count:
             return trading_days[-count:]
-    except Exception:
+    except Exception as exc:
         # The project supports a weekday fallback when the exchange calendar is
         # unavailable, matching the ingest trading-day guard.
-        pass
+        print(
+            f"WARN: NSE calendar unavailable, using weekday fallback: {exc}",
+            file=sys.stderr,
+        )
 
     trading_days: list[date] = []
     candidate = report_date
@@ -136,6 +139,13 @@ def render_markdown(rows: list[dict[str, Any]]) -> str:
             )
             + " |"
         )
+    lines.extend(
+        [
+            "",
+            "Past performance is not indicative of future results. "
+            "Educational/research output only - not investment advice.",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 
@@ -143,6 +153,14 @@ def generate_report(report_date: date | None = None) -> Path:
     """Query Supabase and write the dated weekly report."""
     report_date = report_date or datetime.now(timezone.utc).date()
     rows = fetch_report_rows(get_supabase_client(), report_date)
+    if not rows:
+        print(
+            "ERROR: 0 accuracy_outcomes rows in the trailing window - check whether "
+            "resolve_outcomes.py's cron ran this week.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     report_path = REPORTS_DIR / f"weekly-{report_date.isoformat()}.md"
     report_path.write_text(render_markdown(rows), encoding="utf-8")
