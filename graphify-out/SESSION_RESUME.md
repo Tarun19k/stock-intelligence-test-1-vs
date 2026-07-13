@@ -3,8 +3,8 @@
 
 **Session date:** 2026-07-13 (Codex fully live, G22 pipeline blocker found+fixed same-day, 5-lens Codex-deliverable audit, persona UAT plan proposed)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
-**Last commits (prior to this checkpoint):** 7bcceab (graphify), 337959e (G22 doc log), e251359 (G22 fix), 62fa2cc (Council Lens fix), eb20e86 (graphify)
-**This checkpoint fired 22 commits and one full working day late** — `SESSION_RESUME.md` was last touched 2026-07-12; everything below from 07-13 existed only in conversation until now. Standing lesson: invoke `/housekeeping checkpoint` at natural break points during long sessions, not only when asked.
+**Last commits (prior to this checkpoint):** a805e80 (checkpoint 2026-07-13)
+**Note:** a 2026-07-14 session ran a global `~/.claude/` housekeeping/governance investigation (unrelated to AlphaVeda code) — that work is recorded in the `agentic-operations` workspace's own `SESSION_RESUME.md`, not here, since this repo is public and that investigation touched private cross-workspace internals. AlphaVeda's own queue below is unchanged by it.
 
 ---
 
@@ -269,6 +269,8 @@ Recovery performed directly (not re-delegated): verified the crashed A14 diff wa
 ---
 
 ## EXACT RESUME POINT
+
+**Nothing below this line changed during the 2026-07-14 housekeeping investigation above — this is the AlphaVeda queue exactly as it stood before that thread started.** Pick up here when returning to AlphaVeda work.
 
 **Backend pipeline is genuinely healthy as of the LAST verified run** (`29273458980`, 2026-07-13T18:11:23Z, `status: OK`, 10 outcomes resolved, zero errors) — G22 fixed and proven end-to-end. Today is Day 1 of the 10-day clean-run proof-window counter, not further along; the counter reset when the pre-fix scheduled run failed earlier the same day.
 
