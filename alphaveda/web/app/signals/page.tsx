@@ -28,15 +28,13 @@ type Instrument = { id: number; ticker: string }
 
 export const revalidate = 3600
 
-// Segment = (lynch_class, regime_tag) — the same grouping used server-side for
-// weight cold-start (alphaveda/src/signals/weights.py). A segment with fewer
-// than OBSERVATION_THRESHOLD observations has not earned a calibrated confidence
-// figure; showing a bare percentage there manufactures false trust (G7 bridge /
-// A4). Mirrors the lexicon's ledger.cold pattern ("TOO EARLY" / "New types get
+// Readiness gate: an instrument with fewer than OBSERVATION_THRESHOLD of its
+// OWN observations has not earned a calibrated confidence figure; showing a
+// bare percentage there manufactures false trust (G7 bridge / A4). Fixed
+// 2026-07-13 (G19) to count strictly per-instrument, matching the live
+// calibration formula in engine.py exactly — see segmentObs() below.
+// Mirrors the lexicon's ledger.cold pattern ("TOO EARLY" / "New types get
 // graded after 30 results.").
-function segmentKey(lynchClass: string | null, regimeTag: string | null): string {
-  return `${lynchClass ?? 'unknown'}::${regimeTag ?? 'unknown'}`
-}
 
 export default async function SignalsPage() {
   const sb = getServerSupabase()
@@ -58,16 +56,23 @@ export default async function SignalsPage() {
   const proposedCount = proposedRes.count ?? 0
 
   const tickerById = new Map(instruments.map((i) => [i.id, i.ticker]))
-  const isColdStart = allPredictions.length < OBSERVATION_THRESHOLD
-
-  const segmentCounts = new Map<string, number>()
+  // G19 fix (2026-07-13): segmentObs previously pooled by (lynch_class, regime_tag)
+  // across every instrument sharing that pair — a stock could show "warm" here
+  // while its own real calibration math (engine.py, .eq("instrument_id", ...))
+  // had seen almost none of ITS OWN observations. Fixed to count strictly per
+  // instrument_id, matching the live calibration formula exactly rather than
+  // the more optimistic pooled cohort count. isColdStart follows the same rule.
+  const perInstrumentCounts = new Map<number, number>()
   for (const p of allPredictions) {
-    const key = segmentKey(p.lynch_class, p.regime_tag)
-    segmentCounts.set(key, (segmentCounts.get(key) ?? 0) + 1)
+    perInstrumentCounts.set(p.instrument_id, (perInstrumentCounts.get(p.instrument_id) ?? 0) + 1)
   }
   function segmentObs(p: Prediction): number {
-    return segmentCounts.get(segmentKey(p.lynch_class, p.regime_tag)) ?? 0
+    return perInstrumentCounts.get(p.instrument_id) ?? 0
   }
+  const coldInstrumentCount = new Set(
+    allPredictions.filter((p) => segmentObs(p) < OBSERVATION_THRESHOLD).map((p) => p.instrument_id)
+  ).size
+  const isColdStart = coldInstrumentCount > 0
 
   return (
     <>
@@ -85,7 +90,7 @@ export default async function SignalsPage() {
 
       {isColdStart && (
         <div className="av-banner av-banner--blue">
-          <Lex k="ledger.cold_banner" /> — {allPredictions.length} of {OBSERVATION_THRESHOLD} graded so far.
+          <Lex k="ledger.cold_banner" /> — {coldInstrumentCount} stock{coldInstrumentCount !== 1 ? 's' : ''} still below {OBSERVATION_THRESHOLD} of its own results.
         </div>
       )}
 
