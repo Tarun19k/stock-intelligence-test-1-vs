@@ -1,3 +1,9 @@
+# =============================================================================
+# DEPRECATED - superseded by alphaveda/web/ (Next.js, live in production).
+# This Streamlit page is not maintained and may not reflect current SEBI
+# compliance copy or signal logic. Do not use as a reference for current behavior.
+# =============================================================================
+
 """Accuracy ledger page — signal hit-rate and PROPOSED weight review.
 
 Munger condition: get_staleness_warning() returns a warning when last review > 90 days ago.

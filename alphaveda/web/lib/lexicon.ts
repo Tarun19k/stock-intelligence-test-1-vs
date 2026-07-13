@@ -36,6 +36,12 @@ export type LexKey =
   | 'signal.class.stalwart'
   | 'signal.class.cyclical'
   | 'signal.class.fast_grower'
+  | 'signal.class.description.slow_grower'
+  | 'signal.class.description.stalwart'
+  | 'signal.class.description.fast_grower'
+  | 'signal.class.description.cyclical'
+  | 'signal.class.description.turnaround'
+  | 'signal.class.description.asset_play'
   | 'signal.regime.bull'
   | 'signal.regime.bear'
   | 'signal.regime.sideways'
@@ -51,6 +57,12 @@ export type LexKey =
   | 'instrument.signals_graded'
   | 'instrument.aggregate_prefix'
   | 'instrument.aggregate_suffix'
+  | 'instrument.company_operates_in'
+  | 'instrument.company_sector_suffix'
+  | 'instrument.self_check_intro'
+  | 'instrument.self_check.visibility'
+  | 'instrument.self_check.repeat'
+  | 'instrument.self_check.demand'
   | 'ledger.title'
   | 'ledger.pass'
   | 'ledger.demoted'
@@ -82,6 +94,30 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'signal.class.stalwart': { pro: 'stalwart', simple: 'steady large company', learn: 'lynch_class' },
   'signal.class.cyclical': { pro: 'cyclical', simple: 'it moves with the economy', learn: 'lynch_class' },
   'signal.class.fast_grower': { pro: 'fast_grower', simple: 'fast-growing company', learn: 'lynch_class' },
+  'signal.class.description.slow_grower': {
+    pro: 'Steady, low-drama. Grows like the economy.',
+    simple: 'Steady, low-drama. Grows like the economy.',
+  },
+  'signal.class.description.stalwart': {
+    pro: "Big and dependable. Won't 10x, won't collapse either.",
+    simple: "Big and dependable. Won't 10x, won't collapse either.",
+  },
+  'signal.class.description.fast_grower': {
+    pro: 'Small and expanding fast. Higher upside, higher chance it stumbles.',
+    simple: 'Small and expanding fast. Higher upside, higher chance it stumbles.',
+  },
+  'signal.class.description.cyclical': {
+    pro: "Rises and falls with the economy - buying at the 'boring' point matters more than the story.",
+    simple: "Rises and falls with the economy - buying at the 'boring' point matters more than the story.",
+  },
+  'signal.class.description.turnaround': {
+    pro: 'Was in trouble, trying to recover. Watch for proof, not promises.',
+    simple: 'Was in trouble, trying to recover. Watch for proof, not promises.',
+  },
+  'signal.class.description.asset_play': {
+    pro: 'Worth more in what it owns than what the stock price says.',
+    simple: 'Worth more in what it owns than what the stock price says.',
+  },
   'signal.regime.bull': { pro: 'bull regime', simple: 'market rising', learn: 'regime' },
   'signal.regime.bear': { pro: 'bear regime', simple: 'market falling', learn: 'regime' },
   'signal.regime.sideways': { pro: 'sideways', simple: 'market drifting flat', learn: 'regime' },
@@ -97,6 +133,24 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'instrument.signals_graded': { pro: 'signals graded', simple: 'signals graded' },
   'instrument.aggregate_prefix': { pro: 'tracked stocks showing a positive signal', simple: 'tracked stocks looking positive' },
   'instrument.aggregate_suffix': { pro: 'this week', simple: 'this week' },
+  'instrument.company_operates_in': { pro: 'operates in the', simple: 'operates in the' },
+  'instrument.company_sector_suffix': { pro: 'sector.', simple: 'sector.' },
+  'instrument.self_check_intro': {
+    pro: "This matters as much as the signal above - it's your own judgment, not a recommendation.",
+    simple: "This matters as much as the signal above - it's your own judgment, not a recommendation.",
+  },
+  'instrument.self_check.visibility': {
+    pro: "Do you see this company's products/stores/ads around you - and is that more or less than a year ago?",
+    simple: "Do you see this company's products/stores/ads around you - and is that more or less than a year ago?",
+  },
+  'instrument.self_check.repeat': {
+    pro: 'Would you (or someone you know) buy from them again?',
+    simple: 'Would you (or someone you know) buy from them again?',
+  },
+  'instrument.self_check.demand': {
+    pro: 'Is what they sell something people need more of over time, or is it fading?',
+    simple: 'Is what they sell something people need more of over time, or is it fading?',
+  },
 
   'ledger.title': { pro: 'Accuracy Ledger', simple: 'Our scorecard' },
   'ledger.pass': { pro: 'PASS', simple: 'GOOD' },
@@ -137,7 +191,22 @@ export function directionLexKey(direction: string): LexKey | null {
   return null
 }
 
-export function lynchClassLexKey(lynchClass: string | null | undefined): LexKey | null {
+export function lynchClassLexKey(
+  lynchClass: string | null | undefined,
+  kind: 'label' | 'description' = 'label',
+): LexKey | null {
+  if (kind === 'description') {
+    switch (lynchClass) {
+      case 'slow_grower': return 'signal.class.description.slow_grower'
+      case 'stalwart': return 'signal.class.description.stalwart'
+      case 'fast_grower': return 'signal.class.description.fast_grower'
+      case 'cyclical': return 'signal.class.description.cyclical'
+      case 'turnaround': return 'signal.class.description.turnaround'
+      case 'asset_play': return 'signal.class.description.asset_play'
+      default: return null
+    }
+  }
+
   switch (lynchClass) {
     case 'stalwart': return 'signal.class.stalwart'
     case 'cyclical': return 'signal.class.cyclical'

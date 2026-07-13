@@ -36,7 +36,7 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 | G12 | Jul 2→9 ingest health unverified | **CLOSED 2026-07-10** | Root cause found (24 unpushed commits) and resolved; RF-B live-verified |
 | G13 | `macro_regime` stale by the system's own `REGIME_STALENESS_DAYS=3` rule | OPEN | Tier 5, A18 |
 | G14 | Cold-start segment threshold (30 obs) has no scheduled backfill path | OPEN | Blocked behind G5 (attribution migration) |
-| G15 | Two presentation layers coexist (Streamlit `src/pages/` + Next.js) — dead weight | OPEN | Needs formal deprecation marker |
+| G15 | Two presentation layers coexist (Streamlit `src/pages/` + Next.js) — dead weight | **CLOSED 2026-07-13** | Added prominent deprecation markers to every file in `alphaveda/src/pages/`, identifying `alphaveda/web/` as the canonical production presentation layer. Files were **not deleted** and are retained for reference/rollback only. |
 | G16 | Zero production observability — no error monitoring, uptime check, or analytics | OPEN | Not yet tiered |
 | G17 | Governance promises uncoded (Rule D/E, GraphRAG-first enforcement) | OPEN | Tier 5, A22 |
 

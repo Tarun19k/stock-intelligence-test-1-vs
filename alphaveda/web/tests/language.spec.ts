@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { LEXICON, GLOSSARY, SEBI_PLAIN, SEBI_LEGAL } from '../lib/lexicon'
+import { GLOSSARY, LEXICON, SEBI_PLAIN, lynchClassLexKey } from '../lib/lexicon'
 import { fleschKincaidGrade, stripProperNouns } from './helpers/flesch-kincaid'
 
 // A12 — language test suite, ported into Playwright/CI per
@@ -135,6 +135,15 @@ test('L4 learn-key resolution — every LEXICON.learn key exists in GLOSSARY', (
   const defined = new Set(Object.keys(GLOSSARY))
   const orphans = [...used].filter((k) => !defined.has(k))
   expect(orphans, `dangling learn-keys with no GLOSSARY entry: ${JSON.stringify(orphans)}`).toEqual([])
+})
+
+test('instrument Lynch descriptions cover every supported classification', () => {
+  const classes = ['slow_grower', 'stalwart', 'fast_grower', 'cyclical', 'turnaround', 'asset_play'] as const
+  for (const classification of classes) {
+    const key = lynchClassLexKey(classification, 'description')
+    expect(key, `missing plain-English description for ${classification}`).not.toBeNull()
+    expect(LEXICON[key!].simple.length).toBeGreaterThan(0)
+  }
 })
 
 test('L4 learn-key resolution (E2E) — tap targets on Signals page open a populated glossary card', async ({ page }) => {
