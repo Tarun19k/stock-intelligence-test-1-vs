@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AlphaVeda Stock Detail Template</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="page-shell" data-template="stock-detail" data-refresh-policy="live-price:5m; filings:24h; policy:24h">
+  <section class="update-strip" aria-label="data freshness">
+    <strong>Live detail page template</strong>
+    <span>Last verified: <time datetime="2026-07-13T09:30:00+05:30" data-bind="verifiedAt">13 Jul 2026, 09:30 IST</time></span>
+    <span>Next refresh: <code data-bind="nextRefresh">5 min</code></span>
+  </section>
+
+  <section class="hero" aria-labelledby="stock-title">
+    <div>
+      <p class="eyebrow">Instrument detail · research only</p>
+      <h1 id="stock-title"><span data-bind="companyName">Example Aluminium Ltd</span> <span class="small" data-bind="ticker">EXAL.NS</span></h1>
+      <p class="lede">A compliance-safe one-stock page that separates live market data, AlphaVeda's algorithmic judgment, policy context, and source verification.</p>
+      <div class="metric-grid" aria-label="primary metrics">
+        <div class="kpi"><span class="label">Last price</span><span class="value" data-bind="lastPrice">₹245.80</span><span class="small">Source: exchange/yfinance adapter</span></div>
+        <div class="kpi"><span class="label">Signal</span><span class="value"><span class="badge watch" data-bind="signal">Watch</span></span><span class="small">Algorithmic, not advice</span></div>
+        <div class="kpi"><span class="label">Confidence</span><span class="value" data-bind="confidence">Cold start</span><span class="small">12 / 30 matured outcomes</span></div>
+        <div class="kpi"><span class="label">Data status</span><span class="value"><span class="badge good">Fresh</span></span><span class="small">Price refreshed 3 min ago</span></div>
+      </div>
+    </div>
+    <aside class="notice" aria-label="compliance notice">
+      <h2>Important</h2>
+      <p>For informational purposes only. Not financial advice. Consult a SEBI-registered investment advisor before making investment decisions. Past performance is not indicative of future results.</p>
+      <p>This page includes algorithmically generated signals from quantitative data. It is not a human analyst opinion.</p>
+    </aside>
+  </section>
+
+  <section class="section two-col" aria-label="stock evidence and policy context">
+    <article class="card">
+      <header><h2>Why AlphaVeda is showing this judgment</h2><span class="badge info">Explainable</span></header>
+      <div class="evidence-grid">
+        <div class="evidence-card"><h3>Price action</h3><p data-bind="priceEvidence">Close is above 50-DMA but below 200-DMA, so trend confirmation is incomplete.</p><a href="#source-market">Verify source</a></div>
+        <div class="evidence-card"><h3>Risk / downside</h3><p data-bind="riskEvidence">Downside band is wider than the current confidence allows for position sizing.</p><a href="#source-model">Verify model note</a></div>
+        <div class="evidence-card"><h3>Policy context</h3><p>Aluminium demand is supported by India's long-run capacity and decarbonisation roadmap, but power and carbon intensity remain key risks.</p><a href="#source-niti">Verify source</a></div>
+      </div>
+    </article>
+
+    <aside class="card">
+      <header><h2>Fact-check status</h2><span class="source-status">3 verified</span></header>
+      <table class="fact-table">
+        <thead><tr><th>Claim</th><th>Status</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Policy context</td><td><span class="badge good">Verified</span></td><td><a href="#source-niti">NITI Aayog</a></td></tr>
+          <tr><td>Latest price</td><td><span class="badge good">Live</span></td><td><a href="#source-market">Market adapter</a></td></tr>
+          <tr><td>Signal output</td><td><span class="badge watch">Cold start</span></td><td><a href="#source-model">AlphaVeda ledger</a></td></tr>
+        </tbody>
+      </table>
+    </aside>
+  </section>
+
+  <section class="section card" aria-labelledby="council-title">
+    <header><h2 id="council-title">Council lens summary</h2><span class="badge neutral">Context, not scoring</span></header>
+    <table class="fact-table">
+      <thead><tr><th>Lens</th><th>Question to answer before acting</th><th>Current placeholder answer</th></tr></thead>
+      <tbody>
+        <tr><td>Buffett</td><td>Does policy strengthen an existing moat?</td><td data-bind="buffettLens">Needs proof through cash conversion and durable cost advantage.</td></tr>
+        <tr><td>Munger</td><td>What could break the thesis?</td><td data-bind="mungerLens">Commodity cyclicality, carbon costs, and capex timing.</td></tr>
+        <tr><td>Lynch</td><td>Is the growth story observable?</td><td data-bind="lynchLens">Watch order book, capacity utilisation, and management commentary.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section source-ledger" aria-labelledby="sources-title">
+    <h2 id="sources-title">Source ledger</h2>
+    <ol class="source-list">
+      <li id="source-market" class="citation-card"><strong>Market adapter:</strong> replace with exchange-authorized / yfinance-backed OHLCV endpoint. <span class="small">Fields: price, volume, timestamp, market status.</span></li>
+      <li id="source-model" class="citation-card"><strong>AlphaVeda ledger:</strong> replace with live prediction/outcome tables. <span class="small">Fields: direction, confidence, horizon, matured outcome count.</span></li>
+      <li id="source-niti" class="citation-card"><strong>NITI Aayog aluminium roadmap:</strong> <a href="https://niti.gov.in/sites/default/files/2026-01/Roadmap_for_Aluminium_Sector_Decarbonisation.pdf">Roadmap for Aluminium Sector Decarbonisation</a>. <span class="small">Policy context example; refresh on document updates.</span></li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>

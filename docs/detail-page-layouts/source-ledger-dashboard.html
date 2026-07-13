@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Source Ledger Dashboard Template</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="page-shell" data-template="source-ledger" data-refresh-policy="source-health:15m; stale-check:1h">
+  <section class="hero" aria-labelledby="ledger-title">
+    <div>
+      <p class="eyebrow">Verification operations</p>
+      <h1 id="ledger-title">Source ledger and live-data health</h1>
+      <p class="lede">A reusable layout for any page that must prove where each live or recently updated claim came from, when it was checked, and whether it is safe to display.</p>
+    </div>
+    <aside class="card">
+      <span class="label">Overall status</span>
+      <span class="value"><span class="badge watch">2 warnings</span></span>
+      <p class="small">Use this panel to keep stale data, source failures, and unverified claims visible.</p>
+    </aside>
+  </section>
+
+  <section class="section metric-grid" aria-label="source health metrics">
+    <div class="kpi"><span class="label">Sources checked</span><span class="value" data-bind="sourcesChecked">18</span><span class="small">Last 15 minutes</span></div>
+    <div class="kpi"><span class="label">Fresh</span><span class="value" data-bind="freshSources">14</span><span class="small">Within SLA</span></div>
+    <div class="kpi"><span class="label">Stale</span><span class="value" data-bind="staleSources">3</span><span class="small">Needs refresh</span></div>
+    <div class="kpi"><span class="label">Blocked</span><span class="value" data-bind="blockedClaims">1</span><span class="small">Citation missing</span></div>
+  </section>
+
+  <section class="section card" aria-labelledby="claim-check-title">
+    <header><h2 id="claim-check-title">Claim verification queue</h2><span class="badge info">Operational</span></header>
+    <div class="stack">
+      <div class="check-row"><strong>Verified</strong><span>Aluminium roadmap context has a source URL and publication date.</span><a href="#source-niti">Open</a></div>
+      <div class="check-row"><strong>Live</strong><span>Example stock price passed timestamp freshness check.</span><a href="#source-market">Open</a></div>
+      <div class="check-row"><strong>Warning</strong><span>Macro-regime value is older than freshness SLA; hide scoring impact.</span><a href="#source-macro">Open</a></div>
+      <div class="check-row"><strong>Blocked</strong><span>Unlinked social-media claim is not displayed because no primary source is attached.</span><a href="#source-blocked">Open</a></div>
+    </div>
+  </section>
+
+  <section class="section card" aria-labelledby="integration-title">
+    <header><h2 id="integration-title">Dynamic integration contract</h2><span class="badge neutral">Ready for binding</span></header>
+    <table class="fact-table">
+      <thead><tr><th>Slot</th><th>Expected field</th><th>Validation rule</th><th>Failure state</th></tr></thead>
+      <tbody>
+        <tr><td>Claim text</td><td><code>{{ claim.text }}</code></td><td>Must map to a source id</td><td>Do not render</td></tr>
+        <tr><td>Source link</td><td><code>{{ source.url }}</code></td><td>HTTPS and allowlisted domain</td><td>Show blocked row</td></tr>
+        <tr><td>As-of date</td><td><code>{{ source.published_at }}</code></td><td>Must be parseable ISO date</td><td>Show stale/unknown badge</td></tr>
+        <tr><td>Market metric</td><td><code>{{ market.timestamp }}</code></td><td>Must satisfy page freshness SLA</td><td>Show last-known value label</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section source-ledger" aria-labelledby="sources-title">
+    <h2 id="sources-title">Example source records</h2>
+    <ol class="source-list">
+      <li id="source-niti" class="citation-card"><strong>NITI Aayog:</strong> <a href="https://niti.gov.in/sites/default/files/2026-01/Roadmap_for_Aluminium_Sector_Decarbonisation.pdf">Roadmap for Aluminium Sector Decarbonisation</a>. <span class="small">Status: verified policy source.</span></li>
+      <li id="source-market" class="citation-card"><strong>Market data adapter:</strong> <span class="placeholder-token">{{ market.provider_name }}</span>. <span class="small">Status: live if timestamp is within SLA.</span></li>
+      <li id="source-macro" class="citation-card"><strong>Macro-regime table:</strong> <span class="placeholder-token">{{ macro_regime.updated_at }}</span>. <span class="small">Status: stale values should be displayed as unavailable for scoring.</span></li>
+      <li id="source-blocked" class="citation-card"><strong>Blocked claim:</strong> no primary source attached. <span class="small">Status: hidden from user-facing detail pages.</span></li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>
