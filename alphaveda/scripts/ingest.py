@@ -18,7 +18,12 @@ Schema reference (FALLBACK_SCHEMA in schema_viewer.py):
   ohlcv          : instrument_id, as_of, open/high/low/close, volume,
                    circuit_flag, licence_class, source, ingested_at (DEFAULT now())
   ingest_status  : source (NN), last_run, rows_written, status
-  accuracy_outcomes: prediction_id (NN), resolved_at, hit, return_pct
+  accuracy_outcomes: prediction_id (NN), outcome_date (NN), actual_direction (NN),
+                     is_correct (NN), resolved_at (DEFAULT now()), hit (DEFAULT false),
+                     return_pct, actual_return, peak_return_pct
+                     (verified live via information_schema 2026-07-13 — outcome_date/
+                     actual_direction/is_correct were NOT NULL with no default and were
+                     silently unpopulated by Step 6 until this date; fixed same day)
 """
 from __future__ import annotations
 
@@ -237,13 +242,24 @@ def run_ingest(target_date: date | None = None) -> dict:
         # Step 6: Batch upsert accuracy_outcomes — idempotent on (prediction_id, resolved_at).
         # Requires unique constraint — see supabase/migrations/0014_accuracy_outcomes_unique.sql.
         # Replaces per-row insert() which caused silent double-scoring on re-runs.
+        #
+        # 2026-07-13 fix: outcome_date/actual_direction/is_correct are live NOT NULL
+        # columns (verified via information_schema) that this upsert never populated,
+        # causing every real ingest run to fail on the first resolved-outcomes batch
+        # since G18 shipped. outcome_date mirrors resolved_at (same event, same day);
+        # actual_direction/is_correct are the observed-outcome counterparts to hit/
+        # return_pct, computed in resolve_outcomes_from_ohlcv().
         if resolutions:
             outcome_rows = [
                 {
                     "prediction_id": res["prediction_id"],
+                    "outcome_date": target_date.isoformat(),
                     "resolved_at": target_date.isoformat(),
                     "hit": res["hit"],
+                    "is_correct": res["hit"],
+                    "actual_direction": res["actual_direction"],
                     "return_pct": res["return_pct"],
+                    "actual_return": res["return_pct"],
                 }
                 for res in resolutions
             ]

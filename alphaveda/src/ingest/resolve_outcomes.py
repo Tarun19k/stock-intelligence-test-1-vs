@@ -22,7 +22,9 @@ def resolve_outcomes_from_ohlcv(
 
     Returns:
         list of resolution dicts: prediction_id, hit (bool), return_pct,
-        outcome ('WIN'|'LOSS' — human-readable alias for hit).
+        actual_direction ('BULL'|'BEAR', the observed outcome direction —
+        distinct from the predicted direction), outcome ('WIN'|'LOSS' —
+        human-readable alias for hit).
         Predictions whose symbol has no non-circuit close are silently omitted.
     """
     # Build symbol → last non-circuit close. circuit_flag=True rows are skipped.
@@ -45,6 +47,7 @@ def resolve_outcomes_from_ohlcv(
         actual_close = symbol_close[symbol]
         pct_change = (actual_close - entry_price) / entry_price
         direction = pred.get("signal_direction", "BULL")
+        actual_direction = "BULL" if pct_change > 0 else "BEAR"
 
         hit = (direction == "BULL" and pct_change > 0) or (direction == "BEAR" and pct_change < 0)
 
@@ -52,6 +55,7 @@ def resolve_outcomes_from_ohlcv(
             "prediction_id": pred["id"],
             "hit": hit,
             "return_pct": pct_change,
+            "actual_direction": actual_direction,
             "outcome": "WIN" if hit else "LOSS",  # human-readable alias
         })
 
