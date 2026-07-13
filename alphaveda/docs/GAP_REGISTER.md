@@ -7,6 +7,14 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 
 ---
 
+## G22 (new, closed same-day) — the real ingest blocker
+
+| ID | Description | Status | Note |
+|---|---|---|---|
+| G22 | `accuracy_outcomes` has 3 live NOT NULL columns (`outcome_date`, `actual_direction`, `is_correct`) that Step 6's upsert never populated — every real scheduled ingest run since G18 shipped failed on the first resolved-outcome row, resetting `REVENUE_ROADMAP.md`'s clean-run counter to 0 each time. Confirmed via `information_schema` query 2026-07-13, not assumption. | **CLOSED 2026-07-13** | `e251359` — `resolve_outcomes_from_ohlcv()` now returns `actual_direction`; `ingest.py` Step 6 upserts `outcome_date`/`is_correct`/`actual_return` alongside existing fields. No schema change — columns already existed live. Verified end-to-end: re-triggered ingest for 2026-07-13, confirmed `status: OK`, `outcomes_resolved: 10`, zero errors (run `29273458980`). **This is Day 1 of the clean-run counter, not Day 0 — today's first scheduled run failed before this fix landed.** |
+
+---
+
 ## Red Flags (RF) — financial/compliance correctness
 
 | ID | Description | Status | Note |
