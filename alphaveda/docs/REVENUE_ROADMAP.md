@@ -29,6 +29,28 @@ point, Pro tier at 2-3x entry. The range is decided today and not renegotiated
 reactively once real ledger numbers are in (same discipline applied to price as to the
 launch date itself).
 
+## PENALTY — 2026-07-14: +72 hours added to all commercial gates
+
+**Cause:** the `ingest.yml` scheduled trigger (`schedule:` cron) has a 100% late/no-show
+rate across all 9 recorded runs (2026-07-01 → 07-13) — every scheduled fire was 2-3
+hours late, and 2026-07-14 produced zero run record at all as of 13:59 UTC. This was
+not caught proactively — it surfaced only when Tarun asked directly why today's ingest
+hadn't shown up. There was also no fallback mechanism (no external trigger, no
+timing-alert) to catch a late/missing scheduled run independent of the watchdog, which
+itself only checks 2 hours after the intended fire time.
+
+**Tarun's ruling:** this is a real system miss — caught late, no fallback existed. +72
+hours added to all commercial gates in this roadmap (the proof window's calendar
+deadline and any gate depending on it) as a standing penalty, separate from and
+additional to the existing "max 2 resets" mechanic in the proof window above. This does
+NOT reset the 10-consecutive-clean-days counter itself (that mechanic is unchanged) — it
+extends the calendar-side deadline only.
+
+**Required going forward:** a genuine fallback for trigger-timing failures, not just
+data-integrity failures — see the hybrid-fix action plan (strategic-analysis, 2026-07-14)
+for the concrete fix. Do not consider this penalty closed until that fallback is live
+and observed working for real, not just designed.
+
 ## Why this exists (Buffett + Munger, converging from different angles)
 
 Buffett: the public accuracy ledger is AlphaVeda's only real moat-seed today, and it's
