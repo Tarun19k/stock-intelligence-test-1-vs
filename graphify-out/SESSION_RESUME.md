@@ -333,9 +333,10 @@ Recovery performed directly (not re-delegated): verified the crashed A14 diff wa
 
 | Date | Miss | +Hours | Cumulative |
 |---|---|---|---|
-| 2026-07-01 | 6 misses (council session) | +144h | **+144h (+6 days)** |
+| 2026-07-01 | 6 misses (council session) | +144h | +144h (+6 days) |
+| 2026-07-14 | `ingest.yml` scheduled trigger 100% late/no-show (9/9 runs), no fallback existed, caught late (not proactively) | +72h | **+216h (+9 days)** |
 
-Next miss adds +24h. Surface this tally at every session start before accepting any AlphaVeda or Stream A work.
+Next miss adds +24h minimum (more for a repeat of an already-penalized failure class). Surface this tally at every session start before accepting any AlphaVeda or Stream A work. Full detail on the 07-14 entry: `alphaveda/docs/REVENUE_ROADMAP.md`, "PENALTY" section.
 
 ---
 
