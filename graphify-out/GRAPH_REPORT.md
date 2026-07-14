@@ -1,16 +1,16 @@
 # Graph Report - stock-intelligence-test-1-vs  (2026-07-14)
 
 ## Corpus Check
-- 160 files · ~1,410,149 words
+- 160 files · ~1,410,319 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2347 nodes · 3454 edges · 167 communities detected
+- 2347 nodes · 3454 edges · 168 communities detected
 - Extraction: 87% EXTRACTED · 13% INFERRED · 0% AMBIGUOUS · INFERRED: 456 edges (avg confidence: 0.78)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c580da7c`
+- Built from commit: `b8d63c40`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -148,18 +148,18 @@
 - [[_COMMUNITY_Community 130|Community 130]]
 - [[_COMMUNITY_Community 134|Community 134]]
 - [[_COMMUNITY_Community 135|Community 135]]
-- [[_COMMUNITY_Community 138|Community 138]]
+- [[_COMMUNITY_Community 136|Community 136]]
 - [[_COMMUNITY_Community 139|Community 139]]
 - [[_COMMUNITY_Community 140|Community 140]]
 - [[_COMMUNITY_Community 141|Community 141]]
 - [[_COMMUNITY_Community 142|Community 142]]
-- [[_COMMUNITY_Community 151|Community 151]]
+- [[_COMMUNITY_Community 143|Community 143]]
 - [[_COMMUNITY_Community 152|Community 152]]
 - [[_COMMUNITY_Community 153|Community 153]]
 - [[_COMMUNITY_Community 154|Community 154]]
-- [[_COMMUNITY_Community 159|Community 159]]
+- [[_COMMUNITY_Community 155|Community 155]]
 - [[_COMMUNITY_Community 160|Community 160]]
-- [[_COMMUNITY_Community 163|Community 163]]
+- [[_COMMUNITY_Community 161|Community 161]]
 - [[_COMMUNITY_Community 164|Community 164]]
 - [[_COMMUNITY_Community 165|Community 165]]
 - [[_COMMUNITY_Community 166|Community 166]]
@@ -181,7 +181,8 @@
 - [[_COMMUNITY_Community 182|Community 182]]
 - [[_COMMUNITY_Community 183|Community 183]]
 - [[_COMMUNITY_Community 184|Community 184]]
-- [[_COMMUNITY_Community 186|Community 186]]
+- [[_COMMUNITY_Community 185|Community 185]]
+- [[_COMMUNITY_Community 187|Community 187]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `GSI Dashboard` - 126 edges
@@ -207,7 +208,7 @@
 - `DataType` --uses--> `TestCacheManagerHit`  [INFERRED]
   data_manager.py → tests/test_data_manager_m2.py
 
-## Communities (187 total, 43 thin omitted)
+## Communities (188 total, 44 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.06
@@ -243,7 +244,7 @@ Nodes (22): LanguageToggle(), Lex(), LexOrRaw(), ProbabilityFrame(), fleschKinca
 
 ### Community 8 - "Community 8"
 Cohesion: 0.11
-Nodes (45): Bug: Static Text with Delay Load, Crude Oil WTI ($115), Crude WTI, Gold ($4,685), USD/INR: 92.85 (+0.13%), USD/INR Exchange Rate, USD/INR, Global Trend Signals (+37 more)
+Nodes (44): Bug: Static Text with Delay Load, Crude Oil WTI ($115), Crude WTI, Gold ($4,685), USD/INR: 92.85 (+0.13%), USD/INR Exchange Rate, USD/INR, Global Trend Signals (+36 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.08
@@ -278,16 +279,16 @@ Cohesion: 0.07
 Nodes (32): Bank Nifty Metric Card, Bar Chart Global Indices (Nifty/S&P/Nasdaq/FTSE/Hang Seng/Crude Oil/10Y UST), Dollar (USD/INR) Metric Card, Weekly Forecast Accuracy Report, Global Intelligence Navigation Item, Gold Metric Card, Group Selector, Index Performance This Week (+24 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.09
-Nodes (27): arbitrate(), Signal arbitration — resolves conflicting bull/bear signals into a single emit d, Resolve signals into a single directional emit, or None if suppressed.      Each, _make_signal(), Phase 3 — arbitration.py tests., If weighted scores are within ARBITRATION_MARGIN, suppress emission., If weighted scores are within ARBITRATION_MARGIN, suppress emission., Emitted confidence is in [0, 100]. (+19 more)
+Cohesion: 0.13
+Nodes (11): CacheManager, Bounded LRU in-memory cache (L2).      Deployment note: Streamlit-specific.  Sin, Store result.  No-op if status == UNAVAILABLE.         Evicts the LRU entry if a, Remove all cache entries for this ticker across all DataTypes., _make_result(), Unit tests for DataManager M2 — CacheManager and DataContract.  Run: pytest test, TestCacheManagerHit, TestCacheManagerInvalidate (+3 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.09
-Nodes (29): _clamp(), compute_downside_target(), Downside target computation.  Priority order (GAP-001 fix — Druckenmiller condit, Return downside target in [DOWNSIDE_FLOOR, DOWNSIDE_CAP].      ohlcv_rows: list, Return downside target in [DOWNSIDE_FLOOR, DOWNSIDE_CAP].      ohlcv_rows: dicts, Phase 3 — downside.py tests., ATR(14)/price default when no signal stop-loss is provided., ATR(14)/price default when no signal stop-loss is provided. (+21 more)
+Nodes (27): arbitrate(), Signal arbitration — resolves conflicting bull/bear signals into a single emit d, Resolve signals into a single directional emit, or None if suppressed.      Each, _make_signal(), Phase 3 — arbitration.py tests., If weighted scores are within ARBITRATION_MARGIN, suppress emission., If weighted scores are within ARBITRATION_MARGIN, suppress emission., Emitted confidence is in [0, 100]. (+19 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.14
-Nodes (11): CacheManager, Bounded LRU in-memory cache (L2).      Deployment note: Streamlit-specific.  Sin, Store result.  No-op if status == UNAVAILABLE.         Evicts the LRU entry if a, Remove all cache entries for this ticker across all DataTypes., _make_result(), Unit tests for DataManager M2 — CacheManager and DataContract.  Run: pytest test, TestCacheManagerHit, TestCacheManagerInvalidate (+3 more)
+Cohesion: 0.09
+Nodes (29): _clamp(), compute_downside_target(), Downside target computation.  Priority order (GAP-001 fix — Druckenmiller condit, Return downside target in [DOWNSIDE_FLOOR, DOWNSIDE_CAP].      ohlcv_rows: list, Return downside target in [DOWNSIDE_FLOOR, DOWNSIDE_CAP].      ohlcv_rows: dicts, Phase 3 — downside.py tests., ATR(14)/price default when no signal stop-loss is provided., ATR(14)/price default when no signal stop-loss is provided. (+21 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.11
@@ -298,40 +299,40 @@ Cohesion: 0.09
 Nodes (28): Accuracy Metrics Auto-Populate Note (after due dates pass), Forecast Table Column: Due On, First Resolution Date: 2026-04-13, Forecast Engine — Weekly Accuracy Report, Forecast Horizon 21 Days (1M), Forecast Horizon 63 Days (3M), P(Gain) Field — Probability of Gain, Forecast Status: Pending (+20 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.12
-Nodes (27): Candlestick Chart, MACD (Daily) Chart, Price Chart with Bollinger Bands, RSI (14) Chart, Volume Chart, Chart Date Range: Nov 2025 to Apr 2026, Stock Search Feature, India Market (+19 more)
-
-### Community 23 - "Community 23"
 Cohesion: 0.09
 Nodes (27): Stress Regime Detected Alert Banner, Daily Return Axis (y-axis), Daily Volatility Axis (x-axis), Risk Profile Selector (Conservative / Balanced / Aggressive), Portfolio Allocator Feature, Allocation Stability Indicator (STABLE), Portfolio Size Input (10000), Expected Annual Return (+7.8%) (+19 more)
 
-### Community 24 - "Community 24"
+### Community 23 - "Community 23"
 Cohesion: 0.11
 Nodes (18): _functions_in_file(), _get_completed_phases(), _governance_fail(), _parse_map(), Governance integrity tests — keeps COUNCIL_TEST_MAP.md and the test suite in syn, SPEC in a completed Phase = a test that was never written but Phase is signed of, Every GREEN row must have a collectable test function in its declared test file, Un-skipped test functions with pass-only bodies are ghost tests (FM-08). (+10 more)
 
-### Community 25 - "Community 25"
+### Community 24 - "Community 24"
 Cohesion: 0.08
 Nodes (9): Council Conditions Test Suite ============================== Every test is label, Shakuni: Duplicate ACTIVE signal_weights per segment must be impossible., Shakuni: Duplicate ACTIVE signal_weights per segment must be impossible., Shakuni: Duplicate ACTIVE signal_weights per segment must be impossible., test_all_results_are_valid_phases(), test_never_returns_none(), test_risk_on_above_ma_low_vix_is_mid_bull(), TestShakaniConditions (+1 more)
 
-### Community 26 - "Community 26"
-Cohesion: 0.09
-Nodes (13): DataManager, HealthSnapshot, Factory for UNAVAILABLE DataResult.     Use this everywhere — never construct Da, Point-in-time health state.  Consumed by sidebar observability panel (M6).     R, True if at least one source breaker is CLOSED and DataManager is not in bypass., Always safe to call — never raises.         Returns a snapshot of current health, Direct access to a source's circuit breaker. Used by source adapters (M4/M5)., Synchronous data fetch.  Returns DataResult — never raises.         M1: always r (+5 more)
-
-### Community 27 - "Community 27"
+### Community 25 - "Community 25"
 Cohesion: 0.13
 Nodes (18): derive_cycle_phase(), Cycle phase derivation — maps macro regime + technical position to one of 6 mark, Return one of 6 cycle phases based on macro regime + price vs 200MA + VIX level., Marks: cycle_phase derivation must be deterministic and exhaustive., Marks: cycle_phase derivation must be deterministic and exhaustive., TestMarksConditions, Phase 2 — cycle_phase.py tests. RED until src/accuracy/cycle_phase.py is impleme, Exhaustive check: every PHASE_RULES entry returns a valid phase label. (+10 more)
 
-### Community 28 - "Community 28"
+### Community 26 - "Community 26"
 Cohesion: 0.11
 Nodes (18): compute_streak_flag(), Accuracy ledger — streak flag computation.  The streak flag signals that the mod, True when consecutive same-direction correct predictions >= STREAK_WINDOW., Soros: Streak discount fires at emit (step 3b), NOT in the ledger SQL., Soros: Streak discount fires at emit (step 3b), NOT in the ledger SQL., discount fires BEFORE calibration — bins are built from post-discount confidence, streak_flag = True only when consecutive same-direction count == STREAK_WINDOW., test_streak_flag_fires_at_n() (+10 more)
 
-### Community 29 - "Community 29"
+### Community 27 - "Community 27"
 Cohesion: 0.12
 Nodes (23): Deploy Button, Refresh Data Button, Market Filter (India), Search Filter (Company Name or Symbol), App Navigation Item, Dashboard Navigation Item, Global Intelligence Navigation Item, Home Navigation Item (+15 more)
 
-### Community 30 - "Community 30"
+### Community 28 - "Community 28"
+Cohesion: 0.1
+Nodes (13): DataManager, HealthSnapshot, Factory for UNAVAILABLE DataResult.     Use this everywhere — never construct Da, Point-in-time health state.  Consumed by sidebar observability panel (M6).     R, True if at least one source breaker is CLOSED and DataManager is not in bypass., Always safe to call — never raises.         Returns a snapshot of current health, Direct access to a source's circuit breaker. Used by source adapters (M4/M5)., Synchronous data fetch.  Returns DataResult — never raises.         M1: always r (+5 more)
+
+### Community 29 - "Community 29"
 Cohesion: 0.38
 Nodes (20): bg(), blank_slide(), box(), divider(), label(), pill(), GSI Dashboard — Community Launch Pitch Deck Run: python3 docs/build_pitch_deck.p, Legal / disclaimer — required on all decks (+12 more)
+
+### Community 30 - "Community 30"
+Cohesion: 0.14
+Nodes (22): Candlestick Chart, MACD (Daily) Chart, Price Chart with Bollinger Bands, RSI (14) Chart, Volume Chart, Chart Date Range: Nov 2025 to Apr 2026, Bollinger Bands Indicator, MACD (Daily) (+14 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.13
@@ -343,15 +344,15 @@ Nodes (17): calc_5d_change(), info_tip(), log_error(), Label + ℹ️ icon with 
 
 ### Community 33 - "Community 33"
 Cohesion: 0.11
-Nodes (20): E2: consecutive BEAR emits exceed bucket-specific threshold.      Only counts em, should_exit_e2(), Phase 4 — optimizer.py tests., E2: long_term bucket needs 7 consecutive bears — 5 must not trigger., E2 UNCERTAINTY: doubles the threshold before firing., Even with extreme edge, result must not exceed MAX_POSITION_PCT × portfolio., Even with extreme edge, result must not exceed MAX_POSITION_PCT × portfolio., Even with extreme edge, result must not exceed MAX_POSITION_PCT × portfolio. (+12 more)
+Nodes (20): E2: consecutive BEAR emits exceed bucket-specific threshold.      Only counts em, should_exit_e2(), Phase 4 — optimizer.py tests., E2: long_term bucket needs 7 consecutive bears — 5 must not trigger., E2 UNCERTAINTY: doubles the threshold before firing., b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12, b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12, b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12 (+12 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.16
-Nodes (19): _alphaveda_path(), _build_blockers(), _build_feedback_section(), _build_phase_rows(), _build_stream_badges(), _extract_next_action(), _extract_section_lines(), _extract_streams() (+11 more)
+Cohesion: 0.1
+Nodes (21): Breadcrumb: Current Week > India > Nifty 50, Weekly Returns All Stocks Bar Chart, Group-Level Sector Selection Feature, Auto & EV Sector Group, Banks & Finance Sector Group, FMCG & Consumer Sector Group, IT & Technology Sector Group, Nifty 50 Group (+13 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.13
-Nodes (19): emit_pipeline(), Pure pipeline: no DB calls. Accepts pre-computed inputs.      Returns emit dict, Pure pipeline: no DB calls. Accepts pre-computed inputs.      Returns emit dict, Phase 3 — engine.py tests. Tests cover: calibrate_confidence (pure), emit_pipeli, Buffett condition C4: DB weights below FUNDAMENTAL_WEIGHT_FLOOR raise ValueError, SRA condition: emit_pipeline completes in ≤ 800ms under normal load.     Deferre, Warm path (>= OBSERVATION_THRESHOLD): p = hit_rate (capped at confidence/100)., Suppressed arbitration → None from emit_pipeline. (+11 more)
+Cohesion: 0.16
+Nodes (19): _alphaveda_path(), _build_blockers(), _build_feedback_section(), _build_phase_rows(), _build_stream_badges(), _extract_next_action(), _extract_section_lines(), _extract_streams() (+11 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.16
@@ -434,64 +435,64 @@ Cohesion: 0.17
 Nodes (15): _fetch_all(), fetch_report_rows(), generate_report(), _markdown_cell(), Render report rows as a plain Markdown table., Render report rows as a plain Markdown table., Query Supabase and write the dated weekly report., Query Supabase and write the dated weekly report. (+7 more)
 
 ### Community 56 - "Community 56"
+Cohesion: 0.17
+Nodes (15): emit_pipeline(), Pure pipeline: no DB calls. Accepts pre-computed inputs.      Returns emit dict, Pure pipeline: no DB calls. Accepts pre-computed inputs.      Returns emit dict, Phase 3 — engine.py tests. Tests cover: calibrate_confidence (pure), emit_pipeli, SRA condition: emit_pipeline completes in ≤ 800ms under normal load.     Deferre, Suppressed arbitration → None from emit_pipeline., Pipeline contract: streak discount applied to confidence; result confidence < ra, streak_count < STREAK_WINDOW → no discount applied. (+7 more)
+
+### Community 57 - "Community 57"
 Cohesion: 0.15
 Nodes (15): get_proposed_weights_count(), get_suppression_label(), get_weight_review_banner(), Path page — Kelly sizing and rupee display.  Constraint Enforcer condition: rupe, Delegate to signals.get_proposed_weights_count — path page shares the same banne, Delegate to signals.get_proposed_weights_count — path page shares the same banne, Return weight review banner if PROPOSED weights exist (mirrors signals page)., Return the rupee-suppression state label — deliberate state, not degraded fallba (+7 more)
 
-### Community 57 - "Community 57"
+### Community 58 - "Community 58"
 Cohesion: 0.2
 Nodes (3): _make_ohlcv(), TestDataContractBATCH, TestDataContractOHLCV
 
-### Community 58 - "Community 58"
+### Community 59 - "Community 59"
 Cohesion: 0.24
 Nodes (14): _all_commits(), check_commits(), _full_message(), _get_note(), _git(), main(), _mark_reviewed(), Return the full commit message for a given SHA. (+6 more)
 
-### Community 59 - "Community 59"
+### Community 60 - "Community 60"
 Cohesion: 0.3
 Nodes (6): Score open predictions against actual OHLCV outcomes.  Jhunjhunwala condition (h, Score predictions against actual closing prices, excluding circuit rows.      Ar, resolve_outcomes_from_ohlcv(), Jhunjhunwala: circuit_flag=True rows must NOT be used for outcome scoring., Jhunjhunwala: circuit_flag=True rows must NOT be used for outcome scoring., TestResolveOutcomes
 
-### Community 60 - "Community 60"
+### Community 61 - "Community 61"
 Cohesion: 0.19
 Nodes (13): is_commercial(), Supabase client singleton + commercial gate.  get_supabase_client(): module-leve, True if any waitlist row has converted_at set (first non-self subscriber).     F, _mock_client(), Phase 2 — is_commercial() tests. All tests use mocks: commercial gate is data-de, No converted_at rows → False (personal-use mode, yfinance allowed)., Any converted_at row → True (commercial mode, yfinance blocked)., DB exception → True. Fail-closed: unknown state must block yfinance, not permit (+5 more)
 
-### Community 61 - "Community 61"
+### Community 62 - "Community 62"
 Cohesion: 0.21
 Nodes (14): _alphaveda_path(), _build_commits(), _build_feedback_section(), _build_item_list(), _extract_section(), generate(), _get_head_hash(), _get_recent_commits() (+6 more)
 
-### Community 62 - "Community 62"
+### Community 63 - "Community 63"
 Cohesion: 0.21
 Nodes (15): Global Trend Signals Section, BANK NIFTY Trend Signal Card, CRUDE WTI Trend Signal Card, Signal Disclaimer: Not Equivalent to Full Stock Analysis, DOW JONES Trend Signal Card, GOLD Trend Signal Card, HANG SENG Trend Signal Card, Signal Methodology: RSI + Momentum (+7 more)
 
-### Community 63 - "Community 63"
+### Community 64 - "Community 64"
 Cohesion: 0.16
 Nodes (15): ADX Trend Metric (31.0), Algorithmic Signal Panel, ATR Volatility Metric (₹34.76), Bollinger Width Metric (8.7%), MACD Daily Chart, MACD Metric (-6.775), Price Bollinger Bands Chart, RSI (14) Chart (+7 more)
 
-### Community 64 - "Community 64"
+### Community 65 - "Community 65"
 Cohesion: 0.22
 Nodes (13): classify(), _load_model_display_names(), main(), parse_backlog(), _parse_done_ids(), parse_in_progress(), Classify a backlog item into an execution tier.      Priority order (first match, Extract items from the '### In Progress' table in GSI_SPRINT.md.     These are i (+5 more)
 
-### Community 65 - "Community 65"
+### Community 66 - "Community 66"
 Cohesion: 0.15
 Nodes (13): get_staleness_banner(), Data viewer page — OHLCV and fundamentals display.  Varghese condition: PAGE_REQ, Streamlit render entry point — called by app.py navigation., Query ingest_status and return a banner string if data is stale or missing., Query ingest_status and return a banner string if data is stale or missing., Query ingest_status and return a banner string if data is stale or missing., Streamlit render entry point — called by app.py navigation., Streamlit render entry point — called by app.py navigation. (+5 more)
 
-### Community 66 - "Community 66"
+### Community 67 - "Community 67"
 Cohesion: 0.2
 Nodes (13): _market_of(), Personalised AI career & investment action cards., Render one expandable topic card with chain + news + watchlist., Horizontal cascade of geopolitical impact nodes., Main entry point — called from app.py routing., Infer market from ticker suffix for watchlist filtering (OPEN-014)., Live mini price badges for a topic watchlist., render_global_intelligence() (+5 more)
 
-### Community 67 - "Community 67"
+### Community 68 - "Community 68"
 Cohesion: 0.18
 Nodes (12): _is_trading_day(), Return True if d is an NSE trading day (exchange-calendar aware).      Falls bac, Return True if d is an NSE trading day (exchange-calendar aware).      Falls bac, Run the full ingest pipeline for target_date (defaults to today).      Returns a, Return True if d is an NSE trading day (exchange-calendar aware).      Falls bac, Return True if d is an NSE trading day (exchange-calendar aware).      Falls bac, Return True if d is an NSE trading day (exchange-calendar aware).      Falls bac, Run the full ingest pipeline for target_date (defaults to today).      Returns a (+4 more)
 
-### Community 68 - "Community 68"
+### Community 69 - "Community 69"
 Cohesion: 0.21
 Nodes (7): _backtest_momentum_signal(), _EngineClient, _live_momentum_signal(), _Query, Regression tests keeping backtest signal replay aligned with the live engine., Replay and live paths must emit exactly the same direction and confidence., test_backtest_momentum_price_matches_live_engine()
 
-### Community 69 - "Community 69"
-Cohesion: 0.17
-Nodes (11): governance_strict_mode(), Shared fixtures for AlphaVeda test suite., Phase 5 signed off — promote governance integrity tests to strict mode., Live Supabase client — requires Phase 2 src/config.py + SUPABASE_URL in .env., Live Supabase client — requires Phase 2 src/config.py + SUPABASE_URL in .env., 15 OHLCV rows for ATR(14) tests. Values are realistic NSE prices., 15 OHLCV rows for ATR(14) tests. Values are realistic NSE prices., 15 OHLCV rows for ATR(14) tests. Values are realistic NSE prices. (+3 more)
-
 ### Community 70 - "Community 70"
 Cohesion: 0.17
-Nodes (13): Breadcrumb: Current Week > India > Nifty 50, Weekly Returns All Stocks Bar Chart, Nifty 50 Group, 49 Stocks Tracked Label, Sidebar Group Selector, Sidebar Stock Selector, No Stock Selected State (showing weekly summary), Portfolio Allocator Tab (+5 more)
+Nodes (11): governance_strict_mode(), Shared fixtures for AlphaVeda test suite., Phase 5 signed off — promote governance integrity tests to strict mode., Live Supabase client — requires Phase 2 src/config.py + SUPABASE_URL in .env., Live Supabase client — requires Phase 2 src/config.py + SUPABASE_URL in .env., 15 OHLCV rows for ATR(14) tests. Values are realistic NSE prices., 15 OHLCV rows for ATR(14) tests. Values are realistic NSE prices., 15 OHLCV rows for ATR(14) tests. Values are realistic NSE prices. (+3 more)
 
 ### Community 71 - "Community 71"
 Cohesion: 0.27
@@ -514,32 +515,32 @@ Cohesion: 0.23
 Nodes (10): Render one expandable topic card with chain + news + watchlist., Horizontal cascade of geopolitical impact nodes., Main entry point — called from app.py routing., Live mini price badges for a topic watchlist., Personalised AI career & investment action cards., render_global_intelligence(), _render_impact_chain(), _render_next_steps_ai() (+2 more)
 
 ### Community 76 - "Community 76"
+Cohesion: 0.17
+Nodes (12): calibrate_confidence(), Map raw confidence to calibrated probability p ∈ [0.0, 1.0].      Cold-start (se, Map raw confidence to calibrated probability p ∈ [0.0, 1.0].      Cold-start (se, test_cold_start_calibration_p_leq_confidence(), Cold-start: p = min(confidence/100, hit_rate). Reddy council condition., Calibrated p must never exceed confidence/100 in cold-start., Warm path (>= OBSERVATION_THRESHOLD): p = hit_rate (capped at confidence/100)., Calibrated p must always be in [0.0, 1.0]. (+4 more)
+
+### Community 77 - "Community 77"
 Cohesion: 0.2
 Nodes (11): get_proposed_weights_count(), get_proposed_weights_summary(), Accuracy ledger page — signal hit-rate and PROPOSED weight review.  Munger condi, Return count of signal_weights rows in PROPOSED status.     Delegates to signals, Return count of signal_weights rows in PROPOSED status.     Delegates to signals, Return a summary dict of pending PROPOSED weights for the accuracy tab UI., Return a summary dict of pending PROPOSED weights for the accuracy tab UI., Return a summary dict of pending PROPOSED weights for the accuracy tab UI. (+3 more)
 
-### Community 77 - "Community 77"
+### Community 78 - "Community 78"
 Cohesion: 0.18
 Nodes (4): DataResult, Returns DataResult if the entry exists (FRESH or STALE), None if not found., Every DataManager response is a DataResult.     data is None if and only if stat, TestDataContractLIVE
 
-### Community 78 - "Community 78"
+### Community 79 - "Community 79"
 Cohesion: 0.29
 Nodes (10): get_news(), get_price_data(), get_ticker_info(), get_top_movers(), _is_allowed_rss(), _normalize_df(), Return clean float Series from Close; guards MultiIndex yfinance output., Guarantee df always has string columns: Open High Low Close Volume.     Handles (+2 more)
 
-### Community 79 - "Community 79"
+### Community 80 - "Community 80"
 Cohesion: 0.27
 Nodes (10): _accuracy_context(), _confidence_bucket(), _historical_rows(), _print_table(), Run the backtest and print per-instrument and calibration summaries., Return the exact per-instrument calibration inputs used by engine.py., Load chronological, non-circuit OHLCV rows for one instrument., Replay the live 21-row momentum rule and score each next clean close. (+2 more)
 
-### Community 80 - "Community 80"
+### Community 81 - "Community 81"
 Cohesion: 0.22
 Nodes (10): get_proposed_weights_count(), get_weight_review_banner(), Signals page — signal output with cold-start label and weight review banner.  Ta, Return count of signal_weights rows in PROPOSED status., Return count of signal_weights rows in PROPOSED status., Return review banner when PROPOSED weights exist, else None., Return review banner when PROPOSED weights exist, else None., Streamlit render entry point — called by app.py navigation. (+2 more)
 
-### Community 81 - "Community 81"
+### Community 82 - "Community 82"
 Cohesion: 0.29
 Nodes (10): get_news(), get_price_data(), get_ticker_info(), get_top_movers(), _is_allowed_rss(), _normalize_df(), Return clean float Series from Close; guards MultiIndex yfinance output., Guarantee df always has string columns: Open High Low Close Volume.     Handles (+2 more)
-
-### Community 82 - "Community 82"
-Cohesion: 0.18
-Nodes (11): Group-Level Sector Selection Feature, Auto & EV Sector Group, Banks & Finance Sector Group, FMCG & Consumer Sector Group, IT & Technology Sector Group, Nifty Next 50 Group, Pharma & Healthcare Sector Group, Sensex 30 Group (+3 more)
 
 ### Community 83 - "Community 83"
 Cohesion: 0.24
@@ -554,48 +555,48 @@ Cohesion: 0.38
 Nodes (10): compute_correction_factor(), get_accuracy_summary(), load_forecast_history(), forecast.py, Render accuracy tracking panel — only function here that calls st.*, # NOTE: render_forecast_accuracy is the only function here that calls st.*, render_forecast_accuracy(), resolve_forecasts() (+2 more)
 
 ### Community 86 - "Community 86"
-Cohesion: 0.29
-Nodes (5): parse_bse_xbrl_fundamentals(), BSE XBRL fundamentals loader.  parse_bse_xbrl_fundamentals() is a pure transform, Parse a BSE XBRL fundamentals response dict into a normalised flat dict.      Re, _safe_float(), TestParseBseXbrlFundamentals
-
-### Community 87 - "Community 87"
 Cohesion: 0.24
 Nodes (6): get_ingest_staleness_flag(), Classify ingest freshness for the Imran SRA staleness banner.      Returns:, Classify ingest freshness for the Imran SRA staleness banner.      Returns:, Classify ingest freshness for the Imran SRA staleness banner.      Returns:, Phase 6 — Ingest pipeline unit tests (pure functions only, no live DB required)., TestIngestStalenessFlag
+
+### Community 87 - "Community 87"
+Cohesion: 0.29
+Nodes (5): parse_bse_xbrl_fundamentals(), BSE XBRL fundamentals loader.  parse_bse_xbrl_fundamentals() is a pure transform, Parse a BSE XBRL fundamentals response dict into a normalised flat dict.      Re, _safe_float(), TestParseBseXbrlFundamentals
 
 ### Community 88 - "Community 88"
 Cohesion: 0.29
 Nodes (9): _build_cards(), _build_feedback_section(), generate(), _parse_create_body(), _parse_schema_md(), schema_viewer.py — Generate schema-viewer.html artifact.  Reads: docs/supabase/S, Parse docs/supabase/SCHEMA.md into a dict keyed by table name.     Each value: {, Extract column names, PK, and NOT NULL columns from CREATE TABLE body. (+1 more)
 
 ### Community 89 - "Community 89"
-Cohesion: 0.2
-Nodes (10): calibrate_confidence(), Map raw confidence to calibrated probability p ∈ [0.0, 1.0].      Cold-start (se, Map raw confidence to calibrated probability p ∈ [0.0, 1.0].      Cold-start (se, test_cold_start_calibration_p_leq_confidence(), Cold-start: p = min(confidence/100, hit_rate). Reddy council condition., Calibrated p must never exceed confidence/100 in cold-start., Calibrated p must always be in [0.0, 1.0]., test_calibration_result_in_unit_interval() (+2 more)
-
-### Community 90 - "Community 90"
 Cohesion: 0.38
 Nodes (9): _persona_card(), _render_allocation_brief(), _render_asset_input(), _render_conflict_banner(), _render_council_grid(), render_council_review(), _render_header(), _render_mode_selector() (+1 more)
 
-### Community 91 - "Community 91"
+### Community 90 - "Community 90"
 Cohesion: 0.31
 Nodes (10): AI & Job Markets, China Slowdown & Trade Shifts, Geopolitical & Technology Intelligence, Global Intelligence Centre, Impact Chains, Market Linkages, US Rate Cycle & Fed Policy, West Asia Conflict (+2 more)
 
-### Community 92 - "Community 92"
+### Community 91 - "Community 91"
 Cohesion: 0.25
 Nodes (7): Constraint Enforcer: commercial gate is fail-closed; SEBI rules are non-negotiab, Any exception in DB check → is_commercial() returns True (fail-closed: block yfi, Constraint Enforcer: commercial gate is fail-closed; SEBI rules are non-negotiab, If any waitlist row has converted_at set → commercial=True., Any exception in DB check → is_commercial() returns True (fail-closed: block yfi, If any waitlist row has converted_at set → commercial=True., TestConstraintEnforcerConditions
+
+### Community 92 - "Community 92"
+Cohesion: 0.22
+Nodes (9): get_kelly_display_data(), Return display dict for the Path page.      Keys:       direction  : "BULLISH" |, Return display dict for the Path page.      Keys:       direction  : "BULLISH" |, Path page suppresses rupee amount when is_commercial()=True., Path page suppresses rupee amount when is_commercial()=True., Path page shows rupee amount when is_commercial()=False., Path page shows rupee amount when is_commercial()=False., test_no_rupee_when_commercial() (+1 more)
 
 ### Community 93 - "Community 93"
 Cohesion: 0.22
 Nodes (8): get_cold_start_label(), Return cold-start label when segment_obs < OBSERVATION_THRESHOLD, else None., Return cold-start label when segment_obs < OBSERVATION_THRESHOLD, else None., GET /signals — signal weight status + cold-start state.  Delegates to src/pages/, signals_state(), Cold-start label is returned when segment_obs < OBSERVATION_THRESHOLD., Cold-start label is returned when segment_obs < OBSERVATION_THRESHOLD., test_cold_start_label_visible()
 
 ### Community 94 - "Community 94"
-Cohesion: 0.22
-Nodes (9): get_kelly_display_data(), Return display dict for the Path page.      Keys:       direction  : "BULLISH" |, Return display dict for the Path page.      Keys:       direction  : "BULLISH" |, Path page suppresses rupee amount when is_commercial()=True., Path page suppresses rupee amount when is_commercial()=True., Path page shows rupee amount when is_commercial()=False., Path page shows rupee amount when is_commercial()=False., test_no_rupee_when_commercial() (+1 more)
-
-### Community 95 - "Community 95"
 Cohesion: 0.31
 Nodes (8): approve_signal_weight(), Change a signal weight row from PROPOSED → ACTIVE.      This is the sole applica, _mock_select_chain(), Phase 3 — approve_signal_weight() tests.  Governance rule: no signal_weights sta, Approval gate rejects any status that is not PROPOSED., Approval gate rejects when the weight_id does not exist., test_approve_rejects_missing_row(), test_approve_rejects_non_proposed()
 
-### Community 96 - "Community 96"
+### Community 95 - "Community 95"
 Cohesion: 0.22
 Nodes (9): get_staleness_warning(), Return staleness warning when last_review_date is more than 90 days ago, else No, Return staleness warning when last_review_date is more than 90 days ago, else No, 90-day overdue warning is shown on accuracy page., 90-day overdue warning is shown on accuracy page., No staleness warning when last review was recent., No staleness warning when last review was recent., test_no_staleness_warning_when_recent() (+1 more)
+
+### Community 96 - "Community 96"
+Cohesion: 0.28
+Nodes (9): Stock Search Feature, India Market, Indian Market (NSE/BSE), Reliance Industries Search Result, Sidebar Market Selector (India), Sidebar Search Input, Market CLOSED Status, Reliance Industries (+1 more)
 
 ### Community 97 - "Community 97"
 Cohesion: 0.22
@@ -611,7 +612,7 @@ Nodes (7): chk(), regression.py, regression.py — GSI Regression & Validation S
 
 ### Community 100 - "Community 100"
 Cohesion: 0.21
-Nodes (7): Synthesis Chair: G0 criterion 10 must run first; Kelly must produce rupee output, Synthesis Chair: G0 criterion 10 must run first; Kelly must produce rupee output, TestSynthesisChairConditions, b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12, b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12, b = 0.15/0.07 = 2.14; p=0.65, q=0.35, f = 0.65 - 0.35/2.14 = 0.486, ×0.25 = 0.12, test_kelly_rupee_with_downside()
+Nodes (7): Synthesis Chair: G0 criterion 10 must run first; Kelly must produce rupee output, Synthesis Chair: G0 criterion 10 must run first; Kelly must produce rupee output, TestSynthesisChairConditions, MIN_POSITION_PCT must NOT be applied as a floor — zero-edge = 0, not 1%., MIN_POSITION_PCT must NOT be applied as a floor — zero-edge = 0, not 1%., MIN_POSITION_PCT must NOT be applied as a floor — zero-edge = 0, not 1%., test_kelly_no_min_position_floor()
 
 ### Community 101 - "Community 101"
 Cohesion: 0.36
@@ -663,23 +664,23 @@ Nodes (4): Reddy (calibration): cold-start calibration p must be ≤ confidence/
 
 ### Community 115 - "Community 115"
 Cohesion: 0.5
-Nodes (4): Bhattacharya (data licensing): licence_class and deliverable_volume must exist., Bhattacharya (data licensing): licence_class and deliverable_volume must exist., Bhattacharya (data licensing): licence_class and deliverable_volume must exist., TestBhattacharyaConditions
+Nodes (4): Rashida (DB integrity): All critical tables and columns must exist., Migration 0012 — downside_target column. BLOCKED until G-MIG., Rashida (DB integrity): All critical tables and columns must exist., TestRashidaConditions
 
 ### Community 116 - "Community 116"
 Cohesion: 0.5
-Nodes (4): Jhunjhunwala: circuit_flag on ohlcv — hard pre-G1 gate for data quality., Jhunjhunwala: circuit_flag on ohlcv — hard pre-G1 gate for data quality., Jhunjhunwala: circuit_flag on ohlcv — hard pre-G1 gate for data quality., TestJhunjhunwalaConditions
+Nodes (4): If downside_target is None, return 0 — no rupee amount on Path page., If downside_target is None, return 0 — no rupee amount on Path page., If downside_target is None, return 0 — no rupee amount on Path page., test_kelly_no_rupee_without_downside()
 
 ### Community 117 - "Community 117"
 Cohesion: 0.5
-Nodes (4): MIN_POSITION_PCT must NOT be applied as a floor — zero-edge = 0, not 1%., MIN_POSITION_PCT must NOT be applied as a floor — zero-edge = 0, not 1%., MIN_POSITION_PCT must NOT be applied as a floor — zero-edge = 0, not 1%., test_kelly_no_min_position_floor()
+Nodes (4): Bhattacharya (data licensing): licence_class and deliverable_volume must exist., Bhattacharya (data licensing): licence_class and deliverable_volume must exist., Bhattacharya (data licensing): licence_class and deliverable_volume must exist., TestBhattacharyaConditions
 
 ### Community 118 - "Community 118"
 Cohesion: 0.5
-Nodes (4): If downside_target is None, return 0 — no rupee amount on Path page., If downside_target is None, return 0 — no rupee amount on Path page., If downside_target is None, return 0 — no rupee amount on Path page., test_kelly_no_rupee_without_downside()
+Nodes (4): Jhunjhunwala: circuit_flag on ohlcv — hard pre-G1 gate for data quality., Jhunjhunwala: circuit_flag on ohlcv — hard pre-G1 gate for data quality., Jhunjhunwala: circuit_flag on ohlcv — hard pre-G1 gate for data quality., TestJhunjhunwalaConditions
 
 ### Community 119 - "Community 119"
 Cohesion: 0.5
-Nodes (4): Rashida (DB integrity): All critical tables and columns must exist., Migration 0012 — downside_target column. BLOCKED until G-MIG., Rashida (DB integrity): All critical tables and columns must exist., TestRashidaConditions
+Nodes (4): Negative full Kelly (no edge) must return 0, not a floor., Negative full Kelly (no edge) must return 0, not a floor., Negative full Kelly (no edge) must return 0, not a floor., test_kelly_zero_on_negative_edge()
 
 ### Community 120 - "Community 120"
 Cohesion: 0.5
@@ -695,11 +696,11 @@ Nodes (3): Waitlist form submission handler.  record_waitlist_submission() is id
 
 ### Community 124 - "Community 124"
 Cohesion: 0.5
-Nodes (3): Signal weight loader — DB active weights with cold-start fallback.  Priority (Mu, Validate DB-loaded weights before they enter the signal pipeline.      Raises Va, _validate_db_weights()
+Nodes (3): emit_signal(), Signal emit engine — full pipeline: arbitrate → discount → calibrate.  Pipeline, DB orchestrator: load context → build signal → emit → write accuracy_predictions
 
 ### Community 125 - "Community 125"
 Cohesion: 0.5
-Nodes (3): emit_signal(), Signal emit engine — full pipeline: arbitrate → discount → calibrate.  Pipeline, DB orchestrator: load context → build signal → emit → write accuracy_predictions
+Nodes (3): Signal weight loader — DB active weights with cold-start fallback.  Priority (Mu, Validate DB-loaded weights before they enter the signal pipeline.      Raises Va, _validate_db_weights()
 
 ### Community 128 - "Community 128"
 Cohesion: 0.67
@@ -708,14 +709,14 @@ Nodes (3): is_stale(), Dalio condition: a regime older than REGIME_STALENESS_DAY
 ## Knowledge Gaps
 - **933 isolated node(s):** `R-ZIP · KI-014: Re-read packaged zip from disk and run full suite.     Catches f`, `Return the forecast history dict.     Primary store: st.session_state[_SS_KEY].`, `Persist the forecast history dict.     Always writes to session_state (works on`, `Record a new forecast entry (one per ticker per day).     simulation: optional d`, `Check all pending forecasts whose due date has passed and mark them     resolved` (+928 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `get_supabase_client()` connect `Community 47` to `Community 65`, `Community 67`, `Community 36`, `Community 69`, `Community 43`, `Community 76`, `Community 79`, `Community 80`, `Community 125`, `Community 55`, `Community 60`, `Community 93`, `Community 95`?**
+- **Why does `get_supabase_client()` connect `Community 47` to `Community 66`, `Community 68`, `Community 36`, `Community 70`, `Community 43`, `Community 77`, `Community 80`, `Community 81`, `Community 93`, `Community 55`, `Community 124`, `Community 61`, `Community 94`?**
   _High betweenness centrality (0.069) - this node is a cross-community bridge._
-- **Why does `Exception` connect `Community 107` to `Community 4`, `Community 36`, `Community 43`, `Community 60`, `Community 52`, `Community 92`?**
+- **Why does `Exception` connect `Community 107` to `Community 4`, `Community 36`, `Community 43`, `Community 52`, `Community 91`, `Community 61`?**
   _High betweenness centrality (0.068) - this node is a cross-community bridge._
 - **Why does `_set_rate_limited()` connect `Community 4` to `Community 107`?**
   _High betweenness centrality (0.054) - this node is a cross-community bridge._
