@@ -270,6 +270,19 @@ Recovery performed directly (not re-delegated): verified the crashed A14 diff wa
 
 ## EXACT RESUME POINT
 
+**⚠ SUPERSEDES everything below — read this block first, 2026-07-14 P0 escalation.**
+
+1. **Penalty ledger: +216h cumulative** (was +144h from 07-01; +72h added 07-14 for the ingest-trigger miss below). See "ALPHAVEDA PENALTY TALLY — LIVE" section, this file.
+2. **`ingest.yml`'s scheduled trigger has a 100% late/no-show rate** — 9/9 recorded scheduled runs late by 2-3hrs, and 2026-07-14 produced ZERO run record at all (confirmed 81+ min past intended fire time). Logged as **G23** in `GAP_REGISTER.md`. Fix designed (external trigger — evaluating claude.ai `RemoteTrigger`/Routines over cron-job.com — as primary, GHA `schedule:` demoted to backup, idempotency guard on `ingest.py`) but **NOT YET BUILT** — blocked on item 3 below.
+3. **New global governance rule mandated by Tarun, AlphaVeda is the first test subject:** the **Layer 1.5 Pre-Execution Scrutiny Gate** — no action may be called "done" without a happy-path run + ≥2 failure/edge scenarios, each with real evidence shown (not described), plus council sign-off scaled to risk tier. Designed by `doctrine-panel-constraint-enforcer` (2026-07-14). **NOT YET WRITTEN into a rule file** — was about to be written into `alphaveda/.claude/rules/COUNCIL_RULES.md` when Tarun instead called a P0 strategic-analysis escalation. Full reasoning: memory `project_alphaveda_p0_reliability_pattern.md`.
+4. **Root-cause finding behind the P0 escalation:** every real bug found this session (SESSION_RESUME staleness-blindness, `governance-health-check.sh` dead a month, G22, `weekly-report.yml`'s gitignore block + duplicate-row bug, G23 above) was a failure at the SEAM between two systems, never inside either alone — and each was declared "done" on an isolated/mocked test, never the real end-to-end path. Discovery lag (weeks, not the bugs themselves) is the actual cost driver.
+5. **`weekly-report.yml`'s first real run also found a NEW bug, not yet fixed:** each prediction row appears twice in the committed report (`alphaveda/docs/reports/weekly-2026-07-13.md`, 10 rows for 5 real predictions). Root cause not yet diagnosed.
+6. **Do not manually trigger today's missed ingest** — per Tarun's explicit instruction, fix the trigger mechanism properly first (with Layer 1.5 proof) rather than paper over the miss with a manual click.
+
+**Real ledger accounting, pulled directly 2026-07-14 (not estimated):** 42 predictions ever emitted, 10 outcomes resolved (6 hit / 4 miss), 10 of the roadmap's required 15 resolved signals (67%).
+
+---
+
 **Nothing below this line changed during the 2026-07-14 housekeeping investigation above — this is the AlphaVeda queue exactly as it stood before that thread started.** Pick up here when returning to AlphaVeda work.
 
 **Backend pipeline is genuinely healthy as of the LAST verified run** (`29273458980`, 2026-07-13T18:11:23Z, `status: OK`, 10 outcomes resolved, zero errors) — G22 fixed and proven end-to-end. Today is Day 1 of the 10-day clean-run proof-window counter, not further along; the counter reset when the pre-fix scheduled run failed earlier the same day.
