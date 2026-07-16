@@ -103,9 +103,12 @@ test('L2 helper unit check — fleschKincaidGrade is exposed and behaves monoton
 // mock; here: presence on all 4 real routes, in both modes explicitly).
 //
 // NOTE: SEBI_LEGAL is asserted against the *shipped* disclaimer text
-// (SebiDisclaimer.tsx / sebi-disclaimer.generated.ts), which is the actual
-// pinned footer and differs in exact wording from the SEBI_LEGAL constant in
-// lexicon.ts (both say "NOT investment advice" — that's the substance check).
+// (SebiDisclaimer.tsx / sebi-disclaimer.generated.ts). As of RF-D closure
+// (2026-07-17) lexicon.ts's SEBI_LEGAL is word-for-word identical to the
+// shipped text — both trace to the same canonical source, constants.py.
+// The substance-only check below ("NOT investment advice") is kept as a
+// lighter-weight assertion here; sebi.spec.ts is now the strict exact-match
+// oracle for the shipped footer text.
 // SEBI_PLAIN is asserted against the literal lexicon.ts string, since that is
 // the only source of truth for the plain-language line in this codebase.
 // ---------------------------------------------------------------------------

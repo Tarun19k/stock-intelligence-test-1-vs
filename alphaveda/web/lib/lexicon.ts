@@ -277,16 +277,19 @@ export const GLOSSARY: Record<GlossaryKey, GlossaryEntry> = {
 // ---------------------------------------------------------------------------
 // §4 Compliance strings — ALWAYS present, never toggled by language_mode.
 // This module does not replace SebiDisclaimer.tsx (which remains the pinned
-// footer sourced from process.env.SEBI_DISCLAIMER per NG-4 / RF-D — untouched,
-// out of scope for A10-A14). Exported here only so the language test suite
-// (A12) can assert both plain and legal framing exist verbatim in the lexicon.
+// footer, sourced from alphaveda/constants.py SEBI_DISCLAIMER via
+// lib/sebi-disclaimer.generated.ts per NG-4 — the Vercel SEBI_DISCLAIMER env
+// var was deleted 2026-07-17 as part of RF-D closure). SEBI_LEGAL below is
+// kept word-for-word identical to constants.py's canonical text. Exported
+// here only so the language test suite (A12) can assert both plain and legal
+// framing exist verbatim in the lexicon.
 // ---------------------------------------------------------------------------
 export const SEBI_PLAIN =
   'We share research and its track record. We never tell anyone what to do with their money.'
 export const SEBI_LEGAL =
-  'AlphaVeda provides information and analysis only. This is NOT investment advice. ' +
+  'AlphaVeda provides research and analysis only. This is NOT investment advice. ' +
   'Consult a SEBI-registered investment advisor before making any investment decision. ' +
-  'Past accuracy does not guarantee future returns.'
+  'Past signal accuracy does not guarantee future returns.'
 
 // ---------------------------------------------------------------------------
 // A14 — anchoring counter. Converts a 0-100 confidence/hit-rate percentage into
