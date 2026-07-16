@@ -1,6 +1,12 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
+**Checkpoint date:** 2026-07-16 | **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
+**Latest commit:** 8cd48bc (3 reports + GAP_REGISTER committed). Full 2026-07-16 session detail (governance rule, GitHub fix, prediction-model finding, council expert-user ruling) lives in `agentic-operations/graphify-out/SESSION_RESUME.md`'s 2026-07-16 section — cross-workspace investigation, recorded there per the established public/private split.
+**Immediate next steps, ranked:** (1) wire the Wilson CI display next to the hit rate on `/accuracy`, (2) fix the 3 persona-pilot UX bugs, (3) ship landing page + waitlist (still the top revenue-blocking item), (4) formalize the 4-condition operator-test-account separation before using AlphaVeda on real capital.
+
+---
+
 **Session date:** 2026-07-13 (Codex fully live, G22 pipeline blocker found+fixed same-day, 5-lens Codex-deliverable audit, persona UAT plan proposed)
 **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
 **Last commits (prior to this checkpoint):** a805e80 (checkpoint 2026-07-13)
