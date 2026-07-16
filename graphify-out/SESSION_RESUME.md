@@ -305,12 +305,12 @@ Recovery performed directly (not re-delegated): verified the crashed A14 diff wa
 | `backtest.py` | **Built, zero test coverage** | Calibration-integrity gap; spec-compliant but unpinned to `engine.py` |
 | Codex CLI | ✓ **LIVE, PROVEN** | 6 real dispatches this session; `--write` flag required, always verify output |
 | Haiku Zero-Failure Routing Rule | ✓ **LIVE IN GOVERNANCE** | Global, cross-workspace, premortem-logged, Tarun-approved |
-| India-policy design doc / ticker-watchlist | **HOLD** | 13 total financial-seat reviews across 2 rounds; missing SEBI-specific pass |
+| India-policy design doc / ticker-watchlist | **RESUMED 2026-07-16** (was HOLD) | Tarun explicit go-ahead; 13 financial-seat reviews still stand, missing SEBI-specific pass still open |
 | SESSION_RESUME.md | ✓ **THIS CHECKPOINT** | Was 22 commits / 1 day stale before this write |
 | Waitlist + privacy page (G8/G10) | **P2 — Tarun's explicit downgrade** | Still the actual gate on `REVENUE_ROADMAP.md`'s proof window closing |
-| Design direction pick (D1/D2/D3) | **Tarun-owned — NOT DONE** | Fable recommends D1 + D2 copy transplant; needs phone walkthrough + 5-sec test |
-| Design pack repo decision | **Tarun-owned — NOT DONE** | Recommendation: commit — 3+ council reviews already needed to read it off disk |
-| G6 — hardcoded portfolio value | **Tarun-owned — NOT DONE** | Recommendation: keep placeholder until Tarun has 30 seconds to give the real number |
+| Design direction pick (D1/D2/D3) | **DECIDED 2026-07-16 — D1** | D1 (Bharat Fintech Clarity) + D2's copy voice for negative/ledger states. Tarun accepted Fable's recommendation directly, skipped the phone walkthrough |
+| Design pack repo decision | **DECIDED 2026-07-16 — stay gitignored** | Tarun explicit: keep local/gitignored for now, revisit once direction is being actively built |
+| G6 — hardcoded portfolio value | **CLOSED 2026-07-16** | Real value ₹17,00,000 provided by Tarun. `constants.py` + `path/page.tsx` updated. NG-2 (public ₹ display) remains separately open |
 | fundamentals ingest (G1) | P1 — NOT BUILT | BSE XBRL parser exists; needs scheduling |
 | macro_regime freshness (G13) | P1 — STALE | Seeded 07-01, system's own rule is 3-day staleness |
 | Gumroad (Stream A) | PENALISED + GATED | Trigger: Tarun's go-ahead + financial panel sign-off |
@@ -322,12 +322,12 @@ Recovery performed directly (not re-delegated): verified the crashed A14 diff wa
 
 | Decision | Recommendation given | Status | Needed by |
 |---|---|---|---|
-| Design direction pick (D1/D2/D3) | D1 + D2's copy voice for negative/ledger states | **Awaiting confirmation** | Whenever Tarun does the phone/5-sec-recall walk |
-| A16 human validation | 15-min protocol (1 family + 1 outsider, 2-question recall test) | **Awaiting scheduling** — persona pilot proposed as pre-work | — |
-| Design pack repo commit | Commit — proven load-bearing this session | **Awaiting confirmation** | Before any further design work |
-| G6 real portfolio value | Keep placeholder until Tarun has 30 sec to give the real number | **Awaiting confirmation** | Not urgent, doesn't block anything |
-| India-policy design doc scope | Hold — Munger's 5 conditions + missing SEBI review | **Awaiting confirmation** | Before any further build on ticker-watchlist concept |
-| Persona UAT pilot (3 personas) | Start with 3 (Priya/Rohan/Kavita), not 4 | **Awaiting go-ahead** | Whenever — no urgency, but unblocks A16 prep |
+| Design direction pick (D1/D2/D3) | D1 + D2's copy voice for negative/ledger states | **DECIDED 2026-07-16 — D1** | Unblocks A15 design token migration |
+| A16 human validation | 15-min protocol (1 family + 1 outsider, 2-question recall test) | **Loose timeframe given 2026-07-16 — "coming few days," not yet a fixed date** | Persona UAT pilot runs first as pre-work |
+| Design pack repo commit | Commit — proven load-bearing this session | **DECIDED 2026-07-16 — stay gitignored, revisit later** | — |
+| G6 real portfolio value | Keep placeholder until Tarun has 30 sec to give the real number | **CLOSED 2026-07-16 — ₹17,00,000, code updated** | Done |
+| India-policy design doc scope | Hold — Munger's 5 conditions + missing SEBI review | **RESUMED 2026-07-16** | Active again — SEBI-specific review still outstanding |
+| Persona UAT pilot (3 personas) | Start with 3 (Priya/Rohan/Kavita), not 4 | **GO-AHEAD GIVEN 2026-07-16** | Dispatching now |
 | Gumroad publish Stream A | PENALISED + GATED on AlphaVeda approval AND financial panel sign-off | Unchanged | When Tarun gives go-ahead |
 | Stream C: 3 consulting targets | — | OVERDUE | Revenue clock — NOW |
 

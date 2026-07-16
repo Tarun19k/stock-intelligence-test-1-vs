@@ -36,7 +36,7 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 | G3 | Simple/Pro language layer, glossary, lexicon exist only in design catalog — zero wired into build | OPEN — Tier 3 core work | A10–A14; direction-agnostic, doesn't need design pick first |
 | G4 | Landing page + waitlist signup — catalog mock only, no route exists | **IN PROGRESS 2026-07-13** | Tier 2, A7–A9. Same as G8/NG-5 — now gated by REVENUE_ROADMAP.md's proof window (Day 0 = 2026-07-13); Tarun explicitly sequenced this ahead of Stream A this week |
 | G5 | Attribution schema (`prediction_components`) missing — blocks per-signal RCA | OPEN | Needed before Loop 3 |
-| G6 | Kelly sizing runs on hardcoded `PORTFOLIO_VALUE=725000`, not real holdings | OPEN | Also NG-2 (public display issue) |
+| G6 | Kelly sizing ran on hardcoded `PORTFOLIO_VALUE=725000`, not real holdings | **CLOSED 2026-07-16** | Real value (₹17,00,000) provided by Tarun, updated in `constants.py` + `path/page.tsx`. NG-2 (public ₹ display) remains a separate open item |
 | G7 | Warm calibration (Platt scaling) is placeholder — cold-start path only | OPEN — bridged by A4 | COLD-gating (A4) is the honest interim; A21 is the real fix, deferred to Loop 3 window |
 | G8 | Commercial gate (`waitlist.converted_at`) structurally unreachable — no waitlist route | OPEN | Tier 2, A7 |
 | G9 | Designed product ≠ deployed product (design catalog, direction, Simple/Pro all unwired) | OPEN | A0c (Tarun) + A10–A15 |
