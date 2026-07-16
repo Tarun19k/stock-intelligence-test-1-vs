@@ -5,6 +5,14 @@
 
 Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 
+**Reason-code + aging convention (added 2026-07-16, adapted from a knowledge-governance
+pattern reviewed this session — applied going forward, not retrofitted to historical
+entries):** any OPEN item that represents a real incident (not a design backlog item)
+should carry a short `REASON_CODE`, an `Opened` date, and pass through a fixed sequence
+before it's allowed to close — Detect → Log → Contain → Diagnose → Fix → Retest → Review
+→ Monitor. A reason code with no diagnosis yet is still logged as OPEN, not skipped.
+See G23 below for the first applied example.
+
 ---
 
 ## G22 (new, closed same-day) — the real ingest blocker
@@ -12,7 +20,7 @@ Status legend: `OPEN` · `IN PROGRESS` · `CLOSED` (with commit/date)
 | ID | Description | Status | Note |
 |---|---|---|---|
 | G22 | `accuracy_outcomes` has 3 live NOT NULL columns (`outcome_date`, `actual_direction`, `is_correct`) that Step 6's upsert never populated — every real scheduled ingest run since G18 shipped failed on the first resolved-outcome row, resetting `REVENUE_ROADMAP.md`'s clean-run counter to 0 each time. Confirmed via `information_schema` query 2026-07-13, not assumption. | **CLOSED 2026-07-13** | `e251359` — `resolve_outcomes_from_ohlcv()` now returns `actual_direction`; `ingest.py` Step 6 upserts `outcome_date`/`is_correct`/`actual_return` alongside existing fields. No schema change — columns already existed live. Verified end-to-end: re-triggered ingest for 2026-07-13, confirmed `status: OK`, `outcomes_resolved: 10`, zero errors (run `29273458980`). **This is Day 1 of the clean-run counter, not Day 0 — today's first scheduled run failed before this fix landed.** |
-| G23 | `ingest.yml`'s native GHA `schedule:` trigger has a 100% late/no-show rate: all 9 recorded scheduled runs (2026-07-01→07-13) fired 2-3 hours late, and 2026-07-14 produced ZERO run record at all as of 14:20 UTC (81 min past the intended 13:00 UTC fire time). Root cause per SRE review: too large/consistent a delay to be normal GHA queue jitter; cron fires at `:00`, GitHub's own documented worst-case minute, but that alone doesn't explain a multi-hour pattern. No fallback existed to catch a late/missing scheduled run independent of the watchdog (which itself only checks 2h after the intended time). | **OPEN — penalized (+72h, `REVENUE_ROADMAP.md`), fix designed not yet built** | Hybrid fix approved in principle (external trigger — evaluating claude.ai `RemoteTrigger`/Routines over cron-job.com — as primary, GHA `schedule:` demoted to backup, idempotency guard added to `ingest.py`). **Blocked on the new Layer 1.5 Pre-Execution Scrutiny Gate — requires variational test evidence (happy path + ≥2 failure scenarios, real output shown) before this can be built, per Tarun's 2026-07-14 governance mandate.** |
+| G23 | `ingest.yml`'s native GHA `schedule:` trigger has a 100% late/no-show rate: all 9 recorded scheduled runs (2026-07-01→07-13) fired 2-3 hours late, and 2026-07-14 produced ZERO run record at all as of 14:20 UTC (81 min past the intended 13:00 UTC fire time). Root cause per SRE review: too large/consistent a delay to be normal GHA queue jitter; cron fires at `:00`, GitHub's own documented worst-case minute, but that alone doesn't explain a multi-hour pattern. No fallback existed to catch a late/missing scheduled run independent of the watchdog (which itself only checks 2h after the intended time). | **OPEN — penalized (+72h, `REVENUE_ROADMAP.md`)** | `REASON_CODE: SCHEDULE_MISS` · `Opened: 2026-07-01` · `Age: 15 days` (as of 2026-07-16). Lifecycle: Detect ✓ (2026-07-14) → Log ✓ (this entry + `REVENUE_ROADMAP.md`) → Contain — n/a, no data-integrity risk, only timing → Diagnose ✓ (SRE review, root cause above) → Fix — **scheduler decision CLOSED 2026-07-16: `RemoteTrigger`/claude.ai Routines adopted as primary trigger, GHA `schedule:` demoted to backup, idempotency guard to be added to `ingest.py`** → Retest — not started, blocked on Layer 1.5's ≥2 failure-scenario evidence requirement → Review/Monitor — not started. **Next concrete step: dispatch to Codex per `agentic-operations/docs/CODEX_ACTION_PLAN_2026-07-14.md` Task D (brief updated 2026-07-16 to remove the open scheduler question).** |
 
 ---
 
