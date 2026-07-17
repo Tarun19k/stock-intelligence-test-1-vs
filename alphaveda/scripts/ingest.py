@@ -68,6 +68,25 @@ def run_ingest(target_date: date | None = None) -> dict:
     from src.config import get_supabase_client
     supabase = get_supabase_client()
 
+    # Idempotency guard (G23): the ingest trigger now has two independent sources
+    # (RemoteTrigger primary, GHA schedule: backup) that can both fire for the same
+    # target_date if the primary is late and the backup also lands. Without this
+    # check, a duplicate fire would re-run Steps 1-7 and double-insert predictions/
+    # outcomes for a date already processed. An OK row for this exact date means
+    # ingest already completed successfully — skip cleanly rather than reprocess.
+    existing = (
+        supabase.table("ingest_status")
+        .select("id, status")
+        .eq("last_run", target_date.isoformat())
+        .eq("status", "OK")
+        .limit(1)
+        .execute()
+    )
+    if existing.data:
+        return {"date": target_date.isoformat(), "ohlcv_rows": 0,
+                "outcomes_resolved": 0, "status": "SKIPPED_ALREADY_DONE",
+                "existing_ingest_status_id": existing.data[0]["id"]}
+
     # Holiday gate (Dalio condition): write SKIPPED_HOLIDAY, exit cleanly.
     if not _is_trading_day(target_date):
         supabase.table("ingest_status").insert({
