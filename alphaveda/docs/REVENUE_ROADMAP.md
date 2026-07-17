@@ -6,6 +6,37 @@ deliberately skipped — the council converged with no real disagreement to arbi
 per Constraint Enforcer's own trim recommendation (avoid an Opus-tier pass with nothing
 to resolve).
 
+## ⚠ AMENDMENT — 2026-07-17: both tracks confirmed, sequenced
+
+This document's public waitlist → proof-window → paid-subscriber funnel was written by
+the financial council without ever being told about a second, coexisting model: AlphaVeda
+also becomes a **private freelance-client dashboard** — Tarun uses it personally first,
+then shows it to his own consulting clients (Stream C) — separate from the public
+subscriber funnel below (Stream D). Both are real; found genuinely inconsistent with
+zero prior written record of the private track until Tarun stated it directly on
+2026-07-17. Root cause + investigation: see `agentic-operations/graphify-out/SESSION_RESUME.md`
+2026-07-17 entry.
+
+**Confirmed, Tarun's own words, 2026-07-17:**
+1. **Sequencing: private first.** Tarun uses AlphaVeda personally, builds trust, then
+   shows consulting clients. The public waitlist track below is **PAUSED**, not
+   cancelled — resumes once the private trust gate (below) closes.
+2. **Commercial trigger: unchanged.** `is_commercial()` stays tied solely to
+   `waitlist.converted_at` — a consulting client viewing a demo does NOT trigger
+   commercial=True. Tarun controls what a client sees directly, same as the operator
+   view. No code change needed.
+3. **Landing page (NG-5/G8): PAUSED.** Not the near-term build priority. Revisit once
+   the private trust gate closes.
+4. **Private trust gate — BOTH conditions, whichever takes longer:**
+   - The existing proof-window criteria (10 consecutive clean ingest days, ≥15 resolved
+     signals) — already defined below, unchanged
+   - Tarun's own subjective confidence in the tool, independent of the ledger stats
+
+**What this means for near-term build priority:** ingest reliability (Task D) and
+signal-quality trust items (Wilson CI display, methodology log) now matter MORE, not
+less — they're what the private trust gate is actually measured against. The landing
+page items (NG-5, G8) drop out of the near-term sequence entirely until the gate closes.
+
 ## Day 0 = 2026-07-13
 
 ## The proof window (the core mechanism)

@@ -42,11 +42,11 @@ See G23 below for the first applied example.
 | G1 | `fundamentals` table empty — BSE XBRL parser built, never scheduled | OPEN | Tier 5, A19 |
 | G2 | `macro_regime` — was 0 rows, now 1 manual row | OPEN — stale | Already stale by system's own 3-day rule; see G13 |
 | G3 | Simple/Pro language layer, glossary, lexicon exist only in design catalog — zero wired into build | OPEN — Tier 3 core work | A10–A14; direction-agnostic, doesn't need design pick first |
-| G4 | Landing page + waitlist signup — catalog mock only, no route exists | **IN PROGRESS 2026-07-13** | Tier 2, A7–A9. Same as G8/NG-5 — now gated by REVENUE_ROADMAP.md's proof window (Day 0 = 2026-07-13); Tarun explicitly sequenced this ahead of Stream A this week |
+| G4 | Landing page + waitlist signup — catalog mock only, no route exists | **PAUSED 2026-07-17** | Tier 2, A7–A9. Same as G8/NG-5 — public track paused per Tarun's confirmed private-first sequencing (see REVENUE_ROADMAP.md 2026-07-17 amendment); resumes once the private trust gate closes |
 | G5 | Attribution schema (`prediction_components`) missing — blocks per-signal RCA | OPEN | Needed before Loop 3 |
 | G6 | Kelly sizing ran on hardcoded `PORTFOLIO_VALUE=725000`, not real holdings | **CLOSED 2026-07-16** | Real value (₹17,00,000) provided by Tarun, updated in `constants.py` + `path/page.tsx`. NG-2 (public ₹ display) remains a separate open item |
 | G7 | Warm calibration (Platt scaling) is placeholder — cold-start path only | OPEN — bridged by A4 | COLD-gating (A4) is the honest interim; A21 is the real fix, deferred to Loop 3 window |
-| G8 | Commercial gate (`waitlist.converted_at`) structurally unreachable — no waitlist route | OPEN | Tier 2, A7 |
+| G8 | Commercial gate (`waitlist.converted_at`) structurally unreachable — no waitlist route | **PAUSED 2026-07-17** | Tier 2, A7 — public track paused, see G4 |
 | G9 | Designed product ≠ deployed product (design catalog, direction, Simple/Pro all unwired) | OPEN | A0c (Tarun) + A10–A15 |
 | G10 | No privacy/DPDP policy — required before any waitlist collects emails | OPEN | Tier 2, A8, ships with A7 not after |
 | G11 | No missed-run watchdog for silent GHA cron failures | **CLOSED 2026-07-10, alert-wiring added 2026-07-12** | `ingest-watchdog.yml` built and committed (`83355fe`). SRE council review 2026-07-12 found the watchdog detected misses but produced no human-reaching alert (only a failed job in the Actions tab) — this repo has no email/Slack secrets configured (`gh secret list` confirms only SUPABASE_URL/SUPABASE_SERVICE_KEY exist). Fixed by opening a GitHub Issue on failure via `actions/github-script` (no new secret needed, GITHUB_TOKEN is automatic). |
@@ -79,7 +79,7 @@ See G23 below for the first applied example.
 | NG-2 | Public unauthenticated Path page shows Tarun's personal ₹ Kelly amounts (from hardcoded `PORTFOLIO_VALUE`) | **CLOSED 2026-07-12** | `cb51449` (A5) — fail-closed `isPersonalContext()` gate |
 | NG-3 | Operator-facing language leaks into public empty/error states (e.g. "Run the daily ingest pipeline") | **CLOSED 2026-07-12** | `b0e0c07` (A6) |
 | NG-4 | SEBI disclaimer sourced from `process.env.SEBI_DISCLAIMER` — mutable via a Vercel env edit with zero code review, violating the documented hardcoding standard | **CLOSED 2026-07-12** | `f307967` (A2) — now generated from `constants.py` at build time, CI drift test added |
-| NG-5 | No what/why/trust story exists anywhere for a first-time visitor — landing is a raw data table | OPEN | Tier 2, A9 — not yet built |
+| NG-5 | No what/why/trust story exists anywhere for a first-time visitor — landing is a raw data table | **PAUSED 2026-07-17** | Tier 2, A9 — public track paused, see G4 |
 | NG-6 | (found by A12's CI suite) SEBI_PLAIN dual-disclaimer line exported but never rendered — R11's "dual SEBI in both modes" requirement unmet | **CLOSED 2026-07-12** | `6c7ed11` |
 | NG-7 | (found by A12's CI suite) 4 hardcoded jargon leaks in Simple mode: "Accuracy Ledger"/"Hit Rate" (Accuracy), "Kelly-based"/"Quarter Kelly" (Path), "COLD START"/"Bayesian prior weights" (Signals), "hit rate" inside the NG-1 disclaimer text | **CLOSED 2026-07-12** | `6c7ed11` — all wired through the A10 lexicon |
 
