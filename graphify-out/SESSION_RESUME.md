@@ -1,9 +1,17 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Checkpoint date:** 2026-07-16 | **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
-**Latest commit:** 8cd48bc (3 reports + GAP_REGISTER committed). Full 2026-07-16 session detail (governance rule, GitHub fix, prediction-model finding, council expert-user ruling) lives in `agentic-operations/graphify-out/SESSION_RESUME.md`'s 2026-07-16 section — cross-workspace investigation, recorded there per the established public/private split.
-**Immediate next steps, ranked:** (1) wire the Wilson CI display next to the hit rate on `/accuracy`, (2) fix the 3 persona-pilot UX bugs, (3) ship landing page + waitlist (still the top revenue-blocking item), (4) formalize the 4-condition operator-test-account separation before using AlphaVeda on real capital.
+**Checkpoint date:** 2026-07-17 | **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
+**Latest commit:** a372864 (scheduler status tracking file). Full detail on the scheduler build-in-progress, data-quality gap findings, and the business-model correction lives in `agentic-operations/graphify-out/SESSION_RESUME.md`'s 2026-07-17 sections.
+
+**⚠ SUPERSEDES the "landing page is top priority" framing below** — confirmed with Tarun 2026-07-17: AlphaVeda is a dual-track product. Private track (Tarun as first user → consulting clients) comes FIRST; public waitlist track is PAUSED, not cancelled. `GAP_REGISTER.md`'s G4/G8/NG-5 marked PAUSED accordingly. See `REVENUE_ROADMAP.md`'s 2026-07-17 amendment for the full correction and root-cause investigation.
+
+**Immediate next steps, ranked (revised for the private-first model):**
+1. **Scheduler sign-off** — Task D's RemoteTrigger design is fully specced (90-day expiry, 30-day renewal reminder, git-visible audit trail) but NOT yet created — 2 attempts correctly blocked pending Tarun's final explicit go-ahead. He's still asking clarifying questions.
+2. **Data-quality guardrails** — real gap found (no price-sanity validation, silent uncounted skips) in `ingest.py`; design proposed, not built, awaiting go-ahead.
+3. Wire the Wilson CI display + fix the raw-float bug on `/accuracy` (same code location, do together)
+4. Fix the remaining persona-pilot UX bugs (Class-column consistency)
+5. ~~Landing page + waitlist~~ — **PAUSED**, do not resume without checking `REVENUE_ROADMAP.md`'s amendment first
 
 ---
 
