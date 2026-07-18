@@ -1,7 +1,15 @@
 # SESSION_RESUME.md — AlphaVeda Workspace
 # Recovery: `/chief-of-staff recover` then read this file first
 
-**Checkpoint date:** 2026-07-17 | **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
+**Checkpoint date:** 2026-07-18 | **Workspace:** stock-intelligence-test-1-vs (GSI → AlphaVeda MVP)
+**Latest commits:** `b305958` (Class-column + CI/float UI fixes), `d80b949` (idempotency guard real fix). Full detail in `agentic-operations/graphify-out/SESSION_RESUME.md`'s 2026-07-18 section.
+
+## DO NOT REDO — 2026-07-18
+- **Scheduler live and proven**: `alphaveda-ingest-trigger` routine created via `/schedule` (not the raw API — that path had 2 real schema failures first). Manually fired once, real GHA dispatch confirmed (`run 29597999081`), 90-day expiry (2026-10-15) + 30-day renewal reminder built into its own prompt logic, logs to `SCHEDULER_STATUS.md`.
+- **Idempotency guard was broken, now fixed and tested**: original `.eq("last_run", date_string)` never matched the timestamptz column — a real duplicate trigger fully reprocessed instead of skipping. Fixed with explicit date-range comparison, verified via 2 new adversarial pytest cases (mocked Supabase), not just code review. **Real, unresolved concern: likely duplicate rows exist in `accuracy_predictions` for 2026-07-17 from before this fix — needs live DB access to confirm/clean, not done here.**
+- **Serious housekeeping gap found and fixed**: 10 commits from this session were sitting local-only, never pushed, until a merge conflict with the scheduler's own commit exposed it. All pushed now.
+- **Verification Evidence discipline added** to `dronacharya-ld-lead` and `chief-of-staff` SKILL.md (global, both workspaces) — no "done"/"shipped"/"verified" claim without a real happy-path + adversarial-scenario evidence block. Direct response to the idempotency-guard incident.
+- **Class-column + Hit Rate float/CI fixes** shipped, 34/34 real Playwright tests pass.
 **Latest commit:** a372864 (scheduler status tracking file). Full detail on the scheduler build-in-progress, data-quality gap findings, and the business-model correction lives in `agentic-operations/graphify-out/SESSION_RESUME.md`'s 2026-07-17 sections.
 
 **⚠ SUPERSEDES the "landing page is top priority" framing below** — confirmed with Tarun 2026-07-17: AlphaVeda is a dual-track product. Private track (Tarun as first user → consulting clients) comes FIRST; public waitlist track is PAUSED, not cancelled. `GAP_REGISTER.md`'s G4/G8/NG-5 marked PAUSED accordingly. See `REVENUE_ROADMAP.md`'s 2026-07-17 amendment for the full correction and root-cause investigation.
