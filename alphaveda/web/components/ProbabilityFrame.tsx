@@ -15,15 +15,18 @@ import { useLanguageMode } from '@/lib/language-mode'
 
 export default function ProbabilityFrame({ pct }: { pct: number }) {
   const { mode } = useLanguageMode()
+  // Round to 1 decimal for display — pct is frequently a raw division result
+  // (e.g. 14/30*100 = 46.666666666666664) and was rendering unrounded.
+  const display = pct.toFixed(1)
 
   if (mode === 'pro') {
-    return <span className="mono">{pct}%</span>
+    return <span className="mono">{display}%</span>
   }
 
   const { right, wrong } = naturalFrequency(pct)
   return (
     <span>
-      <span className="mono">{right} · {pct}%</span>
+      <span className="mono">{right} · {display}%</span>
       {wrong && (
         <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
           (which also means {wrong})

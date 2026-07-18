@@ -36,6 +36,9 @@ export type LexKey =
   | 'signal.class.stalwart'
   | 'signal.class.cyclical'
   | 'signal.class.fast_grower'
+  | 'signal.class.slow_grower'
+  | 'signal.class.turnaround'
+  | 'signal.class.asset_play'
   | 'signal.class.description.slow_grower'
   | 'signal.class.description.stalwart'
   | 'signal.class.description.fast_grower'
@@ -94,6 +97,9 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'signal.class.stalwart': { pro: 'stalwart', simple: 'steady large company', learn: 'lynch_class' },
   'signal.class.cyclical': { pro: 'cyclical', simple: 'it moves with the economy', learn: 'lynch_class' },
   'signal.class.fast_grower': { pro: 'fast_grower', simple: 'fast-growing company', learn: 'lynch_class' },
+  'signal.class.slow_grower': { pro: 'slow_grower', simple: 'steady, low-drama company', learn: 'lynch_class' },
+  'signal.class.turnaround': { pro: 'turnaround', simple: 'recovering from trouble', learn: 'lynch_class' },
+  'signal.class.asset_play': { pro: 'asset_play', simple: 'worth more in assets than price says', learn: 'lynch_class' },
   'signal.class.description.slow_grower': {
     pro: 'Steady, low-drama. Grows like the economy.',
     simple: 'Steady, low-drama. Grows like the economy.',
@@ -211,6 +217,9 @@ export function lynchClassLexKey(
     case 'stalwart': return 'signal.class.stalwart'
     case 'cyclical': return 'signal.class.cyclical'
     case 'fast_grower': return 'signal.class.fast_grower'
+    case 'slow_grower': return 'signal.class.slow_grower'
+    case 'turnaround': return 'signal.class.turnaround'
+    case 'asset_play': return 'signal.class.asset_play'
     default: return null
   }
 }
