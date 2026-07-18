@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import os
 import sys
-from datetime import date
+from datetime import date, timedelta
 
 # Ensure alphaveda/ is on the path when run from repo root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -74,10 +74,21 @@ def run_ingest(target_date: date | None = None) -> dict:
     # check, a duplicate fire would re-run Steps 1-7 and double-insert predictions/
     # outcomes for a date already processed. An OK row for this exact date means
     # ingest already completed successfully — skip cleanly rather than reprocess.
+    #
+    # BUG FIXED 2026-07-18: the original version compared `last_run` (a timestamptz
+    # column, stored as e.g. "2026-07-17T00:00:00+00:00") to a bare date string via
+    # .eq() — this silently never matched, so the guard never actually skipped a
+    # real duplicate. Confirmed live: a manual trigger 2.5h after a successful
+    # scheduled run reprocessed the full pipeline instead of skipping, writing a
+    # second set of predictions for the same day. Fixed with an explicit UTC
+    # date-range comparison instead of relying on implicit type casting.
+    range_start = f"{target_date.isoformat()}T00:00:00+00:00"
+    range_end = f"{(target_date + timedelta(days=1)).isoformat()}T00:00:00+00:00"
     existing = (
         supabase.table("ingest_status")
         .select("id, status")
-        .eq("last_run", target_date.isoformat())
+        .gte("last_run", range_start)
+        .lt("last_run", range_end)
         .eq("status", "OK")
         .limit(1)
         .execute()
@@ -193,7 +204,6 @@ def run_ingest(target_date: date | None = None) -> dict:
         #      horizon_days <= target_date (the horizon has actually elapsed).
         #   2. Terminal exclusion: never re-resolve a prediction_id that already has
         #      an accuracy_outcomes row, regardless of horizon — once resolved, done.
-        from datetime import timedelta
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         # DB column is 'direction' (not 'signal_direction') — resolve_outcomes.py
         # uses the Python key 'signal_direction', so we remap at dict-build time.
