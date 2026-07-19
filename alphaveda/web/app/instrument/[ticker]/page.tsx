@@ -55,6 +55,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
     sb.from('accuracy_predictions')
       .select('id,instrument_id,direction,emitted_at')
       .eq('instrument_id', instrument.id)
+      .is('superseded_at', null)
       .order('emitted_at', { ascending: false })
       .limit(1),
     sb.from('accuracy_outcomes')
@@ -66,6 +67,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
     sb.from('accuracy_predictions')
       .select('id,instrument_id,direction,emitted_at')
       .gte('emitted_at', weekStart)
+      .is('superseded_at', null)
       .order('emitted_at', { ascending: false }),
   ])
 

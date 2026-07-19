@@ -44,7 +44,7 @@ export default async function SignalsPage() {
     // No .limit() here: segment observation counts must reflect the full table,
     // not just the most recent page — same unlimited-fetch pattern already used
     // on the Accuracy page for its predictions join.
-    sb.from('accuracy_predictions').select('id,instrument_id,direction,confidence,emitted_at,lynch_class,regime_tag').order('emitted_at', { ascending: false }),
+    sb.from('accuracy_predictions').select('id,instrument_id,direction,confidence,emitted_at,lynch_class,regime_tag').is('superseded_at', null).order('emitted_at', { ascending: false }),
     sb.from('instruments').select('id,ticker'),
     sb.from('signal_weights').select('id', { count: 'exact' }).eq('status', 'PROPOSED'),
   ])

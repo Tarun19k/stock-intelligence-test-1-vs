@@ -62,6 +62,7 @@ export default async function PathPage() {
   const [predsRes, instsRes, proposedRes] = await Promise.all([
     sb.from('accuracy_predictions')
       .select('id,instrument_id,direction,confidence,magnitude_target,downside_target,emitted_at')
+      .is('superseded_at', null)
       .order('emitted_at', { ascending: false })
       .limit(20),
     sb.from('instruments').select('id,ticker,classification'),
