@@ -63,3 +63,32 @@ def test_all_results_are_valid_phases():
 def test_never_returns_none():
     phase = derive_cycle_phase("DEFLATION", 18000, 20000, 25.0)
     assert phase is not None
+
+
+def test_rf_e_above_200ma_actually_changes_output():
+    """RF-E adversarial test (2026-07-19): engine.py used to call this with hardcoded
+    nifty_close=22000/nifty_200ma=20000 constants, always evaluating as "above MA"
+    regardless of real conditions. The fix reads a real above_200ma boolean from
+    macro_regime and picks close=22000 (above) or close=18000 (below) accordingly —
+    this test proves the two branches genuinely diverge for the same regime/vix,
+    not just that derive_cycle_phase() itself works (already covered above)."""
+    above_200ma = True
+    phase_above = derive_cycle_phase(
+        "RISK_ON",
+        nifty_close=22000.0 if above_200ma else 18000.0,
+        nifty_200ma=20000.0,
+        vix=15.0,
+    )
+    above_200ma = False
+    phase_below = derive_cycle_phase(
+        "RISK_ON",
+        nifty_close=22000.0 if above_200ma else 18000.0,
+        nifty_200ma=20000.0,
+        vix=15.0,
+    )
+    assert phase_above != phase_below, (
+        "above_200ma=True and False produced the same phase — the fix is not "
+        "actually reading live data, it's still effectively hardcoded"
+    )
+    assert phase_above == "mid_bull"
+    assert phase_below == "early_bull"

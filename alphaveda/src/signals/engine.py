@@ -110,7 +110,7 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     # 2. Get current regime — macro_regime uses regime_date (not effective_date)
     regime_row = (
         supabase.table("macro_regime")
-        .select("regime,nifty_vix")
+        .select("regime,nifty_vix,above_200ma")
         .lte("regime_date", as_of)
         .order("regime_date", desc=True)
         .limit(1)
@@ -119,6 +119,7 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     regime_data = regime_row.data[0] if regime_row.data else {}
     regime = regime_data.get("regime", "RISK_ON")
     vix = float(regime_data.get("nifty_vix") or 14.0)
+    above_200ma = bool(regime_data.get("above_200ma", True))
 
     # 3. Load weights for this segment (cold-start fallback if no ACTIVE rows)
     weights = load_weights(lynch_class, regime)
@@ -208,10 +209,13 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
 
     # 8b. Compute cycle_phase — required NOT NULL column (check constraint: VALID_PHASES)
     from src.accuracy.cycle_phase import derive_cycle_phase, VIX_THRESHOLD
-    # Use close vs a rough Nifty proxy; since we lack Nifty 200MA data assume above (mid-cycle)
+    # RF-E fix (2026-07-19): above_200ma now comes from a manually-seeded macro_regime
+    # column instead of hardcoded 22000/20000 constants that always evaluated as "above MA".
+    # derive_cycle_phase() only compares close > 200ma, so any two values with the right
+    # relative order produce identical output; the real values are unused for now.
     cycle_phase = derive_cycle_phase(
         regime=regime,
-        nifty_close=22000.0,   # placeholder — assume above 200MA (mid-cycle RISK_ON)
+        nifty_close=22000.0 if above_200ma else 18000.0,
         nifty_200ma=20000.0,
         vix=vix,
     )
