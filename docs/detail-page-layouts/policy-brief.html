@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fact-Checked Policy Brief Template</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="page-shell" data-template="policy-brief" data-refresh-policy="policy:24h; news:2h; market:5m">
+  <section class="update-strip" aria-label="freshness">
+    <strong>Policy brief template</strong>
+    <span>Live source scan: <time datetime="2026-07-13T10:00:00+05:30" data-bind="scanTime">13 Jul 2026, 10:00 IST</time></span>
+    <span>Unverified claims hidden by default</span>
+  </section>
+
+  <section class="hero" aria-labelledby="brief-title">
+    <div>
+      <p class="eyebrow">India manufacturing policy · fact-checked brief</p>
+      <h1 id="brief-title" data-bind="themeTitle">Toy manufacturing and quality-control push</h1>
+      <p class="lede" data-bind="themeSummary">A sector brief showing how policy claims, listed-company exposure, and verification status can be presented without becoming a recommendation feed.</p>
+    </div>
+    <aside class="card">
+      <span class="label">Verification summary</span>
+      <span class="value"><span class="badge good">4 cited facts</span></span>
+      <p class="small">All policy facts below should be sourced, dated, and refreshed independently from market prices.</p>
+    </aside>
+  </section>
+
+  <section class="section card" aria-labelledby="facts-title">
+    <header><h2 id="facts-title">Verified policy facts</h2><span class="badge info">Citations required</span></header>
+    <table class="fact-table">
+      <thead><tr><th>Fact</th><th>Latest value / claim</th><th>As of</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Exports</td><td data-bind="toyExports">Toy exports up 239% over four years</td><td>Jul 2026</td><td><a href="#source-pib-toys">PIB</a></td></tr>
+        <tr><td>Imports</td><td data-bind="toyImports">Toy imports down 32% over four years</td><td>Jul 2026</td><td><a href="#source-pib-toys">PIB</a></td></tr>
+        <tr><td>Testing support</td><td data-bind="testingFacilities">Modern testing facilities proposed across toy clusters</td><td>Jul 2026</td><td><a href="#source-pib-toys">PIB</a></td></tr>
+        <tr><td>Quality-control context</td><td data-bind="qcoContext">QCOs linked to global benchmark compliance</td><td>2025</td><td><a href="#source-pib-qco">PIB</a></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section variation-grid" aria-label="impact map">
+    <article class="card">
+      <header><h2>Potential beneficiaries</h2><span class="badge good">Positive</span></header>
+      <ul>
+        <li>Certified toy brands and education-product makers with distribution.</li>
+        <li>Export-ready manufacturers with testing and compliance capability.</li>
+        <li>Packaging, moulding, plastics, and logistics suppliers where exposure is material.</li>
+      </ul>
+    </article>
+    <article class="card">
+      <header><h2>Potential risks</h2><span class="badge risk">Negative</span></header>
+      <ul>
+        <li>Low-quality import-dependent traders can lose pricing flexibility.</li>
+        <li>Small manufacturers may face higher compliance costs.</li>
+        <li>Listed exposure may be indirect, so revenue materiality must be checked.</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="section card" aria-labelledby="live-title">
+    <header><h2 id="live-title">How live updates would appear</h2><span class="badge neutral">Dynamic slots</span></header>
+    <div class="timeline">
+      <div class="timeline-item"><span class="label">New source detected</span><p><time data-bind="newSourceAt">--</time> · <span class="placeholder-token">{{ source.title }}</span> from <span class="placeholder-token">{{ source.publisher }}</span></p></div>
+      <div class="timeline-item"><span class="label">Fact extraction</span><p><span class="placeholder-token">{{ extracted.claim }}</span> mapped to <span class="placeholder-token">{{ source.url }}</span> and queued for human or rule-based verification.</p></div>
+      <div class="timeline-item"><span class="label">UI state</span><p>Show <span class="badge watch">Pending verification</span> until the citation, date, and source domain pass validation.</p></div>
+    </div>
+  </section>
+
+  <section class="section source-ledger" aria-labelledby="sources-title">
+    <h2 id="sources-title">Source ledger</h2>
+    <ol class="source-list">
+      <li id="source-pib-toys" class="citation-card"><strong>PIB toy-sector update:</strong> <a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=2281005">Commerce Ministry / Piyush Goyal toy manufacturing update</a>.</li>
+      <li id="source-pib-qco" class="citation-card"><strong>PIB QCO context:</strong> <a href="https://www.pib.gov.in/PressReleasePage.aspx?PRID=2142336&lang=2&reg=3">Quality Control Orders and domestic toy manufacturing context</a>.</li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>
