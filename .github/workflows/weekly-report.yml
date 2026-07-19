@@ -1,0 +1,41 @@
+name: Weekly Forecast Report
+
+on:
+  schedule:
+    - cron: "0 15 * * 5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  weekly-report:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: alphaveda
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate weekly forecast report
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scripts/weekly_forecast_report.py
+
+      - name: Commit weekly report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/reports/weekly-*.md
+          git diff --cached --quiet && exit 0
+          git commit -m "docs: add weekly forecast report"
+          git push

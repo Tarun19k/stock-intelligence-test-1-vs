@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { LEXICON, GLOSSARY, SEBI_PLAIN, SEBI_LEGAL } from '../lib/lexicon'
+import { GLOSSARY, LEXICON, SEBI_PLAIN, lynchClassLexKey } from '../lib/lexicon'
 import { fleschKincaidGrade, stripProperNouns } from './helpers/flesch-kincaid'
 
 // A12 — language test suite, ported into Playwright/CI per
@@ -103,9 +103,12 @@ test('L2 helper unit check — fleschKincaidGrade is exposed and behaves monoton
 // mock; here: presence on all 4 real routes, in both modes explicitly).
 //
 // NOTE: SEBI_LEGAL is asserted against the *shipped* disclaimer text
-// (SebiDisclaimer.tsx / sebi-disclaimer.generated.ts), which is the actual
-// pinned footer and differs in exact wording from the SEBI_LEGAL constant in
-// lexicon.ts (both say "NOT investment advice" — that's the substance check).
+// (SebiDisclaimer.tsx / sebi-disclaimer.generated.ts). As of RF-D closure
+// (2026-07-17) lexicon.ts's SEBI_LEGAL is word-for-word identical to the
+// shipped text — both trace to the same canonical source, constants.py.
+// The substance-only check below ("NOT investment advice") is kept as a
+// lighter-weight assertion here; sebi.spec.ts is now the strict exact-match
+// oracle for the shipped footer text.
 // SEBI_PLAIN is asserted against the literal lexicon.ts string, since that is
 // the only source of truth for the plain-language line in this codebase.
 // ---------------------------------------------------------------------------
@@ -135,6 +138,15 @@ test('L4 learn-key resolution — every LEXICON.learn key exists in GLOSSARY', (
   const defined = new Set(Object.keys(GLOSSARY))
   const orphans = [...used].filter((k) => !defined.has(k))
   expect(orphans, `dangling learn-keys with no GLOSSARY entry: ${JSON.stringify(orphans)}`).toEqual([])
+})
+
+test('instrument Lynch descriptions cover every supported classification', () => {
+  const classes = ['slow_grower', 'stalwart', 'fast_grower', 'cyclical', 'turnaround', 'asset_play'] as const
+  for (const classification of classes) {
+    const key = lynchClassLexKey(classification, 'description')
+    expect(key, `missing plain-English description for ${classification}`).not.toBeNull()
+    expect(LEXICON[key!].simple.length).toBeGreaterThan(0)
+  }
 })
 
 test('L4 learn-key resolution (E2E) — tap targets on Signals page open a populated glossary card', async ({ page }) => {

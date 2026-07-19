@@ -30,7 +30,7 @@ REGIME_STALENESS_DAYS = 3
 
 # ── Kelly sizing (Druckenmiller) ─────────────────────────────────────────────
 QUARTER_KELLY_FRACTION = 0.25   # use 25% of full Kelly to limit variance
-PORTFOLIO_VALUE        = 725000  # ₹7.25L — GSI equity tranche (constants.py is source of truth)
+PORTFOLIO_VALUE        = 1700000  # ₹17L — real value, provided by Tarun 2026-07-16 (G6 closed; constants.py is source of truth)
 MAX_POSITION_PCT       = 0.10    # ₹72,500 cap per position
 MIN_POSITION_PCT       = 0.01    # ₹7,250 — reference only; NOT a floor inside kelly_position_size
 SECTOR_CAP_PCT         = 0.35

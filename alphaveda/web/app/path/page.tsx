@@ -4,7 +4,7 @@ import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
 import type { LexKey } from '@/lib/lexicon'
 
-const PORTFOLIO_VALUE = 725000
+const PORTFOLIO_VALUE = 1700000 // ₹17L — real value, provided by Tarun 2026-07-16 (G6 closed)
 const QUARTER_KELLY_FRACTION = 0.25
 const MAX_POSITION_PCT = 0.10
 

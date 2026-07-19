@@ -6,6 +6,37 @@ deliberately skipped — the council converged with no real disagreement to arbi
 per Constraint Enforcer's own trim recommendation (avoid an Opus-tier pass with nothing
 to resolve).
 
+## ⚠ AMENDMENT — 2026-07-17: both tracks confirmed, sequenced
+
+This document's public waitlist → proof-window → paid-subscriber funnel was written by
+the financial council without ever being told about a second, coexisting model: AlphaVeda
+also becomes a **private freelance-client dashboard** — Tarun uses it personally first,
+then shows it to his own consulting clients (Stream C) — separate from the public
+subscriber funnel below (Stream D). Both are real; found genuinely inconsistent with
+zero prior written record of the private track until Tarun stated it directly on
+2026-07-17. Root cause + investigation: see `agentic-operations/graphify-out/SESSION_RESUME.md`
+2026-07-17 entry.
+
+**Confirmed, Tarun's own words, 2026-07-17:**
+1. **Sequencing: private first.** Tarun uses AlphaVeda personally, builds trust, then
+   shows consulting clients. The public waitlist track below is **PAUSED**, not
+   cancelled — resumes once the private trust gate (below) closes.
+2. **Commercial trigger: unchanged.** `is_commercial()` stays tied solely to
+   `waitlist.converted_at` — a consulting client viewing a demo does NOT trigger
+   commercial=True. Tarun controls what a client sees directly, same as the operator
+   view. No code change needed.
+3. **Landing page (NG-5/G8): PAUSED.** Not the near-term build priority. Revisit once
+   the private trust gate closes.
+4. **Private trust gate — BOTH conditions, whichever takes longer:**
+   - The existing proof-window criteria (10 consecutive clean ingest days, ≥15 resolved
+     signals) — already defined below, unchanged
+   - Tarun's own subjective confidence in the tool, independent of the ledger stats
+
+**What this means for near-term build priority:** ingest reliability (Task D) and
+signal-quality trust items (Wilson CI display, methodology log) now matter MORE, not
+less — they're what the private trust gate is actually measured against. The landing
+page items (NG-5, G8) drop out of the near-term sequence entirely until the gate closes.
+
 ## Day 0 = 2026-07-13
 
 ## The proof window (the core mechanism)
@@ -28,6 +59,28 @@ week, at a price-anchor locked now — entry tier at/below GSI's ₹399/month re
 point, Pro tier at 2-3x entry. The range is decided today and not renegotiated
 reactively once real ledger numbers are in (same discipline applied to price as to the
 launch date itself).
+
+## PENALTY — 2026-07-14: +72 hours added to all commercial gates
+
+**Cause:** the `ingest.yml` scheduled trigger (`schedule:` cron) has a 100% late/no-show
+rate across all 9 recorded runs (2026-07-01 → 07-13) — every scheduled fire was 2-3
+hours late, and 2026-07-14 produced zero run record at all as of 13:59 UTC. This was
+not caught proactively — it surfaced only when Tarun asked directly why today's ingest
+hadn't shown up. There was also no fallback mechanism (no external trigger, no
+timing-alert) to catch a late/missing scheduled run independent of the watchdog, which
+itself only checks 2 hours after the intended fire time.
+
+**Tarun's ruling:** this is a real system miss — caught late, no fallback existed. +72
+hours added to all commercial gates in this roadmap (the proof window's calendar
+deadline and any gate depending on it) as a standing penalty, separate from and
+additional to the existing "max 2 resets" mechanic in the proof window above. This does
+NOT reset the 10-consecutive-clean-days counter itself (that mechanic is unchanged) — it
+extends the calendar-side deadline only.
+
+**Required going forward:** a genuine fallback for trigger-timing failures, not just
+data-integrity failures — see the hybrid-fix action plan (strategic-analysis, 2026-07-14)
+for the concrete fix. Do not consider this penalty closed until that fallback is live
+and observed working for real, not just designed.
 
 ## Why this exists (Buffett + Munger, converging from different angles)
 

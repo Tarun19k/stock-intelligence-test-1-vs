@@ -65,6 +65,9 @@
         <tr><td>Buffett</td><td>Does policy strengthen an existing moat?</td><td data-bind="buffettLens">Needs proof through cash conversion and durable cost advantage.</td></tr>
         <tr><td>Munger</td><td>What could break the thesis?</td><td data-bind="mungerLens">Commodity cyclicality, carbon costs, and capex timing.</td></tr>
         <tr><td>Lynch</td><td>Is the growth story observable?</td><td data-bind="lynchLens">Watch order book, capacity utilisation, and management commentary.</td></tr>
+        <tr><td>Dalio</td><td>Does the macro regime support this thesis?</td><td data-bind="dalioLens">Macro regime unavailable — not used in this judgment. AlphaVeda's macro_regime data is not yet live.</td></tr>
+        <tr><td>Marks</td><td>Is this already priced in?</td><td data-bind="marksLens">No valuation or price-history data yet — treat any policy tailwind as unverified until real pricing context exists.</td></tr>
+        <tr><td>Druckenmiller</td><td>What is the catalyst freshness?</td><td data-bind="druckenmillerLens">No staleness tracking yet — policy citations do not currently show an as-of date separate from the price ticker.</td></tr>
       </tbody>
     </table>
   </section>
@@ -74,7 +77,7 @@
     <ol class="source-list">
       <li id="source-market" class="citation-card"><strong>Market adapter:</strong> replace with exchange-authorized / yfinance-backed OHLCV endpoint. <span class="small">Fields: price, volume, timestamp, market status.</span></li>
       <li id="source-model" class="citation-card"><strong>AlphaVeda ledger:</strong> replace with live prediction/outcome tables. <span class="small">Fields: direction, confidence, horizon, matured outcome count.</span></li>
-      <li id="source-niti" class="citation-card"><strong>NITI Aayog aluminium roadmap:</strong> <a href="https://niti.gov.in/sites/default/files/2026-01/Roadmap_for_Aluminium_Sector_Decarbonisation.pdf">Roadmap for Aluminium Sector Decarbonisation</a>. <span class="small">Policy context example; refresh on document updates.</span></li>
+      <li id="source-niti" class="citation-card"><strong>NITI Aayog aluminium roadmap:</strong> <a href="https://niti.gov.in/sites/default/files/2026-01/Roadmap_for_Aluminium_Sector_Decarbonisation.pdf">Roadmap for Aluminium Sector Decarbonisation</a>. <span class="small">As of January 2026; no automated freshness check.</span> <span class="small">Policy context example; refresh on document updates.</span></li>
     </ol>
   </section>
 </main>

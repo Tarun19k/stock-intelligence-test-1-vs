@@ -8,7 +8,13 @@ Council seats covered:
 
 Run: pytest tests/test_ingest.py -v
 """
+import sys
+import os
+from unittest.mock import MagicMock, patch
+
 import pytest
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -216,3 +222,89 @@ class TestParseBseXbrlFundamentals:
         from src.ingest.fundamentals import parse_bse_xbrl_fundamentals
         result = parse_bse_xbrl_fundamentals({"symbol": "X"})
         assert result["source"] == "bse_xbrl"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Idempotency guard (run_ingest, G23) — REAL bug found 2026-07-18: a live
+# duplicate trigger (RemoteTrigger firing 2.5h after GHA's own schedule already
+# succeeded) was NOT skipped, because the original .eq("last_run", "YYYY-MM-DD")
+# comparison never matched the timestamptz column's actual stored format. These
+# tests mock Supabase to reproduce that exact scenario without needing a live DB.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _make_mock_supabase(existing_ok_row):
+    """Build a mock Supabase client whose .table().select()...execute() chain
+    returns `existing_ok_row` (a list — empty means "no existing row found")."""
+    mock_client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.data = existing_ok_row
+    # Every chained method (.select/.gte/.lt/.eq/.limit) must return an object
+    # that itself supports the same chain, terminating in .execute().
+    chain = mock_client.table.return_value
+    chain.select.return_value = chain
+    chain.gte.return_value = chain
+    chain.lt.return_value = chain
+    chain.eq.return_value = chain
+    chain.limit.return_value = chain
+    chain.execute.return_value = mock_result
+    return mock_client
+
+
+class TestIngestIdempotencyGuard:
+    def test_adversarial_duplicate_trigger_is_skipped(self):
+        """THE scenario that broke in production: an OK row already exists for
+        target_date (written by an earlier trigger). A second trigger for the
+        same date must be skipped, not reprocessed."""
+        from datetime import date
+        target = date(2026, 7, 17)
+        mock_supabase = _make_mock_supabase(
+            existing_ok_row=[{"id": 42, "status": "OK"}]
+        )
+        with patch("src.config.get_supabase_client", return_value=mock_supabase):
+            from scripts.ingest import run_ingest
+            with patch("src.ingest.bhavcopy.download_bhavcopy_nse") as mock_download:
+                result = run_ingest(target_date=target)
+                assert result["status"] == "SKIPPED_ALREADY_DONE", (
+                    f"Expected the duplicate trigger to be skipped, got: {result}"
+                )
+                assert result["existing_ingest_status_id"] == 42
+                mock_download.assert_not_called(), (
+                    "download_bhavcopy_nse must NEVER be called when an OK row "
+                    "already exists — calling it means the guard failed to skip."
+                )
+
+    def test_query_uses_date_range_not_exact_string_match(self):
+        """Regression guard for the actual root cause: the query must use
+        .gte()/.lt() with explicit UTC boundaries, not .eq() on a bare date
+        string, which silently never matched the timestamptz column."""
+        from datetime import date
+        target = date(2026, 7, 17)
+        mock_supabase = _make_mock_supabase(existing_ok_row=[])
+        with patch("src.config.get_supabase_client", return_value=mock_supabase):
+            from scripts.ingest import run_ingest
+            with patch("src.ingest.bhavcopy.download_bhavcopy_nse", return_value=b""):
+                with patch("src.ingest.bhavcopy.parse_bhavcopy_nse", return_value=[]):
+                    run_ingest(target_date=target)
+        chain = mock_supabase.table.return_value
+        gte_calls = [c for c in chain.gte.call_args_list if c.args[0] == "last_run"]
+        lt_calls = [c for c in chain.lt.call_args_list if c.args[0] == "last_run"]
+        assert len(gte_calls) >= 1, "Guard must call .gte('last_run', ...) — range check, not exact match"
+        assert len(lt_calls) >= 1, "Guard must call .lt('last_run', ...) — range check, not exact match"
+        assert gte_calls[0].args[1] == "2026-07-17T00:00:00+00:00"
+        assert lt_calls[0].args[1] == "2026-07-18T00:00:00+00:00"
+
+    def test_no_existing_row_proceeds_normally(self):
+        """Happy path: no prior OK row for target_date — ingest should proceed
+        (not short-circuit), confirmed by download_bhavcopy_nse actually being
+        called. Uses a known Friday (2026-07-17) — must be a real trading day
+        or the holiday gate intercepts before reaching the download step."""
+        from datetime import date
+        target = date(2026, 7, 17)  # Friday
+        mock_supabase = _make_mock_supabase(existing_ok_row=[])
+        with patch("src.config.get_supabase_client", return_value=mock_supabase):
+            from scripts.ingest import run_ingest
+            with patch("src.ingest.bhavcopy.download_bhavcopy_nse", return_value=b"") as mock_download:
+                with patch("src.ingest.bhavcopy.parse_bhavcopy_nse", return_value=[]):
+                    result = run_ingest(target_date=target)
+        mock_download.assert_called_once()
+        assert result["status"] != "SKIPPED_ALREADY_DONE"

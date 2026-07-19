@@ -18,13 +18,18 @@ Schema reference (FALLBACK_SCHEMA in schema_viewer.py):
   ohlcv          : instrument_id, as_of, open/high/low/close, volume,
                    circuit_flag, licence_class, source, ingested_at (DEFAULT now())
   ingest_status  : source (NN), last_run, rows_written, status
-  accuracy_outcomes: prediction_id (NN), resolved_at, hit, return_pct
+  accuracy_outcomes: prediction_id (NN), outcome_date (NN), actual_direction (NN),
+                     is_correct (NN), resolved_at (DEFAULT now()), hit (DEFAULT false),
+                     return_pct, actual_return, peak_return_pct
+                     (verified live via information_schema 2026-07-13 — outcome_date/
+                     actual_direction/is_correct were NOT NULL with no default and were
+                     silently unpopulated by Step 6 until this date; fixed same day)
 """
 from __future__ import annotations
 
 import os
 import sys
-from datetime import date
+from datetime import date, timedelta
 
 # Ensure alphaveda/ is on the path when run from repo root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -62,6 +67,36 @@ def run_ingest(target_date: date | None = None) -> dict:
 
     from src.config import get_supabase_client
     supabase = get_supabase_client()
+
+    # Idempotency guard (G23): the ingest trigger now has two independent sources
+    # (RemoteTrigger primary, GHA schedule: backup) that can both fire for the same
+    # target_date if the primary is late and the backup also lands. Without this
+    # check, a duplicate fire would re-run Steps 1-7 and double-insert predictions/
+    # outcomes for a date already processed. An OK row for this exact date means
+    # ingest already completed successfully — skip cleanly rather than reprocess.
+    #
+    # BUG FIXED 2026-07-18: the original version compared `last_run` (a timestamptz
+    # column, stored as e.g. "2026-07-17T00:00:00+00:00") to a bare date string via
+    # .eq() — this silently never matched, so the guard never actually skipped a
+    # real duplicate. Confirmed live: a manual trigger 2.5h after a successful
+    # scheduled run reprocessed the full pipeline instead of skipping, writing a
+    # second set of predictions for the same day. Fixed with an explicit UTC
+    # date-range comparison instead of relying on implicit type casting.
+    range_start = f"{target_date.isoformat()}T00:00:00+00:00"
+    range_end = f"{(target_date + timedelta(days=1)).isoformat()}T00:00:00+00:00"
+    existing = (
+        supabase.table("ingest_status")
+        .select("id, status")
+        .gte("last_run", range_start)
+        .lt("last_run", range_end)
+        .eq("status", "OK")
+        .limit(1)
+        .execute()
+    )
+    if existing.data:
+        return {"date": target_date.isoformat(), "ohlcv_rows": 0,
+                "outcomes_resolved": 0, "status": "SKIPPED_ALREADY_DONE",
+                "existing_ingest_status_id": existing.data[0]["id"]}
 
     # Holiday gate (Dalio condition): write SKIPPED_HOLIDAY, exit cleanly.
     if not _is_trading_day(target_date):
@@ -169,7 +204,6 @@ def run_ingest(target_date: date | None = None) -> dict:
         #      horizon_days <= target_date (the horizon has actually elapsed).
         #   2. Terminal exclusion: never re-resolve a prediction_id that already has
         #      an accuracy_outcomes row, regardless of horizon — once resolved, done.
-        from datetime import timedelta
         from src.ingest.resolve_outcomes import resolve_outcomes_from_ohlcv
         # DB column is 'direction' (not 'signal_direction') — resolve_outcomes.py
         # uses the Python key 'signal_direction', so we remap at dict-build time.
@@ -237,13 +271,24 @@ def run_ingest(target_date: date | None = None) -> dict:
         # Step 6: Batch upsert accuracy_outcomes — idempotent on (prediction_id, resolved_at).
         # Requires unique constraint — see supabase/migrations/0014_accuracy_outcomes_unique.sql.
         # Replaces per-row insert() which caused silent double-scoring on re-runs.
+        #
+        # 2026-07-13 fix: outcome_date/actual_direction/is_correct are live NOT NULL
+        # columns (verified via information_schema) that this upsert never populated,
+        # causing every real ingest run to fail on the first resolved-outcomes batch
+        # since G18 shipped. outcome_date mirrors resolved_at (same event, same day);
+        # actual_direction/is_correct are the observed-outcome counterparts to hit/
+        # return_pct, computed in resolve_outcomes_from_ohlcv().
         if resolutions:
             outcome_rows = [
                 {
                     "prediction_id": res["prediction_id"],
+                    "outcome_date": target_date.isoformat(),
                     "resolved_at": target_date.isoformat(),
                     "hit": res["hit"],
+                    "is_correct": res["hit"],
+                    "actual_direction": res["actual_direction"],
                     "return_pct": res["return_pct"],
+                    "actual_return": res["return_pct"],
                 }
                 for res in resolutions
             ]

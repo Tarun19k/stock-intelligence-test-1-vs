@@ -36,6 +36,15 @@ export type LexKey =
   | 'signal.class.stalwart'
   | 'signal.class.cyclical'
   | 'signal.class.fast_grower'
+  | 'signal.class.slow_grower'
+  | 'signal.class.turnaround'
+  | 'signal.class.asset_play'
+  | 'signal.class.description.slow_grower'
+  | 'signal.class.description.stalwart'
+  | 'signal.class.description.fast_grower'
+  | 'signal.class.description.cyclical'
+  | 'signal.class.description.turnaround'
+  | 'signal.class.description.asset_play'
   | 'signal.regime.bull'
   | 'signal.regime.bear'
   | 'signal.regime.sideways'
@@ -51,6 +60,12 @@ export type LexKey =
   | 'instrument.signals_graded'
   | 'instrument.aggregate_prefix'
   | 'instrument.aggregate_suffix'
+  | 'instrument.company_operates_in'
+  | 'instrument.company_sector_suffix'
+  | 'instrument.self_check_intro'
+  | 'instrument.self_check.visibility'
+  | 'instrument.self_check.repeat'
+  | 'instrument.self_check.demand'
   | 'ledger.title'
   | 'ledger.pass'
   | 'ledger.demoted'
@@ -82,6 +97,33 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'signal.class.stalwart': { pro: 'stalwart', simple: 'steady large company', learn: 'lynch_class' },
   'signal.class.cyclical': { pro: 'cyclical', simple: 'it moves with the economy', learn: 'lynch_class' },
   'signal.class.fast_grower': { pro: 'fast_grower', simple: 'fast-growing company', learn: 'lynch_class' },
+  'signal.class.slow_grower': { pro: 'slow_grower', simple: 'steady, low-drama company', learn: 'lynch_class' },
+  'signal.class.turnaround': { pro: 'turnaround', simple: 'recovering from trouble', learn: 'lynch_class' },
+  'signal.class.asset_play': { pro: 'asset_play', simple: 'worth more in assets than price says', learn: 'lynch_class' },
+  'signal.class.description.slow_grower': {
+    pro: 'Steady, low-drama. Grows like the economy.',
+    simple: 'Steady, low-drama. Grows like the economy.',
+  },
+  'signal.class.description.stalwart': {
+    pro: "Big and dependable. Won't 10x, won't collapse either.",
+    simple: "Big and dependable. Won't 10x, won't collapse either.",
+  },
+  'signal.class.description.fast_grower': {
+    pro: 'Small and expanding fast. Higher upside, higher chance it stumbles.',
+    simple: 'Small and expanding fast. Higher upside, higher chance it stumbles.',
+  },
+  'signal.class.description.cyclical': {
+    pro: "Rises and falls with the economy - buying at the 'boring' point matters more than the story.",
+    simple: "Rises and falls with the economy - buying at the 'boring' point matters more than the story.",
+  },
+  'signal.class.description.turnaround': {
+    pro: 'Was in trouble, trying to recover. Watch for proof, not promises.',
+    simple: 'Was in trouble, trying to recover. Watch for proof, not promises.',
+  },
+  'signal.class.description.asset_play': {
+    pro: 'Worth more in what it owns than what the stock price says.',
+    simple: 'Worth more in what it owns than what the stock price says.',
+  },
   'signal.regime.bull': { pro: 'bull regime', simple: 'market rising', learn: 'regime' },
   'signal.regime.bear': { pro: 'bear regime', simple: 'market falling', learn: 'regime' },
   'signal.regime.sideways': { pro: 'sideways', simple: 'market drifting flat', learn: 'regime' },
@@ -97,6 +139,24 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'instrument.signals_graded': { pro: 'signals graded', simple: 'signals graded' },
   'instrument.aggregate_prefix': { pro: 'tracked stocks showing a positive signal', simple: 'tracked stocks looking positive' },
   'instrument.aggregate_suffix': { pro: 'this week', simple: 'this week' },
+  'instrument.company_operates_in': { pro: 'operates in the', simple: 'operates in the' },
+  'instrument.company_sector_suffix': { pro: 'sector.', simple: 'sector.' },
+  'instrument.self_check_intro': {
+    pro: "This matters as much as the signal above - it's your own judgment, not a recommendation.",
+    simple: "This matters as much as the signal above - it's your own judgment, not a recommendation.",
+  },
+  'instrument.self_check.visibility': {
+    pro: "Do you see this company's products/stores/ads around you - and is that more or less than a year ago?",
+    simple: "Do you see this company's products/stores/ads around you - and is that more or less than a year ago?",
+  },
+  'instrument.self_check.repeat': {
+    pro: 'Would you (or someone you know) buy from them again?',
+    simple: 'Would you (or someone you know) buy from them again?',
+  },
+  'instrument.self_check.demand': {
+    pro: 'Is what they sell something people need more of over time, or is it fading?',
+    simple: 'Is what they sell something people need more of over time, or is it fading?',
+  },
 
   'ledger.title': { pro: 'Accuracy Ledger', simple: 'Our scorecard' },
   'ledger.pass': { pro: 'PASS', simple: 'GOOD' },
@@ -137,11 +197,29 @@ export function directionLexKey(direction: string): LexKey | null {
   return null
 }
 
-export function lynchClassLexKey(lynchClass: string | null | undefined): LexKey | null {
+export function lynchClassLexKey(
+  lynchClass: string | null | undefined,
+  kind: 'label' | 'description' = 'label',
+): LexKey | null {
+  if (kind === 'description') {
+    switch (lynchClass) {
+      case 'slow_grower': return 'signal.class.description.slow_grower'
+      case 'stalwart': return 'signal.class.description.stalwart'
+      case 'fast_grower': return 'signal.class.description.fast_grower'
+      case 'cyclical': return 'signal.class.description.cyclical'
+      case 'turnaround': return 'signal.class.description.turnaround'
+      case 'asset_play': return 'signal.class.description.asset_play'
+      default: return null
+    }
+  }
+
   switch (lynchClass) {
     case 'stalwart': return 'signal.class.stalwart'
     case 'cyclical': return 'signal.class.cyclical'
     case 'fast_grower': return 'signal.class.fast_grower'
+    case 'slow_grower': return 'signal.class.slow_grower'
+    case 'turnaround': return 'signal.class.turnaround'
+    case 'asset_play': return 'signal.class.asset_play'
     default: return null
   }
 }
@@ -208,16 +286,19 @@ export const GLOSSARY: Record<GlossaryKey, GlossaryEntry> = {
 // ---------------------------------------------------------------------------
 // §4 Compliance strings — ALWAYS present, never toggled by language_mode.
 // This module does not replace SebiDisclaimer.tsx (which remains the pinned
-// footer sourced from process.env.SEBI_DISCLAIMER per NG-4 / RF-D — untouched,
-// out of scope for A10-A14). Exported here only so the language test suite
-// (A12) can assert both plain and legal framing exist verbatim in the lexicon.
+// footer, sourced from alphaveda/constants.py SEBI_DISCLAIMER via
+// lib/sebi-disclaimer.generated.ts per NG-4 — the Vercel SEBI_DISCLAIMER env
+// var was deleted 2026-07-17 as part of RF-D closure). SEBI_LEGAL below is
+// kept word-for-word identical to constants.py's canonical text. Exported
+// here only so the language test suite (A12) can assert both plain and legal
+// framing exist verbatim in the lexicon.
 // ---------------------------------------------------------------------------
 export const SEBI_PLAIN =
   'We share research and its track record. We never tell anyone what to do with their money.'
 export const SEBI_LEGAL =
-  'AlphaVeda provides information and analysis only. This is NOT investment advice. ' +
+  'AlphaVeda provides research and analysis only. This is NOT investment advice. ' +
   'Consult a SEBI-registered investment advisor before making any investment decision. ' +
-  'Past accuracy does not guarantee future returns.'
+  'Past signal accuracy does not guarantee future returns.'
 
 // ---------------------------------------------------------------------------
 // A14 — anchoring counter. Converts a 0-100 confidence/hit-rate percentage into

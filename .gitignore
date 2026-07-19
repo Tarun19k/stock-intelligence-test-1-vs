@@ -80,6 +80,11 @@ RALPH_PROMPT.md
 
 # Generated reports and screenshots (not source code)
 reports/
+# Exception: AlphaVeda's weekly forecast reports ARE meant to be committed
+# (found 2026-07-13 — this broad rule silently blocked the first real
+# weekly-report.yml run's git-add step)
+!alphaveda/docs/reports/
+!alphaveda/docs/reports/*.md
 /screenshots/
 # Playwright test screenshots dropped at repo root
 /test_*.png

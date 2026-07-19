@@ -5,7 +5,13 @@ import { directionLexKey, lynchClassLexKey } from '@/lib/lexicon'
 
 const INSTRUMENT_OBSERVATION_THRESHOLD = 20
 
-type Instrument = { id: number; ticker: string; classification: string }
+type Instrument = {
+  id: number
+  ticker: string
+  name: string
+  classification: string
+  sector: string | null
+}
 type Price = { close: number; trade_date: string }
 type Prediction = { id: number; instrument_id: number; direction: string; emitted_at: string }
 
@@ -29,7 +35,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
 
   const instrumentRes = await sb
     .from('instruments')
-    .select('id,ticker,classification')
+    .select('id,ticker,name,classification,sector')
     .eq('ticker', ticker)
     .eq('is_active', true)
     .limit(1)
@@ -77,11 +83,18 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
   const positiveCount = [...latestWeeklyByInstrument.values()].filter(
     (prediction) => prediction.direction === 'BULL',
   ).length
+  const classDescriptionKey = lynchClassLexKey(instrument.classification, 'description')
 
   return (
     <>
       <h1 className="av-heading">{instrument.ticker}</h1>
       <p className="av-subheading"><Lex k="instrument.title" /></p>
+      {instrument.sector && (
+        <p style={{ marginBottom: '1.5rem' }}>
+          {instrument.name} <Lex k="instrument.company_operates_in" /> {instrument.sector}{' '}
+          <Lex k="instrument.company_sector_suffix" />
+        </p>
+      )}
 
       <div className="av-grid av-grid--4" style={{ marginBottom: '1.5rem' }}>
         <div className="av-card">
@@ -111,6 +124,11 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
                 fallback={instrument.classification}
               />
             </span>
+            {classDescriptionKey && (
+              <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.875rem', fontWeight: 400, marginLeft: '0.75rem' }}>
+                <Lex k={classDescriptionKey} />
+              </span>
+            )}
           </div>
         </div>
 
@@ -126,6 +144,15 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
       <div className="av-banner av-banner--blue">
         {positiveCount} of {trackedCount} <Lex k="instrument.aggregate_prefix" /> <Lex k="instrument.aggregate_suffix" />
       </div>
+
+      <section className="av-card">
+        <p style={{ marginBottom: '0.75rem' }}><strong><Lex k="instrument.self_check_intro" /></strong></p>
+        <ol style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.5rem' }}>
+          <li><Lex k="instrument.self_check.visibility" /></li>
+          <li><Lex k="instrument.self_check.repeat" /></li>
+          <li><Lex k="instrument.self_check.demand" /></li>
+        </ol>
+      </section>
     </>
   )
 }

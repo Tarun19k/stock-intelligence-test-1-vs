@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { SEBI_DISCLAIMER } from '../lib/sebi-disclaimer.generated'
 
 const ROUTES = ['/', '/signals', '/path', '/accuracy']
 
@@ -10,8 +11,13 @@ for (const route of ROUTES) {
     const footer = page.locator('.sebi-footer')
     await expect(footer).toBeVisible()
     const text = await footer.textContent()
-    expect(text).toContain('NOT investment advice')
-    expect(text).toContain('research and analysis only')
+    // Assert the FULL canonical text, imported from the single source of truth
+    // (constants.py via sebi-disclaimer.generated.ts) — not just 2 substrings.
+    // This is the oracle fix from RF-D: a wording drift anywhere else (e.g.
+    // lexicon.ts's SEBI_LEGAL) can no longer pass silently, because this test
+    // can never be checking stale/duplicated wording — it reads the same
+    // generated constant the footer itself renders.
+    expect(text).toContain(SEBI_DISCLAIMER)
   })
 
   test(`No prohibited advice language on ${route}`, async ({ page }) => {
