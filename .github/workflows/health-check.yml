@@ -1,0 +1,39 @@
+name: Production health check
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-accuracy-page:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check production accuracy page
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          response_body="$(mktemp)"
+          trap 'rm -f "$response_body"' EXIT
+
+          http_status="$(curl --silent --show-error --location \
+            --max-time 30 \
+            --output "$response_body" \
+            --write-out '%{http_code}' \
+            'https://stock-intelligence-test-1-vs.vercel.app/accuracy')"
+
+          if [[ "$http_status" != '200' ]]; then
+            echo "Health check failed: expected HTTP 200, received $http_status" >&2
+            exit 1
+          fi
+
+          if ! grep --fixed-strings --quiet 'A public record of every call' "$response_body"; then
+            echo 'Health check failed: expected accuracy-page content was not found' >&2
+            exit 1
+          fi
+
+          echo 'Health check passed: accuracy page returned HTTP 200 with expected content'
