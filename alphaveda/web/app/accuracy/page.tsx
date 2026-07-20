@@ -61,6 +61,17 @@ export default async function AccuracyPage() {
   const weightStaleDays = lastApproval ? daysBetween(lastApproval, now) : null
   const weightsStale = weightStaleDays !== null && weightStaleDays > STALENESS_DAYS
 
+  // RF-I coverage check (2026-07-20): computed live, not hardcoded, so this
+  // banner self-corrects the moment RF-I is actually fixed rather than
+  // needing a manual follow-up edit. Instruments with a prediction in the
+  // last 10 days are "covered"; anything less is a real, disclosed gap.
+  const recentCutoff = new Date(now.getTime() - 10 * 86_400_000)
+  const coveredInstrumentIds = new Set(
+    predictions.filter((p) => new Date(p.emitted_at) >= recentCutoff).map((p) => p.instrument_id)
+  )
+  const coverageGapCount = instruments.length - coveredInstrumentIds.size
+  const hasCoverageGap = coverageGapCount > 0
+
   return (
     <>
       <h1 className="av-heading"><Lex k="ledger.title" /></h1>
@@ -75,6 +86,15 @@ export default async function AccuracyPage() {
         part of this record and carry real downside risk if acted on; nothing here is a
         guarantee or a recommendation.
       </div>
+
+      {hasCoverageGap && (
+        <div className="av-banner av-banner--amber">
+          ⚠ Known coverage gap under investigation: {coverageGapCount} of {instruments.length} tracked
+          stocks have not received a new signal in the last 10 days. The figures below reflect only
+          the stocks currently generating signals, not the full tracked list — treat this record as
+          provisional until this is resolved.
+        </div>
+      )}
 
       {proposedCount > 0 && (
         <div className="av-banner av-banner--amber">

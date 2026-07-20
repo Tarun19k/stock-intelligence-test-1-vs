@@ -135,10 +135,11 @@ export default async function PathPage() {
                     </td>
                     <td style={{ textAlign: 'right' }}><ProbabilityFrame pct={p.confidence} /></td>
                     <td className="mono" style={{ textAlign: 'right' }}>
-                      {p.magnitude_target != null ? `${p.magnitude_target.toFixed(1)}%` : '—'}
+                      {/* RF-G fix (2026-07-20): stored as fraction (0.0403 = 4.03%), was rendering unscaled */}
+                      {p.magnitude_target != null ? `${(p.magnitude_target * 100).toFixed(1)}%` : '—'}
                     </td>
                     <td className="mono" style={{ textAlign: 'right' }}>
-                      {p.downside_target != null ? `${p.downside_target.toFixed(1)}%` : '—'}
+                      {p.downside_target != null ? `${(p.downside_target * 100).toFixed(1)}%` : '—'}
                     </td>
                     <td className="mono" style={{ textAlign: 'right' }}>
                       {!showRupee
