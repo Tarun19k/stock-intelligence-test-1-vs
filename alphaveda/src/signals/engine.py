@@ -14,13 +14,98 @@ emit_signal() is the DB orchestrator: computes signals from OHLCV history,
 calls emit_pipeline(), writes to accuracy_predictions.
 """
 from __future__ import annotations
+import logging
+import math
+import statistics
+from datetime import date, timedelta
 from constants import (
+    ARBITRATION_MARGIN,
     OBSERVATION_THRESHOLD,
     STREAK_DISCOUNT_FACTOR,
     STREAK_WINDOW,
 )
 from src.accuracy.ledger import compute_streak_flag
 from src.signals.arbitration import arbitrate
+
+_LOG = logging.getLogger(__name__)
+
+# ── RF-I fix constants ──────────────────────────────────────────────────────
+# RF-I (2026-07-13, verified live against production DB): the momentum
+# reference row used to be "whatever is oldest in the fetched <=21-row
+# window" — for sparse instruments (~9 total rows, not daily-continuous) that
+# silently meant almost the entire available history, diluting real moves to
+# near-zero confidence (RELIANCE: ret=0.38%, confidence=1.9, suppressed).
+#
+# Part 1 (below, used in emit_signal): reference row is anchored to a target
+# CALENDAR date ~21 days back from as_of, not "21 rows back." If no row
+# exists within tolerance of that target, we fail loud (None + logged
+# reason) instead of silently redefining the window.
+#
+# Part 2 (below, used in emit_signal): confidence is volatility-normalized
+# (z-score of the move against the stdev of recent period returns) instead
+# of a flat abs(ret) * 500 — the old formula had no way to distinguish a
+# real move on a calm/low-beta stock from noise on a volatile one.
+REFERENCE_WINDOW_CALENDAR_DAYS = 21
+REFERENCE_TOLERANCE_TRADING_DAYS = 3
+# Safety-net lookback for the OHLCV fetch: wide enough to comfortably contain
+# the tolerance window above plus a full STDEV_WINDOW_ROWS of daily closes
+# even when data is dense (daily-continuous). This is NOT itself a tolerance
+# bound — it only ensures the fetch doesn't starve the stdev calculation.
+FETCH_LOOKBACK_CALENDAR_DAYS = 32
+STDEV_WINDOW_ROWS = 21
+
+# CONFIDENCE_SCALE derivation (not a guessed magic number):
+# confidence = min(abs(ret / stdev) * CONFIDENCE_SCALE, 100.0)
+# We want a genuine ~1-sigma move (a realistic signal, not noise) to clear
+# ARBITRATION_MARGIN (15.0) with comfortable headroom, so a single
+# volatility-normalized signal can stand on its own without relying on other
+# signals to help it clear the dead zone. Setting
+#   CONFIDENCE_SCALE = 2.5 * ARBITRATION_MARGIN
+# gives:
+#   z = 1.0  (1-sigma move)   -> confidence = 37.5  (2.5x the margin)
+#   z = 1.5  (1.5-sigma move) -> confidence = 56.25 (3.75x the margin)
+#   z = 0.4  (0.4-sigma move) -> confidence = 15.0  (exactly at the margin)
+# A calm/low-beta stock is no longer structurally suppressed by a low raw
+# abs(ret): what matters is the size of the move RELATIVE TO ITS OWN
+# volatility, not the raw magnitude vs. an instrument-agnostic constant.
+CONFIDENCE_SCALE = 2.5 * ARBITRATION_MARGIN
+
+# Below this, dividing by stdev is not just noisy — it's meaningless (a flat
+# tape, not genuinely "zero risk"). Guards against ZeroDivisionError / inf / NaN.
+MIN_STDEV_EPSILON = 1e-6
+
+
+def _reference_tolerance_bounds(
+    target_date: date,
+    tolerance_trading_days: int = REFERENCE_TOLERANCE_TRADING_DAYS,
+) -> tuple[date, date]:
+    """Return (lower, upper) calendar-date bounds equivalent to
+    +/- tolerance_trading_days weekday (Mon-Fri) sessions around target_date.
+
+    Deliberately does NOT use pandas_market_calendars here: that library's
+    first .schedule() call has real, unavoidable one-time setup cost
+    (~700-900ms, confirmed via profiling) that blew emit_signal()'s 800ms
+    latency SLA when this path was hit. A plain weekday walk is inexact
+    around NSE holidays (may include 1-2 non-trading days in the tolerance
+    window), but for a fuzzy +/-3-session tolerance band that inexactness is
+    immaterial — worst case the window is very slightly wider than intended,
+    never narrower, so it never causes a false RF-I_STALE_REFERENCE suppression.
+    """
+    lower = target_date
+    remaining = tolerance_trading_days
+    while remaining > 0:
+        lower -= timedelta(days=1)
+        if lower.weekday() < 5:  # Mon=0 .. Fri=4
+            remaining -= 1
+
+    upper = target_date
+    remaining = tolerance_trading_days
+    while remaining > 0:
+        upper += timedelta(days=1)
+        if upper.weekday() < 5:
+            remaining -= 1
+
+    return lower, upper
 
 
 def calibrate_confidence(
@@ -124,14 +209,24 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     # 3. Load weights for this segment (cold-start fallback if no ACTIVE rows)
     weights = load_weights(lynch_class, regime)
 
-    # 4. Fetch recent OHLCV for signal computation (ATR_PERIOD + buffer)
+    # 4. Fetch the most recent rows up to as_of (RF-I fix part 2). The limit
+    #    (FETCH_LOOKBACK_CALENDAR_DAYS-sized) is a generous safety net sized to
+    #    comfortably cover both the reference-row tolerance search and the
+    #    STDEV_WINDOW_ROWS volatility window below, for dense daily data. No
+    #    server-side lower-bound filter — Python-side tolerance filtering below
+    #    already excludes anything outside range, and dropping the extra WHERE
+    #    clause measurably reduced query latency under the 800ms emit SLA.
+    as_of_date = date.fromisoformat(as_of)
+    reference_target_date = as_of_date - timedelta(days=REFERENCE_WINDOW_CALENDAR_DAYS)
+    tolerance_lower, tolerance_upper = _reference_tolerance_bounds(reference_target_date)
+
     ohlcv_result = (
         supabase.table("ohlcv")
         .select("trade_date,open,high,low,close,circuit_flag")
         .eq("instrument_id", instrument_id)
         .lte("trade_date", as_of)
         .order("trade_date", desc=True)
-        .limit(21)
+        .limit(32)
         .execute()
     )
     ohlcv_rows = list(reversed(ohlcv_result.data or []))  # chronological
@@ -139,29 +234,89 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     if not ohlcv_rows:
         return None
 
-    # 5. Build MVP signal: price momentum, weight=1.0 to clear ARBITRATION_MARGIN=15.0
-    #    >= 2 rows → multi-day return; == 1 row → intraday (open → close)
     last = ohlcv_rows[-1]
     last_close = last.get("close")
     if last_close is None:
         return None
 
-    if len(ohlcv_rows) >= 2:
-        ref_close = ohlcv_rows[0]["close"]
-        if not ref_close or ref_close == 0:
-            return None
-        ret = (last_close - ref_close) / ref_close
+    # 5a. Locate the calendar-anchored reference row (RF-I fix part 2): the
+    # available row nearest reference_target_date, but ONLY if it falls
+    # within tolerance. An ingestion gap that pushes the nearest row outside
+    # tolerance must fail loud, not silently redefine the window to
+    # "whatever's oldest in the fetched rows" (the RF-I root cause).
+    candidates = [
+        row
+        for row in ohlcv_rows
+        if row.get("close") is not None
+        and row.get("trade_date")
+        and tolerance_lower <= date.fromisoformat(row["trade_date"]) <= tolerance_upper
+    ]
+    if not candidates:
+        _LOG.warning(
+            "RF-I_STALE_REFERENCE: emit_signal suppressed instrument_id=%s as_of=%s "
+            "target=%s tolerance=[%s, %s] nearest_available=%s",
+            instrument_id, as_of, reference_target_date, tolerance_lower, tolerance_upper,
+            ohlcv_rows[0].get("trade_date") if ohlcv_rows else None,
+        )
+        return None
+
+    reference_row = min(
+        candidates,
+        key=lambda row: abs((date.fromisoformat(row["trade_date"]) - reference_target_date).days),
+    )
+    ref_close = reference_row["close"]
+    if not ref_close or ref_close == 0:
+        return None
+
+    if reference_row.get("trade_date") == last.get("trade_date"):
+        # Reference resolved to the same row as "last" (only one usable row
+        # in range) — no genuine multi-day move to measure. Let ret fall
+        # through as 0.0; the insufficient-return-history guard below (5b)
+        # is what actually suppresses this case, not a fabricated ret.
+        ret = 0.0
     else:
-        ref_open = last.get("open") or last_close
-        if not ref_open or ref_open == 0:
-            return None
-        ret = (last_close - ref_open) / ref_open
+        ret = (last_close - ref_close) / ref_close
 
     direction = "BULL" if ret >= 0 else "BEAR"
+
+    # 5b. Volatility-normalized confidence (RF-I fix part 1). See
+    # CONFIDENCE_SCALE derivation above the module constants.
+    stdev_window = ohlcv_rows[-STDEV_WINDOW_ROWS:]
+    closes = [row["close"] for row in stdev_window if row.get("close") is not None]
+    period_returns = [
+        (closes[i] - closes[i - 1]) / closes[i - 1]
+        for i in range(1, len(closes))
+        if closes[i - 1]
+    ]
+    if len(period_returns) < 2:
+        # Can't compute a meaningful stdev from 0-1 return observations.
+        _LOG.warning(
+            "RF-I_INSUFFICIENT_RETURN_HISTORY: emit_signal suppressed instrument_id=%s "
+            "as_of=%s n_returns=%s", instrument_id, as_of, len(period_returns),
+        )
+        return None
+
+    stdev = statistics.stdev(period_returns)
+    if not math.isfinite(stdev) or stdev < MIN_STDEV_EPSILON:
+        _LOG.warning(
+            "RF-I_ZERO_VOLATILITY: emit_signal suppressed instrument_id=%s as_of=%s stdev=%s",
+            instrument_id, as_of, stdev,
+        )
+        return None
+
+    z_score = abs(ret) / stdev
+    confidence = z_score * CONFIDENCE_SCALE
+    if not math.isfinite(confidence):
+        _LOG.warning(
+            "RF-I_NONFINITE_CONFIDENCE: emit_signal suppressed instrument_id=%s as_of=%s "
+            "z_score=%s", instrument_id, as_of, z_score,
+        )
+        return None
+    confidence = min(confidence, 100.0)
+
     # No artificial floor: weak signals must fail to clear ARBITRATION_MARGIN
     # naturally and go silent via emit_pipeline() returning None. A floor here
     # previously defeated that suppression mechanism (RF-B, 2026-07-09).
-    confidence = min(abs(ret) * 500, 100.0)
     signals = [{"direction": direction, "confidence": confidence,
                 "signal_name": "momentum_price", "weight": 1.0}]
 
