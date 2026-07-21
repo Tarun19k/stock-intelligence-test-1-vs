@@ -19,7 +19,15 @@ matching this session's own Claim Verification Gate.
 |---|---|---|---|---|---|---|
 | T-A | `engine.py`: replace `min(abs(ret)*500,100)` with volatility-normalized z-score + calendar-anchored window with fail-loud staleness guard | none | Sonnet | general-purpose | worktree | **MERGED (`565bd08`)** |
 | T-B | New `scripts/backfill_ohlcv.py`: RELIANCE-only live write authorized by Tarun | none (parallel w/ T-A) | Sonnet | general-purpose | worktree | **MERGED (`565bd08`)** — RELIANCE 9→251 rows live |
-| T-C | Fix `scripts/backtest.py`'s duplicated old formula + `trade_date`-bearing fixtures | T-A merged | Sonnet | not yet dispatched | — | **QUEUED — ready to start** |
+| T-C | **Rescoped via Trimurti lens (2026-07-21):** retire `scripts/backtest.py` (Shiva) rather than patch it; build `scripts/backtest_replay.py` as sole replacement (Brahma), importing engine.py's real logic directly | T-A merged | Sonnet | general-purpose | worktree | **MERGED to main** — 213/213 tests pass, independently re-verified |
+
+### T-C — independent verification (CoS-run)
+
+- Diff read line-by-line: `compute_momentum_signal()` extraction is behavior-preserving (logic moved verbatim, only lost `instrument_id=%s` from log lines since the extracted function doesn't have it — acceptable).
+- `approve_signal_weight()` gate confirmed by direct read, matches agent's claim exactly.
+- Full suite re-run in the worktree before merge (213/213), then again on `main` after merge (213/213) — clean both times.
+- Determinism claim (byte-identical score `0.4604651162790698` across 2 runs, 250 attribution rows each) verified by querying `bt_backtest_runs`/`bt_backtest_attribution` directly, not trusting the report.
+- `scripts/backtest.py` and its test both confirmed deleted; no dangling references remain (would have shown as import errors in the 213-pass run).
 | T-D | G23 idempotency retest | none | — | none | — | MONITORING, 1/3 clean so far |
 
 ### Post-merge finding: T-A introduced a real latency regression, found and fixed by CoS (not the agent)
@@ -46,6 +54,10 @@ ids 86-89 (ITC/COALINDIA/HDFCBANK/RELIANCE) — all from CoS-run verification ca
 Calling `emit_signal()` to spot-check was treated as a read; it is not — it's the DB orchestrator and **writes to `accuracy_predictions`**. This inserted 3 real rows (ids 86/87/88, ITC/COALINDIA/HDFCBANK) into live production using **unmerged, unreviewed worktree code**, without prior authorization or an External State Write Gate check. Logged to `~/.claude/logs/external-state-writes.log`. **Not rolled back** — per this session's own subagent-scope-discipline lesson (deleting rows without confirming which are canonical caused real data loss earlier this session), this needs Tarun's decision, not a unilateral delete. The 3 predictions themselves are directionally consistent with the reported flips (ITC/COALINDIA correctly emit instead of silently suppressing), but they exist in production ahead of the code that produced them being merged — an inconsistency a future audit could flag.
 | T-C | `alphaveda/scripts/backtest_replay.py` Phase 0 harness — MUST import `emit_pipeline`/`arbitrate`/`calibrate_confidence` directly from `src.signals.engine`, never reimplement | T-A merged | Sonnet | general-purpose | sequential, after T-A verified | QUEUED |
 | T-D | G23 idempotency retest — passive, 2 more clean scheduled runs needed (07-21, 07-22) | none | — | none — monitoring only | — | MONITORING |
+
+### Full 13-instrument backfill — authorized 2026-07-21, running
+
+Tarun authorized extending `backfill_ohlcv.py` to all remaining 13 active instruments (RELIANCE already done via T-B). Running directly (not re-delegated — the script is already verified, this is a repeatable operation, not exploration), via `nohup`-backgrounded shell loop (pid 16499) with a `Monitor` watch on the log for per-instrument start/end/error events. Log: `scratchpad/backfill_remaining13.log`.
 
 ## Verification protocol per task (CoS-owned, independent of agent self-report)
 
