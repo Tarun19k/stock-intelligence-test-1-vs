@@ -108,6 +108,125 @@ def _reference_tolerance_bounds(
     return lower, upper
 
 
+def compute_momentum_signal(
+    ohlcv_rows: list[dict],
+    as_of: str,
+) -> list[dict] | None:
+    """Pure momentum-signal computation (RF-I fix parts 1+2). No DB calls.
+
+    Calendar-anchored reference row + volatility-normalized confidence. This
+    is the ONLY place this logic should live — emit_signal() (live path) and
+    scripts/backtest_replay.py (replay path) both call this function so the
+    two paths can never silently diverge the way scripts/backtest.py's old
+    duplicated formula did.
+
+    Args:
+        ohlcv_rows: chronological list of {trade_date, open, high, low, close,
+            circuit_flag} rows with trade_date <= as_of. Should be sized to
+            comfortably cover both the reference-row tolerance search and
+            STDEV_WINDOW_ROWS (32 calendar days is what emit_signal() fetches).
+        as_of: ISO date string, the date the signal is being computed for.
+
+    Returns a signals list ([{"direction", "confidence", "signal_name",
+    "weight"}]) suitable for passing straight into emit_pipeline(), or None
+    if suppressed (stale reference / insufficient return history / zero
+    volatility / non-finite confidence). Suppression reasons are logged with
+    the same RF-I_* markers as emit_signal() used before this extraction.
+    """
+    if not ohlcv_rows:
+        return None
+
+    last = ohlcv_rows[-1]
+    last_close = last.get("close")
+    if last_close is None:
+        return None
+
+    as_of_date = date.fromisoformat(as_of)
+    reference_target_date = as_of_date - timedelta(days=REFERENCE_WINDOW_CALENDAR_DAYS)
+    tolerance_lower, tolerance_upper = _reference_tolerance_bounds(reference_target_date)
+
+    # 1. Locate the calendar-anchored reference row (RF-I fix part 2): the
+    # available row nearest reference_target_date, but ONLY if it falls
+    # within tolerance. An ingestion gap that pushes the nearest row outside
+    # tolerance must fail loud, not silently redefine the window to
+    # "whatever's oldest in the fetched rows" (the RF-I root cause).
+    candidates = [
+        row
+        for row in ohlcv_rows
+        if row.get("close") is not None
+        and row.get("trade_date")
+        and tolerance_lower <= date.fromisoformat(row["trade_date"]) <= tolerance_upper
+    ]
+    if not candidates:
+        _LOG.warning(
+            "RF-I_STALE_REFERENCE: emit_signal suppressed as_of=%s "
+            "target=%s tolerance=[%s, %s] nearest_available=%s",
+            as_of, reference_target_date, tolerance_lower, tolerance_upper,
+            ohlcv_rows[0].get("trade_date") if ohlcv_rows else None,
+        )
+        return None
+
+    reference_row = min(
+        candidates,
+        key=lambda row: abs((date.fromisoformat(row["trade_date"]) - reference_target_date).days),
+    )
+    ref_close = reference_row["close"]
+    if not ref_close or ref_close == 0:
+        return None
+
+    if reference_row.get("trade_date") == last.get("trade_date"):
+        # Reference resolved to the same row as "last" (only one usable row
+        # in range) — no genuine multi-day move to measure. Let ret fall
+        # through as 0.0; the insufficient-return-history guard below is what
+        # actually suppresses this case, not a fabricated ret.
+        ret = 0.0
+    else:
+        ret = (last_close - ref_close) / ref_close
+
+    direction = "BULL" if ret >= 0 else "BEAR"
+
+    # 2. Volatility-normalized confidence (RF-I fix part 1). See
+    # CONFIDENCE_SCALE derivation above the module constants.
+    stdev_window = ohlcv_rows[-STDEV_WINDOW_ROWS:]
+    closes = [row["close"] for row in stdev_window if row.get("close") is not None]
+    period_returns = [
+        (closes[i] - closes[i - 1]) / closes[i - 1]
+        for i in range(1, len(closes))
+        if closes[i - 1]
+    ]
+    if len(period_returns) < 2:
+        # Can't compute a meaningful stdev from 0-1 return observations.
+        _LOG.warning(
+            "RF-I_INSUFFICIENT_RETURN_HISTORY: emit_signal suppressed "
+            "as_of=%s n_returns=%s", as_of, len(period_returns),
+        )
+        return None
+
+    stdev = statistics.stdev(period_returns)
+    if not math.isfinite(stdev) or stdev < MIN_STDEV_EPSILON:
+        _LOG.warning(
+            "RF-I_ZERO_VOLATILITY: emit_signal suppressed as_of=%s stdev=%s",
+            as_of, stdev,
+        )
+        return None
+
+    z_score = abs(ret) / stdev
+    confidence = z_score * CONFIDENCE_SCALE
+    if not math.isfinite(confidence):
+        _LOG.warning(
+            "RF-I_NONFINITE_CONFIDENCE: emit_signal suppressed as_of=%s "
+            "z_score=%s", as_of, z_score,
+        )
+        return None
+    confidence = min(confidence, 100.0)
+
+    # No artificial floor: weak signals must fail to clear ARBITRATION_MARGIN
+    # naturally and go silent via emit_pipeline() returning None. A floor here
+    # previously defeated that suppression mechanism (RF-B, 2026-07-09).
+    return [{"direction": direction, "confidence": confidence,
+              "signal_name": "momentum_price", "weight": 1.0}]
+
+
 def calibrate_confidence(
     confidence: float,
     segment_obs: int,
@@ -216,10 +335,6 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     #    server-side lower-bound filter — Python-side tolerance filtering below
     #    already excludes anything outside range, and dropping the extra WHERE
     #    clause measurably reduced query latency under the 800ms emit SLA.
-    as_of_date = date.fromisoformat(as_of)
-    reference_target_date = as_of_date - timedelta(days=REFERENCE_WINDOW_CALENDAR_DAYS)
-    tolerance_lower, tolerance_upper = _reference_tolerance_bounds(reference_target_date)
-
     ohlcv_result = (
         supabase.table("ohlcv")
         .select("trade_date,open,high,low,close,circuit_flag")
@@ -234,91 +349,12 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     if not ohlcv_rows:
         return None
 
-    last = ohlcv_rows[-1]
-    last_close = last.get("close")
-    if last_close is None:
+    # 5. Pure momentum-signal computation (RF-I fix parts 1+2), shared with
+    #    scripts/backtest_replay.py so the live and replay paths can never
+    #    silently diverge. Suppression (None) is logged inside the helper.
+    signals = compute_momentum_signal(ohlcv_rows, as_of)
+    if signals is None:
         return None
-
-    # 5a. Locate the calendar-anchored reference row (RF-I fix part 2): the
-    # available row nearest reference_target_date, but ONLY if it falls
-    # within tolerance. An ingestion gap that pushes the nearest row outside
-    # tolerance must fail loud, not silently redefine the window to
-    # "whatever's oldest in the fetched rows" (the RF-I root cause).
-    candidates = [
-        row
-        for row in ohlcv_rows
-        if row.get("close") is not None
-        and row.get("trade_date")
-        and tolerance_lower <= date.fromisoformat(row["trade_date"]) <= tolerance_upper
-    ]
-    if not candidates:
-        _LOG.warning(
-            "RF-I_STALE_REFERENCE: emit_signal suppressed instrument_id=%s as_of=%s "
-            "target=%s tolerance=[%s, %s] nearest_available=%s",
-            instrument_id, as_of, reference_target_date, tolerance_lower, tolerance_upper,
-            ohlcv_rows[0].get("trade_date") if ohlcv_rows else None,
-        )
-        return None
-
-    reference_row = min(
-        candidates,
-        key=lambda row: abs((date.fromisoformat(row["trade_date"]) - reference_target_date).days),
-    )
-    ref_close = reference_row["close"]
-    if not ref_close or ref_close == 0:
-        return None
-
-    if reference_row.get("trade_date") == last.get("trade_date"):
-        # Reference resolved to the same row as "last" (only one usable row
-        # in range) — no genuine multi-day move to measure. Let ret fall
-        # through as 0.0; the insufficient-return-history guard below (5b)
-        # is what actually suppresses this case, not a fabricated ret.
-        ret = 0.0
-    else:
-        ret = (last_close - ref_close) / ref_close
-
-    direction = "BULL" if ret >= 0 else "BEAR"
-
-    # 5b. Volatility-normalized confidence (RF-I fix part 1). See
-    # CONFIDENCE_SCALE derivation above the module constants.
-    stdev_window = ohlcv_rows[-STDEV_WINDOW_ROWS:]
-    closes = [row["close"] for row in stdev_window if row.get("close") is not None]
-    period_returns = [
-        (closes[i] - closes[i - 1]) / closes[i - 1]
-        for i in range(1, len(closes))
-        if closes[i - 1]
-    ]
-    if len(period_returns) < 2:
-        # Can't compute a meaningful stdev from 0-1 return observations.
-        _LOG.warning(
-            "RF-I_INSUFFICIENT_RETURN_HISTORY: emit_signal suppressed instrument_id=%s "
-            "as_of=%s n_returns=%s", instrument_id, as_of, len(period_returns),
-        )
-        return None
-
-    stdev = statistics.stdev(period_returns)
-    if not math.isfinite(stdev) or stdev < MIN_STDEV_EPSILON:
-        _LOG.warning(
-            "RF-I_ZERO_VOLATILITY: emit_signal suppressed instrument_id=%s as_of=%s stdev=%s",
-            instrument_id, as_of, stdev,
-        )
-        return None
-
-    z_score = abs(ret) / stdev
-    confidence = z_score * CONFIDENCE_SCALE
-    if not math.isfinite(confidence):
-        _LOG.warning(
-            "RF-I_NONFINITE_CONFIDENCE: emit_signal suppressed instrument_id=%s as_of=%s "
-            "z_score=%s", instrument_id, as_of, z_score,
-        )
-        return None
-    confidence = min(confidence, 100.0)
-
-    # No artificial floor: weak signals must fail to clear ARBITRATION_MARGIN
-    # naturally and go silent via emit_pipeline() returning None. A floor here
-    # previously defeated that suppression mechanism (RF-B, 2026-07-09).
-    signals = [{"direction": direction, "confidence": confidence,
-                "signal_name": "momentum_price", "weight": 1.0}]
 
     # 6. Compute segment accuracy stats for calibration inputs
     all_preds_r = (
