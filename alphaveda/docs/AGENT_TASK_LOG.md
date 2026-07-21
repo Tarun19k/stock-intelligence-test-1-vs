@@ -17,8 +17,22 @@ matching this session's own Claim Verification Gate.
 
 | ID | Task | Depends on | Model | Agent type | Isolation | Status |
 |---|---|---|---|---|---|---|
-| T-A | `engine.py`: replace `min(abs(ret)*500,100)` with volatility-normalized z-score + calendar-anchored window with fail-loud staleness guard | none | Sonnet | general-purpose | worktree | **DONE, VERIFIED — pending merge decision** (see below) |
-| T-B | New `scripts/backfill_ohlcv.py`: RELIANCE-only live write authorized by Tarun | none (parallel w/ T-A) | Sonnet | general-purpose | worktree | RUNNING (hit an API error mid-task, confirmed no partial write occurred, resumed) |
+| T-A | `engine.py`: replace `min(abs(ret)*500,100)` with volatility-normalized z-score + calendar-anchored window with fail-loud staleness guard | none | Sonnet | general-purpose | worktree | **MERGED (`565bd08`)** |
+| T-B | New `scripts/backfill_ohlcv.py`: RELIANCE-only live write authorized by Tarun | none (parallel w/ T-A) | Sonnet | general-purpose | worktree | **MERGED (`565bd08`)** — RELIANCE 9→251 rows live |
+| T-C | Fix `scripts/backtest.py`'s duplicated old formula + `trade_date`-bearing fixtures | T-A merged | Sonnet | not yet dispatched | — | **QUEUED — ready to start** |
+| T-D | G23 idempotency retest | none | — | none | — | MONITORING, 1/3 clean so far |
+
+### Post-merge finding: T-A introduced a real latency regression, found and fixed by CoS (not the agent)
+
+The agent's own test run reported 207/210 pass with 3 explained failures. It did **not** catch a 4th, real regression: `test_emit_latency_under_800ms` started failing consistently (900-1350ms). Root-caused directly (not re-delegated): `pandas_market_calendars`'s first `.schedule()` call has ~800-900ms of unavoidable one-time setup cost, landing inside the timed `emit_signal()` call. Fixed by replacing the calendar library with a plain Mon-Fri weekday walk (adequate for a fuzzy ±3-trading-day tolerance — confirmed the pre-existing baseline test itself already had a 1/5 flake rate at the same SLA boundary) and trimming the OHLCV fetch to the true minimum needed (32 rows/days, was over-provisioned at 60/45). Final state: 5/6 pass, matching baseline's own flakiness — not "perfectly clean" by an unrealistic bar, but no worse than what already existed pre-fix. Full suite: 207 passed, 1 skipped, 3 deselected (known out-of-scope `backtest.py` gap).
+
+### Real integration test, live
+
+After merge, called `emit_signal(instrument_id=4, as_of='2026-07-20')` against the merged code + T-B's real backfilled RELIANCE data: returned `direction=BULL, confidence=50` — RELIANCE emits correctly for the first time since 2026-07-01. This is RF-I resolved end-to-end for the one instrument tested; the other 5 previously-suppressed instruments (PIDILITIND, HDFCBANK, ITC, COALINDIA, TATASTEEL, HINDALCO) have the formula fix live but not yet the backfill (still 9 sparse rows each) — they should already be emitting per the adversarial table (the formula fix alone was enough for them), but haven't been backfilled yet.
+
+### Cleanup: 4 unauthorized verification writes deleted
+
+ids 86-89 (ITC/COALINDIA/HDFCBANK/RELIANCE) — all from CoS-run verification calls that turned out to write to production, not read. Verified exact match against the write log before deleting, per Tarun's explicit "delete once T-A is merged" decision. Confirmed deleted, zero rows remain.
 
 ### T-A — independent verification (CoS-run, not agent self-report)
 
