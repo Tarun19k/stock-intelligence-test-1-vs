@@ -55,9 +55,15 @@ Calling `emit_signal()` to spot-check was treated as a read; it is not — it's 
 | T-C | `alphaveda/scripts/backtest_replay.py` Phase 0 harness — MUST import `emit_pipeline`/`arbitrate`/`calibrate_confidence` directly from `src.signals.engine`, never reimplement | T-A merged | Sonnet | general-purpose | sequential, after T-A verified | QUEUED |
 | T-D | G23 idempotency retest — passive, 2 more clean scheduled runs needed (07-21, 07-22) | none | — | none — monitoring only | — | MONITORING |
 
-### Full 13-instrument backfill — authorized 2026-07-21, running
+### Full 13-instrument backfill — authorized 2026-07-21, COMPLETE, one real finding
 
-Tarun authorized extending `backfill_ohlcv.py` to all remaining 13 active instruments (RELIANCE already done via T-B). Running directly (not re-delegated — the script is already verified, this is a repeatable operation, not exploration), via `nohup`-backgrounded shell loop (pid 16499) with a `Monitor` watch on the log for per-instrument start/end/error events. Log: `scratchpad/backfill_remaining13.log`.
+Tarun authorized extending `backfill_ohlcv.py` to all remaining 13 active instruments (RELIANCE already done via T-B). Ran directly via `nohup`-backgrounded shell loop with a `Monitor` watch. Log: `scratchpad/backfill_remaining13.log`.
+
+**Independently verified across all 14 instruments** (not trusting the log alone): 13/14 have 251 rows, zero duplicates, correct provenance (`source=bhavcopy_nse`, `licence_class=open`).
+
+**TATAMOTORS (id=12) is the exception — real finding, not a script bug**: only 70 rows written, script correctly logged `status: PARTIAL`. Its most recent real Bhavcopy row is **2025-10-23** — NSE has published nothing for this ticker in ~8 months, not just since RF-I's window. Timing coincides with Tata Motors' known 2025 demerger (commercial vs. passenger vehicles) — plausible (not yet confirmed) that the ISIN (`INE155A01022`) or ticker this instrument row points to is now defunct/superseded. **This is real evidence for the corporate-action-adjustment gap already flagged** (prose-only audit item #2) — not a hypothetical risk anymore.
+
+**Needed, not yet done:** confirm whether TATAMOTORS' ticker/ISIN needs updating post-demerger (a real research question, not an engineering one) before any further backfill attempt on it — re-running the script won't fix a genuinely discontinued symbol.
 
 ## Verification protocol per task (CoS-owned, independent of agent self-report)
 
