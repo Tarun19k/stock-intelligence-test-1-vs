@@ -174,6 +174,45 @@ def run_ingest(target_date: date | None = None) -> dict:
             supabase.table("ohlcv").upsert(ohlcv_rows, on_conflict="instrument_id,trade_date").execute()
         summary["ohlcv_rows"] = len(ohlcv_rows)
 
+        # Step 3b: Staleness check (added 2026-07-22, Tata Motors demerger council
+        # synthesis — Munger's non-negotiable: a tracked instrument silently absent
+        # from Bhavcopy must fail loud, not continue unnoticed. This is exactly what
+        # would have caught TATAMOTORS' real ~8-month silent gap (a corporate-action
+        # discontinuity, root-caused only as a side-effect of an unrelated bug).
+        # Deliberately NOT a hard SystemExit — one stale ticker must not block the
+        # other active instruments' legitimate daily updates (same fail-open
+        # principle as Step 4 below). Instead: surfaced visibly via ingest_status.
+        STALENESS_THRESHOLD_DAYS = 10
+        stale_instruments = []
+        for ticker, iid in symbol_to_id.items():
+            if ticker in symbol_close:
+                continue  # got fresh data today — not stale
+            last_row = (
+                supabase.table("ohlcv")
+                .select("trade_date")
+                .eq("instrument_id", iid)
+                .order("trade_date", desc=True)
+                .limit(1)
+                .execute()
+            )
+            if not last_row.data:
+                continue  # never had any data — a separate, already-known gap class
+            last_date = date.fromisoformat(last_row.data[0]["trade_date"])
+            gap_days = (target_date - last_date).days
+            if gap_days > STALENESS_THRESHOLD_DAYS:
+                stale_instruments.append({
+                    "ticker": ticker, "instrument_id": iid,
+                    "last_seen": last_date.isoformat(), "gap_days": gap_days,
+                })
+        if stale_instruments:
+            print(
+                f"[ERROR] STALE_CORPORATE_ACTION_REVIEW: {len(stale_instruments)} "
+                f"instrument(s) missing from Bhavcopy >{STALENESS_THRESHOLD_DAYS} days "
+                f"— needs manual review (likely demerger/rename/delisting): "
+                f"{stale_instruments}", flush=True,
+            )
+        summary["stale_instruments"] = stale_instruments
+
         # Step 4: Emit predictions for each instrument that appeared in today's bhavcopy.
         # Fail-open: one instrument failing must not abort the full ingest.
         from src.signals.engine import emit_signal
@@ -297,11 +336,14 @@ def run_ingest(target_date: date | None = None) -> dict:
                 on_conflict="prediction_id,resolved_at",
             ).execute()
 
-        # Step 7: Write OK ingest_status row.
+        # Step 7: Write ingest_status row. PARTIAL (not OK) if any instrument crossed
+        # the staleness threshold above — visible in the ledger, not silently OK.
+        final_status = "PARTIAL" if stale_instruments else "OK"
+        summary["status"] = final_status
         supabase.table("ingest_status").insert({
             "source": "bhavcopy_nse",
             "last_run": target_date.isoformat(),
-            "status": "OK",
+            "status": final_status,
             "rows_written": len(ohlcv_rows),
         }).execute()
 

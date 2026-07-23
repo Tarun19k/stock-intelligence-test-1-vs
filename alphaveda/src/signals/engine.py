@@ -302,7 +302,7 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     # 1. Load instrument — lynch_class required for weight segment lookup
     inst = (
         supabase.table("instruments")
-        .select("id,ticker,classification")
+        .select("id,ticker,classification,signal_gate_until")
         .eq("id", instrument_id)
         .limit(1)
         .execute()
@@ -310,6 +310,19 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
     if not inst.data:
         return None
     lynch_class = inst.data[0]["classification"]
+
+    # 1a. Signal gate (added 2026-07-22, Tata Motors demerger council synthesis):
+    # a freshly-split-off or newly-listed entity can have real price data but an
+    # unproven standalone track record (e.g. TMCV, gated to 2027-01-01 pending
+    # clean post-Iveco-integration earnings). Data still collects normally;
+    # only signal EMISSION is suppressed until the gate date passes.
+    gate_until = inst.data[0].get("signal_gate_until")
+    if gate_until and as_of < gate_until:
+        _LOG.warning(
+            "SIGNAL_GATED: emit_signal suppressed instrument_id=%s as_of=%s "
+            "gate_until=%s", instrument_id, as_of, gate_until,
+        )
+        return None
 
     # 2. Get current regime — macro_regime uses regime_date (not effective_date)
     regime_row = (
