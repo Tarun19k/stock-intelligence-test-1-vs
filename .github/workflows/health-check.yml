@@ -1,5 +1,14 @@
 name: Production health check
 
+# G16 (GAP_REGISTER.md): this workflow already fails loudly in the GHA UI on
+# check failure, but that alone is a silent failure mode for a human who isn't
+# checking the Actions tab — this repo has no email/Slack secrets configured
+# (`gh secret list` confirms only SUPABASE_URL/SUPABASE_SERVICE_KEY exist, as
+# of 2026-07-25). Reuses the exact alert-wiring pattern already proven in
+# ingest-watchdog.yml (G11): opening a GitHub Issue on failure via
+# actions/github-script needs no new secret (GITHUB_TOKEN is automatic) and is
+# loud both in the repo and via GitHub's own issue-notification path.
+
 on:
   schedule:
     - cron: '0 */2 * * *'
@@ -7,12 +16,14 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   check-accuracy-page:
     runs-on: ubuntu-latest
     steps:
       - name: Check production accuracy page
+        id: check
         shell: bash
         run: |
           set -euo pipefail
@@ -26,14 +37,56 @@ jobs:
             --write-out '%{http_code}' \
             'https://stock-intelligence-test-1-vs.vercel.app/accuracy')"
 
+          echo "HTTP_STATUS=$http_status" >> "$GITHUB_ENV"
+
           if [[ "$http_status" != '200' ]]; then
             echo "Health check failed: expected HTTP 200, received $http_status" >&2
             exit 1
           fi
 
           if ! grep --fixed-strings --quiet 'A public record of every call' "$response_body"; then
+            echo 'HEALTH_CHECK_REASON=expected accuracy-page content was not found' >> "$GITHUB_ENV"
             echo 'Health check failed: expected accuracy-page content was not found' >&2
             exit 1
           fi
 
           echo 'Health check passed: accuracy page returned HTTP 200 with expected content'
+
+      # SRE council review (2026-07-25), same rationale as ingest-watchdog.yml's
+      # G11 fix: no email/Slack channel exists, so open a GitHub Issue instead.
+      - name: Open an issue if the health check fails
+        if: failure() && steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().slice(0, 10);
+            const httpStatus = process.env.HTTP_STATUS || 'unknown';
+            const reason = process.env.HEALTH_CHECK_REASON || `unexpected HTTP status ${httpStatus}`;
+            const title = `Production health check failed — ${today}`;
+            const body = [
+              `The \`/accuracy\` production health check failed on **${today}**.`,
+              '',
+              `**Reason:** ${reason}`,
+              `**HTTP status observed:** ${httpStatus}`,
+              '',
+              'URL checked: https://stock-intelligence-test-1-vs.vercel.app/accuracy',
+              '',
+              `_Opened automatically by [Production health check](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})._`,
+            ].join('\n');
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'health-check',
+            });
+            if (existing.data.some(i => i.title === title)) {
+              console.log('Issue already open for today — not creating a duplicate.');
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['health-check'],
+            });
