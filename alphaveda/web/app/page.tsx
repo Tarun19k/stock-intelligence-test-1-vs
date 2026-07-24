@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { getServerSupabase } from '@/lib/supabase'
 import { LexOrRaw } from '@/components/Lex'
 import { lynchClassLexKey } from '@/lib/lexicon'
@@ -89,7 +90,7 @@ export default async function MarketDataPage() {
                 if (!row) {
                   return (
                     <tr key={inst.id}>
-                      <td className="mono">{inst.ticker}</td>
+                      <td className="mono"><Link href={`/instrument/${inst.ticker}`}>{inst.ticker}</Link></td>
                       <td><LexOrRaw k={lynchClassLexKey(inst.classification)} fallback={inst.classification} /></td>
                       <td colSpan={7} style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                         No data yet
@@ -99,7 +100,7 @@ export default async function MarketDataPage() {
                 }
                 return (
                   <tr key={inst.id}>
-                    <td><strong className="mono">{inst.ticker}</strong></td>
+                    <td><Link href={`/instrument/${inst.ticker}`}><strong className="mono">{inst.ticker}</strong></Link></td>
                     <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       <LexOrRaw k={lynchClassLexKey(inst.classification)} fallback={inst.classification} />
                     </td>

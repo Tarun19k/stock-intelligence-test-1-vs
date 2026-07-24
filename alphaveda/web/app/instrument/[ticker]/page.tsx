@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getServerSupabase } from '@/lib/supabase'
 import Lex, { LexOrRaw } from '@/components/Lex'
 import { directionLexKey, lynchClassLexKey } from '@/lib/lexicon'
+import PriceSparkline from '@/components/PriceSparkline'
 
 const INSTRUMENT_OBSERVATION_THRESHOLD = 20
 
@@ -13,7 +14,14 @@ type Instrument = {
   sector: string | null
 }
 type Price = { close: number; trade_date: string }
-type Prediction = { id: number; instrument_id: number; direction: string; emitted_at: string }
+type Prediction = {
+  id: number
+  instrument_id: number
+  direction: string
+  emitted_at: string
+  magnitude_target: number | null
+  downside_target: number | null
+}
 
 function startOfUtcWeek(now: Date): string {
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
@@ -45,15 +53,23 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
   if (!instrument) notFound()
 
   const weekStart = startOfUtcWeek(new Date())
-  const [priceRes, signalRes, outcomesRes, trackedRes, weeklySignalsRes] = await Promise.all([
+  const [priceRes, historyRes, signalRes, outcomesRes, trackedRes, weeklySignalsRes] = await Promise.all([
     sb.from('ohlcv')
       .select('close,trade_date')
       .eq('instrument_id', instrument.id)
       .eq('circuit_flag', false)
       .order('trade_date', { ascending: false })
       .limit(1),
+    // Last 30 sessions for the sparkline — ascending so PriceSparkline can
+    // read left-to-right without re-sorting.
+    sb.from('ohlcv')
+      .select('close,trade_date')
+      .eq('instrument_id', instrument.id)
+      .eq('circuit_flag', false)
+      .order('trade_date', { ascending: false })
+      .limit(30),
     sb.from('accuracy_predictions')
-      .select('id,instrument_id,direction,emitted_at')
+      .select('id,instrument_id,direction,emitted_at,magnitude_target,downside_target')
       .eq('instrument_id', instrument.id)
       .is('superseded_at', null)
       .order('emitted_at', { ascending: false })
@@ -72,6 +88,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
   ])
 
   const price = (priceRes.data?.[0] ?? null) as Price | null
+  const history = [...((historyRes.data ?? []) as Price[])].reverse() // oldest first for the sparkline
   const signal = (signalRes.data?.[0] ?? null) as Prediction | null
   const resolvedCount = outcomesRes.count ?? 0
   const trackedCount = trackedRes.count ?? 0
@@ -135,12 +152,31 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
         </div>
 
         <div className="av-card">
+          <div className="av-stat__label">Target</div>
+          <div className="av-stat__value mono">
+            {signal?.magnitude_target != null ? `${(signal.magnitude_target * 100).toFixed(1)}%` : '—'}
+          </div>
+        </div>
+
+        <div className="av-card">
+          <div className="av-stat__label">Stop</div>
+          <div className="av-stat__value mono">
+            {signal?.downside_target != null ? `${(signal.downside_target * 100).toFixed(1)}%` : '—'}
+          </div>
+        </div>
+
+        <div className="av-card">
           <div className="av-stat__label"><Lex k="instrument.accuracy" /></div>
           <div style={{ marginTop: '0.5rem' }}>
             {resolvedCount} of {INSTRUMENT_OBSERVATION_THRESHOLD} <Lex k="instrument.signals_graded" />
             {resolvedCount < INSTRUMENT_OBSERVATION_THRESHOLD && <> — <Lex k="instrument.not_enough_data" /></>}
           </div>
         </div>
+      </div>
+
+      <div className="av-card" style={{ marginBottom: '1.5rem' }}>
+        <div className="av-stat__label">Price History (last {history.length} sessions)</div>
+        <PriceSparkline rows={history} />
       </div>
 
       <div className="av-banner av-banner--blue">
