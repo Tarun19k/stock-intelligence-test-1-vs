@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getServerSupabase } from '@/lib/supabase'
 import { LexOrRaw } from '@/components/Lex'
 import { lynchClassLexKey } from '@/lib/lexicon'
+import GainersLosersStrip from '@/components/GainersLosersStrip'
 
 type Instrument = { id: number; ticker: string; classification: string }
 type OHLCVRow = {
@@ -50,6 +51,10 @@ export default async function MarketDataPage() {
       <p className="av-subheading">
         Latest EOD prices from NSE Bhavcopy — {instruments.length} instruments tracked
       </p>
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        <GainersLosersStrip />
+      </div>
 
       {staleDays !== null && staleDays >= 1 && (
         <div className="av-banner av-banner--amber">
