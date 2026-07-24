@@ -439,4 +439,29 @@ def emit_signal(instrument_id: int, as_of: str) -> dict | None:
         "emitted_at": datetime.now(timezone.utc).isoformat(),
     }
     written = supabase.table("accuracy_predictions").insert(row).execute()
-    return written.data[0] if written.data else None
+    written_row = written.data[0] if written.data else None
+
+    # 10. Write per-signal attribution rows to prediction_components (G5/G14/G7
+    # backfill blocker fix, 2026-07-25). Additive-only: fires exactly when a
+    # real accuracy_predictions row was written, never on suppression (None
+    # returns above never reach this line). One extra INSERT round-trip,
+    # batched as a single call across every component in `signals` — not a
+    # per-component loop — so the emit-latency SLA only takes one additional
+    # DB round trip regardless of how many signal components exist.
+    if written_row is not None:
+        ticker = inst.data[0].get("ticker")
+        component_rows = [
+            {
+                "prediction_id": written_row["id"],
+                "symbol": ticker,
+                "component_name": sig["signal_name"],
+                "raw_score": sig["confidence"],
+                "weight": sig["weight"],
+                "contribution": sig["confidence"] * sig["weight"],
+                "source": "emit_signal",
+            }
+            for sig in signals
+        ]
+        supabase.table("prediction_components").insert(component_rows).execute()
+
+    return written_row
