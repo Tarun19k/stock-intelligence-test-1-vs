@@ -125,6 +125,10 @@ def compute_momentum_signal(
             circuit_flag} rows with trade_date <= as_of. Should be sized to
             comfortably cover both the reference-row tolerance search and
             STDEV_WINDOW_ROWS (32 calendar days is what emit_signal() fetches).
+            Rows with circuit_flag=True are excluded internally before any
+            calculation (reference-row selection, return, and stdev window) —
+            callers do not need to pre-filter, though backtest_replay.py does
+            so anyway at the DB-query level for its own reasons.
         as_of: ISO date string, the date the signal is being computed for.
 
     Returns a signals list ([{"direction", "confidence", "signal_name",
@@ -136,7 +140,25 @@ def compute_momentum_signal(
     if not ohlcv_rows:
         return None
 
-    last = ohlcv_rows[-1]
+    # 0. Exclude circuit-locked rows (Jhunjhunwala condition) before any
+    # calculation. circuit_flag=True marks an artificial lock price, not a
+    # genuine market move — letting it stand as the reference row, the
+    # "last" row, or in the stdev window would corrupt the return
+    # calculation and understate/overstate the volatility normalization.
+    # Mirrors the exclusion already applied in compute_downside_target()
+    # (src/signals/downside.py) and scripts/backtest_replay.py's
+    # _historical_rows(); this closes the gap for the live emit_signal()
+    # path, which previously fetched circuit_flag but never filtered on it.
+    clean_rows = [row for row in ohlcv_rows if not row.get("circuit_flag", False)]
+    if not clean_rows:
+        _LOG.warning(
+            "RF-I_ALL_ROWS_CIRCUIT_LOCKED: emit_signal suppressed as_of=%s "
+            "fetched=%s all rows circuit-locked",
+            as_of, len(ohlcv_rows),
+        )
+        return None
+
+    last = clean_rows[-1]
     last_close = last.get("close")
     if last_close is None:
         return None
@@ -152,7 +174,7 @@ def compute_momentum_signal(
     # "whatever's oldest in the fetched rows" (the RF-I root cause).
     candidates = [
         row
-        for row in ohlcv_rows
+        for row in clean_rows
         if row.get("close") is not None
         and row.get("trade_date")
         and tolerance_lower <= date.fromisoformat(row["trade_date"]) <= tolerance_upper
@@ -162,7 +184,7 @@ def compute_momentum_signal(
             "RF-I_STALE_REFERENCE: emit_signal suppressed as_of=%s "
             "target=%s tolerance=[%s, %s] nearest_available=%s",
             as_of, reference_target_date, tolerance_lower, tolerance_upper,
-            ohlcv_rows[0].get("trade_date") if ohlcv_rows else None,
+            clean_rows[0].get("trade_date") if clean_rows else None,
         )
         return None
 
@@ -186,8 +208,10 @@ def compute_momentum_signal(
     direction = "BULL" if ret >= 0 else "BEAR"
 
     # 2. Volatility-normalized confidence (RF-I fix part 1). See
-    # CONFIDENCE_SCALE derivation above the module constants.
-    stdev_window = ohlcv_rows[-STDEV_WINDOW_ROWS:]
+    # CONFIDENCE_SCALE derivation above the module constants. Uses
+    # clean_rows (circuit-excluded) so the stdev window can't be diluted by
+    # artificially-compressed circuit-lock price movement.
+    stdev_window = clean_rows[-STDEV_WINDOW_ROWS:]
     closes = [row["close"] for row in stdev_window if row.get("close") is not None]
     period_returns = [
         (closes[i] - closes[i - 1]) / closes[i - 1]
