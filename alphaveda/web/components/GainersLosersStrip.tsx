@@ -19,13 +19,13 @@ export default async function GainersLosersStrip() {
 
   const [instRes, ohlcvRes] = await Promise.all([
     sb.from('instruments').select('id,ticker').eq('is_active', true),
-    // limit(30) is enough for 2 most-recent rows per instrument (15 active
-    // instruments x 2), assuming daily-continuous data — matches this
-    // codebase's now-backfilled dense history, not the old sparse state.
+    // Fetch enough non-circuit rows for 2 most-recent observations per active
+    // instrument without letting halted, frozen prices shrink the candidate pool.
     sb.from('ohlcv')
       .select('instrument_id,trade_date,close')
+      .eq('circuit_flag', false)
       .order('trade_date', { ascending: false })
-      .limit(30),
+      .limit(60),
   ])
 
   const instruments: Instrument[] = instRes.data ?? []
@@ -64,6 +64,9 @@ export default async function GainersLosersStrip() {
     <div className="av-grid av-grid--2">
       <div className="av-card">
         <div className="av-stat__label">Top Gainers</div>
+        <div style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          Day-over-day price moves — not a ranking of investment quality
+        </div>
         <ul style={{ listStyle: 'none', padding: 0, margin: '0.5rem 0 0' }}>
           {gainers.map((m) => (
             <li key={m.ticker} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0' }}>
@@ -75,6 +78,9 @@ export default async function GainersLosersStrip() {
       </div>
       <div className="av-card">
         <div className="av-stat__label">Top Losers</div>
+        <div style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          Day-over-day price moves — not a ranking of investment quality
+        </div>
         <ul style={{ listStyle: 'none', padding: 0, margin: '0.5rem 0 0' }}>
           {losers.map((m) => (
             <li key={m.ticker} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0' }}>
