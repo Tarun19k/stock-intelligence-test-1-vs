@@ -1,7 +1,7 @@
 import { getServerSupabase } from '@/lib/supabase'
 import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
-import { directionLexKey } from '@/lib/lexicon'
+import { directionLexKey, outcomeLexKey } from '@/lib/lexicon'
 
 const STALENESS_DAYS = 90
 
@@ -11,6 +11,8 @@ type Outcome = {
   resolved_at: string
   hit: boolean
   return_pct: number
+  magnitude_hit: boolean | null
+  outcome: string | null
 }
 
 type Prediction = {
@@ -19,6 +21,17 @@ type Prediction = {
   direction: string
   confidence: number
   emitted_at: string
+  magnitude_target: number | null
+  downside_target: number | null
+}
+
+// L1-D (2026-07-26, RF-J): the target actually stated at signal time — the
+// upside magnitude_target for a BULL call, the downside_target for a BEAR
+// call. Never the forward-looking figure for a still-open signal — this page
+// only ever shows resolved rows.
+function targetForPrediction(pred: Prediction | undefined): number | null {
+  if (!pred) return null
+  return pred.direction === 'BULL' ? pred.magnitude_target : pred.downside_target
 }
 
 type Instrument = { id: number; ticker: string }
@@ -34,8 +47,8 @@ export default async function AccuracyPage() {
   const now = new Date()
 
   const [outcomesRes, predsRes, instsRes, proposedRes] = await Promise.all([
-    sb.from('accuracy_outcomes').select('id,prediction_id,resolved_at,hit,return_pct').order('resolved_at', { ascending: false }).limit(100),
-    sb.from('accuracy_predictions').select('id,instrument_id,direction,confidence,emitted_at'),
+    sb.from('accuracy_outcomes').select('id,prediction_id,resolved_at,hit,return_pct,magnitude_hit,outcome').order('resolved_at', { ascending: false }).limit(100),
+    sb.from('accuracy_predictions').select('id,instrument_id,direction,confidence,emitted_at,magnitude_target,downside_target'),
     sb.from('instruments').select('id,ticker'),
     sb.from('signal_weights').select('id,approved_at', { count: 'exact' }).eq('status', 'PROPOSED'),
   ])
@@ -84,7 +97,10 @@ export default async function AccuracyPage() {
         returns below are a historical record only — they do not predict what will happen
         next, and results can get worse as well as better. Negative returns are a normal
         part of this record and carry real downside risk if acted on; nothing here is a
-        guarantee or a recommendation.
+        guarantee or a recommendation. &quot;Direction&quot; below means we called the
+        move up or down correctly; &quot;Magnitude&quot; means the move actually reached
+        the stated target — a call can get the direction right without reaching the
+        target, and the two are shown separately so one is never mistaken for the other.
       </div>
 
       {hasCoverageGap && (
@@ -150,15 +166,22 @@ export default async function AccuracyPage() {
                 <th>Ticker</th>
                 <th>Signal</th>
                 <th style={{ textAlign: 'right' }}>Confidence</th>
-                <th>Hit</th>
-                <th style={{ textAlign: 'right' }}>Return</th>
-                <th>Resolved</th>
+                <th style={{ textAlign: 'right' }}><Lex k="ledger.target_label" /></th>
+                <th style={{ textAlign: 'right' }}><Lex k="ledger.return_label" /></th>
+                <th><Lex k="ledger.resolved_after_label" /></th>
+                <th><Lex k="ledger.direction_hit_label" /></th>
+                <th><Lex k="ledger.magnitude_hit_label" /></th>
               </tr>
             </thead>
             <tbody>
               {outcomes.map((o) => {
                 const pred = predById.get(o.prediction_id)
                 const ticker = pred ? tickerById.get(pred.instrument_id) : null
+                const target = targetForPrediction(pred)
+                const resolvedAfterDays = pred ? daysBetween(pred.emitted_at, new Date(o.resolved_at)) : null
+                // magnitude_hit may be null on rows resolved before migration 0018 —
+                // render as unknown ('—'), never silently coerce to a badge value.
+                const magnitudeHit = o.magnitude_hit
                 return (
                   <tr key={o.id}>
                     <td className="mono">{ticker ?? '—'}</td>
@@ -172,15 +195,36 @@ export default async function AccuracyPage() {
                     <td style={{ textAlign: 'right' }}>
                       {pred ? <ProbabilityFrame pct={pred.confidence} /> : '—'}
                     </td>
-                    <td>
-                      <span style={{ color: o.hit ? 'var(--emerald)' : 'var(--terra)', fontWeight: 500 }}>
-                        {o.hit ? '✓' : '✗'}
-                      </span>
+                    <td className="mono" style={{ textAlign: 'right' }}>
+                      {target != null ? `${(target * 100).toFixed(1)}%` : '—'}
                     </td>
                     <td className="mono" style={{ textAlign: 'right', color: o.return_pct >= 0 ? 'var(--emerald)' : 'var(--terra)' }}>
                       {o.return_pct >= 0 ? '+' : ''}{o.return_pct.toFixed(2)}%
                     </td>
-                    <td className="mono" style={{ fontSize: '0.8rem' }}>{o.resolved_at.slice(0, 10)}</td>
+                    <td className="mono" style={{ fontSize: '0.8rem' }}>
+                      {resolvedAfterDays != null ? `${resolvedAfterDays} day${resolvedAfterDays !== 1 ? 's' : ''}` : o.resolved_at.slice(0, 10)}
+                    </td>
+                    <td>
+                      <span
+                        title={o.hit ? 'Direction called correctly' : 'Direction called incorrectly'}
+                        style={{ color: o.hit ? 'var(--emerald)' : 'var(--terra)', fontWeight: 500 }}
+                      >
+                        {o.hit ? '✓' : '✗'}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        title={o.outcome ? undefined : 'Not available for this row'}
+                        style={{ color: magnitudeHit == null ? 'var(--text-muted)' : magnitudeHit ? 'var(--emerald)' : 'var(--terra)', fontWeight: 500 }}
+                      >
+                        {magnitudeHit == null ? '—' : magnitudeHit ? '✓' : '✗'}
+                      </span>
+                      {o.outcome && (
+                        <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          <LexOrRaw k={outcomeLexKey(o.outcome)} fallback={o.outcome} />
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 )
               })}

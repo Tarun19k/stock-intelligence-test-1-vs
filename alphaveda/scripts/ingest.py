@@ -256,7 +256,7 @@ def run_ingest(target_date: date | None = None) -> dict:
         }
         open_preds_all = (
             supabase.table("accuracy_predictions")
-            .select("id, instrument_id, direction, emitted_at, horizon_days")
+            .select("id, instrument_id, direction, emitted_at, horizon_days, magnitude_target, downside_target")
             .execute()
         ).data or []
 
@@ -302,6 +302,8 @@ def run_ingest(target_date: date | None = None) -> dict:
                     "symbol": symbol,
                     "signal_direction": pred["direction"],  # remap DB col → Python key
                     "entry_price": entry_close,
+                    "magnitude_target": pred.get("magnitude_target"),
+                    "downside_target": pred.get("downside_target"),
                 })
 
         resolutions = resolve_outcomes_from_ohlcv(prediction_dicts, parsed_rows)
@@ -317,6 +319,11 @@ def run_ingest(target_date: date | None = None) -> dict:
         # since G18 shipped. outcome_date mirrors resolved_at (same event, same day);
         # actual_direction/is_correct are the observed-outcome counterparts to hit/
         # return_pct, computed in resolve_outcomes_from_ohlcv().
+        #
+        # L1-D (2026-07-26): magnitude_hit/outcome added — see
+        # supabase/migrations/0018_accuracy_outcomes_add_magnitude.sql. `hit` and
+        # `is_correct` stay direction-only and unchanged; magnitude_hit/outcome are
+        # additive columns for the retail-facing magnitude-of-target check.
         if resolutions:
             outcome_rows = [
                 {
@@ -328,6 +335,8 @@ def run_ingest(target_date: date | None = None) -> dict:
                     "actual_direction": res["actual_direction"],
                     "return_pct": res["return_pct"],
                     "actual_return": res["return_pct"],
+                    "magnitude_hit": res["magnitude_hit"],
+                    "outcome": res["outcome"],
                 }
                 for res in resolutions
             ]

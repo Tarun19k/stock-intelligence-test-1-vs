@@ -18,6 +18,7 @@ REQUIRED_TABLES = [
 REQUIRED_COLUMNS = {
     "accuracy_predictions": ["downside_target"],       # migration 0012
     "ohlcv": ["circuit_flag", "deliverable_volume", "licence_class"],  # migration 0013
+    "accuracy_outcomes": ["magnitude_hit", "outcome"],  # migration 0018
 }
 
 

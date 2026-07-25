@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getServerSupabase } from '@/lib/supabase'
 import Lex, { LexOrRaw } from '@/components/Lex'
-import { directionLexKey, lynchClassLexKey } from '@/lib/lexicon'
+import { directionLexKey, lynchClassLexKey, outcomeLexKey } from '@/lib/lexicon'
 import PriceSparkline from '@/components/PriceSparkline'
 import { getLynchNarrative } from '@/lib/lynch-narratives'
 
@@ -22,6 +22,23 @@ type Prediction = {
   emitted_at: string
   magnitude_target: number | null
   downside_target: number | null
+}
+
+// L1-D (2026-07-26, RF-J): the most recent RESOLVED prior signal for this
+// instrument, joined to its outcome — used only to show a past, already-graded
+// call ("we said X / it did Y"). Never used for the current open signal above
+// (see A13 adaptation note below) — that would be forward guidance, which
+// SEBI compliance flags as prohibited.
+type ResolvedPriorSignal = {
+  outcome_id: number
+  resolved_at: string
+  hit: boolean
+  return_pct: number
+  magnitude_hit: boolean | null
+  outcome: string | null
+  direction: string
+  emitted_at: string
+  target: number | null
 }
 
 function startOfUtcWeek(now: Date): string {
@@ -54,7 +71,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
   if (!instrument) notFound()
 
   const weekStart = startOfUtcWeek(new Date())
-  const [priceRes, historyRes, signalRes, outcomesRes, trackedRes, weeklySignalsRes] = await Promise.all([
+  const [priceRes, historyRes, signalRes, outcomesRes, trackedRes, weeklySignalsRes, lastResolvedRes] = await Promise.all([
     sb.from('ohlcv')
       .select('close,trade_date')
       .eq('instrument_id', instrument.id)
@@ -86,6 +103,14 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
       .gte('emitted_at', weekStart)
       .is('superseded_at', null)
       .order('emitted_at', { ascending: false }),
+    // Most recent RESOLVED signal for this instrument, for the "we said X /
+    // it did Y" comparison — an already-graded past call, never the current
+    // open signal's forward target.
+    sb.from('accuracy_outcomes')
+      .select('id,resolved_at,hit,return_pct,magnitude_hit,outcome,accuracy_predictions!inner(instrument_id,direction,emitted_at,magnitude_target,downside_target)')
+      .eq('accuracy_predictions.instrument_id', instrument.id)
+      .order('resolved_at', { ascending: false })
+      .limit(1),
   ])
 
   const price = (priceRes.data?.[0] ?? null) as Price | null
@@ -93,6 +118,34 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
   const signal = (signalRes.data?.[0] ?? null) as Prediction | null
   const resolvedCount = outcomesRes.count ?? 0
   const trackedCount = trackedRes.count ?? 0
+
+  // Supabase's embedded-resource shape for a to-one !inner join can come back
+  // as either an object or a single-element array depending on client
+  // version — normalize defensively rather than assume one shape.
+  const rawLastResolved = lastResolvedRes.data?.[0] as
+    | (Record<string, unknown> & { accuracy_predictions: unknown })
+    | undefined
+  const rawPred = rawLastResolved
+    ? (Array.isArray(rawLastResolved.accuracy_predictions)
+        ? rawLastResolved.accuracy_predictions[0]
+        : rawLastResolved.accuracy_predictions) as
+        | { instrument_id: number; direction: string; emitted_at: string; magnitude_target: number | null; downside_target: number | null }
+        | undefined
+    : undefined
+  const lastResolved: ResolvedPriorSignal | null =
+    rawLastResolved && rawPred
+      ? {
+          outcome_id: rawLastResolved.id as number,
+          resolved_at: rawLastResolved.resolved_at as string,
+          hit: rawLastResolved.hit as boolean,
+          return_pct: rawLastResolved.return_pct as number,
+          magnitude_hit: (rawLastResolved.magnitude_hit as boolean | null) ?? null,
+          outcome: (rawLastResolved.outcome as string | null) ?? null,
+          direction: rawPred.direction,
+          emitted_at: rawPred.emitted_at,
+          target: rawPred.direction === 'BULL' ? rawPred.magnitude_target : rawPred.downside_target,
+        }
+      : null
   const weeklySignals = (weeklySignalsRes.data ?? []) as Prediction[]
   const latestWeeklyByInstrument = new Map<number, Prediction>()
   for (const prediction of weeklySignals) {
@@ -197,6 +250,64 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
           </div>
         </div>
       </div>
+
+      {/* L1-D (2026-07-26, RF-J): comparison for the most recent RESOLVED past
+          signal only — never for the open signal above (that would be forward
+          guidance). Renders nothing if this instrument has no resolved prior
+          signal yet, per council condition: check what data is actually
+          available before assuming, don't fabricate a comparison. */}
+      {lastResolved && (
+        <div className="av-card" style={{ marginBottom: '1.5rem' }}>
+          <div className="av-stat__label" style={{ marginBottom: '0.75rem' }}>
+            Past call, graded — {lastResolved.resolved_at.slice(0, 10)}
+          </div>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <div>
+              <div className="av-stat__label">We said</div>
+              <div className="av-stat__value mono" style={{ fontSize: '1.75rem' }}>
+                {lastResolved.direction === 'BULL' ? '+' : '-'}
+                {lastResolved.target != null ? `${(lastResolved.target * 100).toFixed(1)}%` : '—'}
+              </div>
+            </div>
+            <div>
+              <div className="av-stat__label">It did</div>
+              <div
+                className="av-stat__value mono"
+                style={{ fontSize: '1.75rem', color: lastResolved.return_pct >= 0 ? 'var(--emerald)' : 'var(--terra)' }}
+              >
+                {/* Matches accuracy/page.tsx's existing return_pct rendering convention
+                    exactly (no *100) — kept consistent with that page rather than
+                    "corrected" here, since changing the convention is out of L1-D's
+                    scope and two pages disagreeing on the same field would be worse. */}
+                {lastResolved.return_pct >= 0 ? '+' : ''}{lastResolved.return_pct.toFixed(2)}%
+              </div>
+            </div>
+            <div>
+              <div className="av-stat__label"><Lex k="ledger.direction_hit_label" /></div>
+              <div className="av-stat__value" style={{ color: lastResolved.hit ? 'var(--emerald)' : 'var(--terra)' }}>
+                {lastResolved.hit ? '✓' : '✗'}
+              </div>
+            </div>
+            <div>
+              <div className="av-stat__label"><Lex k="ledger.magnitude_hit_label" /></div>
+              <div
+                className="av-stat__value"
+                style={{ color: lastResolved.magnitude_hit == null ? 'var(--text-muted)' : lastResolved.magnitude_hit ? 'var(--emerald)' : 'var(--terra)' }}
+              >
+                {lastResolved.magnitude_hit == null ? '—' : lastResolved.magnitude_hit ? '✓' : '✗'}
+              </div>
+            </div>
+          </div>
+          {lastResolved.outcome && (
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.75rem' }}>
+              <LexOrRaw k={outcomeLexKey(lastResolved.outcome)} fallback={lastResolved.outcome} />
+            </div>
+          )}
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+            A single past result, shown for reference only — not a prediction of what happens next.
+          </div>
+        </div>
+      )}
 
       <div className="av-card" style={{ marginBottom: '1.5rem' }}>
         <div className="av-stat__label">Price History (last {history.length} sessions)</div>
