@@ -170,6 +170,9 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
             {resolvedCount} of {INSTRUMENT_OBSERVATION_THRESHOLD} <Lex k="instrument.signals_graded" />
             {resolvedCount < INSTRUMENT_OBSERVATION_THRESHOLD && <> — <Lex k="instrument.not_enough_data" /></>}
           </div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+            Past signal accuracy does not guarantee future results.
+          </div>
         </div>
       </div>
 

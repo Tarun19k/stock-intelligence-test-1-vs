@@ -150,8 +150,8 @@ export const LEXICON: Record<LexKey, LexEntry> = {
     simple: "Do you see this company's products/stores/ads around you - and is that more or less than a year ago?",
   },
   'instrument.self_check.repeat': {
-    pro: 'Would you (or someone you know) buy from them again?',
-    simple: 'Would you (or someone you know) buy from them again?',
+    pro: 'Would you (or someone you know) use their product/service again?',
+    simple: 'Would you (or someone you know) use their product/service again?',
   },
   'instrument.self_check.demand': {
     pro: 'Is what they sell something people need more of over time, or is it fading?',
