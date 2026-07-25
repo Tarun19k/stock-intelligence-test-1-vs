@@ -1,4 +1,4 @@
-# Agent Task Log — RF-I Fix Execution
+# Agent Task Log — RF-I Fix Execution (+ Gall's-Law Layered Plan, 2026-07-25)
 
 Native TaskCreate/TaskList/TaskUpdate tools are disconnected this session (MCP server down) —
 this file is the tracked substitute. CoS (this session) owns triage of every failure below;
@@ -80,3 +80,50 @@ Tarun authorized extending `backfill_ohlcv.py` to all remaining 13 active instru
 | 3 | `backtest_replay.py` silently diverges from `engine.py`'s live math (same class of gap flagged earlier this session for the old `backtest.py`) | Harness reimplements logic instead of importing it | Mandatory direct import + pinning test, T-C task spec + verification step 3 |
 | 4 | Parallel agents overwrite each other on shared files (already happened once this session — Tier 1/Tier 3 same-directory dispatch) | No isolation between concurrent agents | `isolation: worktree` on T-A and T-B, T-C sequenced after T-A merges, not concurrent |
 | 5 | Dispatched agent self-reports "tests pass" without actually running them | Exactly the gap the Claim Verification Gate exists for | CoS independently re-runs every test/check in this turn, never trusts agent's own claim |
+
+---
+
+# Layer 1–5 Execution Plan (Gall's Law) — Bookkeeping & Sign-Off
+
+Extends this same file rather than starting a new one — per this session's own finding (twice: RF-G, G16) that a
+second tracking document just goes stale. Single source of truth for the plan from the 2026-07-25 strategic
+analysis. Sign-off is tiered to risk, not applied uniformly — a Layer 2 mechanical fix does not need the same
+chain as a Layer 1 compliance fix.
+
+## Workflow (per task)
+
+```
+1. CLAIM   — task moves to IN PROGRESS, owner assigned (Codex or Claude, per Method column below)
+2. ATTEMPT — if Codex: up to 3 trial loops (dispatch → review output → retry if wrong/incomplete)
+             if Codex fails/silent-no-ops on all 3 → FALLBACK to Claude, log the reason, do not retry Codex further
+3. REVIEW  — Claude independently re-verifies the output (same standard as every fix this session:
+             read the real diff, re-run real tests, query real data — never trust a self-report)
+4. SIGN-OFF — per the Required Signers column below; task is BLOCKED until all required signers respond
+5. CLOSE   — GAP_REGISTER.md updated in the same turn sign-off completes
+```
+
+**Codex fallback rule, made concrete:** "a few trial loops" = 3. A trial counts as a real dispatch attempt with a
+verifiable output (a diff, a file, a test result) — a silent no-op or an error counts as a failed trial, not a
+non-attempt. After 3 failed trials, switch to Claude directly and note `codex_fallback_reason` in this log; do not
+keep retrying Codex past that on the same task.
+
+## Task table
+
+| ID | Task | Layer | Method | Acceptance Criteria | Required Signers | Status |
+|---|---|---|---|---|---|---|
+| L1-A | Investigate + fix `engine.py`'s unused `circuit_flag` column (fetched, never filtered) | 1 | Claude direct (judgment on whether/how to filter without breaking existing behavior) | Confirm real impact (does any current live instrument have unfiltered circuit-day data affecting its signal today); fix filters circuit-locked rows from momentum/stdev calc; 213/213 test suite still passes; adversarial re-run confirms no live instrument's current signal silently flips without a real reason | Jhunjhunwala (circuit-microstructure-reviewer), CoS, Tarun | OPEN |
+| L1-B | Fix `GainersLosersStrip.tsx` circuit_flag filter (confirmed BLOCK) | 1 | Codex first, Claude review | `.eq('circuit_flag', false)` added to query; `limit()` adjusted per reviewer's caution (avoid silently dropping instruments); live Playwright re-check on `/` shows correct gainers/losers with no circuit-locked instrument present; zero console errors | Jhunjhunwala, CoS, Tarun | OPEN |
+| L1-C | Bundle 4 SEBI REVISE fixes (caveat text, A13-style mitigation on instrument page, "buy"-word reword, past-performance disclaimer) | 1 | Codex first for the text/wording changes, Claude direct for the A13-style structural mitigation (judgment call) | All 4 changes present; re-run `sebi-compliance-reviewer` for a fresh verdict (not reusing the prior REVISE) — must reach APPROVE or a named, accepted residual; live Playwright check on `/` and `/instrument/RELIANCE` | Varghese (sebi-compliance-reviewer), CoS, Tarun | OPEN |
+| L2-A | HDFCBANK/PIDILITIND corporate-action correction (0.5x scale factor, 31+50 rows) | 2 | Claude direct (touches already-written prod data, no unilateral-delete precedent applies) | Backup of affected rows taken before UPDATE; correction applied; `check_corporate_actions.py` re-run shows 0 discontinuities for both tickers; spot-check 3 rows by hand against real pre/post values | Munger (WATCH condition owner), CoS, Tarun | OPEN — needs volume-adjustment decision first (see prior turn) |
+| L2-B | Wire `check_corporate_actions.py` into a recurring/gating check | 2 | Codex first (proven GHA pattern to replicate) | New/extended workflow; exit-code-1 gate confirmed working (already verified this session); real triggered run shown, not just YAML-valid | CoS, Tarun | OPEN — needs cadence/placement decision first |
+| L2-C | G21 Lynch content layer | 2 | Codex first (content generation, bounded, spec-clear commission already drafted) | Matches the drafted commission's 6 fields exactly; SEBI language check passes (grep-verified, zero BUY/SELL/HOLD); 3 spot-checked instruments show genuinely differentiated content, not palette-swapped | Varghese, Lynch (panel-lynch), CoS, Tarun | OPEN |
+| L3-A | G20 nav promotion decision | 3 | N/A — decision, not build | Your explicit go/no-go on the "1wk watchlist-strip, no misuse" condition | Tarun only | PENDING YOUR CALL |
+| L3-B | G1 fundamentals sourcing decision | 3 | N/A — decision | Manual entry vs. paid API, with real cost named | Wealth Strategist (doctrine-panel-wealth-revenue-strategist), Tarun | PENDING — Wealth Strategist not yet asked |
+| L4/L5 | Track B, Policy Context RAG, real-time-vs-EOD research | 4/5 | Not started | N/A yet | N/A yet | CORRECTLY PARKED per Gall's Law |
+
+## Codex trial log (populate as each Codex-first task runs)
+
+| Task ID | Trial # | Real output produced? | Verdict | Notes |
+|---|---|---|---|---|
+| — | — | — | — | Not yet dispatched |
+
