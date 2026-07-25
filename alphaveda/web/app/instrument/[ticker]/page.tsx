@@ -3,6 +3,7 @@ import { getServerSupabase } from '@/lib/supabase'
 import Lex, { LexOrRaw } from '@/components/Lex'
 import { directionLexKey, lynchClassLexKey } from '@/lib/lexicon'
 import PriceSparkline from '@/components/PriceSparkline'
+import { getLynchNarrative } from '@/lib/lynch-narratives'
 
 const INSTRUMENT_OBSERVATION_THRESHOLD = 20
 
@@ -103,6 +104,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
     (prediction) => prediction.direction === 'BULL',
   ).length
   const classDescriptionKey = lynchClassLexKey(instrument.classification, 'description')
+  const lynchNarrative = getLynchNarrative(instrument.ticker)
 
   return (
     <>
@@ -213,6 +215,30 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
           <li><Lex k="instrument.self_check.demand" /></li>
         </ol>
       </section>
+
+      {lynchNarrative && (
+        <section className="av-card" style={{ marginTop: '1.5rem' }}>
+          <h2 style={{ marginBottom: '1rem' }}>Understand this company</h2>
+
+          <h3 style={{ marginBottom: '0.5rem' }}>What the company does</h3>
+          <p style={{ marginBottom: '1rem' }}>{lynchNarrative.companyDescription}</p>
+
+          <h3 style={{ marginBottom: '0.5rem' }}>Why it fits this company class</h3>
+          <p style={{ marginBottom: '1rem' }}>{lynchNarrative.lynchClassStory}</p>
+
+          <h3 style={{ marginBottom: '0.5rem' }}>Check your understanding</h3>
+          <ol style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.5rem', marginBottom: '1rem' }}>
+            {lynchNarrative.selfVerification.map((question) => (
+              <li key={question}>{question}</li>
+            ))}
+          </ol>
+
+          <aside className="av-banner av-banner--blue">
+            <strong>How future news will be chosen:</strong>{' '}
+            {lynchNarrative.newsFilter}
+          </aside>
+        </section>
+      )}
     </>
   )
 }
