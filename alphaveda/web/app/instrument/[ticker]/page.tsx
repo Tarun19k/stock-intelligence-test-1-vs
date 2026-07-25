@@ -115,6 +115,19 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
         </p>
       )}
 
+      {/* A13 adaptation (Fable round table 2026-07-10 principle, applied 2026-07-25
+          — Varghese/sebi-compliance-reviewer finding): this page is a single-stock
+          isolation surface, the exact condition the original A13 comment (see
+          web/app/path/page.tsx) flags as risk — a raw BULL/BEAR verdict pill sitting
+          in the same stat row as Target/Stop numbers reads as an implicit trade
+          instruction even with analytical wording. Path's fix was to drop the raw
+          pill entirely in favour of an analytical band framing; that specific
+          replacement doesn't exist here (no Kelly/position context on this page),
+          so the equivalent move is structural: the direction pill stays in the
+          identity/classification grid (legitimate research data, same as /signals),
+          and Target/Stop are visually decoupled into their own section below rather
+          than sharing a row with the pill — so the page never presents
+          "BULL + Target 5% + Stop 2%" as one flat, instruction-shaped unit. */}
       <div className="av-grid av-grid--4" style={{ marginBottom: '1.5rem' }}>
         <div className="av-card">
           <div className="av-stat__label"><Lex k="instrument.live_price" /></div>
@@ -152,24 +165,30 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
         </div>
 
         <div className="av-card">
-          <div className="av-stat__label">Target</div>
-          <div className="av-stat__value mono">
-            {signal?.magnitude_target != null ? `${(signal.magnitude_target * 100).toFixed(1)}%` : '—'}
-          </div>
-        </div>
-
-        <div className="av-card">
-          <div className="av-stat__label">Stop</div>
-          <div className="av-stat__value mono">
-            {signal?.downside_target != null ? `${(signal.downside_target * 100).toFixed(1)}%` : '—'}
-          </div>
-        </div>
-
-        <div className="av-card">
           <div className="av-stat__label"><Lex k="instrument.accuracy" /></div>
           <div style={{ marginTop: '0.5rem' }}>
             {resolvedCount} of {INSTRUMENT_OBSERVATION_THRESHOLD} <Lex k="instrument.signals_graded" />
             {resolvedCount < INSTRUMENT_OBSERVATION_THRESHOLD && <> — <Lex k="instrument.not_enough_data" /></>}
+          </div>
+        </div>
+      </div>
+
+      {/* Target/Stop live in their own card, separate from the signal pill above —
+          see A13 adaptation note. */}
+      <div className="av-card" style={{ marginBottom: '1.5rem' }}>
+        <div className="av-stat__label" style={{ marginBottom: '0.75rem' }}>Signal Risk Parameters</div>
+        <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
+          <div>
+            <div className="av-stat__label">Target</div>
+            <div className="av-stat__value mono">
+              {signal?.magnitude_target != null ? `${(signal.magnitude_target * 100).toFixed(1)}%` : '—'}
+            </div>
+          </div>
+          <div>
+            <div className="av-stat__label">Stop</div>
+            <div className="av-stat__value mono">
+              {signal?.downside_target != null ? `${(signal.downside_target * 100).toFixed(1)}%` : '—'}
+            </div>
           </div>
         </div>
       </div>
