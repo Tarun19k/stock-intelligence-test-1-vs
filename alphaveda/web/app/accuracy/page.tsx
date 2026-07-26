@@ -139,7 +139,7 @@ export default async function AccuracyPage() {
         <div className="av-card">
           <div className="av-stat__label">Avg Return</div>
           <div className="av-stat__value" style={{ color: avgReturn != null && avgReturn >= 0 ? 'var(--emerald)' : 'var(--terra)' }}>
-            {avgReturn != null ? `${avgReturn.toFixed(2)}%` : '—'}
+            {avgReturn != null ? `${(avgReturn * 100).toFixed(2)}%` : '—'}
           </div>
           <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
             Average of past outcomes only — individual results vary and losses are possible.
@@ -199,7 +199,7 @@ export default async function AccuracyPage() {
                       {target != null ? `${(target * 100).toFixed(1)}%` : '—'}
                     </td>
                     <td className="mono" style={{ textAlign: 'right', color: o.return_pct >= 0 ? 'var(--emerald)' : 'var(--terra)' }}>
-                      {o.return_pct >= 0 ? '+' : ''}{o.return_pct.toFixed(2)}%
+                      {o.return_pct >= 0 ? '+' : ''}{(o.return_pct * 100).toFixed(2)}%
                     </td>
                     <td className="mono" style={{ fontSize: '0.8rem' }}>
                       {resolvedAfterDays != null ? `${resolvedAfterDays} day${resolvedAfterDays !== 1 ? 's' : ''}` : o.resolved_at.slice(0, 10)}
