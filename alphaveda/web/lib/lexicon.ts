@@ -72,6 +72,14 @@ export type LexKey =
   | 'ledger.cold'
   | 'ledger.hit_label'
   | 'ledger.cold_banner'
+  | 'ledger.target_label'
+  | 'ledger.return_label'
+  | 'ledger.direction_hit_label'
+  | 'ledger.magnitude_hit_label'
+  | 'ledger.resolved_after_label'
+  | 'ledger.outcome.win'
+  | 'ledger.outcome.partial'
+  | 'ledger.outcome.loss'
   | 'port.title'
   | 'port.band'
   | 'port.above'
@@ -170,6 +178,19 @@ export const LEXICON: Record<LexKey, LexEntry> = {
     simple: 'Just getting started',
     learn: 'ledger_cold',
   },
+  // L1-D (2026-07-26, RF-J): direction-hit vs magnitude-hit must render as two
+  // separate, never-blended labels — see accuracy/page.tsx.
+  'ledger.target_label': { pro: 'Target (at signal time)', simple: 'Target (at signal time)' },
+  'ledger.return_label': { pro: 'Actual Return', simple: 'What actually happened' },
+  'ledger.direction_hit_label': { pro: 'Direction', simple: 'Direction right?' },
+  'ledger.magnitude_hit_label': { pro: 'Magnitude', simple: 'Reached target?' },
+  'ledger.resolved_after_label': { pro: 'Resolved after', simple: 'Graded after' },
+  'ledger.outcome.win': { pro: 'Reached target', simple: 'Went as far as we said' },
+  'ledger.outcome.partial': {
+    pro: 'Right direction, target not reached',
+    simple: 'We got the direction right, but not the size',
+  },
+  'ledger.outcome.loss': { pro: 'Wrong direction', simple: 'We got this one wrong' },
 
   'port.title': { pro: 'Kelly view', simple: 'Your position sizes' },
   'port.subtitle': { pro: 'Kelly-based position sizing — research purposes only', simple: 'How much of your money each idea might fit — research only' },
@@ -220,6 +241,15 @@ export function lynchClassLexKey(
     case 'slow_grower': return 'signal.class.slow_grower'
     case 'turnaround': return 'signal.class.turnaround'
     case 'asset_play': return 'signal.class.asset_play'
+    default: return null
+  }
+}
+
+export function outcomeLexKey(outcome: string | null | undefined): LexKey | null {
+  switch (outcome) {
+    case 'WIN': return 'ledger.outcome.win'
+    case 'PARTIAL': return 'ledger.outcome.partial'
+    case 'LOSS': return 'ledger.outcome.loss'
     default: return null
   }
 }
