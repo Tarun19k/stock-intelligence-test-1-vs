@@ -24,6 +24,14 @@ See G23 below for the first applied example.
 
 ---
 
+## G24 (new, closed same-day) — deploy-parity gate
+
+| ID | Description | Status | Note |
+|---|---|---|---|
+| G24 | Root cause of the 2026-07-26 accuracy-ledger incident (see RF-K's surrounding context): `verify_migrations.py` already existed and would have caught a migration-less deploy, but was only ever a documented manual step in `CONTRIBUTING.md`, never wired into CI — nobody ran it before the merge that shipped `/accuracy` querying columns that didn't exist in production yet. | **CLOSED 2026-07-26 (`31010e5`/`f319f31`)** | `alphaveda/scripts/verify_deploy_parity.py` + `.github/workflows/deploy-parity-check.yml` — runs on every push to `main`. Self-maintaining: every migration file must carry a `PARITY-CHECK` annotation or the gate itself fails, so a future migration can't silently skip the check the way this one did. Alert not blocking (confirmed via `gh api .../branches/main/protection` → 404, no branch protection exists to make a blocking check enforceable on this solo-maintainer repo) — push-triggered check + GitHub Issue, same pattern as `ingest-watchdog.yml`. Independently re-run by CoS against live production: confirmed migration 0018 still correctly flagged FAIL (2 columns named), all prior migrations OK, 3 manual-only items listed. This gate does not apply the missing migration — it only makes it impossible to miss going forward. |
+
+---
+
 ## Red Flags (RF) — financial/compliance correctness
 
 | ID | Description | Status | Note |
