@@ -10,6 +10,9 @@
 -- return_pct: signed return from entry price to resolution close; NULL until resolved
 --
 -- Apply: paste into Supabase Dashboard → SQL Editor, or `supabase db push`
+--
+-- PARITY-CHECK: column accuracy_outcomes.hit
+-- PARITY-CHECK: column accuracy_outcomes.return_pct
 
 ALTER TABLE accuracy_outcomes
     ADD COLUMN IF NOT EXISTS hit BOOLEAN NOT NULL DEFAULT FALSE,

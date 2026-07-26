@@ -31,6 +31,24 @@ python3 alphaveda/scripts/verify_migrations.py
 If any table is missing, apply the missing migration via Supabase dashboard SQL editor before proceeding.
 Supabase project: kowlkczswaglbmabygtl (ap-south-1). Credentials: workspace .env.
 
+## Quality Rule 3b — Deploy-Parity Gate Before Merging Any Migration
+This is CI-wired (`.github/workflows/deploy-parity-check.yml`, runs on every push to
+`main`), but run it locally too before merging — the CI check is a post-push alert,
+not a pre-merge block (no branch protection is configured on this repo, so nothing
+structurally stops a push that fails it):
+```bash
+python3 alphaveda/scripts/verify_deploy_parity.py
+```
+Every new migration file **must** carry a `-- PARITY-CHECK: column <table>.<col>`
+(or `manual <description>` for changes a REST select can't verify, e.g. constraints
+or column-width changes) annotation — the script fails loud on any migration file
+with none, and fails loud on any `column` check that doesn't resolve against live
+production. This exists because code querying `magnitude_hit`/`outcome` was merged
+and deployed before migration 0018 adding them was applied to production
+(2026-07-26 incident, `GAP_REGISTER.md`) — `verify_migrations.py` above already
+existed and would have caught it, but it was never more than a manual step
+documented in this file that nobody ran before that merge.
+
 ## Quality Rule 4 — Skip Reason Format Contract
 Every `@pytest.mark.skip` decorator must use this exact format:
 

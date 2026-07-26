@@ -1,0 +1,124 @@
+name: Deploy Parity Check
+
+# Root-cause fix for the 2026-07-26 incident (GAP_REGISTER.md, RF-K entry's
+# surrounding context): code querying `magnitude_hit`/`outcome` on
+# `accuracy_outcomes` was merged to `main` (which auto-deploys to Vercel) before
+# migration 0018 (alphaveda/supabase/migrations/0018_accuracy_outcomes_add_magnitude.sql)
+# had been applied to production Supabase. `/accuracy` silently showed "0 Resolved"
+# instead of 108 real rows, for an unknown window, with zero errors in Vercel's logs
+# — the Supabase query errored and a `?? []` fallback swallowed it.
+#
+# `alphaveda/scripts/verify_migrations.py` (the G-MIG gate) already existed and would
+# have caught this — but it was only ever documented as a manual step in
+# CONTRIBUTING.md, never wired into CI, so nobody ran it before the merge that shipped
+# the incident. `verify_deploy_parity.py` is the CI-wired successor: it compares every
+# migration file in supabase/migrations/ against live production Supabase schema and
+# fails loud, naming the exact unapplied file(s), if any migration hasn't landed.
+#
+# BLOCKING vs. ALERT — design decision:
+# This is deliberately a post-push alert, not a required pre-merge PR check, because a
+# required check needs branch protection with required status checks enabled to
+# actually block anything — confirmed via `gh api repos/.../branches/main/protection`
+# returning 404 "Branch not protected" (2026-07-26). This is a solo-maintainer repo
+# that pushes straight to `main` (see G12's "24 unpushed commits" incident) with no PR
+# gate in consistent use, so a "blocking" check here would just be a red X nobody is
+# structurally required to look at before merging — theoretically ideal, not actually
+# enforceable given the real repo configuration. A push-triggered check that fails
+# loud in the Actions tab AND opens a GitHub Issue (same pattern as G11's
+# ingest-watchdog.yml and G16's health-check.yml — no new secret needed, GITHUB_TOKEN
+# is automatic) is the fastest mechanism that's actually enforceable today: it fires
+# within ~1 minute of the same push that triggers the Vercel deploy, and it's loud via
+# two independent channels (Actions tab + Issue) instead of a status check a solo
+# maintainer isn't gated on seeing. If branch protection is turned on later, this same
+# script can be re-pointed at `pull_request` with zero logic changes.
+#
+# Runs on every push to main (primary — same commit that triggers the Vercel deploy)
+# plus a periodic backstop in case a push-triggered run itself fails to fire, plus
+# workflow_dispatch for manual runs.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "alphaveda/supabase/migrations/**"
+      - "alphaveda/scripts/verify_deploy_parity.py"
+      - "alphaveda/web/**"
+      - "alphaveda/src/**"
+  schedule:
+    # Backstop only, matching health-check.yml's cadence — catches drift if a
+    # push-triggered run itself never fired (GHA outage, etc.).
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  deploy-parity:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: alphaveda
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify migration files match live production schema
+        id: check
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/verify_deploy_parity.py
+
+      - name: Open an issue if a migration is unapplied on production
+        if: failure() && steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Deploy parity alert — unapplied migration(s) on production';
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = [
+              'The deploy-parity gate found migration file(s) in `alphaveda/supabase/migrations/` ' +
+              'whose columns are not reachable on live production Supabase.',
+              '',
+              'If any merged code queries these columns, it will error against production and, ' +
+              'depending on the caller\'s error handling, may fail loudly or silently (see the ' +
+              '2026-07-26 incident this gate was built to catch: `/accuracy` showed "0 Resolved" ' +
+              'instead of 108 real rows for an unknown window, with zero errors in Vercel logs, ' +
+              'because a `?? []` fallback swallowed the Supabase error).',
+              '',
+              `**Full check output:** ${runUrl}`,
+              '',
+              '**Fix:** apply the named migration file(s) via Supabase Dashboard -> SQL Editor ' +
+              '(or `supabase db push`), then re-run this workflow to confirm parity:',
+              '```',
+              'gh workflow run deploy-parity-check.yml',
+              '```',
+              '',
+              `_Opened automatically by [Deploy Parity Check](${runUrl})._`,
+            ].join('\n');
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'deploy-parity',
+            });
+            if (existing.data.some(i => i.title === title)) {
+              console.log('Issue already open — not creating a duplicate.');
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['deploy-parity'],
+            });
