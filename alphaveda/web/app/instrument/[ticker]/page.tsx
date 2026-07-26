@@ -275,11 +275,11 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
                 className="av-stat__value mono"
                 style={{ fontSize: '1.75rem', color: lastResolved.return_pct >= 0 ? 'var(--emerald)' : 'var(--terra)' }}
               >
-                {/* Matches accuracy/page.tsx's existing return_pct rendering convention
-                    exactly (no *100) — kept consistent with that page rather than
-                    "corrected" here, since changing the convention is out of L1-D's
-                    scope and two pages disagreeing on the same field would be worse. */}
-                {lastResolved.return_pct >= 0 ? '+' : ''}{lastResolved.return_pct.toFixed(2)}%
+                {/* RF-K fix (2026-07-26): return_pct is a raw fraction from
+                    resolve_outcomes.py (e.g. 0.05 for a 5% move) — multiply by 100
+                    to render as a percentage. Matches accuracy/page.tsx's corrected
+                    rendering so both pages agree on the same field. */}
+                {lastResolved.return_pct >= 0 ? '+' : ''}{(lastResolved.return_pct * 100).toFixed(2)}%
               </div>
             </div>
             <div>
