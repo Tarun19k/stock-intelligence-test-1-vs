@@ -7,6 +7,13 @@
 -- Apply via Supabase SQL editor or CLI:
 --   supabase db push  (if using supabase CLI)
 --   or paste into Supabase dashboard → SQL Editor
+--
+-- PARITY-CHECK: manual UNIQUE constraint accuracy_outcomes_prediction_date_unique
+--   on accuracy_outcomes(prediction_id, resolved_at) — not observable via a PostgREST
+--   column select (no missing column results from a missing constraint), so
+--   verify_deploy_parity.py cannot check this automatically. Verify manually via
+--   Supabase SQL editor: SELECT conname FROM pg_constraint WHERE conname =
+--   'accuracy_outcomes_prediction_date_unique';
 
 ALTER TABLE accuracy_outcomes
     ADD CONSTRAINT accuracy_outcomes_prediction_date_unique

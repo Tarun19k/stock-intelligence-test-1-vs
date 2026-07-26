@@ -22,6 +22,17 @@
 --              web/app/accuracy/page.tsx (per-row Magnitude-Hit badge)
 --
 -- Apply: paste into Supabase Dashboard → SQL Editor, or `supabase db push`
+--
+-- PARITY-CHECK: column accuracy_outcomes.magnitude_hit
+-- PARITY-CHECK: column accuracy_outcomes.outcome
+--
+-- This is the migration that caused the deploy-parity incident (2026-07-26): code
+-- querying magnitude_hit/outcome was merged to main (auto-deploys to Vercel) before
+-- this file was applied to production Supabase. /accuracy silently showed "0
+-- Resolved" instead of 108 real rows — the Supabase query errored and a `?? []`
+-- fallback swallowed it, with zero errors in Vercel logs. verify_deploy_parity.py
+-- (CI, runs on every push to main) exists specifically to catch this class of gap
+-- before it ships dark again.
 
 ALTER TABLE accuracy_outcomes
     ADD COLUMN IF NOT EXISTS magnitude_hit BOOLEAN NOT NULL DEFAULT FALSE,

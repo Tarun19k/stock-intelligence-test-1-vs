@@ -18,6 +18,15 @@ ALTER TABLE ingest_status ADD CONSTRAINT ingest_status_status_check
 -- 4. Rename error_msg → error to match ingest.py summary dict key
 ALTER TABLE ingest_status RENAME COLUMN error_msg TO error;
 
+-- PARITY-CHECK: column ingest_status.source
+-- PARITY-CHECK: column ingest_status.last_run
+-- PARITY-CHECK: column ingest_status.error
+-- PARITY-CHECK: manual CHECK constraint ingest_status_status_check widened to
+--   include OK/NO_DATA/SKIPPED_HOLIDAY/ERROR/FAILED/PARTIAL — column selects above
+--   prove the renames landed but not the constraint's value set; verify manually via
+--   Supabase SQL editor: SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE
+--   conname = 'ingest_status_status_check';
+
 -- Verify
 SELECT column_name, data_type
 FROM information_schema.columns
