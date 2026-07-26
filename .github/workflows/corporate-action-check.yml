@@ -1,0 +1,119 @@
+name: Corporate Action Discontinuity Check
+
+# L2-B (AGENT_TASK_LOG.md): wires scripts/check_corporate_actions.py into a
+# recurring, gating check. Tarun's decision (2026-07-26): weekly cadence +
+# a pre-flight gate on any future OHLCV backfill (that half of the fix lives
+# in scripts/backfill_ohlcv.py's __main__, not here — this workflow is the
+# standing/recurring half).
+#
+# Trigger mechanism (per G23, GAP_REGISTER.md): native GHA `schedule:` had a
+# 100% late/no-show rate for ingest.yml (9/9 runs 2-3h late, one no-show) and
+# was demoted to backup-only after `RemoteTrigger` (a claude.ai Routine) was
+# adopted as the primary trigger for ingest.yml — see SCHEDULER_STATUS.md.
+# Same pattern applied here, not reinvented:
+#   - `schedule:` below is BACKUP ONLY, same as ingest.yml's backup role.
+#   - `workflow_dispatch` is the entrypoint a RemoteTrigger routine calls.
+#   - PRIMARY trigger is a RemoteTrigger routine dispatching this workflow
+#     weekly, to be created by Tarun in the claude.ai UI (this session has no
+#     tool access to create claude.ai Routines) — same division of labour as
+#     the existing `alphaveda-ingest-trigger` routine documented in
+#     SCHEDULER_STATUS.md. Until that routine exists, `schedule:` below is
+#     the only trigger firing, same degraded-but-safe state ingest.yml was in
+#     before G23's routine was created.
+#
+# Failure path reuses G11's exact pattern (ingest-watchdog.yml): open a
+# GitHub Issue via actions/github-script on failure — needs no new secret
+# (GITHUB_TOKEN is automatic), no new alerting channel invented.
+
+on:
+  schedule:
+    # Weekly backup trigger, Monday 15:00 UTC — matches ingest-watchdog.yml's
+    # T+2h-after-market time-of-day convention, once per week instead of daily.
+    - cron: "0 15 * * 1"
+  workflow_dispatch:
+    inputs:
+      threshold:
+        description: "Day-over-day close move fraction that triggers a flag (default 0.15)"
+        required: false
+        default: ""
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    defaults:
+      run:
+        working-directory: alphaveda
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run corporate-action discontinuity check
+        id: check
+        # Fails loud (exit 1) if any active instrument has a new unadjusted
+        # discontinuity — check_corporate_actions.py's own exit-code-1 gate,
+        # confirmed working this session, reused unchanged.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          THRESHOLD: ${{ inputs.threshold }}
+        run: |
+          if [ -n "$THRESHOLD" ]; then
+            python scripts/check_corporate_actions.py --json --threshold "$THRESHOLD"
+          else
+            python scripts/check_corporate_actions.py --json
+          fi
+
+      - name: Open an issue if new discontinuities were found
+        if: failure() && steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().slice(0, 10);
+            const title = `Corporate-action discontinuity alert — ${today}`;
+            const body = [
+              `\`check_corporate_actions.py\` flagged one or more unadjusted price ` +
+              `discontinuities (exit code 1) during the weekly scan on **${today}**.`,
+              '',
+              'These are raw Bhavcopy day-over-day close moves exceeding the flag ' +
+              'threshold — often a real split/bonus/rights corporate action recorded ' +
+              'with no adjustment applied (see GAP_REGISTER.md G-CA for the confirmed ' +
+              'HDFCBANK/PIDILITIND precedent).',
+              '',
+              '**Next step:** research each flagged date against real BSE/NSE ' +
+              'corporate-action records or dated financial news before trusting any ' +
+              'return/volatility calculation spanning it. Do NOT auto-fix — see G-CA ' +
+              'in GAP_REGISTER.md for the sign-off-required correction process.',
+              '',
+              '**Full flagged output:**',
+              '```',
+              `See run log: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+              '```',
+              '',
+              `_Opened automatically by [Corporate Action Discontinuity Check](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})._`,
+            ].join('\n');
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'corporate-action-check',
+            });
+            if (existing.data.some(i => i.title === title)) {
+              console.log('Issue already open for today — not creating a duplicate.');
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['corporate-action-check'],
+            });

@@ -43,7 +43,9 @@ backfill must invoke this once per instrument, each a separate, auditable call.
 from __future__ import annotations
 
 import argparse
+import json
 import os
+import subprocess
 import sys
 import time
 from datetime import date, timedelta
@@ -198,6 +200,67 @@ def run_backfill(
     return summary
 
 
+def run_corporate_action_preflight(ticker: str) -> bool:
+    """Pre-flight gate (L2-B, Tarun's decision 2026-07-26): run
+    scripts/check_corporate_actions.py for this ticker BEFORE any backfill writes
+    happen, and block (return False) if it finds unadjusted discontinuities.
+
+    Why this exists: G-CA (GAP_REGISTER.md) confirmed raw Bhavcopy backfills can
+    encode a real, unadjusted split/bonus as a fake ~50% single-day "crash"
+    (HDFCBANK, PIDILITIND). Deepening a backfill on top of an unresearched
+    discontinuity compounds the same corruption further back in history. This
+    gate does not fix anything — same DETECTION ONLY contract as
+    check_corporate_actions.py itself — it just stops the backfill from
+    proceeding blind. Reuses the existing script unchanged (subprocess call,
+    not reimplemented logic) rather than duplicating its detection code here.
+
+    Returns True if the backfill may proceed (clean, or checker errored in a
+    way that isn't a discontinuity flag — see below), False if it must be
+    blocked.
+    """
+    script = os.path.join(os.path.dirname(__file__), "check_corporate_actions.py")
+    result = subprocess.run(
+        [sys.executable, script, "--ticker", ticker, "--json"],
+        capture_output=True,
+        text=True,
+    )
+
+    if result.returncode == 0:
+        print(f"[PREFLIGHT] check_corporate_actions.py clean for {ticker} — proceeding with backfill.", flush=True)
+        return True
+
+    if result.returncode == 1:
+        # Real discontinuities found — this is the gate doing its job. Fail loud.
+        print(
+            f"[PREFLIGHT BLOCK] check_corporate_actions.py found unadjusted price "
+            f"discontinuities for {ticker} — backfill BLOCKED.\n"
+            f"Research each flagged date against real BSE/NSE corporate-action records "
+            f"before backfilling further (see GAP_REGISTER.md G-CA). Do NOT auto-fix.\n"
+            f"Re-run with --skip-preflight-check only after explicit manual review.",
+            file=sys.stderr,
+            flush=True,
+        )
+        try:
+            payload = json.loads(result.stdout)
+            print(json.dumps(payload, indent=2), file=sys.stderr, flush=True)
+        except (json.JSONDecodeError, ValueError):
+            print(result.stdout, file=sys.stderr, flush=True)
+        return False
+
+    # Any other exit code (e.g. 2 = ticker not found among active instruments,
+    # or an uncaught exception in the checker) is an inconclusive result, not a
+    # clean bill of health. Treat as a hard stop too — a backfill running
+    # un-gated because the gate itself errored defeats the point of the gate.
+    print(
+        f"[PREFLIGHT ERROR] check_corporate_actions.py could not evaluate {ticker} "
+        f"(exit code {result.returncode}) — treating as BLOCK, not a pass-through.\n"
+        f"stderr:\n{result.stderr}",
+        file=sys.stderr,
+        flush=True,
+    )
+    return False
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--ticker", required=True, help="NSE symbol, e.g. RELIANCE")
@@ -206,7 +269,22 @@ if __name__ == "__main__":
     parser.add_argument("--end-date", type=str, default=None, help="YYYY-MM-DD, defaults to today")
     parser.add_argument("--force", action="store_true", help="re-fetch and overwrite dates already present")
     parser.add_argument("--dry-run", action="store_true", help="print the trading-day list without writing")
+    parser.add_argument(
+        "--skip-preflight-check",
+        action="store_true",
+        help=(
+            "Skip the check_corporate_actions.py pre-flight gate. Only use after "
+            "explicit manual review of flagged discontinuities (see GAP_REGISTER.md "
+            "G-CA) — this does not fix or adjust anything, it just silences the gate."
+        ),
+    )
     args = parser.parse_args()
+
+    if args.skip_preflight_check:
+        print(f"[PREFLIGHT SKIPPED] --skip-preflight-check passed — proceeding without the corporate-action gate for {args.ticker}.", flush=True)
+    else:
+        if not run_corporate_action_preflight(args.ticker):
+            sys.exit(1)
 
     end = date.fromisoformat(args.end_date) if args.end_date else None
     result = run_backfill(
