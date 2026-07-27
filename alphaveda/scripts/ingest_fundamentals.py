@@ -63,33 +63,45 @@ JSON endpoints directly (no key/auth required):
    exercised end-to-end today.
 
 =============================================================================
-SECOND GENUINE GAP — parse_bse_xbrl_fundamentals() output vs. the live `fundamentals`
-table schema (confirmed live via Supabase MCP list_tables against project
-kowlkczswaglbmabygtl, 2026-07-24; table currently has 0 rows):
+SECOND GENUINE GAP (CLOSED 2026-07-27) — parse_bse_xbrl_fundamentals() output vs. the
+live `fundamentals` table schema (confirmed live via Supabase MCP list_tables against
+project kowlkczswaglbmabygtl, 2026-07-24; table currently has 0 rows):
 
   fundamentals columns: id, instrument_id, period_end (DATE, NOT NULL), roic_pct,
   fcf_cr, promoter_pledge_pct, debt_equity, eps, revenue_cr, source, ingested_at.
 
-  parse_bse_xbrl_fundamentals() output keys: symbol, source, roic, fcf, eps_growth,
-  peg, dividend, debt_equity, book_value.
+  parse_bse_xbrl_fundamentals() output keys (as of 2026-07-27): symbol, source, roic,
+  fcf, eps_growth, peg, dividend, debt_equity, book_value, promoter_pledge_pct, eps,
+  revenue_cr.
 
-  Overlap is partial:
-    roic         -> roic_pct       (mapped; units NOT verified equal — see below)
-    fcf          -> fcf_cr         (mapped; units NOT verified equal — see below)
-    debt_equity  -> debt_equity    (direct match)
-    source       -> source         (direct match)
+  Overlap:
+    roic                 -> roic_pct              (mapped; units NOT verified equal — see below)
+    fcf                  -> fcf_cr                 (mapped; units NOT verified equal — see below)
+    debt_equity           -> debt_equity            (direct match)
+    source                -> source                 (direct match)
+    promoter_pledge_pct   -> promoter_pledge_pct    (direct match, added 2026-07-27)
+    eps                   -> eps                    (direct match, added 2026-07-27)
+    revenue_cr            -> revenue_cr             (direct match, added 2026-07-27)
   No destination column exists for: eps_growth, peg, dividend, book_value — these
   are DROPPED (never written) and reported explicitly per-row in dry-run output,
   not silently discarded.
-  No source field exists for: period_end, promoter_pledge_pct, eps, revenue_cr —
-  period_end MUST be supplied externally (--period-end or a "period_end" key in the
-  --manual-input JSON; the DB column is NOT NULL, so a row cannot be built without
-  it). promoter_pledge_pct/eps/revenue_cr are left NULL.
+  No source field exists for: period_end — it MUST be supplied externally
+  (--period-end or a "period_end" key in the --manual-input JSON; the DB column is
+  NOT NULL, so a row cannot be built without it).
+  Why promoter_pledge_pct/eps/revenue_cr were added directly to
+  parse_bse_xbrl_fundamentals() (src/ingest/fundamentals.py) rather than special-cased
+  in this script: unlike roic/peg/eps_growth (derived ratios needing a not-yet-built
+  tag-to-ratio extractor — see FIRST GENUINE GAP above), these three are primitive
+  XBRL facts (eps, revenue) or a primitive shareholding-XBRL fact
+  (promoter_pledge_pct) that need no derivation, only the same float-cast every other
+  field already gets in _safe_float(). They are now accepted as ordinary
+  --manual-input keys alongside the existing seven (see Usage below).
   Unit mismatch risk (NOT resolved here — flagged for whoever wires a real XBRL
   extractor): fcf_cr's "_cr" suffix strongly implies crores; parse_bse_xbrl_fundamentals
   applies no unit conversion, it only casts to float. A real extractor must produce
   fcf already in crores before this script's mapping step, or figures will be wrong
-  by orders of magnitude. Same caution applies to roic_pct (percentage vs. fraction).
+  by orders of magnitude. Same caution applies to roic_pct (percentage vs. fraction)
+  and revenue_cr (crores, per the "_cr" suffix).
 
 =============================================================================
 THIRD GENUINE GAP — no UNIQUE constraint on fundamentals(instrument_id, period_end).
@@ -112,15 +124,21 @@ Usage:
       --manual-input path/to/xbrl_fields.json --period-end 2026-06-30
 
   --manual-input JSON shape (per ticker, same fields the smoke-tested
-  parse_bse_xbrl_fundamentals() call already accepts):
+  parse_bse_xbrl_fundamentals() call already accepts — extended 2026-07-27 with
+  promoter_pledge_pct/eps/revenue_cr, see SECOND GENUINE GAP above):
     {
       "RELIANCE": {"roic": "12.4", "fcf": "45000", "eps_growth": "NA",
                     "peg": "1.8", "dividend": "8.0", "debt_equity": "0.35",
-                    "book_value": "1120.5", "period_end": "2026-06-30"}
+                    "book_value": "1120.5", "promoter_pledge_pct": "0.0",
+                    "eps": "118.2", "revenue_cr": "231784.0",
+                    "period_end": "2026-06-30"}
     }
 
-No live write path is exercised by this dispatch — see --dry-run requirement in
-__main__ below. A future authorized run would drop --dry-run to actually INSERT.
+Dry-run is the DEFAULT (no flag needed) — it always was, and still is, no matter
+which other flags are passed. Live writes are opt-in only: pass BOTH --live-write
+AND --i-understand-this-writes-live-data together (see __main__ below). Neither
+flag alone enables a write; this dispatch does not pass either, so no live write
+occurs here.
 """
 from __future__ import annotations
 
@@ -159,11 +177,16 @@ _ANNOUNCEMENT_MAX_PAGES = 3
 # parse_bse_xbrl_fundamentals() output key -> live fundamentals column.
 # Keys with no destination are intentionally absent here (dropped, not silently
 # mapped) — see "SECOND GENUINE GAP" in the module docstring.
+# promoter_pledge_pct/eps/revenue_cr added 2026-07-27: primitive XBRL/shareholding
+# facts, not derived ratios, so they map 1:1 straight from manual input.
 _FIELD_MAP = {
     "roic": "roic_pct",
     "fcf": "fcf_cr",
     "debt_equity": "debt_equity",
     "source": "source",
+    "promoter_pledge_pct": "promoter_pledge_pct",
+    "eps": "eps",
+    "revenue_cr": "revenue_cr",
 }
 _DROPPED_FIELDS = ("eps_growth", "peg", "dividend", "book_value")
 
@@ -378,13 +401,35 @@ if __name__ == "__main__":
     parser.add_argument("--period-end", type=str, default=None,
                          help="YYYY-MM-DD default period_end for entries lacking their own")
     parser.add_argument("--dry-run", action="store_true",
-                         help="print intended fundamentals rows without writing (required — see module docstring: live write is out of scope for this dispatch)")
+                         help="print intended fundamentals rows without writing (this is the "
+                              "default behaviour with or without this flag — kept for explicit "
+                              "clarity in scripts/CI invocations)")
+    parser.add_argument("--live-write", action="store_true",
+                         help="opt in to actually INSERTing rows into `fundamentals`. Has no "
+                              "effect unless --i-understand-this-writes-live-data is ALSO passed "
+                              "(two-flag gate, same explicit-confirmation spirit as the External "
+                              "State Write Gate in CLAUDE.md — this table has no UNIQUE "
+                              "constraint on (instrument_id, period_end), see THIRD GENUINE GAP "
+                              "above, so idempotency here is application-level only)")
+    parser.add_argument("--i-understand-this-writes-live-data", action="store_true",
+                         dest="i_understand_this_writes_live_data",
+                         help="required alongside --live-write to confirm intent; passing this "
+                              "alone (without --live-write) does nothing")
     args = parser.parse_args()
 
-    if not args.dry_run:
-        print("[ERROR] Live writes to `fundamentals` are out of scope for this script's "
-              "current authorization. Re-run with --dry-run.", flush=True)
+    if args.live_write and not args.i_understand_this_writes_live_data:
+        print("[ERROR] --live-write requires --i-understand-this-writes-live-data as well "
+              "(two-flag confirmation gate — see --help). Re-run with both, or omit both to "
+              "stay in dry-run.", flush=True)
         sys.exit(2)
+
+    live_confirmed = args.live_write and args.i_understand_this_writes_live_data
+    dry_run = not live_confirmed  # default True; only False when BOTH flags above are passed
+
+    if live_confirmed:
+        print("[WARN] LIVE WRITE MODE — rows will be INSERTed into `fundamentals` "
+              "(kowlkczswaglbmabygtl). No UNIQUE constraint backs the idempotency check; "
+              "see THIRD GENUINE GAP in module docstring.", flush=True)
 
     tickers_arg = [t.strip() for t in args.tickers.split(",")] if args.tickers else None
     manual_data: dict[str, dict] = {}
@@ -396,7 +441,7 @@ if __name__ == "__main__":
         tickers=tickers_arg,
         manual_input=manual_data,
         default_period_end=args.period_end,
-        dry_run=True,
+        dry_run=dry_run,
     )
     print(json.dumps(result, indent=2, default=str))
     sys.exit(0)
