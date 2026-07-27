@@ -5,7 +5,14 @@ All numeric fields are normalised to float; missing/invalid values become None.
 """
 from __future__ import annotations
 
-_NUMERIC_FIELDS = ("roic", "fcf", "eps_growth", "peg", "dividend", "debt_equity", "book_value")
+_NUMERIC_FIELDS = (
+    "roic", "fcf", "eps_growth", "peg", "dividend", "debt_equity", "book_value",
+    # promoter_pledge_pct/eps/revenue_cr added 2026-07-27 (ingest_fundamentals.py GAP 1
+    # fix): unlike roic/peg/eps_growth these are primitive XBRL facts, not derived
+    # ratios that need separate extraction engineering — they need only float parsing,
+    # so they belong here as ordinary pass-through numeric fields.
+    "promoter_pledge_pct", "eps", "revenue_cr",
+)
 _NULL_SENTINELS = frozenset({"NA", "N/A", "", "NULL", "null", "None"})
 
 
@@ -24,7 +31,7 @@ def parse_bse_xbrl_fundamentals(xbrl_data: dict) -> dict:
     """Parse a BSE XBRL fundamentals response dict into a normalised flat dict.
 
     Required output keys: symbol, roic, fcf, eps_growth, peg, dividend,
-    debt_equity, book_value, source.
+    debt_equity, book_value, promoter_pledge_pct, eps, revenue_cr, source.
     """
     result: dict = {
         "symbol": xbrl_data.get("symbol", ""),
