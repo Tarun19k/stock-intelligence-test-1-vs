@@ -17,3 +17,4 @@ for background). The routine appends a status line here on every fire, and a
 - 2026-07-20 — triggered ingest.yml, dispatch accepted, run status: queued (run 29745313713)
 - 2026-07-22 — triggered ingest.yml, dispatch accepted, run status: queued (run 29922805544)
 - 2026-07-23 — triggered ingest.yml, dispatch accepted, run status: queued (run 30025758066)
+- 2026-07-28 — triggered ingest.yml, dispatch failed, run status: n/a (gh CLI auth error: "Failed to log in to github.com using token (GH_TOKEN)" / "The token in GH_TOKEN is invalid" — GHA native schedule: trigger remains as backup for today)
