@@ -219,6 +219,21 @@ def _build_isin_to_scripcode(scrip_rows: list[dict]) -> dict[str, str]:
     }
 
 
+def _is_throttle_sentinel(rows: list[dict]) -> bool:
+    """BSE's announcement API intermittently returns {"Table":[{"Column1":1}]}
+    instead of real rows — confirmed live 2026-07-29: identical request, same
+    params/headers/cookies, alternates between this sentinel and real data across
+    repeated calls seconds apart. Not a real "zero results" response (a genuine
+    empty result is {"Table":[]}), not a header/UA/param issue (ruled out by direct
+    probe), not fixable by cookie priming. Distinguishable by shape: exactly one row
+    whose only key is "Column1" — no NEWSID/CATEGORYNAME/any real announcement field.
+    Treated as a transient throttle to retry, not a real "no filing" outcome."""
+    return len(rows) == 1 and set(rows[0].keys()) == {"Column1"}
+
+
+_THROTTLE_RETRY_DELAYS = (2, 4, 8)  # seconds; exhausted -> treat as genuinely no data
+
+
 def _find_latest_result_filing(scrip_code: str, end_date: date) -> dict | None:
     """Query BSE's per-scrip announcement feed and return the most recent row whose
     CATEGORYNAME == 'Result' (BSE's own label for financial-results filings),
@@ -243,10 +258,22 @@ def _find_latest_result_filing(scrip_code: str, end_date: date) -> dict | None:
         url = f"{_ANNOUNCEMENTS_URL}?{urllib.parse.urlencode(params)}"
         try:
             data = _http_get_json(url)
+            rows = data.get("Table", []) if isinstance(data, dict) else []
+            for delay in _THROTTLE_RETRY_DELAYS:
+                if not _is_throttle_sentinel(rows):
+                    break
+                print(f"[WARN] BSE throttle sentinel for scrip={scrip_code} page={page} "
+                      f"— retrying in {delay}s", flush=True)
+                time.sleep(delay)
+                data = _http_get_json(url)
+                rows = data.get("Table", []) if isinstance(data, dict) else []
+            if _is_throttle_sentinel(rows):
+                print(f"[WARN] BSE throttle sentinel persisted for scrip={scrip_code} page={page} "
+                      f"after {len(_THROTTLE_RETRY_DELAYS)} retries — giving up this run", flush=True)
+                return None
         except Exception as exc:
             print(f"[WARN] BSE announcement fetch failed for scrip={scrip_code} page={page}: {exc}", flush=True)
             return None
-        rows = data.get("Table", []) if isinstance(data, dict) else []
         if not rows:
             break
         for row in rows:

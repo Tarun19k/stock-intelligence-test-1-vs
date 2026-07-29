@@ -35,7 +35,7 @@ def parse_bse_xbrl_fundamentals(xbrl_data: dict) -> dict:
     """
     result: dict = {
         "symbol": xbrl_data.get("symbol", ""),
-        "source": "bse_xbrl",
+        "source": xbrl_data.get("source", "bse_xbrl"),
     }
     for field in _NUMERIC_FIELDS:
         result[field] = _safe_float(xbrl_data.get(field))
