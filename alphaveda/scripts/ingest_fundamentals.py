@@ -145,6 +145,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import ssl
 import sys
 import time
@@ -173,6 +174,11 @@ _ANNOUNCEMENTS_URL = "https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGet
 _RESULT_CATEGORY = "Result"
 _ANNOUNCEMENT_LOOKBACK_DAYS = 400  # comfortably covers one quarterly cycle + buffer
 _ANNOUNCEMENT_MAX_PAGES = 3
+_MIN_SCRIP_MASTER_ROWS = 1_000
+_FETCH_FOUND = "FOUND"
+_FETCH_NOT_FOUND = "NOT_FOUND"
+_FETCH_THROTTLED = "THROTTLED"
+_FETCH_ERROR = "FETCH_ERROR"
 
 # parse_bse_xbrl_fundamentals() output key -> live fundamentals column.
 # Keys with no destination are intentionally absent here (dropped, not silently
@@ -204,11 +210,25 @@ def _http_get_json(url: str) -> object:
         return json.loads(resp.read().decode("utf-8", errors="replace"))
 
 
-def _fetch_scrip_master() -> list[dict]:
+def _fetch_scrip_master() -> object:
     """Bulk BSE scrip master — one call, ~4,900 rows. The one genuinely bulk/
     archive-shaped resource in this pipeline. Not unit-tested (network dependency),
     same convention as download_bhavcopy_nse()."""
     return _http_get_json(_SCRIP_MASTER_URL)
+
+
+def _validate_scrip_master(rows: object) -> list[dict]:
+    """Reject throttled/malformed/truncated preflight data before the batch starts."""
+    if not isinstance(rows, list):
+        raise RuntimeError("BSE scrip-master preflight failed: response is not a list")
+    if _is_throttle_sentinel(rows):
+        raise RuntimeError("BSE scrip-master preflight failed: throttle sentinel received")
+    if len(rows) < _MIN_SCRIP_MASTER_ROWS:
+        raise RuntimeError(
+            f"BSE scrip-master preflight failed: received only {len(rows)} rows; "
+            f"expected at least {_MIN_SCRIP_MASTER_ROWS}"
+        )
+    return rows
 
 
 def _build_isin_to_scripcode(scrip_rows: list[dict]) -> dict[str, str]:
@@ -219,31 +239,40 @@ def _build_isin_to_scripcode(scrip_rows: list[dict]) -> dict[str, str]:
     }
 
 
-def _is_throttle_sentinel(rows: list[dict]) -> bool:
+def _is_throttle_sentinel(rows: object) -> bool:
     """BSE's announcement API intermittently returns {"Table":[{"Column1":1}]}
     instead of real rows — confirmed live 2026-07-29: identical request, same
     params/headers/cookies, alternates between this sentinel and real data across
     repeated calls seconds apart. Not a real "zero results" response (a genuine
     empty result is {"Table":[]}), not a header/UA/param issue (ruled out by direct
-    probe), not fixable by cookie priming. Distinguishable by shape: exactly one row
-    whose only key is "Column1" — no NEWSID/CATEGORYNAME/any real announcement field.
+    probe), not fixable by cookie priming. Distinguishable by shape: Column1 is
+    present while no row carries NEWSID/CATEGORYNAME announcement fields.
     Treated as a transient throttle to retry, not a real "no filing" outcome."""
-    return len(rows) == 1 and set(rows[0].keys()) == {"Column1"}
+    if not isinstance(rows, list) or not rows or not all(isinstance(row, dict) for row in rows):
+        return False
+    has_real_announcement_fields = any(
+        row.get("NEWSID") is not None or row.get("CATEGORYNAME") is not None
+        for row in rows
+    )
+    return not has_real_announcement_fields and any("Column1" in row for row in rows)
 
 
-_THROTTLE_RETRY_DELAYS = (2, 4, 8)  # seconds; exhausted -> treat as genuinely no data
+_THROTTLE_RETRY_DELAYS = (2, 4, 8)  # seconds; one shared retry budget per ticker
 
 
-def _find_latest_result_filing(scrip_code: str, end_date: date) -> dict | None:
+def _jittered_delay(delay: float) -> float:
+    return delay * random.uniform(0.75, 1.25)
+
+
+def _find_latest_result_filing(scrip_code: str, end_date: date) -> tuple[str, dict | None]:
     """Query BSE's per-scrip announcement feed and return the most recent row whose
     CATEGORYNAME == 'Result' (BSE's own label for financial-results filings),
-    walking back up to _ANNOUNCEMENT_MAX_PAGES pages if needed. Returns None if no
-    Result-category filing appears in the lookback window — a real, reportable
-    outcome (not an error), same fail-open spirit as ingest.py's per-instrument
-    emit_signal try/except.
+    walking back up to _ANNOUNCEMENT_MAX_PAGES pages if needed. The outcome keeps a
+    genuine no-filing result distinct from persistent throttling and fetch errors.
     """
     from_date = (end_date - timedelta(days=_ANNOUNCEMENT_LOOKBACK_DAYS)).strftime("%Y%m%d")
     to_date = end_date.strftime("%Y%m%d")
+    retries_used = 0
     for page in range(1, _ANNOUNCEMENT_MAX_PAGES + 1):
         params = {
             "pageno": page,
@@ -259,26 +288,27 @@ def _find_latest_result_filing(scrip_code: str, end_date: date) -> dict | None:
         try:
             data = _http_get_json(url)
             rows = data.get("Table", []) if isinstance(data, dict) else []
-            for delay in _THROTTLE_RETRY_DELAYS:
-                if not _is_throttle_sentinel(rows):
-                    break
+            while _is_throttle_sentinel(rows) and retries_used < len(_THROTTLE_RETRY_DELAYS):
+                delay = _jittered_delay(_THROTTLE_RETRY_DELAYS[retries_used])
+                retries_used += 1
                 print(f"[WARN] BSE throttle sentinel for scrip={scrip_code} page={page} "
-                      f"— retrying in {delay}s", flush=True)
+                      f"— retrying in {delay:.1f}s ({retries_used}/"
+                      f"{len(_THROTTLE_RETRY_DELAYS)} ticker retries)", flush=True)
                 time.sleep(delay)
                 data = _http_get_json(url)
                 rows = data.get("Table", []) if isinstance(data, dict) else []
             if _is_throttle_sentinel(rows):
                 print(f"[WARN] BSE throttle sentinel persisted for scrip={scrip_code} page={page} "
                       f"after {len(_THROTTLE_RETRY_DELAYS)} retries — giving up this run", flush=True)
-                return None
+                return _FETCH_THROTTLED, None
         except Exception as exc:
             print(f"[WARN] BSE announcement fetch failed for scrip={scrip_code} page={page}: {exc}", flush=True)
-            return None
+            return _FETCH_ERROR, None
         if not rows:
             break
         for row in rows:
             if row.get("CATEGORYNAME") == _RESULT_CATEGORY:
-                return {
+                return _FETCH_FOUND, {
                     "news_id": row.get("NEWSID"),
                     "news_dt": row.get("NEWS_DT"),
                     "subcategory": row.get("SUBCATNAME"),
@@ -289,7 +319,78 @@ def _find_latest_result_filing(scrip_code: str, end_date: date) -> dict | None:
         if len(rows) < 50:  # short page — no more results to page through
             break
         time.sleep(_REQUEST_DELAY_SECONDS)
-    return None
+    return _FETCH_NOT_FOUND, None
+
+
+class ThrottleBreaker:
+    COOLDOWN_TIERS = (120, 300, 600)
+    N_TRIGGER = 2
+    MAX_TRIPS = 3
+    REQUEST_DELAYS = (1.5, 3.0)
+
+    def __init__(self, checkpoint_callback, no_cooldown: bool = False) -> None:
+        self.consecutive_throttled = 0
+        self.trips = 0
+        self.request_delay = _REQUEST_DELAY_SECONDS
+        self.aborted = False
+        self._checkpoint_callback = checkpoint_callback
+        self._no_cooldown = no_cooldown
+
+    def note_non_throttled(self) -> None:
+        self.consecutive_throttled = 0
+
+    def cooldown_and_probe(self, scrip_code: str, end_date: date) -> bool:
+        """Cool down by escalating tiers until a one-page probe is not throttled."""
+        if self._no_cooldown:
+            print("[WARN] Systemic throttle detected; --no-cooldown is set, aborting", flush=True)
+            return False
+        while self.trips < self.MAX_TRIPS:
+            delay = self.COOLDOWN_TIERS[min(self.trips, len(self.COOLDOWN_TIERS) - 1)]
+            self.trips += 1
+            print(f"[WARN] Systemic BSE throttle: cooldown tier {self.trips}/"
+                  f"{self.MAX_TRIPS} for {delay}s", flush=True)
+            self._checkpoint_callback()
+            remaining = delay
+            while remaining > 0:
+                if remaining == delay or remaining % 30 == 0:
+                    print(f"[INFO] BSE throttle cooldown: {remaining}s remaining", flush=True)
+                sleep_for = min(5, remaining)
+                time.sleep(sleep_for)
+                remaining -= sleep_for
+            probe_outcome = _probe_announcement_page(scrip_code, end_date)
+            if probe_outcome == _FETCH_THROTTLED:
+                print("[WARN] BSE throttle probe still returned sentinel; escalating", flush=True)
+                continue
+            if probe_outcome == _FETCH_ERROR:
+                print("[WARN] BSE throttle probe failed; escalating cooldown tier", flush=True)
+                continue
+            self.request_delay = self.REQUEST_DELAYS[min(self.trips - 1, len(self.REQUEST_DELAYS) - 1)]
+            self.consecutive_throttled = 0
+            print(f"[INFO] BSE throttle probe recovered; inter-ticker delay is now "
+                  f"{self.request_delay:.1f}s", flush=True)
+            return True
+        return False
+
+
+def _probe_announcement_page(scrip_code: str, end_date: date) -> str:
+    """Make one cheap page-one request used only by the batch circuit breaker."""
+    params = {
+        "pageno": 1,
+        "strCat": "-1",
+        "strPrevDate": (end_date - timedelta(days=_ANNOUNCEMENT_LOOKBACK_DAYS)).strftime("%Y%m%d"),
+        "strScrip": scrip_code,
+        "strSearch": "P",
+        "strToDate": end_date.strftime("%Y%m%d"),
+        "strType": "C",
+        "subcategory": "-1",
+    }
+    try:
+        data = _http_get_json(f"{_ANNOUNCEMENTS_URL}?{urllib.parse.urlencode(params)}")
+        rows = data.get("Table", []) if isinstance(data, dict) else []
+        return _FETCH_THROTTLED if _is_throttle_sentinel(rows) else _FETCH_FOUND
+    except Exception as exc:
+        print(f"[WARN] BSE throttle probe failed for scrip={scrip_code}: {exc}", flush=True)
+        return _FETCH_ERROR
 
 
 def _map_parsed_to_fundamentals_row(parsed: dict, instrument_id: int, period_end: str) -> tuple[dict, list[str]]:
@@ -312,6 +413,7 @@ def run_ingest_fundamentals(
     manual_input: dict[str, dict] | None = None,
     default_period_end: str | None = None,
     dry_run: bool = True,
+    no_cooldown: bool = False,
 ) -> dict:
     """For each active instrument (optionally filtered to `tickers`), resolve its
     BSE scrip code, locate its latest Result-category filing (real network calls),
@@ -330,43 +432,110 @@ def run_ingest_fundamentals(
         inst_query = inst_query.in_("ticker", tickers)
     instruments = inst_query.execute().data or []
 
-    scrip_rows = _fetch_scrip_master()
+    try:
+        scrip_rows = _validate_scrip_master(_fetch_scrip_master())
+    except Exception as exc:
+        raise RuntimeError(f"Cannot start fundamentals ingest. {exc}") from exc
     isin_to_scrip = _build_isin_to_scripcode(scrip_rows)
 
     summary: dict = {
         "requested": len(instruments),
         "scrip_resolved": 0,
         "filing_found": 0,
+        "no_result_filing_found": 0,
+        "throttled": 0,
+        "fetch_errors": 0,
+        "skipped_systemic_throttle": 0,
         "rows_built": 0,
         "rows_written": 0,
         "results": [],
         "status": "DRY_RUN" if dry_run else "OK",
     }
 
+    checkpoint_path = os.path.join(os.getcwd(), "ingest_fundamentals_checkpoint.json")
+
+    def checkpoint() -> None:
+        checkpoint_data = dict(summary)
+        checkpoint_data["status"] = "PARTIAL_THROTTLED"
+        temp_path = f"{checkpoint_path}.tmp"
+        with open(temp_path, "w") as checkpoint_file:
+            json.dump(checkpoint_data, checkpoint_file, indent=2, default=str)
+        os.replace(temp_path, checkpoint_path)
+        print(f"[INFO] Partial ingest checkpoint written to {checkpoint_path}", flush=True)
+
+    breaker = ThrottleBreaker(checkpoint, no_cooldown=no_cooldown)
+    attempts: dict[str, int] = {}
+
+    def print_resume_command() -> None:
+        resume_tickers = [
+            entry["ticker"] for entry in summary["results"]
+            if entry.get("status") in {"THROTTLED", "SKIPPED_SYSTEMIC_THROTTLE"}
+        ]
+        if resume_tickers:
+            print("[RESUME] python3 alphaveda/scripts/ingest_fundamentals.py --dry-run "
+                  f"--tickers {','.join(resume_tickers)}", flush=True)
+
     today = date.today()
-    for i, inst in enumerate(instruments):
-        if i > 0:
-            time.sleep(_REQUEST_DELAY_SECONDS)
+    index = 0
+    try:
+      while index < len(instruments):
+        inst = instruments[index]
         ticker = inst["ticker"]
         isin = inst.get("isin")
         entry: dict = {"ticker": ticker, "instrument_id": inst["id"]}
+
+        if breaker.aborted:
+            entry["status"] = "SKIPPED_SYSTEMIC_THROTTLE"
+            summary["skipped_systemic_throttle"] += 1
+            summary["results"].append(entry)
+            index += 1
+            continue
 
         scrip_code = isin_to_scrip.get((isin or "").strip()) if isin else None
         if not scrip_code:
             entry["status"] = "NO_SCRIP_CODE_MATCH"
             summary["results"].append(entry)
             print(f"[WARN] {ticker}: no BSE scrip code match for ISIN={isin!r}", flush=True)
+            index += 1
             continue
-        summary["scrip_resolved"] += 1
+        if attempts.get(ticker, 0) == 0:
+            summary["scrip_resolved"] += 1
         entry["bse_scrip_code"] = scrip_code
 
-        filing = _find_latest_result_filing(scrip_code, today)
-        if filing is None:
+        if index > 0 or attempts.get(ticker, 0) > 0:
+            time.sleep(breaker.request_delay)
+        attempts[ticker] = attempts.get(ticker, 0) + 1
+        outcome, filing = _find_latest_result_filing(scrip_code, today)
+        if outcome == _FETCH_THROTTLED:
+            breaker.consecutive_throttled += 1
+            entry["status"] = "THROTTLED"
+            if breaker.consecutive_throttled >= breaker.N_TRIGGER:
+                recovered = breaker.cooldown_and_probe(scrip_code, today)
+                if recovered and attempts[ticker] < 2:
+                    print(f"[INFO] {ticker}: re-queued after successful throttle probe", flush=True)
+                    continue
+                if not recovered:
+                    breaker.aborted = True
+            summary["throttled"] += 1
+            summary["results"].append(entry)
+            index += 1
+            continue
+        breaker.note_non_throttled()
+        if outcome == _FETCH_ERROR:
+            entry["status"] = "FETCH_ERROR"
+            summary["fetch_errors"] += 1
+            summary["results"].append(entry)
+            index += 1
+            continue
+        if outcome == _FETCH_NOT_FOUND:
             entry["status"] = "NO_RESULT_FILING_FOUND"
+            summary["no_result_filing_found"] += 1
             summary["results"].append(entry)
             print(f"[INFO] {ticker} ({scrip_code}): no Result-category filing in last "
                   f"{_ANNOUNCEMENT_LOOKBACK_DAYS}d", flush=True)
+            index += 1
             continue
+        assert outcome == _FETCH_FOUND and filing is not None
         summary["filing_found"] += 1
         entry["latest_filing"] = filing
         print(f"[INFO] {ticker} ({scrip_code}): latest Result filing "
@@ -376,6 +545,7 @@ def run_ingest_fundamentals(
         if xbrl_data is None:
             entry["status"] = "FOUND_NO_EXTRACTOR"  # filing located; no XBRL->dict path exists
             summary["results"].append(entry)
+            index += 1
             continue
 
         period_end = xbrl_data.get("period_end") or default_period_end
@@ -384,6 +554,7 @@ def run_ingest_fundamentals(
             summary["results"].append(entry)
             print(f"[WARN] {ticker}: manual input present but no period_end supplied "
                   f"(fundamentals.period_end is NOT NULL) — skipping row build", flush=True)
+            index += 1
             continue
 
         parsed = parse_bse_xbrl_fundamentals(xbrl_data)
@@ -415,6 +586,26 @@ def run_ingest_fundamentals(
                 entry["status"] = "WRITTEN"
 
         summary["results"].append(entry)
+        index += 1
+    except KeyboardInterrupt:
+        print("[WARN] Fundamentals ingest interrupted; partial results preserved", flush=True)
+        breaker.aborted = True
+        for inst in instruments[index:]:
+            if not any(item["ticker"] == inst["ticker"] for item in summary["results"]):
+                summary["results"].append({
+                    "ticker": inst["ticker"],
+                    "instrument_id": inst["id"],
+                    "status": "SKIPPED_SYSTEMIC_THROTTLE",
+                })
+                summary["skipped_systemic_throttle"] += 1
+
+    degraded = any(
+        entry.get("status") in {"THROTTLED", "SKIPPED_SYSTEMIC_THROTTLE"}
+        for entry in summary["results"]
+    )
+    if degraded:
+        summary["status"] = "PARTIAL_THROTTLED"
+        print_resume_command()
 
     return summary
 
@@ -431,6 +622,8 @@ if __name__ == "__main__":
                          help="print intended fundamentals rows without writing (this is the "
                               "default behaviour with or without this flag — kept for explicit "
                               "clarity in scripts/CI invocations)")
+    parser.add_argument("--no-cooldown", action="store_true",
+                         help="fail fast on systemic throttling instead of waiting through cooldowns")
     parser.add_argument("--live-write", action="store_true",
                          help="opt in to actually INSERTing rows into `fundamentals`. Has no "
                               "effect unless --i-understand-this-writes-live-data is ALSO passed "
@@ -464,11 +657,16 @@ if __name__ == "__main__":
         with open(args.manual_input) as f:
             manual_data = json.load(f)
 
-    result = run_ingest_fundamentals(
-        tickers=tickers_arg,
-        manual_input=manual_data,
-        default_period_end=args.period_end,
-        dry_run=dry_run,
-    )
+    try:
+        result = run_ingest_fundamentals(
+            tickers=tickers_arg,
+            manual_input=manual_data,
+            default_period_end=args.period_end,
+            dry_run=dry_run,
+            no_cooldown=args.no_cooldown,
+        )
+    except Exception as exc:
+        print(f"[ERROR] {exc}", flush=True)
+        sys.exit(1)
     print(json.dumps(result, indent=2, default=str))
-    sys.exit(0)
+    sys.exit(1 if result["status"] == "PARTIAL_THROTTLED" else 0)
