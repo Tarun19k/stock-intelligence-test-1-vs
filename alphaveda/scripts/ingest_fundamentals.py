@@ -193,6 +193,12 @@ _FIELD_MAP = {
     "promoter_pledge_pct": "promoter_pledge_pct",
     "eps": "eps",
     "revenue_cr": "revenue_cr",
+    # Added 2026-07-29 (migration 0019): roe_pct is the sector-appropriate
+    # profitability metric for financial-sector tickers; sector_class lets
+    # downstream code distinguish "N/A by design" from "missing data" for
+    # roic_pct/debt_equity on bank/NBFC rows.
+    "roe": "roe_pct",
+    "sector_class": "sector_class",
 }
 _DROPPED_FIELDS = ("eps_growth", "peg", "dividend", "book_value")
 

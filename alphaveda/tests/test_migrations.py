@@ -22,6 +22,7 @@ EXPECTED_COLUMNS = {
     "accuracy_predictions": ["downside_target"],   # migration 0012
     "ohlcv": ["circuit_flag", "deliverable_volume", "licence_class"],  # migration 0013
     "signal_weights": ["approved_by"],             # approve_signal_weight function dep
+    "fundamentals": ["sector_class", "roe_pct"],   # migration 0019
 }
 
 
@@ -84,6 +85,18 @@ def test_waitlist_table(supabase_client):
 
 def test_ingest_status_table(supabase_client):
     result = supabase_client.table("ingest_status").select("id").limit(1).execute()
+    assert hasattr(result, "data")
+
+
+def test_fundamentals_has_sector_class(supabase_client):
+    """Migration 0019 — sector_class column must exist."""
+    result = supabase_client.table("fundamentals").select("sector_class").limit(1).execute()
+    assert hasattr(result, "data")
+
+
+def test_fundamentals_has_roe_pct(supabase_client):
+    """Migration 0019 — roe_pct column must exist."""
+    result = supabase_client.table("fundamentals").select("roe_pct").limit(1).execute()
     assert hasattr(result, "data")
 
 

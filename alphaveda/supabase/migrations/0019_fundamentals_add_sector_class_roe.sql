@@ -1,0 +1,44 @@
+-- Migration 0019: add sector_class and roe_pct columns to fundamentals
+--
+-- Root cause (found 2026-07-29, L3-B batch validation): the `fundamentals` table
+-- schema (roic_pct, fcf_cr, promoter_pledge_pct, debt_equity, eps, revenue_cr) is
+-- an industrial-company schema. For financial-sector tickers (banks/NBFCs — e.g.
+-- HDFCBANK, BAJFINANCE among AlphaVeda's tracked instruments), two fields become
+-- meaningless, not just hard to source:
+--   - debt_equity: banks are deposit-funded by design; Borrowings/Equity does not
+--     mean the same thing for a bank as for an industrial company and is not a
+--     ratio analysts use to assess bank leverage (regulatory capital rules govern
+--     that instead).
+--   - roic_pct: was already a ROCE-as-proxy default (Tarun-approved 2026-07-29);
+--     ROCE itself is not the metric used to assess bank profitability either.
+--
+-- Fix, scoped honestly: add `roe_pct` (Return on Equity) — freely visible on
+-- Screener's summary bar for EVERY company regardless of sector, industrial or
+-- financial — as the sector-appropriate profitability metric. Add `sector_class`
+-- so downstream code (ingest, signal generation, any future dashboard) can tell
+-- the difference between "NULL because sector-inapplicable by design" and "NULL
+-- because data is missing" for roic_pct/debt_equity.
+--
+-- Explicitly NOT added: car_pct, nim_pct, gross_npa_pct, net_npa_pct, casa_pct.
+-- These are the ratios genuinely used to assess bank health (Capital Adequacy,
+-- Net Interest Margin, NPA%, CASA), but they are paywalled on Screener's free
+-- tier (confirmed live 2026-07-29 — HDFCBANK's own page shows "Gross NPA ratio...
+-- Requires Premium", "CASA ratio... Requires Premium" under Insights). Adding
+-- columns we cannot populate would recreate the exact silent-gap problem this
+-- migration exists to fix, one layer up (empty columns instead of a wrong
+-- number). This is a real, currently-unsolved sourcing gap for bank/NBFC
+-- fundamentals depth — named here rather than papered over. Revisit if/when a
+-- paid data source is adopted (see DATA_SOURCES.md upgrade triggers).
+--
+-- Required by: alphaveda/scripts/ingest_fundamentals.py (_FIELD_MAP, roe/sector_class)
+--              alphaveda/src/ingest/fundamentals.py (_NUMERIC_FIELDS: roe)
+--              alphaveda/.claude/rules/DATA_SOURCES.md (documents sector_class rule)
+--
+-- Apply: paste into Supabase Dashboard → SQL Editor, or `supabase db push`
+--
+-- PARITY-CHECK: column fundamentals.sector_class
+-- PARITY-CHECK: column fundamentals.roe_pct
+
+ALTER TABLE fundamentals
+    ADD COLUMN IF NOT EXISTS sector_class VARCHAR(20),
+    ADD COLUMN IF NOT EXISTS roe_pct NUMERIC;
