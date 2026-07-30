@@ -77,7 +77,7 @@ jobs:
             exit 1
           fi
 
-          if ! grep --fixed-strings --quiet 'ZZZ_INTENTIONAL_TEST_STRING_THAT_WILL_NOT_MATCH_ZZZ' "$response_body"; then
+          if ! grep --fixed-strings --quiet 'ZZZ_INTENTIONAL_TEST_STRING_ZZZ' "$response_body"; then
             echo 'INSTRUMENT_CHECK_REASON=expected instrument-page content was not found' >> "$GITHUB_ENV"
             echo 'Health check failed: expected instrument-page content was not found' >&2
             exit 1
@@ -87,23 +87,49 @@ jobs:
 
       # SRE council review (2026-07-25), same rationale as ingest-watchdog.yml's
       # G11 fix: no email/Slack channel exists, so open a GitHub Issue instead.
+      #
+      # BUG FOUND AND FIXED 2026-07-30: this condition originally only checked
+      # steps.check.outcome (the /accuracy step) — when the instrument-page step
+      # was added, a failure there made the job fail but this step was SKIPPED,
+      # because steps.check.outcome was still 'success'. Confirmed via a real,
+      # deliberate failure injection (temporarily broke the instrument check's
+      # content match, ran it, watched the alert step get skipped) rather than
+      # assumed from reading the YAML. Fixed by checking both step outcomes.
       - name: Open an issue if the health check fails
-        if: failure() && steps.check.outcome == 'failure'
+        if: failure() && (steps.check.outcome == 'failure' || steps.check_instrument.outcome == 'failure')
         uses: actions/github-script@v7
         with:
           script: |
             const today = new Date().toISOString().slice(0, 10);
-            const httpStatus = process.env.HTTP_STATUS || 'unknown';
-            const reason = process.env.HEALTH_CHECK_REASON || `unexpected HTTP status ${httpStatus}`;
+            const accuracyFailed = '${{ steps.check.outcome }}' === 'failure';
+            const instrumentFailed = '${{ steps.check_instrument.outcome }}' === 'failure';
+
+            const failedChecks = [];
+            if (accuracyFailed) {
+              failedChecks.push({
+                page: '/accuracy',
+                httpStatus: process.env.HTTP_STATUS || 'unknown',
+                reason: process.env.HEALTH_CHECK_REASON || `unexpected HTTP status ${process.env.HTTP_STATUS || 'unknown'}`,
+              });
+            }
+            if (instrumentFailed) {
+              failedChecks.push({
+                page: '/instrument/RELIANCE',
+                httpStatus: process.env.INSTRUMENT_HTTP_STATUS || 'unknown',
+                reason: process.env.INSTRUMENT_CHECK_REASON || `unexpected HTTP status ${process.env.INSTRUMENT_HTTP_STATUS || 'unknown'}`,
+              });
+            }
+
             const title = `Production health check failed — ${today}`;
             const body = [
-              `The \`/accuracy\` production health check failed on **${today}**.`,
+              `The production health check failed on **${today}** for ${failedChecks.length} page(s).`,
               '',
-              `**Reason:** ${reason}`,
-              `**HTTP status observed:** ${httpStatus}`,
-              '',
-              'URL checked: https://stock-intelligence-test-1-vs.vercel.app/accuracy',
-              '',
+              ...failedChecks.flatMap(c => [
+                `**Page:** \`${c.page}\``,
+                `**Reason:** ${c.reason}`,
+                `**HTTP status observed:** ${c.httpStatus}`,
+                '',
+              ]),
               `_Opened automatically by [Production health check](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})._`,
             ].join('\n');
             const existing = await github.rest.issues.listForRepo({
