@@ -1,5 +1,5 @@
 # Offset / Harvest / Yield — Foundation Draft
-**STATUS: DRAFT — NOT APPROVED. Documentation only. Zero code, zero financial claims, zero regulatory positioning implied beyond what is explicitly stated below.**
+**STATUS: Prerequisite 1 (Product Boundary) APPROVED by Tarun 2026-07-30 — Model B, constrained variant, as recommended below. Prerequisites 2–10 NOT YET DRAFTED. Documentation only past this point. Zero code, zero financial claims, zero regulatory positioning implied beyond what is explicitly stated below.**
 **Scope: Phase A, Prerequisite 1 (Product Boundary) + partial glossary only — per Tarun's 2026-07-29 explicit, narrow go-ahead. Trigger thresholds, tax logic, and recommendation eligibility are OUT OF SCOPE (G2-class, human-approval-required per the source document's own governance model) and must not be inferred or filled in here.**
 **Source: externally-authored PDF (ChatGPT-generated, not verified) — treat all source claims as proposals to evaluate, not settled fact.**
 
