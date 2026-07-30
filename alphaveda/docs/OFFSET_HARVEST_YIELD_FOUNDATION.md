@@ -227,4 +227,106 @@ Which specific formulas consume which tier of evidence, and what confidence pena
 
 ---
 
-*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope), 6 (Data-Source & Evidence Policy), and 9 (Human Decision Boundaries) drafted above — pending Tarun's review. Prerequisites 3, 4, 8, 10 remain undrafted, sequenced next (structurally depend on 2/9's content). Prerequisites 5, 7 remain G2 — drafting begins once Tarun's cross-referenced-public-source protocol (agreed 2026-07-30) is applied.*
+## 6. Offset / Harvest / Yield Formal Contracts (Phase A, Prerequisite 3)
+
+**Status: DRAFT — builds on the Glossary (§2), does not repeat it. Structure only, no thresholds/formulas — those are Prereq 5, G2.**
+
+Each engine gets the same contract shape: named inputs, a fixed enumerated output set, and an explicit "does not decide" boundary. This is the difference between a glossary entry (what it's *for*) and a contract (what it actually *takes and returns*).
+
+### Offset contract
+```
+INPUT   condition_detected: enum (concentration_drift | liquidity_mismatch | goal_change | ...)
+        evidence: [DataPoint]  — each tagged with evidence_tier (Prereq 6)
+        investor_constraints: InvestorProfile (Prereq 8)
+OUTPUT  one of: no_material_offset | monitor | correct_via_cashflow | partial_rebalance |
+                broader_reallocation | urgent_human_escalation
+        — never "sell" as a direct instruction (source p.30, already in Glossary)
+DOES NOT DECIDE  materiality cut-offs, confidence thresholds, cost-benefit maths — Prereq 5 (G2)
+```
+
+### Harvest contract
+```
+INPUT   subtype: enum (goal_liquidity | risk_concentration | tax_loss | tax_gain | income | opportunity)
+        — Harvest is not one contract, it's six, per the Glossary's own structural requirement
+        candidate_holding: Instrument
+        purpose_category: subtype (above) — must be explicit, never inferred
+OUTPUT  one of: not_eligible | eligible_pending_cost_check | eligible
+        + after-cost benefit breakdown (tax/risk/goal/opportunity components, unpriced here)
+DOES NOT DECIDE  the eligibility formula itself, all tax rules (set-off ordering, holding-period
+                 treatment) — Prereq 5 and 7 (both G2)
+```
+
+### Yield contract
+```
+INPUT   available_capital: {amount, funding_source: enum (new_deposit | dividend | realised_gain |
+        realised_loss_replacement | maturing_instrument | reduced_holding | existing_cash)}
+        goal_required_return: from InvestorProfile (Prereq 8)
+        constraints: {risk_limit, liquidity_requirement, concentration_threshold, suitability_rule}
+OUTPUT  allocation_category: enum (retain_cash | broad_equity | diversified_equity |
+        liquid_short_duration | goal_reserve) — categories only, never individual security picks
+        (source p.62, Phase G gate — already in Glossary)
+DOES NOT DECIDE  expected-return methodology, security-selection logic, after-tax return maths —
+                 Prereq 5 (G2). Internal engine name: "Productive Capital Deployment" per source
+                 p.33, user-facing label stays "Yield."
+```
+
+### Cross-engine rule already fixed by the Glossary, restated as a contract constraint
+
+No engine's output may itself violate another's constraint — Offset limits Yield's solution space (source p.38, already in Glossary §"Offset versus Yield"). This is enforced at the orchestration layer (Prereq 4), not inside any single engine's contract.
+
+---
+
+## 7. Trigger Hierarchy & Conflict Rules (Phase A, Prerequisite 4)
+
+**Status: DRAFT — encodes the source's own combined hierarchy (p.35, p.38) as AlphaVeda's working decision order, not a re-derivation.**
+
+### Overarching precedence (source p.35, adopted as-is — no disagreement found)
+
+```
+1. Investor survival and liquidity
+2. Goal continuity
+3. Regulatory and suitability constraints
+4. Protection from material permanent loss
+5. Preservation of durable compounding
+6. Tax and cost efficiency
+7. Portfolio risk improvement
+8. Income generation
+9. Incremental return optimisation
+10. Tactical opportunity
+```
+
+### Severity vocabulary — same 6-level scale across all three engines (source p.37–38)
+
+| Level | Meaning | UX response |
+|---|---|---|
+| 0 — Dormant | No material condition | No user interruption |
+| 1 — Observed | Early/weak evidence | Record silently |
+| 2 — Monitoring | Evidence strengthening | Display in portfolio health |
+| 3 — Review | Material enough for comparison | Offer strategies |
+| 4 — Action justified | Net benefit exceeds threshold (Prereq 5, G2 — the threshold itself) | Highlight recommendation |
+| 5 — Critical | Goal, liquidity, or permanent-loss concern | Require prompt review |
+
+"Critical" is reserved for genuinely consequential circumstances — not routine volatility (source's own explicit constraint, already in Glossary).
+
+### Pairwise conflict rules (source p.38, adopted)
+
+- **Offset vs. Harvest:** Offset wins when a structural risk can't safely remain; Harvest wins when the portfolio is structurally healthy but a time-sensitive tax/goal opportunity exists.
+- **Harvest vs. Yield:** Harvest doesn't proceed merely because Yield found an attractive replacement — the replacement must exceed current-asset value + tax cost + execution cost + uncertainty premium + lost optionality (formula itself is Prereq 5, G2; the *rule that a formula must be cleared* is fixed here).
+- **Offset vs. Yield:** Offset limits the solution space; Yield may only optimise inside already-approved allocation/risk/liquidity/concentration/suitability limits.
+- **Goal need vs. all three:** a hard goal or liquidity requirement overrides tax and incremental-return optimisation, full stop.
+
+### Execution sequence — a loop, not a one-way pipeline (source p.36–37, real structural finding already surfaced)
+
+```
+Observe → Offset → Harvest → Yield → Offset REVALIDATION → human decision → outcome review → repeat
+```
+
+The revalidation step is not optional: a Yield-proposed allocation can itself introduce new concentration, liquidity risk, or tax exposure — Offset must re-check the *proposed* end-state, not just the current one. This is the same principle as the Loop-Engineered Roadmap's own "Fail-Loud" law (verify at the point of change, not only at entry).
+
+### Orchestration ownership (ties Prereq 3's contracts together)
+
+A supervisory orchestrator — not any single engine, and not "language-model interpretation at runtime" (source's own explicit prohibition, p.49) — owns: running the four-step sequence above, applying the precedence list to resolve conflicts, and constructing the final option set (Preserve / Offset-only / Harvest-only / Yield-new-capital / integrated). This orchestrator is itself a build target (Phase H in the source's roadmap), not decided further in this document.
+
+---
+
+*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope, revised), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6 (Data-Source & Evidence Policy), and 9 (Human Decision Boundaries) drafted above — pending Tarun's review. Prerequisites 8, 10 remain undrafted next. Prerequisites 5, 7 remain G2 — drafting begins once Tarun's cross-referenced-public-source protocol (agreed 2026-07-30) is applied.*
