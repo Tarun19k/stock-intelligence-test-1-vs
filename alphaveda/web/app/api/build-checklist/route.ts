@@ -4,6 +4,16 @@ import { getServerSupabase } from '@/lib/supabase'
 const VALID_STATUSES = ['completed', 'in_progress', 'pending', 'blocked']
 
 export async function PATCH(req: NextRequest) {
+  const expectedToken = process.env.BUILD_CHECKLIST_TOKEN
+  if (!expectedToken) {
+    // Fail-closed, same pattern as COMMERCIAL_GATE.md: if the protection can't
+    // be verified (env var unset), deny rather than silently allow.
+    return NextResponse.json({ error: 'BUILD_CHECKLIST_TOKEN not configured on the server' }, { status: 503 })
+  }
+  if (req.headers.get('x-build-token') !== expectedToken) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+
   const body = await req.json().catch(() => null)
   const id = body?.id
   const status = body?.status

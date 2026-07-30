@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toggleTaskStatus } from './actions'
 
 type BuildTask = {
   id: number
@@ -27,15 +28,7 @@ export default function TaskRow({ task }: { task: BuildTask }) {
     setSaving(true)
     setSaveError(null)
     try {
-      const res = await fetch('/api/build-checklist', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: task.id, status: next }),
-      })
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.error ?? `HTTP ${res.status}`)
-      }
+      await toggleTaskStatus(task.id, next)
       setStatus(next)
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Update failed')
