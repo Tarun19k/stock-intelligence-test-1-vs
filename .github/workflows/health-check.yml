@@ -77,7 +77,7 @@ jobs:
             exit 1
           fi
 
-          if ! grep --fixed-strings --quiet 'ZZZ_INTENTIONAL_TEST_STRING_ZZZ' "$response_body"; then
+          if ! grep --fixed-strings --quiet 'Signal Risk Parameters' "$response_body"; then
             echo 'INSTRUMENT_CHECK_REASON=expected instrument-page content was not found' >> "$GITHUB_ENV"
             echo 'Health check failed: expected instrument-page content was not found' >&2
             exit 1
