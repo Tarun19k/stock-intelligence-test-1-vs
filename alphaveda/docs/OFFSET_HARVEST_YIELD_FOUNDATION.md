@@ -90,4 +90,118 @@ The source concedes B "still requires compliance review." For AlphaVeda specific
 
 ---
 
-*End of draft. Nothing below the Product Boundary recommendation and the glossary has been drafted. Trigger contracts, orchestration, conflict-resolution rules, metric dictionary, UX wireframes, and all implementation detail are the explicit NEXT step, gated behind Tarun's review of this document.*
+## 3. Market & Instrument Scope (Phase A, Prerequisite 2)
+
+**Status: DRAFT — Prerequisite 1 approved 2026-07-30, this is the next document in sequence.**
+
+### The source's recommendation (p.46–47) vs. AlphaVeda's actual current capability
+
+The source recommends an MVP universe of: India, Indian residents, listed Indian equities, equity mutual funds, ETFs, liquid funds/cash, EOD analysis, manual/CSV portfolio import — deferring derivatives, leverage, margin, international tax, complex-pricing bonds, unlisted investments, real estate, cryptocurrency, intraday recommendations, and automated orders.
+
+**Checked against AlphaVeda's live instrument table before adopting this (2026-07-30):** all 16 currently-seeded instruments are NSE-listed equities. Zero mutual funds, ETFs, or liquid-fund instruments exist anywhere in the schema or ingest pipeline (`src/ingest/bhavcopy.py` reads NSE/BSE Bhavcopy — an equity-only feed). Adopting the source's scope verbatim would silently commit to a capability that does not exist today.
+
+### Recommendation for AlphaVeda: narrow the source's scope to match real capability, name the gap explicitly
+
+| Asset class | Source recommends | AlphaVeda can ingest today | Verdict |
+|---|---|---|---|
+| Listed Indian equities (NSE) | In scope | Yes — `bhavcopy.py`, 16 instruments live | **In scope** |
+| Equity mutual funds | In scope | No ingest path exists | **Deferred — real gap, not silently assumed** |
+| ETFs | In scope | No ingest path exists | **Deferred — same gap class as MFs** |
+| Liquid funds / cash | In scope | No ingest path exists | **Deferred** |
+| Derivatives, leverage, margin | Deferred (source) | No | **Deferred — agreement with source** |
+| International tax, complex-pricing bonds, unlisted, real estate, crypto | Deferred (source) | No | **Deferred — agreement with source** |
+| Intraday recommendations, automated orders | Deferred (source) | No (EOD-only pipeline) | **Deferred — agreement with source** |
+
+**Net scope for Offset/Harvest/Yield Phase A:** listed NSE equities only, EOD data, manual/CSV portfolio import for holdings not already in `instruments`. This is narrower than the source's own MVP recommendation — not a disagreement with the source's judgment, but an honest reflection of what AlphaVeda's ingest pipeline actually supports today. MF/ETF/liquid-fund support is a **named, separate future prerequisite** (not numbered here, since adding it wouldn't be a documentation task — it requires a new ingest source and schema work, itself a build decision outside Phase A's scope) — not something OHY's trigger logic should pretend to handle by assuming a portfolio contains asset classes AlphaVeda cannot actually price or track.
+
+### Portfolio import for held-but-unlisted-in-AlphaVeda instruments
+
+A user's real portfolio may contain equities AlphaVeda doesn't yet track (any NSE-listed stock outside the current 16), or asset classes outside scope entirely (MFs, ETFs, cash). Per the source's own Model B constraint (comparisons only, no execution) and its explicit "no order execution" boundary:
+- NSE-listed equities outside the current 16 — CSV/manual import is in scope; the *instrument* itself still needs to exist in `instruments` with real fundamentals/OHLCV before Offset/Harvest/Yield can reason about it. Adding a new instrument is an existing, already-working AlphaVeda capability (demonstrated this session with the 11-ticker batch) — not new build work.
+- Out-of-scope asset classes (MFs, ETFs, cash, anything deferred above) — the portfolio-comparison surface should show them as **untracked holdings, excluded from Offset/Harvest/Yield analysis, explicitly labeled as such** — never silently omitted or misrepresented as $0.
+
+### Out of scope here (per Prerequisite 3–10, not this document)
+
+Trigger thresholds, materiality cut-offs, and any dollar/rupee-value logic for what counts as a "material" concentration are NOT decided here — this document only fixes *which instruments and asset classes exist in the universe*, not what AlphaVeda does with them.
+
+---
+
+## 4. Human Decision Boundaries (Phase A, Prerequisite 9)
+
+**Status: DRAFT — sequenced after Prerequisite 2, per the agreed task-portfolio plan.**
+
+### Not a new taxonomy — the source's G0/G1/G2 model mapped onto AlphaVeda's existing conventions
+
+The source (p.64) proposes its own G0/G1/G2 classes. AlphaVeda already has a working equivalent — the global CLAUDE.md's **External State Write Gate** (replace-object / append-event / irreversible-replace) and the Data Governance Approval Gate — governing every write this session made (the 11-ticker fundamentals batch, the ISIN correction, migration 0019). Rather than run two parallel classification systems, this document maps the source's categories onto what already exists:
+
+| Source's class | AlphaVeda's existing equivalent | Examples from this session |
+|---|---|---|
+| G0 — Claude may decide | Routine implementation, no external-state write | Drafting this document itself; internal code refactors |
+| G1 — Claude may recommend, human approves | Append-event writes (narrow, reversible) + Claude-proposed thresholds | The 11-ticker fundamentals write (logged, reviewed after); the 15%-concentration onboarding threshold proposed this session and approved by Tarun |
+| G2 — Human/domain approval mandatory *before* implementation | Irreversible-replace writes + anything touching financial formulas, tax logic, or regulatory classification | Migration 0019 (schema change, went through DIFF + go/no-go); OHY Prereqs 5/7 (financial formulas, tax law) |
+
+### What Offset/Harvest/Yield may automate (G0/G1, structure only — no thresholds decided here)
+
+- Ingesting and validating portfolio/instrument data (the hybrid onboarding model agreed this session — auto-approve on clean checks).
+- Portfolio-level calculations that don't touch G2 territory (concentration %, allocation drift) — using formulas already approved elsewhere, not inventing new ones.
+- Identifying missing information and flagging it, rather than silently proceeding.
+- Generating candidate Offset/Harvest/Yield allocations *within already-approved constraints* — never proposing a constraint change itself.
+- Running simulations against synthetic data (per the sandbox/testing strategy already agreed).
+- Producing source-backed explanations (evidence before persuasion, per the source's own UX principle already adopted).
+- Flagging a policy violation (e.g., a candidate option that would breach Model B's research-only language) — flagging, not silently correcting and proceeding.
+
+### What requires deterministic policy or Tarun's approval before implementation (G2 — same bar as Prereqs 5/7)
+
+- Interpretation of tax ambiguity, or any change to the tax module's methodology (Prereq 7).
+- Any change to a financial formula (Prereq 5) — including the Harvest Benefit calculation, risk-adjusted yield, or Offset materiality thresholds.
+- Introducing a new security-selection or replacement-asset logic.
+- Overriding a user's stated constraint (locked holdings, minimum cash reserve, prohibited assets).
+- Approving a low-confidence recommendation for display — low-confidence output either doesn't ship or ships explicitly labeled, never silently upgraded.
+- Introducing a new asset class beyond Prereq 2's approved scope (this is the exact trigger already named for revisiting MF/ETF/liquid-fund support).
+- Deciding regulatory suitability or legal product classification (this is what Prereq 1's Model B decision already resolved — reopening it is G2, not a routine call).
+- Production data access beyond the sandbox (per the testing/sandbox strategy — real portfolio data stays consent-gated, no-execution, per the source's own Phase I boundary).
+- Enabling any trade execution — permanently out of scope per Model B; reopening this is a Prerequisite-1-level decision, not routine.
+- Changing a critical threshold once set (e.g., the 15% concentration-review trigger agreed this session) — a threshold change is G2, proposing one for the first time is G1.
+
+### How this interacts with the Trimurti sign-off model already built
+
+This maps directly onto the Shiva gate from the sign-off model two turns ago: G0 items are Brahma/Vishnu self-certified by Claude; G1 items get Claude's Brahma/Vishnu self-certification but Shiva always routes to Tarun; G2 items don't get drafted at all without Tarun's methodology input first (Prereq 5/7's resolution this session — draft from cross-referenced public sources, Tarun signs off before it's trusted).
+
+---
+
+## 5. Data-Source & Evidence Policy (Phase A, Prerequisite 6)
+
+**Status: DRAFT — extends `alphaveda/.claude/rules/DATA_SOURCES.md`, does not duplicate it.**
+
+### Why extend rather than write a new file
+
+`DATA_SOURCES.md` already governs every source AlphaVeda's signal engine uses (NSE/BSE Bhavcopy, BSE XBRL, macro data, yfinance/FMP), with real provenance requirements (`source`, `ingested_at`, `licence_class`) already enforced on every row. This session's own L3-B work used a source not yet in that table — Firecrawl + Screener.in, logged as `source: manual_screener` on all 15 fundamentals rows. OHY needs the same discipline extended to the tiered evidence hierarchy the source PDF recommends (p.50–51), applied to what AlphaVeda has actually used, not a generic list.
+
+### Tiered hierarchy, mapped onto real sources this session touched
+
+| Tier | Source class | AlphaVeda's actual instance | Used for |
+|---|---|---|---|
+| 1 — Authoritative | Exchange data, regulatory filings, audited statements | NSE Bhavcopy, BSE Bhavcopy, BSE Shareholding/Financials XBRL (already in `DATA_SOURCES.md`) | `ohlcv`, `fundamentals` (existing) |
+| 1 — Authoritative | Official regulatory disclosure pages | NSE's bulk pledge-disclosure page (Reg-31/SEBI-LODR column specifically — confirmed this session to be the promoter-only column, distinct from the broader depository-wide column) | `fundamentals.promoter_pledge_pct` |
+| 2 — Licensed institutional | Verified market-data vendors | FMP (existing, `commercial=True` only) | `ohlcv` supplement |
+| 3 — Secondary analysis | Aggregated financial databases | Screener.in via Firecrawl (`source: manual_screener`) — a real, working source this session, but a secondary aggregator, not a primary filing | `fundamentals` (current interim source, pending Prereq-5's calc-spec decision on whether a Tier-1 source should replace it) |
+| 4 — Context only | News, commentary | Not currently used for any stored value | N/A |
+| 5 — Prohibited as decision evidence | Unsourced social posts, inferred figures without lineage, LLM-generated financial facts | N/A — already excluded by existing provenance requirements | N/A |
+
+### Real finding this session that this policy must encode, not just describe
+
+Screener.in (Tier 3) was treated as sufficient for fundamentals sourcing this session — but two real data-quality bugs surfaced from *not* independently verifying against a Tier-1 source: (1) wrong ISINs for BAJFINANCE/TATASTEEL only caught by cross-checking BSE's own scrip master directly; (2) TMCV's pledge status genuinely absent from NSE's bulk file post-demerger, correctly recorded as `NULL` rather than inferred. **Policy: any Tier-3-sourced value that a Tier-1 source can independently confirm must be cross-checked before being trusted as fact** — this is the same discipline the Claim Verification Gate already requires generally, made concrete for OHY's specific sources.
+
+### Provenance requirements (extends existing, does not replace)
+
+Same three fields already required (`source`, `ingested_at`, `licence_class` for `ohlcv`) — OHY-derived tables additionally require:
+- `evidence_tier` (1–5, per the table above) on any value used in an Offset/Harvest/Yield calculation.
+- `cross_verified` (boolean) — whether a Tier-3 value was independently checked against Tier 1/2 before use, per the policy above.
+
+### Out of scope here
+
+Which specific formulas consume which tier of evidence, and what confidence penalty (if any) applies to Tier-3-only data — that's Prereq 5 (calculation spec), not this document.
+
+---
+
+*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope), 6 (Data-Source & Evidence Policy), and 9 (Human Decision Boundaries) drafted above — pending Tarun's review. Prerequisites 3, 4, 8, 10 remain undrafted, sequenced next (structurally depend on 2/9's content). Prerequisites 5, 7 remain G2 — drafting begins once Tarun's cross-referenced-public-source protocol (agreed 2026-07-30) is applied.*
