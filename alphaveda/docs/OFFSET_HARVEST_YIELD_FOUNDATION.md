@@ -394,4 +394,63 @@ An OHY feature is not "done" — regardless of what any test suite reports — u
 
 ---
 
-*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope, revised twice), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6 (Data-Source & Evidence Policy), 8 (Investor & Suitability Model — schema only, awaiting real values), 9 (Human Decision Boundaries), and 10 (Acceptance Criteria) all drafted above — pending Tarun's review. Prerequisites 5, 7 remain G2 — drafting begins once Tarun's cross-referenced-public-source protocol (agreed 2026-07-30) is applied. All 8 draftable prerequisites are now done; only 5, 7 (G2) and populating Prereq 8's real values remain before Phase A is complete.*
+## 10. Tax Engine Specification — Equity Capital Gains (Phase A, Prerequisite 7, DRAFT)
+
+**Status: DRAFT — first section only (listed equity/equity-oriented mutual funds). Cross-referenced
+against 5 independent secondary sources plus a direct snippet from the official Income Tax
+Department page (`incometaxindia.gov.in/w/tax-on-long-term-capital-gains`), retrieved 2026-07-30.
+This is a draft for Tarun's review and approval — G2, not yet authorized for use in any real
+calculation. Full page render of the official source failed (JS-loading shell); the figures below
+rely on convergent secondary sources plus one real official-page search snippet, not a full
+primary-document read — flagged honestly, not smoothed over.**
+
+### Short-Term Capital Gains (STCG) — Section 111A
+
+| Field | Value | Source |
+|---|---|---|
+| Applies to | Listed equity shares, equity-oriented mutual funds, units of business trust — where STT paid | Section 111A |
+| Holding period | ≤ 12 months | Section 111A |
+| Tax rate | 20% (flat, no exemption threshold) | Effective for transfers on/after 23-07-2024 (Budget 2024). Rate was 15% before this date — **AlphaVeda's tax engine must be date-aware, not a single constant.** |
+
+### Long-Term Capital Gains (LTCG) — Section 112A
+
+| Field | Value | Source |
+|---|---|---|
+| Applies to | Listed equity shares, equity-oriented mutual funds, units of business trust — where STT paid | Section 112A |
+| Holding period | > 12 months | Section 112A |
+| Exemption threshold | ₹1,25,000 per financial year (raised from ₹1,00,000 by Budget 2024, effective FY 2024-25 onward) | Cross-verified: Bajaj Finserv, Quicko, Groww, Tax2Win, and the official IT-Dept page snippet all state ₹1,25,000 |
+| Tax rate | 12.5% on gains exceeding the exemption threshold | Effective for transfers on/after 23-07-2024. Rate was 10% (with indexation, pre-2024 rules) before this date — same date-awareness requirement as STCG above |
+
+### Set-off rules (real, cross-verified, not yet a full engine spec)
+
+- Long-term capital loss can **only** be set off against long-term capital gains — confirmed
+  identically across Bajaj Finserv, Quicko, and Tax2Win.
+- The ₹1,25,000 exemption applies to **net** LTCG remaining *after* loss set-off, not gross LTCG
+  before set-off (Quicko: "exemption of INR 1.25 lakh is available on net gains remaining after
+  loss set-off").
+- Short-term capital loss set-off ordering (against STCG vs LTCG), carry-forward periods, and
+  grandfathering treatment for pre-2018 holdings are **not yet researched** — genuine gap, not
+  silently assumed.
+
+### What this draft does NOT yet cover (honest scope statement)
+
+- Debt mutual funds, bonds, or any non-equity instrument (out of AlphaVeda's current MVP scope per
+  Prereq 2 anyway)
+- Short-term capital loss carry-forward rules
+- Grandfathering (holdings acquired before 31-01-2018)
+- Securities Transaction Tax (STT) computation itself
+- Surcharge and cess layered on top of the base rates above
+- Any of this applied to a specific investor's actual tax slab/status beyond the flat 111A/112A rates
+
+### What Tarun needs to do to close this prerequisite
+
+1. Confirm the two rate/threshold tables above are correctly understood before any code consumes them.
+2. Decide whether AlphaVeda should hard-block on the missing items (short-term loss ordering,
+   grandfathering) until researched, or explicitly scope them as "not supported in MVP."
+3. Approve this becoming a versioned, jurisdiction-specific tax rules module (per the source PDF's
+   own requirement) rather than inline UI logic — this is a G1 architecture decision layered on
+   top of the G2 content above.
+
+---
+
+*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope, revised twice), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6 (Data-Source & Evidence Policy), 8 (Investor & Suitability Model — schema only, awaiting real values), 9 (Human Decision Boundaries), and 10 (Acceptance Criteria) all drafted above — pending Tarun's review. Prerequisite 7 (Tax Engine Spec) has a first real section drafted (equity STCG/LTCG, section 10 above) — cross-referenced against 5 independent sources, still pending Tarun's approval and missing several sub-items honestly flagged in that section. Prerequisite 5 (Calculation Spec) not yet started. All draftable content is now either complete or partially complete; Prereq 5, the remainder of Prereq 7, and populating Prereq 8's real values remain before Phase A is complete.*

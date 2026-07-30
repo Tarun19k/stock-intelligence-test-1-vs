@@ -1,0 +1,6 @@
+[
+  {"ticker": "SYN_TECHCO", "qty": 200, "avg_cost": 800.0, "current_price": 2400.0},
+  {"ticker": "SYN_BANK", "qty": 100, "avg_cost": 1200.0, "current_price": 1350.0},
+  {"ticker": "SYN_PHARMA", "qty": 300, "avg_cost": 450.0, "current_price": 380.0},
+  {"ticker": "SYN_CASH", "qty": 1, "avg_cost": 200000.0, "current_price": 200000.0}
+]

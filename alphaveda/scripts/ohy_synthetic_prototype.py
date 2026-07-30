@@ -286,5 +286,32 @@ def run_full_decision_loop(holdings):
     return decision_object
 
 
+def load_portfolio_from_json(path: str):
+    """Load a custom synthetic portfolio from a JSON file for interactive testing.
+
+    Expected format:
+    [
+      {"ticker": "SYN_ANYTHING", "qty": 100, "avg_cost": 500.0, "current_price": 650.0},
+      ...
+    ]
+    Tickers do not need a SYN_ prefix, but keep them clearly fake — this script must
+    never be pointed at a real holdings table.
+    """
+    with open(path) as f:
+        raw = json.load(f)
+    return [SyntheticHolding(**row) for row in raw]
+
+
 if __name__ == "__main__":
-    run_full_decision_loop(SYNTHETIC_PORTFOLIO)
+    import sys
+
+    if len(sys.argv) > 1:
+        custom_path = sys.argv[1]
+        print(f"Loading custom synthetic portfolio from: {custom_path}\n")
+        portfolio = load_portfolio_from_json(custom_path)
+    else:
+        print("No custom portfolio file given — using the built-in synthetic example.")
+        print("To test your own scenario: python3 ohy_synthetic_prototype.py <path-to-json>\n")
+        portfolio = SYNTHETIC_PORTFOLIO
+
+    run_full_decision_loop(portfolio)
