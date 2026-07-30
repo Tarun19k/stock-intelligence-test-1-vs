@@ -1,6 +1,14 @@
 # Recovery: /chief-of-staff recover then read this file first
 
-Checkpoint: 2026-07-30 (mid-Bucket-A-execution — 2nd checkpoint this day)
+Checkpoint: 2026-07-31 (post-compaction continuation — 3rd checkpoint, supersedes 2026-07-30 entries below which remain as history)
+
+## DO NOT REDO — completed since the prior checkpoint (commit `2784445`)
+
+- **Real security incident found and fixed on `/portfolio`.** A background commit-security review flagged `broken-access-control` + `information-disclosure`: the page (built/UI-enhanced/Playwright-tested in the prior session block) showed real ingested portfolio holdings with zero authentication. Immediately taken down (commit `8e491e0`, disabled placeholder) before a real fix was built — the no-auth precedent used for `/instrument`/`/build-checklist` was valid only because those pages hold synthetic/non-financial data, and that distinction was never re-checked before `/portfolio` shipped. New standing memory saved: `feedback_data_sensitivity_reeval.md`.
+- **Real access control built and shipped** (commit `1357437`): `alphaveda/web/lib/portfolio-auth.ts` — shared-secret gate via `PORTFOLIO_ACCESS_TOKEN` env var (fail-closed if unset, same fail-closed pattern as `BUILD_CHECKLIST_TOKEN`), checked with `crypto.timingSafeEqual`. `/portfolio/login` — token form → Server Action sets an httpOnly/secure/sameSite=lax cookie holding SHA-256(token), never the raw token. `/portfolio` — Server Component checks the session cookie before the Supabase query runs at all; redirects to `/portfolio/login` if invalid/absent. "Lock this page" action clears the cookie. Verified: `tsc --noEmit` clean, `next build` clean, both routes registered as dynamic (`ƒ /portfolio`, `ƒ /portfolio/login`).
+- **`PORTFOLIO_ACCESS_TOKEN` is NOT yet set** — Tarun must set it directly in Vercel project env vars (not done by Claude — avoids putting a secret value in a prompt/tool call). Until set, the gate fails closed: every login attempt rejected, page always redirects, so it stays inaccessible rather than reverting to unauthenticated.
+- **Standing depersonalization instruction applied** (commit `f2be5c5`): the ingested real portfolio holdings are never to be identified by a real named individual in any durable artifact (docs, code comments, on-page copy, memory) — labeled "John Doe" as account holder throughout, matching the placeholder identity already present in the source P&L export. Updated: `portfolio/page.tsx` on-page copy, `GAP_REGISTER.md` (G26/G6/NG-2 rows), `OFFSET_HARVEST_YIELD_FOUNDATION.md` (Investor & Suitability Model section, §8). Left untouched: mentions attributing a *decision/approval* to Tarun by name (e.g. "approved by Tarun 2026-07-30") — those describe who authorized something, a different category from whose money it is. Applies going forward to all new AlphaVeda holdings-related artifacts, not just this pass.
+- Interrupted Playwright loop testing (mobile-viewport screenshot review) from the prior session block remains paused — moot until `PORTFOLIO_ACCESS_TOKEN` is set and the login flow can be exercised live.
 
 ## DO NOT REDO — completed since the prior same-day checkpoint (commit `5595fe5`)
 
@@ -25,7 +33,9 @@ Checkpoint: 2026-07-30 (mid-Bucket-A-execution — 2nd checkpoint this day)
 
 ## EXACT RESUME POINT
 
-**Bucket A item 1 (Synthesis Engine token/session estimate) is DONE — waiting on Tarun's GO before continuing.** Next up once GO is given:
+**Immediate next action: Tarun sets `PORTFOLIO_ACCESS_TOKEN` in Vercel project env vars.** Once set, resume the interrupted Playwright loop test against the live authenticated `/portfolio` page (including reviewing the still-unreviewed mobile-viewport screenshot from the prior session block). That is the only item blocking full completion of "I need the page ready and wired appropriately" from the prior session's multi-part request.
+
+Separately, **Bucket A item 1 (Synthesis Engine token/session estimate) is DONE — waiting on Tarun's GO before continuing.** Next up once GO is given:
 1. ~~Synthesis Engine token/session estimate~~ — DONE, see above, awaiting sign-off.
 2. OHY Prereq 2 (market/instrument scope) + Prereq 9 (human decision boundaries) — these shape 3/4/6/8/10.
 3. OHY Prereq 6 (data-source & evidence policy), Synthesis Engine trimurti/Shiva checkpoint scope (condition 2).
@@ -38,6 +48,7 @@ Nothing in Buckets B (Pending Decisions), C (Pending Planning), or D (Needs R&D)
 
 | Decision | Impact | Deadline |
 |---|---|---|
+| Set `PORTFOLIO_ACCESS_TOKEN` in Vercel env vars | Unlocks `/portfolio`; currently fails closed (safe, but inaccessible) | None — but blocks resuming the Playwright loop test |
 | L3-A: G20 nav promotion go/no-go | Feature gate; window completes ~2026-07-31 18:03 UTC | ~1 day from this checkpoint |
 | OHY Prereq 5 (calculation spec) — financial-formula methodology | G2, blocks any draft of the metric dictionary | Not urgent, but blocks Bucket C fully |
 | OHY Prereq 7 (tax engine spec) — India tax-law interpretation | G2, same class as above | Not urgent |
