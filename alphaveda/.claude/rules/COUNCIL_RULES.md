@@ -78,6 +78,43 @@ Write log / tools-seen registry: `~/.claude/logs/external-state-writes.log`
    detection backstop, not prevention. No mechanical enforcement exists for this action
    class; a bounded time-to-detection is the accepted operating point.
 
+## Rule E — Financial Council Consultation Gate (added 2026-07-30, standing rule — Tarun-mandated)
+
+**Effective immediately, applies to all AlphaVeda work going forward, not just this session.**
+
+Before any AlphaVeda decision is finalized that touches: a retail-facing screen or UI copy, signal
+presentation or framing, portfolio-decision logic (Offset/Harvest/Yield engines, diagnostics,
+metric definitions), or any G1/G2-class decision per `OFFSET_HARVEST_YIELD_FOUNDATION.md`'s
+decision-class boundaries — the Financial Council must be consulted and its verdict logged before
+that decision ships or is treated as final.
+
+**Minimum required seats** (per Rule A's registry above — all already backed, no new skill needed):
+- At least one investor-persona seat (Buffett, Munger, Dalio, Lynch, Marks, Soros, or Druckenmiller
+  — pick based on relevance to the specific decision, not all seven every time)
+- `sebi-compliance-reviewer` (Varghese) — mandatory whenever the decision touches retail-facing
+  output, regardless of which investor seat also runs
+- `calibration-integrity` (Reddy) — mandatory whenever the decision touches a displayed metric,
+  score, or confidence claim
+
+**What this gates:** new screens (Screens 2/3/5-9 per the source blueprint), any change to how
+Offset/Harvest/Yield outputs are framed, any new metric added to the diagnostic dictionary, any
+copy change on an existing shipped page that alters what a retail user is told. **Does not gate**:
+internal engineering scaffolding (repo restructuring, ADRs, hooks, subagent definitions, synthetic
+test fixtures with no retail-facing surface) — those follow the ordinary premortem/External State
+Write Gate rules already in force, not this one.
+
+**Enforcement mechanism:** same as Rule A — no mechanical hook exists to block this (Agent-tool
+dispatches aren't observable by hooks, same honest limitation already documented in global
+`chief-of-staff/SKILL.md`'s Council Engagement Logging section). This is a discipline requirement,
+verified by checking `bridge/data/council/audit-log.jsonl` for a matching entry before treating any
+gated decision as shippable — the same Claim Verification Gate pattern used elsewhere in this
+system. A gated decision with no matching audit-log entry has not actually cleared this gate,
+regardless of how confident the implementation looks.
+
+**Bypass:** Tarun may say "skip financial council for [specific decision] this session" — valid for
+that item only, never persisted, logged as a bypass in the session record same as the global Layer
+1 Council Gate's bypass mechanism.
+
 ## Verification hook
 ```bash
 # Before dispatching a seat:
