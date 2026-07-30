@@ -332,4 +332,66 @@ A supervisory orchestrator — not any single engine, and not "language-model in
 
 ---
 
-*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope, revised), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6 (Data-Source & Evidence Policy), and 9 (Human Decision Boundaries) drafted above — pending Tarun's review. Prerequisites 8, 10 remain undrafted next. Prerequisites 5, 7 remain G2 — drafting begins once Tarun's cross-referenced-public-source protocol (agreed 2026-07-30) is applied.*
+## 8. Investor & Suitability Model (Phase A, Prerequisite 8)
+
+**Status: DRAFT — schema seeded with Tarun's real profile per his explicit choice (2026-07-30), not a generic template.**
+
+### Why a real instance, and the honesty constraint that comes with it
+
+Tarun chose to seed this with his own real profile rather than a generic placeholder — this makes the document concrete, but it also means real personal-financial information will live in this file going forward. Same discipline as everywhere else in this session: fields left unfilled are marked explicitly, not silently defaulted to a plausible-looking value.
+
+### Schema (source's own field list, source p.52)
+
+| Field | Value | Status |
+|---|---|---|
+| Investment goals | *(needs your input)* | — |
+| Horizon | *(needs your input)* | — |
+| Required liquidity | *(needs your input)* | — |
+| Income dependency | *(needs your input)* — does AlphaVeda-tracked capital fund regular income needs? | — |
+| Risk capacity | *(needs your input)* — objective capacity (income stability, other assets), distinct from tolerance below | — |
+| Risk tolerance | *(needs your input)* — subjective comfort with drawdown | — |
+| Loss tolerance | *(needs your input)* — e.g. "could tolerate a 20% temporary decline without changing plan" | — |
+| Tax position | *(needs your input)* — tax slab / relevant bracket, for Prereq 7 to eventually consume | — |
+| Locked holdings | *(needs your input)* — any position that must not be sold regardless of signal | — |
+| Prohibited assets | *(needs your input)* — anything OHY should never recommend | — |
+| Minimum cash reserve | *(needs your input)* | — |
+| Upcoming liabilities | *(needs your input)* — known near-term cash needs | — |
+| Maximum permitted churn | *(needs your input)* — e.g. "no more than X% of portfolio moved per recommendation cycle" | — |
+| Preferred implementation method | *(needs your input)* — immediate / phased / cash-flow-led | — |
+| Knowledge & experience | *(needs your input)* — informs Classification A from the source's UX principles (already summarized earlier this session) | — |
+| Acknowledgement & consent | Pending — required before any real-portfolio (non-synthetic) use, per the sandbox strategy already agreed | — |
+
+### What this does NOT decide
+
+The schema's *shape* is fixed here. The actual values above are open — filling them in is a one-time real-data input from Tarun, not a Claude drafting task, and doesn't require re-running this document's Brahma/Vishnu self-certification once populated (the shape doesn't change, only the instance data does).
+
+### Data governance note
+
+Once populated, this document contains real personal-financial information. It should be treated with the same care as any workspace source data under the Data Governance Approval Gate — not committed to a public-facing artifact, and any future extraction of it into a shipped product would trip the Commercial Packaging Provenance Gate.
+
+---
+
+## 9. Acceptance Criteria (Phase A, Prerequisite 10)
+
+**Status: DRAFT — adopts the source's own 12-point checklist (p.53–54) directly; no disagreement found.**
+
+An OHY feature is not "done" — regardless of what any test suite reports — unless all 12 hold:
+
+1. Every calculation is reproducible from saved inputs.
+2. Every input has lineage (source, tier, cross-verification status — per Prereq 6).
+3. Every recommendation maps to one or more validated triggers (per Prereq 4's hierarchy).
+4. Every option includes a no-action ("Preserve") comparator — never absent.
+5. Taxes and costs are included, or explicitly marked unavailable — never silently omitted.
+6. Missing critical data blocks the recommendation — it does not silently proceed with a gap.
+7. User constraints (Prereq 8, once populated) cannot be silently overridden.
+8. Simulations expose their own assumptions and uncertainty, not a false-precision single number.
+9. Recommendation output is stable under immaterial input changes (no flapping between Offset states on noise).
+10. Tests cover normal, boundary, contradictory, and failure cases — not just the happy path.
+11. The full decision object is logged (ties into the existing `external-state-writes.log` pattern already used this session).
+12. A human reviewer can reconstruct *why* a result was produced, from the logged decision object alone.
+
+**How this ties to the Trimurti sign-off model:** these 12 criteria collectively constitute the Shiva gate's actual checklist for OHY code — not a separate review process, the same one already built, made concrete and itemized.
+
+---
+
+*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope, revised twice), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6 (Data-Source & Evidence Policy), 8 (Investor & Suitability Model — schema only, awaiting real values), 9 (Human Decision Boundaries), and 10 (Acceptance Criteria) all drafted above — pending Tarun's review. Prerequisites 5, 7 remain G2 — drafting begins once Tarun's cross-referenced-public-source protocol (agreed 2026-07-30) is applied. All 8 draftable prerequisites are now done; only 5, 7 (G2) and populating Prereq 8's real values remain before Phase A is complete.*
