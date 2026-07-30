@@ -92,7 +92,7 @@ The source concedes B "still requires compliance review." For AlphaVeda specific
 
 ## 3. Market & Instrument Scope (Phase A, Prerequisite 2)
 
-**Status: DRAFT — Prerequisite 1 approved 2026-07-30, this is the next document in sequence.**
+**Status: REVISED 2026-07-30 per Tarun's explicit instruction — ETFs added to in-scope, MFs/liquid-funds/cash re-parked with target dates + execution roadmaps (no indefinite defers, per the standing rule).**
 
 ### The source's recommendation (p.46–47) vs. AlphaVeda's actual current capability
 
@@ -105,20 +105,43 @@ The source recommends an MVP universe of: India, Indian residents, listed Indian
 | Asset class | Source recommends | AlphaVeda can ingest today | Verdict |
 |---|---|---|---|
 | Listed Indian equities (NSE) | In scope | Yes — `bhavcopy.py`, 16 instruments live | **In scope** |
-| Equity mutual funds | In scope | No ingest path exists | **Deferred — real gap, not silently assumed** |
-| ETFs | In scope | No ingest path exists | **Deferred — same gap class as MFs** |
-| Liquid funds / cash | In scope | No ingest path exists | **Deferred** |
+| ETFs | In scope | **No — checked live 2026-07-30**: `bhavcopy.py`'s `_VALID_SERIES = {"EQ","BE","BL"}` explicitly filters out ETF rows (see its own docstring: "excludes derivatives, ETFs-on-debt, and other non-equity instruments") | **In scope by Tarun's explicit instruction — build required, see roadmap below, not silently assumed working** |
+| Equity mutual funds | In scope | No ingest path exists at all | **Parked — target date + roadmap below** |
+| Liquid funds | In scope | No ingest path exists | **Parked — same roadmap shape as mutual funds** |
+| Cash | In scope | N/A — cash isn't a priced instrument; it's a portfolio-ledger rupee amount | **Always in scope, trivially — no ingest dependency, this was mis-scoped as a "deferred" item earlier; correcting here** |
 | Derivatives, leverage, margin | Deferred (source) | No | **Deferred — agreement with source** |
 | International tax, complex-pricing bonds, unlisted, real estate, crypto | Deferred (source) | No | **Deferred — agreement with source** |
 | Intraday recommendations, automated orders | Deferred (source) | No (EOD-only pipeline) | **Deferred — agreement with source** |
 
-**Net scope for Offset/Harvest/Yield Phase A:** listed NSE equities only, EOD data, manual/CSV portfolio import for holdings not already in `instruments`. This is narrower than the source's own MVP recommendation — not a disagreement with the source's judgment, but an honest reflection of what AlphaVeda's ingest pipeline actually supports today. MF/ETF/liquid-fund support is a **named, separate future prerequisite** (not numbered here, since adding it wouldn't be a documentation task — it requires a new ingest source and schema work, itself a build decision outside Phase A's scope) — not something OHY's trigger logic should pretend to handle by assuming a portfolio contains asset classes AlphaVeda cannot actually price or track.
+**Net scope for Offset/Harvest/Yield Phase A:** listed NSE equities + ETFs (once the build below lands) + cash (already trivially trackable), EOD data, manual/CSV portfolio import for holdings not already in `instruments`.
+
+### ETF inclusion — real execution roadmap (this is a build task, not a documentation change)
+
+Including ETFs "for now" means real engineering work before OHY can reason about them, not a scope-doc edit alone:
+
+1. **Verify empirically which NSE `SERIES` codes actually correspond to ETFs** in a live Bhavcopy sample — the current exclusion comment is ambiguous about which ETF sub-types (equity ETF vs. gold/debt ETF, which may use different series codes) are already passing through under `EQ` vs. genuinely filtered. Don't assume; check a real file first.
+2. **Expand `bhavcopy.py`'s series handling** once (1) is confirmed, so ETF OHLCV actually flows into `ohlcv`.
+3. **Add an `asset_class` column** (`'equity'` | `'etf'`) parallel to the existing `sector_class` pattern from migration 0019 — an ETF's "fundamentals" analog is NAV, tracking index, and expense ratio, none of which fit the company-fundamentals schema (no ROIC, no debt/equity, no promoter pledge — an ETF has no promoters).
+4. **Source and tier-classify ETF NAV/expense-ratio data** per Prereq 6's evidence policy (not yet vetted — likely NSE's own ETF-specific disclosure, Tier 1 if confirmed official).
+
+**Target date: complete before OHY Phase E (Offset prototype) begins** — Offset/Harvest/Yield literally cannot reason about a portfolio holding an ETF without real data behind it, so this has to land before, not during, Phase E.
+
+### Mutual funds & liquid funds — parked, with target date and roadmap (not indefinite)
+
+**Target date:** Track A close (the same 30-day Synthesis Engine reliability clock), or the first real user portfolio containing one, whichever comes first — same trigger already set for the original MF/ETF deferral, now scoped to MFs/liquid-funds only since ETFs moved to in-scope above.
+
+**Execution roadmap if triggered:**
+1. Source AMFI's daily NAV data feed (a real, known, public source — not yet vetted against Prereq 6's tier hierarchy).
+2. New ingest module, analogous to `bhavcopy.py` but for fund NAVs.
+3. Same `asset_class` extension as ETFs above (`'mutual_fund'` | `'liquid_fund'`), with its own non-company fundamentals analog (category, expense ratio, AUM, benchmark — not ROIC/debt-equity/pledge).
+4. Re-run this scope decision with real data in hand, same discipline as the ETF build above.
 
 ### Portfolio import for held-but-unlisted-in-AlphaVeda instruments
 
-A user's real portfolio may contain equities AlphaVeda doesn't yet track (any NSE-listed stock outside the current 16), or asset classes outside scope entirely (MFs, ETFs, cash). Per the source's own Model B constraint (comparisons only, no execution) and its explicit "no order execution" boundary:
+A user's real portfolio may contain equities AlphaVeda doesn't yet track (any NSE-listed stock outside the current 16), an ETF (in scope, pending the build above), or MFs/liquid funds (parked, see roadmap above). Per the source's own Model B constraint (comparisons only, no execution) and its explicit "no order execution" boundary:
 - NSE-listed equities outside the current 16 — CSV/manual import is in scope; the *instrument* itself still needs to exist in `instruments` with real fundamentals/OHLCV before Offset/Harvest/Yield can reason about it. Adding a new instrument is an existing, already-working AlphaVeda capability (demonstrated this session with the 11-ticker batch) — not new build work.
-- Out-of-scope asset classes (MFs, ETFs, cash, anything deferred above) — the portfolio-comparison surface should show them as **untracked holdings, excluded from Offset/Harvest/Yield analysis, explicitly labeled as such** — never silently omitted or misrepresented as $0.
+- Cash — always trackable, a ledger amount, not a priced instrument; no ingest dependency.
+- ETFs, before the build above lands, and MFs/liquid funds (parked) — the portfolio-comparison surface should show them as **untracked holdings, excluded from Offset/Harvest/Yield analysis, explicitly labeled as such** — never silently omitted or misrepresented as $0.
 
 ### Out of scope here (per Prerequisite 3–10, not this document)
 
