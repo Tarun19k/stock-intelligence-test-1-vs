@@ -436,21 +436,97 @@ primary-document read — flagged honestly, not smoothed over.**
 
 - Debt mutual funds, bonds, or any non-equity instrument (out of AlphaVeda's current MVP scope per
   Prereq 2 anyway)
-- Short-term capital loss carry-forward rules
-- Grandfathering (holdings acquired before 31-01-2018)
-- Securities Transaction Tax (STT) computation itself
-- Surcharge and cess layered on top of the base rates above
-- Any of this applied to a specific investor's actual tax slab/status beyond the flat 111A/112A rates
+- ~~Short-term capital loss carry-forward rules~~ — now researched, see below
+- ~~Grandfathering (holdings acquired before 31-01-2018)~~ — now researched, see below
+- ~~Securities Transaction Tax (STT) computation~~ — now researched, see below
+- ~~Surcharge and cess layered on top of the base rates~~ — now researched, see below
+- Any of this applied to a specific investor's actual tax slab/status beyond the flat 111A/112A
+  rates — still not researched (surcharge specifically requires knowing total taxable income, which
+  needs Prereq 8's real investor data, not just tax law)
+
+### Set-off ordering and carry-forward (Section 74)
+
+Cross-verified: official `incometaxindia.gov.in` set-off/carry-forward page + Section 74 summaries
+(Bajaj Finserv, Tax2Win), all in agreement.
+
+| Rule | Detail |
+|---|---|
+| STCL set-off | Flexible — can be set off against **either** STCG or LTCG in the same year (confirmed via the official IT-Dept MCQ answer key: "short-term capital loss can be set off against short-term capital gain as well as against long-term capital gain") |
+| LTCL set-off | Restricted — can **only** be set off against LTCG (already established above) |
+| Carry-forward period | 8 assessment years from the year the loss is incurred |
+| Condition | Loss can only be carried forward if the return is filed on or before the due date under Section 139(1) — a late return forfeits carry-forward |
+
+### Grandfathering (Section 112A proviso, shares held before 31-01-2018)
+
+Cross-verified: official `incometaxindia.gov.in` Schedule 112A page + taxharvestlab + Quicko +
+Tax2Win, all stating the identical formula.
+
+```
+Cost of Acquisition = Min(Sale Price, Max(Actual Purchase Price, FMV on 31-01-2018))
+```
+
+This prevents both an artificial loss (if FMV was inflated above sale price) and an artificial gain
+(if FMV was below actual purchase price). **Confirmed still in effect after Budget 2024** —
+taxharvestlab explicitly addresses this: "Does Grandfathering Apply After Budget 2024 Changes? ...
+still calculated using the same formula." Real implication for AlphaVeda: any Harvest-engine
+tax-loss/gain calculation on a holding acquired before 31-01-2018 needs the FMV-as-of-that-date as
+an input — a data point AlphaVeda does not currently source anywhere.
+
+### Securities Transaction Tax (STT)
+
+Cross-verified: Zerodha's own broker support documentation (an operational source that must be
+exactly correct, since it drives real broker contract notes) + a market bulletin (Arihant Plus),
+both agreeing, both confirming no change in the April 2026 F&O-rate revision.
+
+| Order type | Rate | Applies to |
+|---|---|---|
+| Equity delivery | 0.1% (₹100 per lakh) | Both buy and sell sides |
+| Equity intraday | 0.025% (₹25 per lakh) | Sell side only |
+
+AlphaVeda's MVP scope (Prereq 2) is delivery-based equity/ETF holdings — the 0.1%-both-sides rate is
+the one directly relevant; intraday is out of scope and only included here for completeness/contrast.
+
+### Surcharge and cess
+
+Cross-verified: official `incometaxindia.gov.in` short-term-gains examples (worked examples
+consistently show "@ 20% (plus cess @ 4%)") + Nippon India Mutual Fund's own Tax Reckoner FY 2025-26
+(a real institutional compliance document) + PwC's Worldwide Tax Summaries.
+
+- **Cess:** flat 4% ("Health and Education Cess"), applied on top of tax + surcharge — confirmed
+  directly in official worked examples.
+- **Surcharge:** income-slab-dependent (10%/15%/25%/37% tiers based on total taxable income), **but
+  capped at a maximum of 15% specifically for capital gains and dividend income** regardless of
+  which slab the investor's other income falls into — confirmed via Nippon India's Tax Reckoner:
+  "Maximum surcharge will be 15% where income is in nature of dividend from shares and capital
+  gain." This cap is a real, specific carve-out — do not apply the general 37% top surcharge slab
+  to capital gains income.
+- **Not yet resolved:** the exact surcharge tier a specific investor falls into depends on their
+  *total* taxable income (all sources, not just capital gains) — this requires Prereq 8's real
+  investor data, not just tax law, and is correctly deferred until that's populated.
 
 ### What Tarun needs to do to close this prerequisite
 
-1. Confirm the two rate/threshold tables above are correctly understood before any code consumes them.
-2. Decide whether AlphaVeda should hard-block on the missing items (short-term loss ordering,
-   grandfathering) until researched, or explicitly scope them as "not supported in MVP."
+1. Confirm all rate/threshold/formula tables above (STCG/LTCG, set-off, grandfathering, STT,
+   surcharge/cess) are correctly understood before any code consumes them.
+2. Decide whether the still-open item (surcharge tier depends on total income, needs Prereq 8) blocks
+   any tax display until Prereq 8 is populated, or whether AlphaVeda should show pre-surcharge figures
+   with an explicit "surcharge not yet calculated" label in the interim.
 3. Approve this becoming a versioned, jurisdiction-specific tax rules module (per the source PDF's
    own requirement) rather than inline UI logic — this is a G1 architecture decision layered on
    top of the G2 content above.
+4. Provide the FMV-as-of-31-01-2018 data source for any pre-2018 holdings, if any exist in the real
+   portfolio — AlphaVeda has no current source for this historical price point.
 
 ---
 
-*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market & Instrument Scope, revised twice), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6 (Data-Source & Evidence Policy), 8 (Investor & Suitability Model — schema only, awaiting real values), 9 (Human Decision Boundaries), and 10 (Acceptance Criteria) all drafted above — pending Tarun's review. Prerequisite 7 (Tax Engine Spec) has a first real section drafted (equity STCG/LTCG, section 10 above) — cross-referenced against 5 independent sources, still pending Tarun's approval and missing several sub-items honestly flagged in that section. Prerequisite 5 (Calculation Spec) not yet started. All draftable content is now either complete or partially complete; Prereq 5, the remainder of Prereq 7, and populating Prereq 8's real values remain before Phase A is complete.*
+*End of draft. Prerequisite 1 (Product Boundary) approved 2026-07-30. Prerequisites 2 (Market &
+Instrument Scope, revised twice), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6
+(Data-Source & Evidence Policy), 8 (Investor & Suitability Model — schema only, awaiting real
+values), 9 (Human Decision Boundaries), and 10 (Acceptance Criteria) all drafted above — pending
+Tarun's review. Prerequisite 7 (Tax Engine Spec) is now substantially drafted: STCG/LTCG rate
+tables **approved by Tarun 2026-07-30**, plus set-off ordering, grandfathering formula, STT, and
+surcharge/cess all researched and cross-verified the same day. One genuine gap remains
+(surcharge-tier depends on total income, needs Prereq 8's real data) and one data-source gap (FMV
+as of 31-01-2018 for any pre-2018 holdings — no current source). Prerequisite 5 (Calculation Spec)
+not yet started. Remaining before Phase A is complete: Prereq 5, the two named Prereq 7 gaps above,
+and populating Prereq 8's real values.*
