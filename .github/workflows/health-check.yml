@@ -52,6 +52,39 @@ jobs:
 
           echo 'Health check passed: accuracy page returned HTTP 200 with expected content'
 
+      # L3-A (2026-07-30): the instrument-detail preview page had zero route-specific
+      # monitoring — confirmed live via Vercel runtime logs (1 self-generated request
+      # in 7 days). This step gives it a real, enforced check instead of "no complaints".
+      - name: Check production instrument page
+        id: check_instrument
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          response_body="$(mktemp)"
+          trap 'rm -f "$response_body"' EXIT
+
+          http_status="$(curl --silent --show-error --location \
+            --max-time 30 \
+            --output "$response_body" \
+            --write-out '%{http_code}' \
+            'https://stock-intelligence-test-1-vs.vercel.app/instrument/RELIANCE')"
+
+          echo "INSTRUMENT_HTTP_STATUS=$http_status" >> "$GITHUB_ENV"
+
+          if [[ "$http_status" != '200' ]]; then
+            echo "Health check failed: expected HTTP 200, received $http_status" >&2
+            exit 1
+          fi
+
+          if ! grep --fixed-strings --quiet 'Signal Risk Parameters' "$response_body"; then
+            echo 'INSTRUMENT_CHECK_REASON=expected instrument-page content was not found' >> "$GITHUB_ENV"
+            echo 'Health check failed: expected instrument-page content was not found' >&2
+            exit 1
+          fi
+
+          echo 'Health check passed: instrument page returned HTTP 200 with expected content'
+
       # SRE council review (2026-07-25), same rationale as ingest-watchdog.yml's
       # G11 fix: no email/Slack channel exists, so open a GitHub Issue instead.
       - name: Open an issue if the health check fails
