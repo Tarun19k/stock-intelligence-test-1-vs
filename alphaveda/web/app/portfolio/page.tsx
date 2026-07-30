@@ -74,7 +74,7 @@ export default async function PortfolioPage() {
       <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Real portfolio data — ingested from your broker P&L, 2026-07-30
+            Real portfolio data — ingested from broker P&L, account holder: John Doe, 2026-07-30
           </div>
           <h1 style={{ margin: '0.2rem 0 0', fontSize: '1.6rem' }}>Portfolio Health</h1>
         </div>
@@ -130,7 +130,8 @@ export default async function PortfolioPage() {
       </div>
 
       <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.7rem 1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-        Concentration and portfolio value above are real arithmetic on your real holdings — no
+        Concentration and portfolio value above are real arithmetic on the account holder&apos;s real
+        holdings — no
         Offset/Harvest/Yield judgment is applied here. That logic remains placeholder-only
         (see <code>scripts/ohy_synthetic_prototype.py</code>) until Prereq 5/7&apos;s methodology is
         approved. This page has not yet had Financial Council review per Rule E

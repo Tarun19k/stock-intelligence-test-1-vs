@@ -334,11 +334,11 @@ A supervisory orchestrator — not any single engine, and not "language-model in
 
 ## 8. Investor & Suitability Model (Phase A, Prerequisite 8)
 
-**Status: DRAFT — schema seeded with Tarun's real profile per his explicit choice (2026-07-30), not a generic template.**
+**Status: DRAFT — schema seeded with the account holder's (John Doe) real profile per an explicit choice made 2026-07-30, not a generic template.**
 
 ### Why a real instance, and the honesty constraint that comes with it
 
-Tarun chose to seed this with his own real profile rather than a generic placeholder — this makes the document concrete, but it also means real personal-financial information will live in this file going forward. Same discipline as everywhere else in this session: fields left unfilled are marked explicitly, not silently defaulted to a plausible-looking value.
+The decision was made to seed this with a real profile (account holder: John Doe) rather than a generic placeholder — this makes the document concrete, but it also means real personal-financial information will live in this file going forward. Same discipline as everywhere else in this session: fields left unfilled are marked explicitly, not silently defaulted to a plausible-looking value.
 
 ### Schema (source's own field list, source p.52)
 
@@ -363,7 +363,7 @@ Tarun chose to seed this with his own real profile rather than a generic placeho
 
 ### What this does NOT decide
 
-The schema's *shape* is fixed here. The actual values above are open — filling them in is a one-time real-data input from Tarun, not a Claude drafting task, and doesn't require re-running this document's Brahma/Vishnu self-certification once populated (the shape doesn't change, only the instance data does).
+The schema's *shape* is fixed here. The actual values above are open — filling them in is a one-time real-data input from the account holder (John Doe), not a Claude drafting task, and doesn't require re-running this document's Brahma/Vishnu self-certification once populated (the shape doesn't change, only the instance data does).
 
 ### Data governance note
 
