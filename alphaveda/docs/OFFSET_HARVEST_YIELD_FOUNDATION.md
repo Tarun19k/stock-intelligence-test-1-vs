@@ -115,16 +115,19 @@ The source recommends an MVP universe of: India, Indian residents, listed Indian
 
 **Net scope for Offset/Harvest/Yield Phase A:** listed NSE equities + ETFs (once the build below lands) + cash (already trivially trackable), EOD data, manual/CSV portfolio import for holdings not already in `instruments`.
 
-### ETF inclusion — real execution roadmap (this is a build task, not a documentation change)
+### ETF inclusion — real execution roadmap, revised after live verification (2026-07-30)
 
-Including ETFs "for now" means real engineering work before OHY can reason about them, not a scope-doc edit alone:
+**Step 1 done, and the finding changes the scope.** Checked a live NSE Bhavcopy file directly against 5 real, well-known NSE ETFs (NIFTYBEES, GOLDBEES, BANKBEES, JUNIORBEES, LIQUIDBEES): all five trade under `SERIES: EQ`, which is **already** in `bhavcopy.py`'s `_VALID_SERIES`. The module's own docstring claim ("excludes... ETFs-on-debt") appears to apply to specific non-equity-style ETF sub-types not yet identified — not to standard equity/gold/liquid-fund ETFs, which pass through the existing filter unchanged. **No code change is needed for OHLCV ingestion of this common ETF class.**
 
-1. **Verify empirically which NSE `SERIES` codes actually correspond to ETFs** in a live Bhavcopy sample — the current exclusion comment is ambiguous about which ETF sub-types (equity ETF vs. gold/debt ETF, which may use different series codes) are already passing through under `EQ` vs. genuinely filtered. Don't assume; check a real file first.
-2. **Expand `bhavcopy.py`'s series handling** once (1) is confirmed, so ETF OHLCV actually flows into `ohlcv`.
-3. **Add an `asset_class` column** (`'equity'` | `'etf'`) parallel to the existing `sector_class` pattern from migration 0019 — an ETF's "fundamentals" analog is NAV, tracking index, and expense ratio, none of which fit the company-fundamentals schema (no ROIC, no debt/equity, no promoter pledge — an ETF has no promoters).
+Remaining real work, narrowed accordingly:
+1. ~~Verify NSE SERIES codes~~ — DONE, live-checked above, no ambiguity remains for the common ETF class.
+2. ~~Expand `bhavcopy.py`~~ — **not needed** for standard equity-style ETFs; only revisit if a debt/commodity-linked ETF sub-type is later found to use a different series.
+3. **Add an `asset_class` column** (`'equity'` | `'etf'`) parallel to the existing `sector_class` pattern from migration 0019 — an ETF's "fundamentals" analog is NAV, tracking index, and expense ratio, none of which fit the company-fundamentals schema (no ROIC, no debt/equity, no promoter pledge — an ETF has no promoters). This is the real remaining gap.
 4. **Source and tier-classify ETF NAV/expense-ratio data** per Prereq 6's evidence policy (not yet vetted — likely NSE's own ETF-specific disclosure, Tier 1 if confirmed official).
 
-**Target date: complete before OHY Phase E (Offset prototype) begins** — Offset/Harvest/Yield literally cannot reason about a portfolio holding an ETF without real data behind it, so this has to land before, not during, Phase E.
+**Target date: complete before OHY Phase E (Offset prototype) begins.** Materially cheaper than first estimated — this is now a schema + data-source task, not a parser rewrite.
+
+**Side finding worth naming, not yet acted on:** LIQUIDBEES is itself a liquid-fund ETF (NAV ~₹1000, tracks overnight rates) already flowing through the existing OHLCV pipeline unchanged. It may partially bridge the separate "liquid funds" gap below via the ETF wrapper rather than needing AMFI's NAV feed at all — flagged for consideration when that prerequisite is actually triggered, not decided here.
 
 ### Mutual funds & liquid funds — parked, with target date and roadmap (not indefinite)
 
