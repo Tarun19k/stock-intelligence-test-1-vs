@@ -182,4 +182,18 @@ a { color: inherit; text-decoration: none; }
   .av-nav__brand { font-size: 1rem; }
   .av-nav__link { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
   .av-page { padding-left: 1rem; padding-right: 1rem; }
+
+  /* Portfolio table: fold secondary columns under the primary cell rather than
+     shrinking font size, per financial-data-viz/SKILL.md's mobile rule. */
+  .av-table--portfolio th.av-col--secondary,
+  .av-table--portfolio td.av-col--secondary {
+    display: none;
+  }
+  .av-table--portfolio .av-secondary-line {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
 }
+.av-secondary-line { display: none; }

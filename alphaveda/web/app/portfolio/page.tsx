@@ -11,6 +11,14 @@ type Holding = {
   source: string
 }
 
+type Tier = 'HIGH' | 'MID' | 'LOW'
+const TIER_LABEL: Record<Tier, string> = { HIGH: '> 5% of portfolio', MID: '1–5% of portfolio', LOW: '< 1% of portfolio' }
+function tierFor(concentration: number): Tier {
+  if (concentration > 5) return 'HIGH'
+  if (concentration >= 1) return 'MID'
+  return 'LOW'
+}
+
 export default async function PortfolioPage() {
   const supabase = getServerSupabase()
   const { data: holdings, error } = await supabase
@@ -35,8 +43,20 @@ export default async function PortfolioPage() {
   const withValue = rows.map((h) => ({ ...h, value: h.qty * h.avg_cost }))
   const totalValue = withValue.reduce((sum, h) => sum + h.value, 0)
   const withConcentration = withValue
-    .map((h) => ({ ...h, concentration: totalValue ? (100 * h.value) / totalValue : 0 }))
+    .map((h) => {
+      const concentration = totalValue ? (100 * h.value) / totalValue : 0
+      return { ...h, concentration, tier: tierFor(concentration) }
+    })
     .sort((a, b) => b.concentration - a.concentration)
+
+  // Real aggregation for the concentration bar -- top 5 named segments, rest
+  // bucketed. Not a new metric, just a visual sum of numbers already computed.
+  const top5 = withConcentration.slice(0, 5)
+  const otherPct = withConcentration.slice(5).reduce((s, h) => s + h.concentration, 0)
+  const otherCount = withConcentration.length - top5.length
+
+  const tierGroups: Record<Tier, typeof withConcentration> = { HIGH: [], MID: [], LOW: [] }
+  for (const h of withConcentration) tierGroups[h.tier].push(h)
 
   return (
     <div className="av-page" style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -49,18 +69,42 @@ export default async function PortfolioPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.7rem' }}>
         <div className="av-card" style={{ padding: '0.8rem 1rem' }}>
-          <div style={{ fontFamily: 'monospace', fontSize: '1.4rem', fontWeight: 600 }}>Rs.{totalValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
-          <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Cost-basis value</div>
+          <div className="av-stat__value">Rs.{totalValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+          <div className="av-stat__label">Cost-basis value</div>
         </div>
         <div className="av-card" style={{ padding: '0.8rem 1rem' }}>
-          <div style={{ fontFamily: 'monospace', fontSize: '1.4rem', fontWeight: 600 }}>{rows.length}</div>
-          <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Holdings</div>
+          <div className="av-stat__value">{rows.length}</div>
+          <div className="av-stat__label">Holdings</div>
         </div>
         <div className="av-card" style={{ padding: '0.8rem 1rem' }}>
-          <div style={{ fontFamily: 'monospace', fontSize: '1.4rem', fontWeight: 600 }}>
+          <div className="av-stat__value">
             {withConcentration[0] ? `${withConcentration[0].concentration.toFixed(1)}%` : '—'}
           </div>
-          <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Largest position</div>
+          <div className="av-stat__label">Largest position</div>
+        </div>
+      </div>
+
+      <div>
+        <div className="av-stat__label" style={{ marginBottom: '0.4rem' }}>Concentration at a glance</div>
+        <a href="#holdings-table" style={{ display: 'flex', height: '1.75rem', borderRadius: '4px', overflow: 'hidden', textDecoration: 'none' }}>
+          {top5.map((h, i) => (
+            <div
+              key={h.id}
+              title={`${h.ticker}: ${h.concentration.toFixed(1)}%`}
+              style={{
+                width: `${h.concentration}%`,
+                background: `color-mix(in srgb, var(--indigo, #4a5b9e) ${100 - i * 12}%, transparent)`,
+                minWidth: h.concentration > 3 ? 'auto' : '2px',
+              }}
+            />
+          ))}
+          {otherPct > 0 && (
+            <div title={`Other (${otherCount} holdings): ${otherPct.toFixed(1)}%`} style={{ width: `${otherPct}%`, background: 'var(--border)' }} />
+          )}
+        </a>
+        <div className="mono" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+          Top 5: {top5.map((h) => `${h.ticker} ${h.concentration.toFixed(1)}%`).join(' · ')}
+          {otherCount > 0 && ` · Other (${otherCount}) ${otherPct.toFixed(1)}%`}
         </div>
       </div>
 
@@ -72,27 +116,41 @@ export default async function PortfolioPage() {
         (<code>COUNCIL_RULES.md</code>) — flagging, not skipping that gate.
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+      <div id="holdings-table" style={{ overflowX: 'auto' }}>
+        <table className="av-table av-table--portfolio">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: '0.5rem' }}>Ticker</th>
-              <th style={{ textAlign: 'right', padding: '0.5rem' }}>Qty</th>
-              <th style={{ textAlign: 'right', padding: '0.5rem' }}>Avg cost</th>
-              <th style={{ textAlign: 'right', padding: '0.5rem' }}>Value</th>
-              <th style={{ textAlign: 'right', padding: '0.5rem' }}>Concentration</th>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Ticker</th>
+              <th className="av-col--secondary" style={{ textAlign: 'right' }}>Qty</th>
+              <th className="av-col--secondary" style={{ textAlign: 'right' }}>Avg cost</th>
+              <th style={{ textAlign: 'right' }}>Value</th>
+              <th style={{ textAlign: 'right' }}>Concentration</th>
             </tr>
           </thead>
           <tbody>
-            {withConcentration.map((h) => (
-              <tr key={h.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '0.5rem', fontFamily: 'monospace' }}>{h.ticker}</td>
-                <td style={{ padding: '0.5rem', textAlign: 'right', fontFamily: 'monospace' }}>{h.qty}</td>
-                <td style={{ padding: '0.5rem', textAlign: 'right', fontFamily: 'monospace' }}>{h.avg_cost.toFixed(2)}</td>
-                <td style={{ padding: '0.5rem', textAlign: 'right', fontFamily: 'monospace' }}>{h.value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                <td style={{ padding: '0.5rem', textAlign: 'right', fontFamily: 'monospace' }}>{h.concentration.toFixed(1)}%</td>
-              </tr>
-            ))}
+            {(['HIGH', 'MID', 'LOW'] as Tier[]).map((tier) =>
+              tierGroups[tier].length === 0 ? null : (
+                <>
+                  <tr key={`${tier}-header`}>
+                    <td colSpan={5} className="mono" style={{ background: 'var(--surface2)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', padding: '0.4rem 0.75rem' }}>
+                      {TIER_LABEL[tier]} — {tierGroups[tier].length} holding{tierGroups[tier].length === 1 ? '' : 's'}, {tierGroups[tier].reduce((s, h) => s + h.concentration, 0).toFixed(1)}% of portfolio
+                    </td>
+                  </tr>
+                  {tierGroups[tier].map((h) => (
+                    <tr key={h.id}>
+                      <td className="mono">
+                        {h.ticker}
+                        <span className="av-secondary-line">qty {h.qty} · avg Rs.{h.avg_cost.toFixed(2)}</span>
+                      </td>
+                      <td className="av-col--secondary mono" style={{ textAlign: 'right' }}>{h.qty}</td>
+                      <td className="av-col--secondary mono" style={{ textAlign: 'right' }}>{h.avg_cost.toFixed(2)}</td>
+                      <td className="mono" style={{ textAlign: 'right' }}>{h.value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
+                      <td className="mono" style={{ textAlign: 'right' }}>{h.concentration.toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </>
+              )
+            )}
           </tbody>
         </table>
       </div>
