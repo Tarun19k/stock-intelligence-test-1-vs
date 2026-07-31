@@ -74,7 +74,7 @@ export default async function PortfolioPage() {
       <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Real portfolio data — ingested from broker P&L, account holder: John Doe, 2026-07-30
+            Real portfolio data — ingested from broker P&L, 2026-07-30
           </div>
           <h1 style={{ margin: '0.2rem 0 0', fontSize: '1.6rem' }}>Portfolio Health</h1>
         </div>
@@ -101,12 +101,12 @@ export default async function PortfolioPage() {
           <div className="av-stat__value">
             {withConcentration[0] ? `${withConcentration[0].concentration.toFixed(1)}%` : '—'}
           </div>
-          <div className="av-stat__label">Largest position</div>
+          <div className="av-stat__label">Largest position (cost-basis)</div>
         </div>
       </div>
 
       <div>
-        <div className="av-stat__label" style={{ marginBottom: '0.4rem' }}>Concentration at a glance</div>
+        <div className="av-stat__label" style={{ marginBottom: '0.4rem' }}>Concentration at a glance (by cost-basis, not market value)</div>
         <a href="#holdings-table" style={{ display: 'flex', height: '1.75rem', borderRadius: '4px', overflow: 'hidden', textDecoration: 'none' }}>
           {top5.map((h, i) => (
             <div
@@ -129,13 +129,19 @@ export default async function PortfolioPage() {
         </div>
       </div>
 
+      {/* Financial Council review (Rule E, COUNCIL_RULES.md) completed 2026-07-31:
+          ui-ux-pro-max + sebi-compliance-reviewer + calibration-integrity, logged in
+          bridge/data/council/audit-log.jsonl. Internal audit-trail notes stay in this
+          comment, not in rendered copy -- a retail user has no use for a citation to
+          our own governance rule (ui-ux-pro-max finding). */}
       <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.7rem 1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-        Concentration and portfolio value above are real arithmetic on the account holder&apos;s real
-        holdings — no
+        All figures above are cost-basis — what was actually paid for each holding, not today&apos;s
+        market value (this page has no live price feed). A holding with a large unrealized gain or
+        loss can show a different concentration by market value than shown here. Concentration and
+        portfolio value are real arithmetic on the account holder&apos;s real holdings — no
         Offset/Harvest/Yield judgment is applied here. That logic remains placeholder-only
         (see <code>scripts/ohy_synthetic_prototype.py</code>) until Prereq 5/7&apos;s methodology is
-        approved. This page has not yet had Financial Council review per Rule E
-        (<code>COUNCIL_RULES.md</code>) — flagging, not skipping that gate.
+        approved. Concentration is a measure of exposure, not a signal to act on.
       </div>
 
       <div id="holdings-table" style={{ overflowX: 'auto' }}>
@@ -145,8 +151,8 @@ export default async function PortfolioPage() {
               <th style={{ textAlign: 'left' }}>Ticker</th>
               <th className="av-col--secondary" style={{ textAlign: 'right' }}>Qty</th>
               <th className="av-col--secondary" style={{ textAlign: 'right' }}>Avg cost</th>
-              <th style={{ textAlign: 'right' }}>Value</th>
-              <th style={{ textAlign: 'right' }}>Concentration</th>
+              <th style={{ textAlign: 'right' }}>Cost paid</th>
+              <th style={{ textAlign: 'right' }}>Concentration (cost-basis)</th>
             </tr>
           </thead>
           <tbody>
@@ -155,7 +161,7 @@ export default async function PortfolioPage() {
                 <>
                   <tr key={`${tier}-header`}>
                     <td colSpan={5} className="mono" style={{ background: 'var(--surface2)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', padding: '0.4rem 0.75rem' }}>
-                      {TIER_LABEL[tier]} — {tierGroups[tier].length} holding{tierGroups[tier].length === 1 ? '' : 's'}, {tierGroups[tier].reduce((s, h) => s + h.concentration, 0).toFixed(1)}% of portfolio
+                      {TIER_LABEL[tier]} — {tierGroups[tier].length} holding{tierGroups[tier].length === 1 ? '' : 's'}, {tierGroups[tier].reduce((s, h) => s + h.concentration, 0).toFixed(1)}% of portfolio (cost-basis)
                     </td>
                   </tr>
                   {tierGroups[tier].map((h) => (
