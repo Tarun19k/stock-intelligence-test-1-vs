@@ -504,18 +504,28 @@ consistently show "@ 20% (plus cess @ 4%)") + Nippon India Mutual Fund's own Tax
   *total* taxable income (all sources, not just capital gains) — this requires Prereq 8's real
   investor data, not just tax law, and is correctly deferred until that's populated.
 
-### What Tarun needs to do to close this prerequisite
+### What Tarun needs to do to close this prerequisite — RESOLVED 2026-07-31
 
-1. Confirm all rate/threshold/formula tables above (STCG/LTCG, set-off, grandfathering, STT,
-   surcharge/cess) are correctly understood before any code consumes them.
-2. Decide whether the still-open item (surcharge tier depends on total income, needs Prereq 8) blocks
-   any tax display until Prereq 8 is populated, or whether AlphaVeda should show pre-surcharge figures
-   with an explicit "surcharge not yet calculated" label in the interim.
-3. Approve this becoming a versioned, jurisdiction-specific tax rules module (per the source PDF's
-   own requirement) rather than inline UI logic — this is a G1 architecture decision layered on
-   top of the G2 content above.
-4. Provide the FMV-as-of-31-01-2018 data source for any pre-2018 holdings, if any exist in the real
-   portfolio — AlphaVeda has no current source for this historical price point.
+1. Rate/threshold/formula tables above confirmed understood.
+2. **Decided:** show pre-surcharge STCG/LTCG figures with an explicit "surcharge not yet calculated"
+   label until Prereq 8 is populated — tax display is not blocked on the full investor profile.
+3. **Decided:** tax rules become a versioned, standalone module — the single source of truth for
+   STCG/LTCG rates, set-off ordering, grandfathering, STT, and surcharge/cess. Any inline logic in
+   pages/scripts reads from this module; it never re-derives or duplicates a rate/threshold itself.
+   Concrete structure proposed: `alphaveda/src/tax/rules_2024_25.py` (or a dated module per Budget
+   cycle — e.g. a future `rules_2026_27.py` when rates next change), each exporting a single
+   `TAX_RULES` dict/dataclass with an `effective_from`/`effective_to` date range, a `source_citations`
+   list (the real sources already cross-verified in this section), and the rate/threshold values
+   themselves. A thin `get_active_rules(as_of: date)` lookup function selects the right version by
+   date — the same "date-awareness requirement" already flagged earlier in this document (rates
+   changed 23-07-2024, so any historical calculation needs the rules that were active on that date,
+   not today's). Callers (tax display, future Harvest-benefit calc) import only through that lookup,
+   never hardcode a rate — same discipline as `NO_HARDCODING.md`.
+4. **Resolved as not-applicable, confirmed via live data (2026-07-31):** queried `holdings_lots` for
+   any `buy_date < '2018-01-31'` — **zero rows returned**. No holding in the real portfolio predates
+   the grandfathering cutoff, so the FMV-as-of-31-01-2018 data-source gap does not apply to this
+   portfolio at all. (If a future holding is added with an earlier acquisition date, this check
+   would need re-running — noted here so it isn't silently assumed to stay true forever.)
 
 ---
 
@@ -523,10 +533,14 @@ consistently show "@ 20% (plus cess @ 4%)") + Nippon India Mutual Fund's own Tax
 Instrument Scope, revised twice), 3 (Formal Contracts), 4 (Trigger Hierarchy & Conflict Rules), 6
 (Data-Source & Evidence Policy), 8 (Investor & Suitability Model — schema only, awaiting real
 values), 9 (Human Decision Boundaries), and 10 (Acceptance Criteria) all drafted above — pending
-Tarun's review. Prerequisite 7 (Tax Engine Spec) is now substantially drafted: STCG/LTCG rate
-tables **approved by Tarun 2026-07-30**, plus set-off ordering, grandfathering formula, STT, and
-surcharge/cess all researched and cross-verified the same day. One genuine gap remains
-(surcharge-tier depends on total income, needs Prereq 8's real data) and one data-source gap (FMV
-as of 31-01-2018 for any pre-2018 holdings — no current source). Prerequisite 5 (Calculation Spec)
-not yet started. Remaining before Phase A is complete: Prereq 5, the two named Prereq 7 gaps above,
-and populating Prereq 8's real values.*
+Tarun's review. **Prerequisite 7 (Tax Engine Spec) is now fully closed as of 2026-07-31**: STCG/LTCG
+rate tables **approved by Tarun 2026-07-30**, plus set-off ordering, grandfathering formula, STT, and
+surcharge/cess all researched and cross-verified the same day. Both remaining gaps resolved
+2026-07-31: surcharge-tier display strategy decided (pre-surcharge figures + explicit label), and
+grandfathering confirmed not-applicable via live data query (0 pre-2018 lots). Architecture decided:
+versioned standalone tax-rules module (`alphaveda/src/tax/rules_2024_25.py` + `get_active_rules(as_of)`
+lookup), not yet implemented as code — this document records the decision, not the build.
+**Prerequisite 5 (Calculation Spec) is being tackled now as its own dedicated session (Tarun's
+explicit choice, 2026-07-31)** — not yet started as of this line. Remaining before Phase A is
+complete: Prereq 5 (in progress), building the tax-rules module code, and populating Prereq 8's
+real values.*
