@@ -105,7 +105,7 @@ The source recommends an MVP universe of: India, Indian residents, listed Indian
 | Asset class | Source recommends | AlphaVeda can ingest today | Verdict |
 |---|---|---|---|
 | Listed Indian equities (NSE) | In scope | Yes — `bhavcopy.py`, 16 instruments live | **In scope** |
-| ETFs | In scope | **No — checked live 2026-07-30**: `bhavcopy.py`'s `_VALID_SERIES = {"EQ","BE","BL"}` explicitly filters out ETF rows (see its own docstring: "excludes derivatives, ETFs-on-debt, and other non-equity instruments") | **In scope by Tarun's explicit instruction — build required, see roadmap below, not silently assumed working** |
+| ETFs | In scope | **Superseded below — see "ETF inclusion" section.** Initial read of `bhavcopy.py`'s docstring suggested `_VALID_SERIES` excluded ETFs; live verification the same day found this wrong for standard equity/gold/liquid-fund ETFs (they trade under `SERIES: EQ`, already included). Independently re-verified again 2026-07-31 against the live NSE Bhavcopy file (BANKBEES/GOLDBEES/JUNIORBEES/NIFTYBEES all confirmed `SERIES: EQ`) — same conclusion both times. | **In scope — no new ingestion pipeline needed; remaining gap is the `asset_class` schema column, see roadmap below.** |
 | Equity mutual funds | In scope | No ingest path exists at all | **Parked — target date + roadmap below** |
 | Liquid funds | In scope | No ingest path exists | **Parked — same roadmap shape as mutual funds** |
 | Cash | In scope | N/A — cash isn't a priced instrument; it's a portfolio-ledger rupee amount | **Always in scope, trivially — no ingest dependency, this was mis-scoped as a "deferred" item earlier; correcting here** |
