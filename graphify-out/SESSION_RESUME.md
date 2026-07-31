@@ -1,6 +1,18 @@
 # Recovery: /chief-of-staff recover then read this file first
 
-Checkpoint: 2026-07-31 (post-compaction continuation — 3rd checkpoint, supersedes 2026-07-30 entries below which remain as history)
+Checkpoint: 2026-08-01 (4th checkpoint, supersedes 2026-07-31 entries below which remain as history)
+
+## DO NOT REDO — completed since the prior checkpoint (commit `907b4db`)
+
+- **`PORTFOLIO_ACCESS_TOKEN` was set by Tarun and verified live** — logged in via the real token, confirmed all 70 holdings render correctly. Security fix from the prior checkpoint is fully closed end-to-end, not just deployed.
+- **AlphaVeda real-data expansion, all verified live, not just claimed** (commits `08c0c90`→`247eca9`): `instruments` widened 16→501 real Nifty 500 constituents (live NSE data, classification='unclassified' + signal_gate_until='2099-01-01' for the 485 new ones — no fabricated Lynch classifications, matches the existing TMCV gating pattern). ETF ingestion: found existing `bhavcopy.py` already includes ETFs (`SERIES:EQ`, confirmed live against BANKBEES/GOLDBEES/JUNIORBEES/NIFTYBEES) — no new pipeline needed, just added `instruments.asset_class` column. G26 (6 unresolved holdings tickers) closed 5/6: GOLDAXIS/MON100/GOLDBEES/GOLDBETA resolved and corrected in `holdings`/`holdings_lots` (double-verified against live 2026-07-30 Bhavcopy trading data); SREI confirmed genuinely extinguished (NCLT-cancelled 2023-08-11, not just suspended — old ticker SREINFRA absent from live trading data).
+- **Portfolio page Rule E council review completed** (ui-ux-pro-max + sebi-compliance-reviewer + calibration-integrity, converged, no Synthesis Chair needed): dropped hardcoded "John Doe" name from rendered copy (real NO_HARDCODING.md violation + PII surface), moved internal governance note out of user-facing UI, added "cost-basis not market value" qualifier everywhere concentration is shown (was only on one stat tile), fixed mislabeled "Value" column to "Cost paid."
+- **Synthesis Engine (agentic-operations) repair — real bug found and fixed, verified live, not assumed**: `bridge/synthesize-sitrep.sh` was silently producing no output. Root cause (found by direct reproduction, not theory): stderr pollution + non-deterministic markdown-fence wrapping + a Perl `--` argument-parsing bug that silently broke the timeout wrapper. Fixed all three, verified end-to-end (dry-run and live paths both produce valid JSON with real interventions, history log appends correctly). `command_center.html`'s `loadSitrep()` was also reading fields (`pulse.status`, `open_p0_tasks`) that don't exist in the real schema — fixed to read the actual `health`/`top_risk` fields, verified live in-browser via a local HTTP server (screenshot confirmed real rendering).
+- **Second Brain quarantine bug (agentic-operations) — root-caused and fixed, not just documented**: the 2026-07-25 mass-quarantine (667/728 sources) was a real, reproduced bug (unscoped query quarantining every other workspace's rows); already fixed same-day, confirmed via git archaeology. A **second, previously-unknown bug** found and fixed this session: routine re-ingest of a wrongly-quarantined file would silently create a duplicate row instead of self-healing — reproduced and verified fixed live. Current real corpus state: 851 active / 30 quarantined (all legitimate), fully reachable.
+- **Corrected a real overclaim in memory**: `project_second_brain_initiative_parked.md` said "Phase 1+2 live" — a real 2026-07-25 benchmark (found uncommitted, now committed to git) explicitly concluded "do not represent this system as meeting the 0.95/0.90 bar" (91.6% of corpus was quarantined-unreachable at benchmark time). Memory corrected to reflect the real, more sobering state.
+- **16 of 18 AlphaVeda council seats got their "AlphaVeda OHY Loop Role" section** (only panel-buffett/panel-munger had it before this session) — premortem logged first (`.claude/skills/` is an architectural trigger file), all 16 writes verified present via grep after writing.
+- **Global "Explain-Simply Rule" added to `~/.claude/CLAUDE.md`** (Tarun-mandated, full premortem run first): all decision-relevant explanations must pass a "would a 14-year-old understand this" test — style only, never strips precision from compliance/legal/financial facts. Does not apply to routine status output.
+- **Offset materiality-trigger category work (Prereq 5 kickoff) — 3-round council+red-team loop, in progress.** Round 1: 5 seats (Munger/Marks/Dalio/sebi-compliance-reviewer/calibration-integrity) converged — unanimous 5/5 to drop "goal/life-change misalignment" (not a real detectable trigger, highest SEBI risk), real new categories found (regime misalignment, duration/rate sensitivity, sunk-cost/anchoring inaction, recency-bias slow decline, inertia-on-legacy-holdings). Red-team round 1: HIGH RISK, do-not-ship verdict — found a critical gap in the corporate-action/terminal-event model (CIRP resolutions ending in massive dilution would go completely unflagged) plus an insufficient tax-lot phrasing fix (found a compliant-looking sentence that still functions as a sell signal) plus flagged categories 6/7 (regime/duration) risk shipping as fabricated proxy signals. Round 2 rebuttal: all 3 challenged seats fully accepted red-team's findings, no disagreement — calibration-integrity upgraded to a 3-state model (TERMINAL/RESOLVED-DILUTED/RESOLVED-CLEAN) + 90-day re-fire cadence; sebi-compliance-reviewer added Checks 2b/3b (no countdown+valence-rate co-occurrence) with an exact compliant template; Marks/Dalio agreed categories 6/7 ship named-but-deferred with real candidate data sources (RBI Financial Stability Report, RBI G-Sec yield + disclosed sector-beta proxy), never a silently fabricated signal. **Round 3 (final, red-team re-attacking the fixes) dispatched, not yet returned as of this checkpoint.**
 
 ## DO NOT REDO — completed since the prior checkpoint (commit `2784445`)
 
@@ -33,27 +45,30 @@ Checkpoint: 2026-07-31 (post-compaction continuation — 3rd checkpoint, superse
 
 ## EXACT RESUME POINT
 
-**Immediate next action: Tarun sets `PORTFOLIO_ACCESS_TOKEN` in Vercel project env vars.** Once set, resume the interrupted Playwright loop test against the live authenticated `/portfolio` page (including reviewing the still-unreviewed mobile-viewport screenshot from the prior session block). That is the only item blocking full completion of "I need the page ready and wired appropriately" from the prior session's multi-part request.
+**Immediate next action: bring the Offset materiality-category loop's final NOT READY verdict to Tarun for a direct decision — the 3-round council+red-team loop is at its bound (max 3 rounds), no round 4 without his explicit direction.** Three real, red-team-verified blocking findings, none manufactured:
+1. Category 4 (corporate-action/terminal event) 3-state model has no REVERSAL state for an NCLT order under appeal.
+2. Category 5 (tax-lot disclosure) phrasing checks (2b/3b) are lexical, not semantic — a real compliant-per-checklist sentence still functions as a timing signal via date-adjacency/firing-cadence.
+3. Categories 6/7 (regime/duration) "named-but-deferred" status has zero enforcement mechanism — matches this workspace's own documented recurring failure pattern (`project_alphaveda_p0_reliability_pattern`).
+Also carried forward, not blocking but must stay named with an owner: composite-alert/de-duplication layer (untouched across all 3 rounds) and issuer-credit look-through blind spot (round 1's own framing).
 
-Separately, **Bucket A item 1 (Synthesis Engine token/session estimate) is DONE — waiting on Tarun's GO before continuing.** Next up once GO is given:
-1. ~~Synthesis Engine token/session estimate~~ — DONE, see above, awaiting sign-off.
-2. OHY Prereq 2 (market/instrument scope) + Prereq 9 (human decision boundaries) — these shape 3/4/6/8/10.
-3. OHY Prereq 6 (data-source & evidence policy), Synthesis Engine trimurti/Shiva checkpoint scope (condition 2).
-4. Test-framework/synthetic-data scaffold, `LOOP_ENGINEERED_ROADMAP.md` extension (OHY + Synthesis Engine loops), write-log/token-tracker wiring.
-5. Stop hook mechanizing the Trimurti sign-off model — **premortem required before this specific write** (touches `.claude/hooks/` + `settings.json`), log-only rollout first per the risk register's Shiva-risk fallback.
+Prereq 5 (Calculation Spec) cannot close until Tarun resolves these three — this is now the critical path for Bucket C.
 
-Nothing in Buckets B (Pending Decisions), C (Pending Planning), or D (Needs R&D) is to be started — each is explicitly sequenced behind either a Tarun decision or a Bucket-A item landing first.
+Separately, still pending, no blocker, just not started yet:
+- Task #19 (plain-language lexicon wiring into `/portfolio`)
+- Task #20 (versioned tax-rules module code — architecture already decided in `OFFSET_HARVEST_YIELD_FOUNDATION.md`)
+- Task #22 (formal OKF-based frontmatter standard for org-corpus — real external standard identified, Google's Open Knowledge Format, not yet applied to any file)
+- Task #25 (CHECK constraint on second-brain `audit_log.action` — small, low-risk, not started)
+- G20/L3-A nav promotion — real active-monitoring check completed (7-day GHA health-check history clean except one unrelated accuracy-page failure that self-resolved), evidence supports GO, but final sign-off is explicitly Tarun-only and one condition (has the instrument page been shared/screenshotted anywhere) can't be checked from logs — still awaiting his explicit go/no-go.
 
 ## OPEN DECISIONS (Tarun-owned)
 
 | Decision | Impact | Deadline |
 |---|---|---|
-| Set `PORTFOLIO_ACCESS_TOKEN` in Vercel env vars | Unlocks `/portfolio`; currently fails closed (safe, but inaccessible) | None — but blocks resuming the Playwright loop test |
-| L3-A: G20 nav promotion go/no-go | Feature gate; window completes ~2026-07-31 18:03 UTC | ~1 day from this checkpoint |
-| OHY Prereq 5 (calculation spec) — financial-formula methodology | G2, blocks any draft of the metric dictionary | Not urgent, but blocks Bucket C fully |
-| OHY Prereq 7 (tax engine spec) — India tax-law interpretation | G2, same class as above | Not urgent |
-| Synthesis Engine condition 1 — explicit go-ahead on the whole design | Blocks `writing-plans` entirely | Not urgent, but the single biggest unlock available |
-| Synthesis Engine condition 4 — fix second-brain staleness/`sitrep.json` bug now vs. accept as debt | Determines whether Track A's 30-day clock can start honestly | Should be resolved before Bucket-A item 4 lands |
+| Offset materiality loop — resolve 3 blocking findings (REVERSAL state, semantic phrasing gap, unenforced deferred-status) | Blocks Prereq 5 (Calculation Spec) closing; blocks Bucket C | Critical path, not urgent by clock but blocking by dependency |
+| L3-A: G20 nav promotion go/no-go | Feature gate; monitoring evidence supports GO, one condition (screenshot/misuse) only Tarun can confirm | Window already closed (~2026-07-31 18:03 UTC) — decision itself has no further deadline pressure |
+| OHY Prereq 7 remaining pieces | Surcharge display + grandfathering both resolved 2026-07-31; tax-rules module code (Task #20) not yet written | Not urgent |
+| Synthesis Engine condition 1 | **RESOLVED** — Tarun gave explicit go-ahead 2026-07-31, logged in `bridge/data/council/audit-log.jsonl` | Closed |
+| Explain-Simply global rule | **RESOLVED** — added to `~/.claude/CLAUDE.md` 2026-08-01, premortem logged, demonstrated live | Closed |
 | G5b — cold-start latency regression | Confirmed non-live-risk; deprioritized investigation, not urgent | None |
 
 ## Commercial state
