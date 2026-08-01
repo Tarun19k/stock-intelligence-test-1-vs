@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getServerSupabase } from '@/lib/supabase'
-import { LexOrRaw } from '@/components/Lex'
+import Lex, { LexOrRaw } from '@/components/Lex'
 import { lynchClassLexKey } from '@/lib/lexicon'
 import GainersLosersStrip from '@/components/GainersLosersStrip'
 
@@ -119,7 +119,7 @@ export default async function MarketDataPage() {
                     </td>
                     <td>
                       {row.circuit_flag
-                        ? <span className="pill pill--circuit">CIRCUIT</span>
+                        ? <span className="pill pill--circuit"><Lex k="signal.circuit" /></span>
                         : '—'}
                     </td>
                   </tr>

@@ -21,6 +21,10 @@ export type GlossaryKey =
   | 'ledger_cold'
   | 'ledger_ece'
   | 'kelly_band'
+  | 'circuit_flag'
+  | 'risk_target'
+  | 'risk_stop'
+  | 'cost_basis'
 
 export type LexEntry = {
   pro: string
@@ -88,6 +92,10 @@ export type LexKey =
   | 'port.judgment'
   | 'port.subtitle'
   | 'port.method'
+  | 'signal.circuit'
+  | 'risk.target_label'
+  | 'risk.stop_label'
+  | 'holdings.cost_basis'
 
 // ---------------------------------------------------------------------------
 // §1 Signal surface, §2 Scorecard surface, §3 Portfolio surface (labels only —
@@ -200,6 +208,14 @@ export const LEXICON: Record<LexKey, LexEntry> = {
   'port.within': { pro: 'WITHIN', simple: 'HEALTHY' },
   'port.below': { pro: 'BELOW', simple: 'SMALLER than range' },
   'port.judgment': { pro: 'observations for your judgment', simple: 'You decide what to do.' },
+
+  // Added 2026-08-01 -- financial council full-page review (Lynch finding: Target/Stop,
+  // circuit_flag, and cost-basis had zero glossary coverage despite everything else
+  // going through this system).
+  'signal.circuit': { pro: 'CIRCUIT', simple: 'TRADING PAUSED', learn: 'circuit_flag' },
+  'risk.target_label': { pro: 'Target', simple: 'Target', learn: 'risk_target' },
+  'risk.stop_label': { pro: 'Stop', simple: 'Stop', learn: 'risk_stop' },
+  'holdings.cost_basis': { pro: 'Cost-basis value', simple: 'What you paid, in total', learn: 'cost_basis' },
 }
 
 export function lex(key: LexKey, mode: LanguageMode): string {
@@ -310,6 +326,26 @@ export const GLOSSARY: Record<GlossaryKey, GlossaryEntry> = {
     headline: 'Healthy size range',
     body: 'For each holding we compute a sensible size, given how often calls like this are right and how much it could fall.',
     term: 'Professional term: Kelly sizing band',
+  },
+  circuit_flag: {
+    headline: 'Trading paused, price moved too far too fast',
+    body: 'The exchange paused trading because the price moved too far, too fast in one day. This protects everyone from panic-driven prices — it happens sometimes and isn’t unusual.',
+    term: 'Professional term: circuit breaker / price band',
+  },
+  risk_target: {
+    headline: 'If this call plays out',
+    body: 'This is roughly how far up (or down, for a bearish call) the price might go if the call is right. Not a guarantee.',
+    term: 'Professional term: magnitude target',
+  },
+  risk_stop: {
+    headline: 'If this call goes the other way',
+    body: 'This is roughly where we’d consider the call wrong. Not a guarantee — actual moves can go further than this in either direction.',
+    term: 'Professional term: downside target',
+  },
+  cost_basis: {
+    headline: 'What you paid, not what it’s worth today',
+    body: 'This adds up what you originally paid for everything you hold. It is not today’s market value — there’s no live price feed wired in here yet, so your real value could be higher or lower than this number.',
+    term: 'Professional term: cost basis',
   },
 }
 

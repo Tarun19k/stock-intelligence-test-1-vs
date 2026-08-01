@@ -236,13 +236,13 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
         <div className="av-stat__label" style={{ marginBottom: '0.75rem' }}>Signal Risk Parameters</div>
         <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
           <div>
-            <div className="av-stat__label">Target</div>
+            <div className="av-stat__label"><Lex k="risk.target_label" /></div>
             <div className="av-stat__value mono">
               {signal?.magnitude_target != null ? `${(signal.magnitude_target * 100).toFixed(1)}%` : '—'}
             </div>
           </div>
           <div>
-            <div className="av-stat__label">Stop</div>
+            <div className="av-stat__label"><Lex k="risk.stop_label" /></div>
             <div className="av-stat__value mono">
               {signal?.downside_target != null ? `${(signal.downside_target * 100).toFixed(1)}%` : '—'}
             </div>
@@ -333,7 +333,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
         </ol>
       </section>
 
-      {lynchNarrative && (
+      {lynchNarrative ? (
         <section className="av-card" style={{ marginTop: '1.5rem' }}>
           <h2 style={{ marginBottom: '1rem' }}>Understand this company</h2>
 
@@ -354,6 +354,20 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
             <strong>How future news will be chosen:</strong>{' '}
             {lynchNarrative.newsFilter}
           </aside>
+        </section>
+      ) : (
+        // Lynch council finding (2026-08-01): this section used to just disappear when
+        // no narrative existed for a ticker -- a retail user had no way to tell "nothing
+        // to see" from "we haven't written this one yet." Now says so explicitly, and
+        // still surfaces the one thing we DO have (the generic class description).
+        <section className="av-card" style={{ marginTop: '1.5rem' }}>
+          <h2 style={{ marginBottom: '0.75rem' }}>Understand this company</h2>
+          {classDescriptionKey && (
+            <p style={{ marginBottom: '0.75rem' }}><Lex k={classDescriptionKey} /></p>
+          )}
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            A full plain-English company story for this stock hasn&apos;t been written yet.
+          </p>
         </section>
       )}
     </>

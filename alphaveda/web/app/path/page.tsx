@@ -125,8 +125,8 @@ export default async function PathPage() {
                 <th>Ticker</th>
                 <th>Position vs. band</th>
                 <th style={{ textAlign: 'right' }}>Confidence</th>
-                <th style={{ textAlign: 'right' }}>Target</th>
-                <th style={{ textAlign: 'right' }}>Stop</th>
+                <th style={{ textAlign: 'right' }}><Lex k="risk.target_label" /></th>
+                <th style={{ textAlign: 'right' }}><Lex k="risk.stop_label" /></th>
                 <th style={{ textAlign: 'right' }}>
                   {showRupee ? 'Kelly (₹)' : 'Size'}
                 </th>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getServerSupabase } from '@/lib/supabase'
 import { isPortfolioSessionValid } from '@/lib/portfolio-auth'
 import { logoutOfPortfolio } from './login/actions'
+import Lex from '@/components/Lex'
 
 export const dynamic = 'force-dynamic'
 
@@ -91,7 +92,7 @@ export default async function PortfolioPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.7rem' }}>
         <div className="av-card" style={{ padding: '0.8rem 1rem' }}>
           <div className="av-stat__value">Rs.{totalValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
-          <div className="av-stat__label">Cost-basis value</div>
+          <div className="av-stat__label"><Lex k="holdings.cost_basis" /></div>
         </div>
         <div className="av-card" style={{ padding: '0.8rem 1rem' }}>
           <div className="av-stat__value">{rows.length}</div>
