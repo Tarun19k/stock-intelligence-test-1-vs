@@ -3,4 +3,4 @@
 // Regenerate with: python3 alphaveda/scripts/generate_sebi_disclaimer_ts.py
 // CI sync check: alphaveda/tests/test_constants.py::test_generated_ts_disclaimer_matches_source
 
-export const SEBI_DISCLAIMER: string = "AlphaVeda provides research and analysis only. This is NOT investment advice. Consult a SEBI-registered investment advisor before making any investment decision. Past signal accuracy does not guarantee future returns."
+export const SEBI_DISCLAIMER: string = "AlphaVeda is not a SEBI-registered Research Analyst or Investment Adviser. AlphaVeda provides research and analysis for educational and informational purposes only. This is NOT investment advice and is not a substitute for professional financial advice. Consult a SEBI-registered investment advisor before making any investment decision. Past signal accuracy does not guarantee future returns."

@@ -3,6 +3,7 @@ import { isCommercial, isPersonalContext } from '@/lib/commercial'
 import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
 import type { LexKey } from '@/lib/lexicon'
+import { OBSERVATION_THRESHOLD } from '@/lib/calibration'
 
 const PORTFOLIO_VALUE = 1700000 // ₹17L — real value, provided by Tarun 2026-07-16 (G6 closed)
 const QUARTER_KELLY_FRACTION = 0.25
@@ -59,12 +60,20 @@ export default async function PathPage() {
   // no auth layer — must see band position only, never the literal figure.
   const showRupee = !commercial && isPersonalContext()
 
-  const [predsRes, instsRes, proposedRes] = await Promise.all([
+  const [predsRes, allPredsIdRes, instsRes, proposedRes] = await Promise.all([
     sb.from('accuracy_predictions')
       .select('id,instrument_id,direction,confidence,magnitude_target,downside_target,emitted_at')
       .is('superseded_at', null)
       .order('emitted_at', { ascending: false })
       .limit(20),
+    // Cold-start gate (2026-08-01, calibration-integrity + Buffett council finding):
+    // this page previously computed a real rupee Kelly position size off `confidence`
+    // with NO check on how many of the instrument's own observations backed that
+    // number — /signals already gates the same underlying confidence figure at
+    // OBSERVATION_THRESHOLD, this page did not. Fetching per-instrument counts across
+    // the full table (unlimited, same pattern as signals/page.tsx) so an under-sampled
+    // confidence can never drive a displayed rupee amount.
+    sb.from('accuracy_predictions').select('instrument_id').is('superseded_at', null),
     sb.from('instruments').select('id,ticker,classification'),
     sb.from('signal_weights').select('id', { count: 'exact' }).eq('status', 'PROPOSED'),
   ])
@@ -74,6 +83,14 @@ export default async function PathPage() {
   const proposedCount = proposedRes.count ?? 0
 
   const instById = new Map(instruments.map((i) => [i.id, i]))
+
+  const perInstrumentCounts = new Map<number, number>()
+  for (const row of allPredsIdRes.data ?? []) {
+    perInstrumentCounts.set(row.instrument_id, (perInstrumentCounts.get(row.instrument_id) ?? 0) + 1)
+  }
+  function segmentObs(instrumentId: number): number {
+    return perInstrumentCounts.get(instrumentId) ?? 0
+  }
 
   return (
     <>
@@ -119,7 +136,8 @@ export default async function PathPage() {
             <tbody>
               {predictions.map((p) => {
                 const inst = instById.get(p.instrument_id)
-                const result = (p.magnitude_target && p.downside_target)
+                const isCold = segmentObs(p.instrument_id) < OBSERVATION_THRESHOLD
+                const result = (!isCold && p.magnitude_target && p.downside_target)
                   ? kellyBand(p.confidence, p.magnitude_target, p.downside_target)
                   : null
                 const rupee = showRupee ? (result?.rupee ?? null) : null
@@ -127,19 +145,31 @@ export default async function PathPage() {
                   <tr key={p.id}>
                     <td className="mono">{inst?.ticker ?? p.instrument_id}</td>
                     <td>
-                      {result
-                        ? <span className="pill">
-                            <LexOrRaw k={BAND_LEX[result.band]} fallback={result.band.toUpperCase()} />
-                          </span>
-                        : <span style={{ color: 'var(--text-muted)' }}>—</span>}
+                      {isCold ? (
+                        <span
+                          className="pill"
+                          style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}
+                          title={`${segmentObs(p.instrument_id)} of ${OBSERVATION_THRESHOLD} results for this stock — too early to size a position`}
+                        >
+                          <Lex k="ledger.cold" />
+                        </span>
+                      ) : result ? (
+                        <span className="pill">
+                          <LexOrRaw k={BAND_LEX[result.band]} fallback={result.band.toUpperCase()} />
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)' }}>—</span>
+                      )}
                     </td>
-                    <td style={{ textAlign: 'right' }}><ProbabilityFrame pct={p.confidence} /></td>
+                    <td style={{ textAlign: 'right' }}>
+                      {isCold ? <span style={{ color: 'var(--text-muted)' }}>—</span> : <ProbabilityFrame pct={p.confidence} />}
+                    </td>
                     <td className="mono" style={{ textAlign: 'right' }}>
                       {/* RF-G fix (2026-07-20): stored as fraction (0.0403 = 4.03%), was rendering unscaled */}
-                      {p.magnitude_target != null ? `${(p.magnitude_target * 100).toFixed(1)}%` : '—'}
+                      {isCold ? '—' : p.magnitude_target != null ? `${(p.magnitude_target * 100).toFixed(1)}%` : '—'}
                     </td>
                     <td className="mono" style={{ textAlign: 'right' }}>
-                      {p.downside_target != null ? `${(p.downside_target * 100).toFixed(1)}%` : '—'}
+                      {isCold ? '—' : p.downside_target != null ? `${(p.downside_target * 100).toFixed(1)}%` : '—'}
                     </td>
                     <td className="mono" style={{ textAlign: 'right' }}>
                       {!showRupee
@@ -158,6 +188,14 @@ export default async function PathPage() {
           </table>
         )}
       </div>
+
+      {/* SEBI compliance council finding (2026-08-01, Check 6): Target/Stop are
+          hypothetical research levels, not price guarantees -- state the loss risk
+          directly next to the numbers, not buried elsewhere. */}
+      <p style={{ marginTop: '0.5rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+        Target and Stop are hypothetical research levels, not price guarantees — actual price
+        movement can differ and losses can exceed the stated Stop.
+      </p>
 
       {showRupee ? (
         <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>

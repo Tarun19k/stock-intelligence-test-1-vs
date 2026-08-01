@@ -2,8 +2,7 @@ import { getServerSupabase } from '@/lib/supabase'
 import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
 import { directionLexKey, lynchClassLexKey, regimeLexKey } from '@/lib/lexicon'
-
-const OBSERVATION_THRESHOLD = 30
+import { OBSERVATION_THRESHOLD } from '@/lib/calibration'
 
 type SignalWeight = {
   id: number

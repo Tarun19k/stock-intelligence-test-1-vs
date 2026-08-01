@@ -2,8 +2,10 @@ import { getServerSupabase } from '@/lib/supabase'
 import Lex, { LexOrRaw } from '@/components/Lex'
 import ProbabilityFrame from '@/components/ProbabilityFrame'
 import { directionLexKey, outcomeLexKey } from '@/lib/lexicon'
+import { OBSERVATION_THRESHOLD } from '@/lib/calibration'
 
 const STALENESS_DAYS = 90
+const RESOLVED_QUERY_LIMIT = 100
 
 type Outcome = {
   id: number
@@ -47,7 +49,7 @@ export default async function AccuracyPage() {
   const now = new Date()
 
   const [outcomesRes, predsRes, instsRes, proposedRes] = await Promise.all([
-    sb.from('accuracy_outcomes').select('id,prediction_id,resolved_at,hit,return_pct,magnitude_hit,outcome').order('resolved_at', { ascending: false }).limit(100),
+    sb.from('accuracy_outcomes').select('id,prediction_id,resolved_at,hit,return_pct,magnitude_hit,outcome').order('resolved_at', { ascending: false }).limit(RESOLVED_QUERY_LIMIT),
     sb.from('accuracy_predictions').select('id,instrument_id,direction,confidence,emitted_at,magnitude_target,downside_target'),
     sb.from('instruments').select('id,ticker'),
     sb.from('signal_weights').select('id,approved_at', { count: 'exact' }).eq('status', 'PROPOSED'),
@@ -62,7 +64,12 @@ export default async function AccuracyPage() {
   const tickerById = new Map(instruments.map((i) => [i.id, i.ticker]))
 
   const totalHits = outcomes.filter((o) => o.hit).length
-  const hitRate = outcomes.length > 0 ? (totalHits / outcomes.length) * 100 : null
+  // Cold-start gate (2026-08-01, calibration-integrity council finding): this stat had
+  // NO minimum-sample check -- outcomes.length=1 could render a clean "100.0%" through
+  // ProbabilityFrame with nothing telling the viewer that's the entire sample. Same
+  // OBSERVATION_THRESHOLD used everywhere else in the app now applies here too.
+  const hasEnoughForHitRate = outcomes.length >= OBSERVATION_THRESHOLD
+  const hitRate = hasEnoughForHitRate ? (totalHits / outcomes.length) * 100 : null
 
   const avgReturn = outcomes.length > 0
     ? outcomes.reduce((sum, o) => sum + o.return_pct, 0) / outcomes.length
@@ -129,11 +136,22 @@ export default async function AccuracyPage() {
         <div className="av-card">
           <div className="av-stat__label">Total Resolved</div>
           <div className="av-stat__value">{outcomes.length}</div>
+          {outcomes.length === RESOLVED_QUERY_LIMIT && (
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+              Showing the {RESOLVED_QUERY_LIMIT} most recent — total record may be larger.
+            </div>
+          )}
         </div>
         <div className="av-card">
           <div className="av-stat__label"><Lex k="ledger.hit_label" /></div>
           <div className="av-stat__value" style={{ color: hitRate != null && hitRate >= 50 ? 'var(--emerald)' : 'var(--terra)' }}>
-            {hitRate != null ? <ProbabilityFrame pct={hitRate} /> : '—'}
+            {hasEnoughForHitRate && hitRate != null ? (
+              <ProbabilityFrame pct={hitRate} />
+            ) : (
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                {outcomes.length} of {OBSERVATION_THRESHOLD} — too early to grade
+              </span>
+            )}
           </div>
         </div>
         <div className="av-card">

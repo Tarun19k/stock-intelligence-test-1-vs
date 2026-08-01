@@ -4,8 +4,7 @@ import Lex, { LexOrRaw } from '@/components/Lex'
 import { directionLexKey, lynchClassLexKey, outcomeLexKey } from '@/lib/lexicon'
 import PriceSparkline from '@/components/PriceSparkline'
 import { getLynchNarrative } from '@/lib/lynch-narratives'
-
-const INSTRUMENT_OBSERVATION_THRESHOLD = 20
+import { OBSERVATION_THRESHOLD as INSTRUMENT_OBSERVATION_THRESHOLD } from '@/lib/calibration'
 
 type Instrument = {
   id: number
@@ -249,6 +248,13 @@ export default async function InstrumentPage({ params }: { params: Promise<{ tic
             </div>
           </div>
         </div>
+        {/* SEBI compliance council finding (2026-08-01, Check 6): same inline
+            risk-of-loss note added to /path — the risk applies wherever
+            Target/Stop render, not just one page. */}
+        <p style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+          Target and Stop are hypothetical research levels, not price guarantees — actual price
+          movement can differ and losses can exceed the stated Stop.
+        </p>
       </div>
 
       {/* L1-D (2026-07-26, RF-J): comparison for the most recent RESOLVED past

@@ -326,9 +326,12 @@ export const GLOSSARY: Record<GlossaryKey, GlossaryEntry> = {
 export const SEBI_PLAIN =
   'We share research and its track record. We never tell anyone what to do with their money.'
 export const SEBI_LEGAL =
-  'AlphaVeda provides research and analysis only. This is NOT investment advice. ' +
-  'Consult a SEBI-registered investment advisor before making any investment decision. ' +
-  'Past signal accuracy does not guarantee future returns.'
+  'AlphaVeda is not a SEBI-registered Research Analyst or Investment Adviser. ' +
+  'AlphaVeda provides research and analysis for educational and informational ' +
+  'purposes only. This is NOT investment advice and is not a substitute for ' +
+  'professional financial advice. Consult a SEBI-registered investment advisor ' +
+  'before making any investment decision. Past signal accuracy does not ' +
+  'guarantee future returns.'
 
 // ---------------------------------------------------------------------------
 // A14 — anchoring counter. Converts a 0-100 confidence/hit-rate percentage into

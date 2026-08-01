@@ -50,10 +50,12 @@ E2_CONFIDENCE_FLOOR = 50  # emits below this do not count toward E2 streak
 
 # ── SEBI (Varghese) ──────────────────────────────────────────────────────────
 SEBI_DISCLAIMER = (
-    "AlphaVeda provides research and analysis only. "
-    "This is NOT investment advice. Consult a SEBI-registered "
-    "investment advisor before making any investment decision. "
-    "Past signal accuracy does not guarantee future returns."
+    "AlphaVeda is not a SEBI-registered Research Analyst or Investment Adviser. "
+    "AlphaVeda provides research and analysis for educational and informational "
+    "purposes only. This is NOT investment advice and is not a substitute for "
+    "professional financial advice. Consult a SEBI-registered investment advisor "
+    "before making any investment decision. Past signal accuracy does not "
+    "guarantee future returns."
 )
 
 # ── Cold-start weights — Bayesian priors (Synthesis Chair / Gap-011) ─────────
