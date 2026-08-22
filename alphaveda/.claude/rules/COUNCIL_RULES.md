@@ -1,6 +1,6 @@
 # AlphaVeda — Council Seat Rules
 # Enforces zero-assumption tolerance for council dispatch.
-# Last updated: 2026-06-26
+# Last updated: 2026-08-17 (registry corrected — see note below)
 
 ## Rule A — Council Seat Dispatch Gate (ENFORCED)
 
@@ -11,27 +11,45 @@ Before dispatching any council seat as an agent, verify:
 If either check fails, dispatch is BLOCKED. Create the skill and register it first.
 A REVISE/APPROVE verdict from an unbacked seat is INADMISSIBLE and cannot count toward Phase sign-off.
 
+**Canonical source of truth for seat status:** `alphaveda/.claude/skills-index.md` (git-tracked —
+this table below is a convenience mirror and can go stale; if the two disagree, skills-index.md
+wins). 2026-08-17 correction: this table previously marked all 18 seats "✓" unconditionally — a
+fresh Claude Code on the web workspace found none of the 18 `SKILL.md` files actually present
+under `~/.claude/skills/` (that directory doesn't persist across remote-workspace containers), so
+the "✓" was describing the *design*, not verified runtime state. Don't repeat that mistake — a
+"✓" here means a real, checked-in `SKILL.md` exists at `alphaveda/.claude/skills/<name>/SKILL.md`
+(git-durable) and is mirrored to `~/.claude/skills/` by `.claude/hooks/session-start.sh` every
+session, not that the seat "exists" as a design concept.
+
 **Seat → Skill registry (AlphaVeda council):**
 | Persona name | Canonical skill name | SKILL.md exists |
 |---|---|---|
-| Buffett | panel-buffett | ✓ |
-| Munger | panel-munger | ✓ |
-| Dalio | panel-dalio | ✓ |
-| Marks | panel-marks | ✓ |
-| Soros | panel-soros | ✓ |
-| Druckenmiller | panel-druckenmiller | ✓ |
-| Lynch | panel-lynch | ✓ |
-| Wealth & Revenue | doctrine-panel-wealth-revenue-strategist | ✓ |
-| Constraint Enforcer | doctrine-panel-constraint-enforcer | ✓ |
-| Shakuni | red-team | ✓ (alias) |
-| Synthesis Chair | synthesis-chair | ✓ |
-| UX/Accessibility (was Tanvi Rao) | ui-ux-pro-max | ✓ |
-| SRA/Reliability Architect (was Imran) | doctrine-panel-systems-reliability-architect | ✓ |
-| DB Integrity (was Rashida) | doctrine-panel-constraint-enforcer (DB ext) | ✓ (enhanced) |
-| Calibration Integrity (was Reddy) | calibration-integrity | ✓ |
-| Jhunjhunwala | circuit-microstructure-reviewer | ✓ (created 2026-06-26) |
-| Bhattacharya | data-licence-compliance-reviewer | ✓ (created 2026-06-26) |
-| Varghese | sebi-compliance-reviewer | ✓ (created 2026-06-26) |
+| Buffett | panel-buffett | ⬜ not yet rebuilt |
+| Munger | panel-munger | ⬜ not yet rebuilt |
+| Dalio | panel-dalio | ⬜ not yet rebuilt |
+| Marks | panel-marks | ⬜ not yet rebuilt |
+| Soros | panel-soros | ⬜ not yet rebuilt |
+| Druckenmiller | panel-druckenmiller | ⬜ not yet rebuilt |
+| Lynch | panel-lynch | ⬜ not yet rebuilt |
+| Wealth & Revenue | doctrine-panel-wealth-revenue-strategist | ⬜ not yet rebuilt |
+| Constraint Enforcer | doctrine-panel-constraint-enforcer | ⬜ not yet rebuilt |
+| Shakuni | red-team | ⬜ not yet rebuilt |
+| Synthesis Chair | synthesis-chair | ⬜ not yet rebuilt |
+| UX/Accessibility (was Tanvi Rao) | ui-ux-pro-max | ⬜ not yet rebuilt |
+| SRA/Reliability Architect (was Imran) | doctrine-panel-systems-reliability-architect | ⬜ not yet rebuilt |
+| DB Integrity (was Rashida) | doctrine-panel-constraint-enforcer (DB ext) | ⬜ not yet rebuilt |
+| Calibration Integrity (was Reddy) | calibration-integrity | ✅ rebuilt 2026-08-17, PROVISIONAL |
+| Jhunjhunwala | circuit-microstructure-reviewer | ⬜ not yet rebuilt |
+| Bhattacharya | data-licence-compliance-reviewer | ⬜ not yet rebuilt |
+| Varghese | sebi-compliance-reviewer | ✅ rebuilt 2026-08-17, PROVISIONAL |
+| (orchestrator, not a Financial Council seat but same Rule A gate) | chief-of-staff | ✅ rebuilt 2026-08-17, PROVISIONAL — weakest evidence base of the 3, see its SKILL.md Provenance |
+
+**PROVISIONAL** = reconstructed from this repo's own documentation and real historical verdicts
+(`bridge/data/council/audit-log.jsonl`, `graphify-out/SESSION_RESUME.md`), self-tested to
+reproduce those real recorded outcomes — not the original file. Treat verdicts from these 3 as
+admissible for now, but Tarun should spot-check each skill's embedded self-test cases (and
+replace with the original `SKILL.md` if it still exists on his own machine) before relying on them
+for anything higher-stakes than what's already been through this reconstruction check.
 
 ## Rule B — Skill Reference in Dispatch Prompt
 Every council dispatch prompt must name its backing skill:
