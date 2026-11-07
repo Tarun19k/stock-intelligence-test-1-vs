@@ -22,10 +22,23 @@
       "Write(.claude/hooks/*)",
       "Bash(chmod +x .claude/hooks/*.sh)",
       "Bash(mkdir -p .claude/hooks)",
-      "Bash(python3 sync_docs.py --check)"
+      "Bash(python3 sync_docs.py --check)",
+      "Write(alphaveda/.claude/scripts/*)",
+      "Bash(mkdir -p alphaveda/.claude/*)",
+      "Bash(chmod +x alphaveda/.claude/scripts/*.sh)",
+      "Bash(bash .claude/hooks/session-start.sh)",
+      "Bash(CLAUDE_CODE_REMOTE=true .claude/hooks/session-start.sh)",
+      "Bash(pip install -q -r requirements.txt)",
+      "Bash(pip install -q --ignore-installed PyJWT -r alphaveda/requirements.txt -r alphaveda/requirements-api.txt)",
+      "Bash(npm install --prefix alphaveda/web)",
+      "Bash(npm run lint --prefix alphaveda/web)",
+      "Bash(npm run build --prefix alphaveda/web)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(npx playwright test *)",
+      "Bash(python3 -m pytest *)",
+      "Bash(pytest *)"
     ],
     "deny": [
-      "Bash(pip install *)",
       "Bash(uv pip install *)",
       "Bash(rm *)",
       "Bash(curl *)",
@@ -34,6 +47,16 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -91,9 +114,16 @@
   },
   "model": "claude-sonnet-4-6",
   "notes": [
-    "deny pip/uv installs \u2014 dependency changes must be deliberate and reviewed",
+    "2026-08-17: blanket 'pip install *' deny replaced with two narrow, reviewed allow entries",
+    "  (exact commands run by .claude/hooks/session-start.sh) \u2014 anything outside those two exact",
+    "  commands still has no matching allow rule and falls through to an interactive prompt,",
+    "  which is the 'deliberate and reviewed' behavior the original blanket deny was going for.",
+    "  uv pip install stays fully denied \u2014 this repo doesn't use uv.",
     "deny rm \u2014 file deletion must be intentional, not accidental",
     "deny curl/wget \u2014 no unreviewed external fetches",
-    "deny streamlit run \u2014 app should be run manually by developer, not by Claude"
+    "deny streamlit run \u2014 app should be run manually by developer, not by Claude",
+    "SessionStart hook (session-start.sh) installs both dependency stacks (GSI Dashboard root +",
+    "  AlphaVeda) and mirrors alphaveda/.claude/skills/ (git-tracked, durable) into",
+    "  ~/.claude/skills/ (session-local, not durable) \u2014 see alphaveda/.claude/skills-index.md."
   ]
 }
